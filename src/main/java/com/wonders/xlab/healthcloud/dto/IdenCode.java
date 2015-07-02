@@ -1,7 +1,5 @@
 package com.wonders.xlab.healthcloud.dto;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
@@ -45,16 +43,4 @@ public class IdenCode implements Serializable {
         this.code = code;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!(obj instanceof IdenCode))
-            return false;
-        IdenCode cast = (IdenCode) obj;
-        return new EqualsBuilder()
-                .append(this.tel, cast.tel)
-                .append(this.code, cast.code)
-                .isEquals();
-    }
 }

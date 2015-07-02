@@ -1,7 +1,5 @@
 package com.wonders.xlab.healthcloud.dto;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
@@ -27,7 +25,7 @@ public class ThirdLoginToken implements Serializable {
     private String thirdType;
 
     /** 验证码 */
-    @NotNull(message = "4位随机验证码不能为空！")
+//    @NotNull(message = "4位随机验证码不能为空！")
     private String code;
 
     public ThirdLoginToken() {
@@ -73,17 +71,4 @@ public class ThirdLoginToken implements Serializable {
         this.code = code;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!(obj instanceof ThirdLoginToken))
-            return false;
-        ThirdLoginToken cast = (ThirdLoginToken) obj;
-        return new EqualsBuilder()
-                .append(this.thirdId, cast.thirdId)
-                .append(this.thirdType, cast.thirdType)
-                .append(this.code, cast.code)
-                .isEquals();
-    }
 }

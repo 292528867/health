@@ -1,6 +1,5 @@
 package com.wonders.xlab.healthcloud.controller;
 
-import com.wonders.xlab.healthcloud.dto.IdenCode;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import net.sf.ehcache.Cache;
@@ -40,8 +39,7 @@ public class SendValidCode {
 
         if (resultCode == 0) {
 
-            IdenCode idenCode = new IdenCode(mobiles, code);
-            Element element = new Element(mobiles, idenCode);
+            Element element = new Element(mobiles, code);
 
             idenCodeCache.put(element);
 

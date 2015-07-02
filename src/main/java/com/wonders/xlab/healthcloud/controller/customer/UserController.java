@@ -13,6 +13,7 @@ import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         try {
             //登陆不带手机号
             if (null == token.getTel()) {
-                UserThird userThird = userThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())]);
+                UserThird userThird = userThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
                 //找不到指定类型第三方，该第三方第一次登陆
                 if (null == userThird) {
                     return new ControllerResult<>().setRet_code(-1).setRet_values("用户不存在!");
@@ -79,12 +80,13 @@ public class UserController extends AbstractBaseController<User, Long> {
                 }
 
                 // 获取指定手机号的验证编码缓存并，比较是否相同
-                IdenCode idenCoded = (IdenCode) idenCodeCache.get(token.getTel()).getObjectValue();
+//                IdenCode idenCoded = (IdenCode) idenCodeCache.get(token.getTel()).getObjectValue();
+                Element element = idenCodeCache.get(token.getTel());
 
-                if (null == idenCoded) {
+                if (null == element || null == (String) element.getObjectValue() ) {
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
                 } else {
-                    if (token.getCode().equals(idenCoded.getCode())) {
+                    if (!token.getCode().equals((String) element.getObjectValue())) {
                         // 前台输错验证码
                         return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
                     } else {
@@ -105,7 +107,6 @@ public class UserController extends AbstractBaseController<User, Long> {
                         return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser().getId());
                     }
                 }
-
             }
         } catch (Exception exp) {
             return new ControllerResult<>().setRet_code(-1).setRet_values(exp.getLocalizedMessage());
@@ -129,11 +130,13 @@ public class UserController extends AbstractBaseController<User, Long> {
         }
         try {
             // 获取指定手机号的验证编码缓存并，比较是否相同
-            IdenCode idenCoded = (IdenCode) idenCodeCache.get(idenCode.getTel()).getObjectValue();
-            if (null == idenCoded) {
+//            IdenCode idenCoded = (IdenCode) idenCodeCache.get(idenCode.getTel()).getObjectValue();
+            Element element = idenCodeCache.get(idenCode.getTel());
+
+            if (null == element || null == (String) element.getObjectValue()) {
                 return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
             } else {
-                if (!idenCoded.equals(idenCode)) {
+                if (!idenCode.getCode().equals((String) element.getObjectValue())) {
                     // 前台输错验证码
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
                 } else {
