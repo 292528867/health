@@ -44,7 +44,7 @@
 	</appender>
 
 	<!-- 定义数据库自定义log输出appender -->
-	<appender name="LOG2DB" class="com.wonders.xlab.nurse.service.log.MyDBAppender">
+	<appender name="LOG2DB" class="com.wonders.xlab.healthcloud.service.log.MyDBAppender">
 		<connectionSource
 			class="ch.qos.logback.core.db.DriverManagerConnectionSource">
 			<driverClass>com.mysql.jdbc.Driver</driverClass>
