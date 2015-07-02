@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by lixuanwu on 15/7/2.
  */
@@ -22,7 +25,6 @@ public class SendValidCode {
     @Autowired
     @Qualifier("idenCodeCache")
     private Cache idenCodeCache;
-
 
     /**
      * 获取验证码，并且放入缓存中
@@ -39,12 +41,12 @@ public class SendValidCode {
         int resultCode = SmsUtils.sendValidCode(mobiles, code);
 
         if (resultCode == 0) {
+
             Element element = new Element(mobiles, code);
             idenCodeCache.put(element);
-            return  new ControllerResult<String>().setRet_code(0).setRet_values("已成功发送，请耐心等待!");
-
+            return new ControllerResult().setRet_code(0).setRet_values("已成功发送，请耐心等待!");
         } else {
-            return  new ControllerResult<String>().setRet_code(-1).setRet_values("发送失败!");
+            return new ControllerResult().setRet_code(1).setRet_values("发送失败!");
         }
 
     }
