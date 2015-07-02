@@ -7,4 +7,6 @@ import com.wonders.xlab.healthcloud.entity.customer.User;
  * Created by Jeffrey on 15/7/2.
  */
 public interface UserRepository extends MyRepository<User,Long> {
+
+    User findByTel(String tel);
 }
