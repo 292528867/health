@@ -80,7 +80,6 @@ public class UserController extends AbstractBaseController<User, Long> {
                 }
 
                 // 获取指定手机号的验证编码缓存并，比较是否相同
-//                IdenCode idenCoded = (IdenCode) idenCodeCache.get(token.getTel()).getObjectValue();
                 Element element = idenCodeCache.get(token.getTel());
 
                 if (null == element || null == (String) element.getObjectValue() ) {
@@ -104,7 +103,7 @@ public class UserController extends AbstractBaseController<User, Long> {
                         userThird.setThirdId(token.getThirdId());
                         userThird.setThirdType(ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())]);
                         userThird = userThirdRepository.save(userThird);
-                        return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser().getId());
+                        return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser());
                     }
                 }
             }
@@ -130,7 +129,6 @@ public class UserController extends AbstractBaseController<User, Long> {
         }
         try {
             // 获取指定手机号的验证编码缓存并，比较是否相同
-//            IdenCode idenCoded = (IdenCode) idenCodeCache.get(idenCode.getTel()).getObjectValue();
             Element element = idenCodeCache.get(idenCode.getTel());
 
             if (null == element || null == (String) element.getObjectValue()) {
