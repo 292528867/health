@@ -1,5 +1,6 @@
 package com.wonders.xlab.healthcloud.controller;
 
+import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -10,9 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by lixuanwu on 15/7/2.
@@ -25,6 +23,7 @@ public class SendValidCode {
     @Qualifier("idenCodeCache")
     private Cache idenCodeCache;
 
+
     /**
      * 获取验证码，并且放入缓存中
      * @param mobiles
@@ -33,9 +32,7 @@ public class SendValidCode {
      */
 
     @RequestMapping(name = "sendValidCode/{telephone}", method = RequestMethod.GET)
-    public Map<String, Object> sendValidCode(@PathVariable String mobiles) throws RuntimeException{
-
-        Map<String, Object> resultMap = new HashMap<>();
+    public ControllerResult sendValidCode(@PathVariable String mobiles) throws RuntimeException{
 
         String code = RandomStringUtils.random(4);
 
@@ -44,11 +41,11 @@ public class SendValidCode {
         if (resultCode == 0) {
             Element element = new Element(mobiles, code);
             idenCodeCache.put(element);
-            resultMap.put("status", 0);
+            return  new ControllerResult<String>().setRet_code(0).setRet_values("已成功发送，请耐心等待!");
+
         } else {
-            resultMap.put("status", 1);
+            return  new ControllerResult<String>().setRet_code(-1).setRet_values("发送失败!");
         }
-        return resultMap;
 
     }
 
