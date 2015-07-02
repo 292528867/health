@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.controller.result;
+package com.wonders.xlab.healthcloud.dto.result;
 
 /**
  * 控制器返回result。

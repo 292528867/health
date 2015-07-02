@@ -2,8 +2,8 @@ package com.wonders.xlab.healthcloud.controller.doctor;
 
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
-import com.wonders.xlab.healthcloud.controller.result.ControllerResult;
 import com.wonders.xlab.healthcloud.dto.IdenCode;
+import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.doctor.Doctor;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import net.sf.ehcache.Cache;
