@@ -115,10 +115,12 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
             return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString());
         }
         try {
+
+            DoctorThird third = this.doctorThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
+
             // 没有手机号登陆
             if (token.getTel() == null) {
 
-                DoctorThird third = this.doctorThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
 
                 // 找不到第三方账号，第一次用第三方登陆
                 if (third == null) {
@@ -128,8 +130,6 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     return new ControllerResult<Long>().setRet_code(0).setRet_values(third.getDoctor().getId());
                 }
             } else {
-
-                DoctorThird third = this.doctorThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
 
                 if (third != null) {
                     // 有第三方账号，返回医师id
@@ -171,7 +171,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                         dThird.setThirdId(token.getThirdId());
                         dThird.setThirdType(ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
                         dThird = this.doctorThirdRepository.save(dThird);
-                        return new ControllerResult<Long>().setRet_code(0).setRet_values(doctor.getId());
+                        return new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor);
                     }
                 }
 
