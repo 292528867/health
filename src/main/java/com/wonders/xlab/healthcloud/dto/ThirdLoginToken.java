@@ -26,14 +26,19 @@ public class ThirdLoginToken implements Serializable {
     @Pattern(regexp = "^(0|1|2)$", message = "登陆平台标识必须为0 sina, 1 tencent, 2 wechat")
     private int thirdType;
 
+    /** 验证码 */
+    @NotNull(message = "4位随机验证码不能为空！")
+    private String code;
+
     public ThirdLoginToken() {
         super();
     }
 
-    public ThirdLoginToken(String tel, String thirdId, int thirdType) {
+    public ThirdLoginToken(String tel, String thirdId, int thirdType, String code) {
         this.tel = tel;
         this.thirdId = thirdId;
         this.thirdType = thirdType;
+        this.code = code;
     }
 
     public String getTel() {
@@ -60,6 +65,13 @@ public class ThirdLoginToken implements Serializable {
         this.thirdType = thirdType;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -71,6 +83,7 @@ public class ThirdLoginToken implements Serializable {
         return new EqualsBuilder()
                 .append(this.thirdId, cast.thirdId)
                 .append(this.thirdType, cast.thirdType)
+                .append(this.code, cast.code)
                 .isEquals();
     }
 }
