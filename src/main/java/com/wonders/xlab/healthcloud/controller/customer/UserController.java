@@ -13,6 +13,8 @@ import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindingResult;
@@ -32,7 +34,7 @@ import java.net.URLDecoder;
 @RequestMapping("user")
 public class UserController extends AbstractBaseController<User, Long> {
 
-//    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private UserRepository userRepository;
@@ -45,8 +47,9 @@ public class UserController extends AbstractBaseController<User, Long> {
     private Cache idenCodeCache;
 
     /**
-     *  第三方登录
-     * @param token 第三方用户标识对象
+     * 第三方登录
+     *
+     * @param token  第三方用户标识对象
      * @param result
      * @return ControllerResult
      */
@@ -61,7 +64,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         try {
             //登陆不带手机号
             if (null == token.getTel()) {
-                UserThird userThird = userThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[token.getThirdType()]);
+                UserThird userThird = userThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())]);
                 //找不到指定类型第三方，该第三方第一次登陆
                 if (null == userThird) {
                     return new ControllerResult<>().setRet_code(-1).setRet_values("用户不存在!");
@@ -75,19 +78,34 @@ public class UserController extends AbstractBaseController<User, Long> {
                     return new ControllerResult<>().setRet_code(-1).setRet_values("关联的手机号格式不正确！");
                 }
 
-                User user = userRepository.findByTel(token.getTel());
+                // 获取指定手机号的验证编码缓存并，比较是否相同
+                IdenCode idenCoded = (IdenCode) idenCodeCache.get(token.getTel()).getObjectValue();
 
-                if (null == user) {
-                    user = new User();
-                    user.setTel(token.getTel());
+                if (null == idenCoded) {
+                    return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
+                } else {
+                    if (token.getCode().equals(idenCoded.getCode())) {
+                        // 前台输错验证码
+                        return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
+                    } else {
+                        //通过电话获取用户
+                        User user = userRepository.findByTel(token.getTel());
+
+                        //用户为空创建用户和第三方关联
+                        if (null == user) {
+                            user = new User();
+                            user.setTel(token.getTel());
+                        }
+
+                        UserThird userThird = new UserThird();
+                        userThird.setUser(user);
+                        userThird.setThirdId(token.getThirdId());
+                        userThird.setThirdType(ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())]);
+                        userThird = userThirdRepository.save(userThird);
+                        return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser().getId());
+                    }
                 }
 
-                UserThird userThird = new UserThird();
-                userThird.setUser(user);
-                userThird.setThirdId(token.getThirdId());
-                userThird.setThirdType(ThirdBaseInfo.ThirdType.values()[token.getThirdType()]);
-                userThird = userThirdRepository.save(userThird);
-                return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser().getId());
             }
         } catch (Exception exp) {
             return new ControllerResult<>().setRet_code(-1).setRet_values(exp.getLocalizedMessage());
@@ -122,12 +140,13 @@ public class UserController extends AbstractBaseController<User, Long> {
                     User user = userRepository.findByTel(idenCode.getTel());
                     // 如果未找到用户则进行注册登陆
                     if (null == user) {
+                        logger.info("user is null");
                         user = new User();
                         user.setTel(idenCode.getTel());
                         user = userRepository.save(user);
-                        return new ControllerResult<>().setRet_code(0).setRet_values(user.getId());
+                        return new ControllerResult<>().setRet_code(0).setRet_values(user);
                     } else
-                        return new ControllerResult<>().setRet_code(0).setRet_values(user.getId());
+                        return new ControllerResult<>().setRet_code(0).setRet_values(user);
                 }
             }
         } catch (Exception e) {
@@ -137,13 +156,14 @@ public class UserController extends AbstractBaseController<User, Long> {
 
     /**
      * 用户上传图片
-     * @param id  用户id
+     *
+     * @param id   用户id
      * @param file 用户图像
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "uploadPic/{id}" ,method = RequestMethod.POST)
-    public  String uploadPic(@PathVariable long id,@RequestParam("file") MultipartFile file) throws  Exception{
+    @RequestMapping(value = "uploadPic/{id}", method = RequestMethod.POST)
+    public String uploadPic(@PathVariable long id, @RequestParam("file") MultipartFile file) throws Exception {
         if (!file.isEmpty()) {
             User user = userRepository.findOne(id);
             String filename = URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
@@ -159,7 +179,7 @@ public class UserController extends AbstractBaseController<User, Long> {
     public Object sendValid(@PathVariable String tel) {
         return tel;
     }
-    
+
     @Override
     protected MyRepository<User, Long> getRepository() {
         return userRepository;
