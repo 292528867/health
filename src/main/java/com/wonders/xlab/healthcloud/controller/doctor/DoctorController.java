@@ -10,18 +10,20 @@ import com.wonders.xlab.healthcloud.entity.doctor.Doctor;
 import com.wonders.xlab.healthcloud.entity.doctor.DoctorThird;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorThirdRepository;
+import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.net.URLDecoder;
 
 /**
  * Created by mars on 15/7/2.
@@ -63,17 +65,23 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         }
         try {
             // 获取指定手机号的验证编码缓存并，比较是否相同
-            IdenCode iden_cached = (IdenCode) idenCodeCache.get(iden.getTel()).getObjectValue();
+            // 判断element是否为空
+            Element element = idenCodeCache.get(iden.getTel());
+            if (element == null) {
+                return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
+            }
+            // 获取验证码
+            String iden_code = (String)element.getObjectValue();
 
-            if (iden_cached == null) {
+            if (iden_code == null) {
                 // cache失效罗
                 return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
             } else {
-                if (!iden_cached.equals(iden)) {
+                if (!iden_code.equals(iden.getCode())) {
                     // 前台输错验证码罗
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
                 } else {
-                    Doctor doctor = this.doctorRepository.findByTel(iden_cached.getTel());
+                    Doctor doctor = this.doctorRepository.findByTel(iden.getTel());
                     if (doctor == null) { // 如果是新用户，插入记录
                         doctor = new Doctor();
                         doctor.setTel(iden.getTel());
@@ -107,10 +115,12 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
             return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString());
         }
         try {
+
+            DoctorThird third = this.doctorThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
+
             // 没有手机号登陆
             if (token.getTel() == null) {
 
-                DoctorThird third = this.doctorThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[token.getThirdType()]);
 
                 // 找不到第三方账号，第一次用第三方登陆
                 if (third == null) {
@@ -120,26 +130,51 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     return new ControllerResult<Long>().setRet_code(0).setRet_values(third.getDoctor().getId());
                 }
             } else {
+
+                if (third != null) {
+                    // 有第三方账号，返回医师id
+                    return new ControllerResult<Long>().setRet_code(0).setRet_values(third.getDoctor().getId());
+                }
+
                 // 带有手机登陆，创建第三方账号，查看医师是否用手机注册，有就绑定
                 if (!ValidateUtils.validateTel(token.getTel())) {
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("关联的手机号格式不正确！");
                 }
 
-                Doctor doctor = this.doctorRepository.findByTel(token.getTel());
+                // 判断element是否为空
+                Element element = idenCodeCache.get(token.getTel());
+                if (element == null) {
+                    return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
+                }
+                // 获取验证码
+                String iden_code = (String)element.getObjectValue();
 
-                // 医师手机注册，创建手机注册
-                if (doctor == null) {
-                    doctor = new Doctor();
-                    doctor.setTel(token.getTel());
-                    doctor = this.doctorRepository.save(doctor);
+                if (iden_code == null) {
+                    // cache失效罗
+                    return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
+                } else {
+                    if (!iden_code.equals(token.getCode())) {
+                        // 前台输错验证码罗
+                        return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
+                    } else {
+                        Doctor doctor = this.doctorRepository.findByTel(token.getTel());
+
+                        // 医师手机注册，创建手机注册
+                        if (doctor == null) {
+                            doctor = new Doctor();
+                            doctor.setTel(token.getTel());
+                            doctor = this.doctorRepository.save(doctor);
+                        }
+
+                        DoctorThird dThird = new DoctorThird();
+                        dThird.setDoctor(doctor);
+                        dThird.setThirdId(token.getThirdId());
+                        dThird.setThirdType(ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
+                        dThird = this.doctorThirdRepository.save(dThird);
+                        return new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor);
+                    }
                 }
 
-                DoctorThird dThird = new DoctorThird();
-                dThird.setDoctor(doctor);
-                dThird.setThirdId(token.getThirdId());
-                dThird.setThirdType(ThirdBaseInfo.ThirdType.values()[token.getThirdType()]);
-                dThird = this.doctorThirdRepository.save(dThird);
-                return new ControllerResult<Long>().setRet_code(0).setRet_values(doctor.getId());
             }
 
         } catch (Exception e) {
@@ -147,6 +182,36 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
             return new ControllerResult<String>().setRet_code(-1).setRet_values(e.getLocalizedMessage());
         }
     }
+
+    /**
+     * 医师上传图片
+     *
+     * @param id   医师id
+     * @param file 医师图像
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "uploadPic/{id}", method = RequestMethod.POST)
+    public Object uploadPic(@PathVariable long id, @RequestParam("file") MultipartFile file) throws Exception {
+        if (file.isEmpty()) {
+            return new ControllerResult<String>().setRet_code(-1).setRet_values("图片不存在");
+        }
+
+        try {
+            Doctor doctor = this.doctorRepository.findOne(id);
+            String filename = URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
+            String url = QiniuUploadUtils.upload(file.getBytes(), filename);
+            doctor.setIconUrl(url);
+            this.doctorRepository.save(doctor);
+            return new ControllerResult<String>().setRet_code(0).setRet_values(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ControllerResult<String>().setRet_code(-1).setRet_values(e.getLocalizedMessage());
+        }
+    }
+
+
+
 
     @RequestMapping("getCode/{tel}")
     public Object getCode(@PathVariable String tel) {

@@ -2,9 +2,7 @@ package com.wonders.xlab.healthcloud.entity.customer;
 
 import com.wonders.xlab.healthcloud.entity.ThirdBaseInfo;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by Jeffrey on 15/7/2.
@@ -26,7 +24,7 @@ public class UserThird extends ThirdBaseInfo<Long> {
     /**
      * 用户信息
      */
-    @Column(nullable = false)
+    @ManyToOne(cascade = {CascadeType.REMOVE,CascadeType.PERSIST})
     private User user;
 
     public User getUser() {
