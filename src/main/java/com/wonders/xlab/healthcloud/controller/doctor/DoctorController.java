@@ -128,6 +128,14 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     return new ControllerResult<Long>().setRet_code(0).setRet_values(third.getDoctor().getId());
                 }
             } else {
+
+                DoctorThird third = this.doctorThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
+
+                if (third != null) {
+                    // 有第三方账号，返回医师id
+                    return new ControllerResult<Long>().setRet_code(0).setRet_values(third.getDoctor().getId());
+                }
+
                 // 带有手机登陆，创建第三方账号，查看医师是否用手机注册，有就绑定
                 if (!ValidateUtils.validateTel(token.getTel())) {
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("关联的手机号格式不正确！");
