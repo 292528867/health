@@ -16,6 +16,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
@@ -80,10 +81,10 @@ public class UserController extends AbstractBaseController<User, Long> {
                 // 获取指定手机号的验证编码缓存并，比较是否相同
                 Element element = idenCodeCache.get(token.getTel());
 
-                if (null == element || null == element.getObjectValue() ) {
+                if (null == element || null == element.getObjectValue()) {
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！");
                 } else {
-                    if (!token.getCode().equals( element.getObjectValue())) {
+                    if (!token.getCode().equals(element.getObjectValue())) {
                         // 前台输错验证码
                         return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！");
                     } else {
@@ -132,7 +133,7 @@ public class UserController extends AbstractBaseController<User, Long> {
             if (null == element || null == element.getObjectValue()) {
                 return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！");
             } else {
-                if (!idenCode.getCode().equals( element.getObjectValue()) ) {
+                if (!idenCode.getCode().equals(element.getObjectValue())) {
                     // 前台输错验证码
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！");
                 } else {
@@ -161,15 +162,21 @@ public class UserController extends AbstractBaseController<User, Long> {
      * @return
      * @throws Exception
      */
+    @Transactional
     @RequestMapping(value = "uploadPic/{id}", method = RequestMethod.POST)
-    public String uploadPic(@PathVariable long id, @RequestParam("file") MultipartFile file) throws Exception {
+    public Object uploadPic(@PathVariable long id, @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
-            User user = userRepository.findOne(id);
-            String filename = URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
-            String url = QiniuUploadUtils.upload(file.getBytes(), filename);
-            user.setIconUrl(url);
-            userRepository.save(user);
-            return url;
+            try {
+                User user = userRepository.findOne(id);
+                String filename = URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
+                String url = QiniuUploadUtils.upload(file.getBytes(), filename);
+                user.setIconUrl(url);
+                userRepository.save(user);
+                return new ControllerResult<>().setRet_code(0).setRet_values(url);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ControllerResult<>().setRet_code(-1).setRet_values(e.getLocalizedMessage());
+            }
         }
         return null;
     }
