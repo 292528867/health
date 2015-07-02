@@ -15,7 +15,7 @@ import com.wonders.xlab.healthcloud.service.log.MyDBAppender;
  *
  */
 @Entity
-@Table(name = "BIZ_LOG_INFO")
+@Table(name = "HC_LOG_INFO")
 public class LogInfo extends AbstractPersistable<Long> {
 	/**
 	 * 

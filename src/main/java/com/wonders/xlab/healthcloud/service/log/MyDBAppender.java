@@ -23,7 +23,7 @@ public class MyDBAppender extends DBAppenderBase<ILoggingEvent> {
 
 	@Override
 	protected String getInsertSQL() {
-		return "insert into biz_log_info(MESSAGE,LEVEL,LOGTIME) values(?,?,?) ";
+		return "insert into hc_log_info(MESSAGE,LEVEL,LOGTIME) values(?,?,?) ";
 	}
 
 	@Override
