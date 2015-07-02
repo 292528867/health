@@ -82,12 +82,12 @@
 	<!-- To enable JMX Management -->
 	<jmxConfigurator />
 
-<!-- 
-	<logger name="com.wonders.xlab.nurse.controller.UserController" level="INFO" additivity="false">
+
+	<logger name="com.wonders.xlab.healthcloud" level="INFO" additivity="false">
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="LOG2DB" />
 	</logger>
- -->
+
  	
 	<root level="INFO">
 		<appender-ref ref="CONSOLE" />

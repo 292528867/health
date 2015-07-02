@@ -10,6 +10,8 @@ public class ControllerResult<RESULTOBJECT> {
 	private Integer ret_code;
 	/** 编码返回描述（泛型返回对象） */
 	private RESULTOBJECT ret_values;
+
+	private String message;
 	
 	public Integer getRet_code() {
 		return ret_code;
@@ -25,7 +27,11 @@ public class ControllerResult<RESULTOBJECT> {
 		this.ret_values = ret_values;
 		return this;
 	}
-	
-	
-
+	public String getMessage() {
+		return message;
+	}
+	public ControllerResult<RESULTOBJECT> setMessage(String message) {
+		this.message = message;
+		return  this;
+	}
 }
