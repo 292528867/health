@@ -45,14 +45,6 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         return doctorRepository;
     }
 
-
-    /**
-     * 手机登陆
-     *
-     * @param iden
-     * @param result
-     * @return
-     */
     @RequestMapping("mlogin")
     private Object mlogin(@Valid IdenCode iden, BindingResult result) {
 
@@ -153,8 +145,8 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
     @RequestMapping("getCode/{tel}")
     public Object getCode(@PathVariable String tel) {
 
-        String s = SmsUtils.sendValidCode(tel);
-        return new ControllerResult<String>().setRet_code(0).setRet_values(s);
+        int s = SmsUtils.sendValidCode(tel, "1234");
+        return new ControllerResult<Integer>().setRet_code(0).setRet_values(s);
     }
 
 }
