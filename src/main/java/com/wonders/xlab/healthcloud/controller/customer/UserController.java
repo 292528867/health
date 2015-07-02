@@ -159,7 +159,7 @@ public class UserController extends AbstractBaseController<User, Long> {
     public Object sendValid(@PathVariable String tel) {
         return tel;
     }
-    
+
     @Override
     protected MyRepository<User, Long> getRepository() {
         return userRepository;
