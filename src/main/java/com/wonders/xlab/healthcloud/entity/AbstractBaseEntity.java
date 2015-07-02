@@ -27,6 +27,9 @@ public abstract class AbstractBaseEntity<ID extends Serializable> extends Abstra
     @Temporal(TIMESTAMP)
     private Date lastModifiedDate;
 
+    /** 备注 */
+    private String remark;
+
     public Date getCreatedDate() {
         return createdDate;
     }

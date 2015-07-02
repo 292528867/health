@@ -22,11 +22,11 @@ public class CacheConfiguration {
 	}
 	
 	@Bean
-	public Cache userIdenCodeCache(CacheManager ehcacheManager) {
+	public Cache idenCodeCache(CacheManager ehcacheManager) {
 		// 创建用户验证编码缓存
 		Cache cache = new Cache(
 			new net.sf.ehcache.config.CacheConfiguration(
-				"userIdenCodeCache", // 缓存名
+				"idenCodeCache", // 缓存名
 				5000 // 缓存最大个数
 			)
 			.memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.FIFO) // 当缓存满时，使用先进先出清理内存

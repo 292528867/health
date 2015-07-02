@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.controller.user;
+package com.wonders.xlab.healthcloud.controller.customer;
 
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
