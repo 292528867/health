@@ -12,7 +12,7 @@ public class IdenCode {
     /** 手机 */
     @NotNull(message = "关联的手机号不能为空！")
     @Pattern(regexp = "^1[0-9]{10}$", message = "关联的手机号格式不正确！")
-    private String phone;
+    private String tel;
 
     /** 验证码 */
     @NotNull(message = "4位随机验证码不能为空！")
@@ -25,18 +25,18 @@ public class IdenCode {
         super();
     }
 
-    public IdenCode(String phone, String code, Date createTime) {
-        this.phone = phone;
+    public IdenCode(String tel, String code, Date createTime) {
+        this.tel = tel;
         this.code = code;
         this.createTime = createTime;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getTel() {
+        return tel;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setTel(String tel) {
+        this.tel = tel;
     }
 
     public String getCode() {
