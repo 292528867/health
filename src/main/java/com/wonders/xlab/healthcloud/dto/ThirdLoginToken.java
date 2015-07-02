@@ -24,7 +24,7 @@ public class ThirdLoginToken implements Serializable {
     /** 第三方登陆平台 0 新浪 1 扣扣 2 微信 */
     @NotNull(message = "第三方登陆平台标识不能为空")
     @Pattern(regexp = "^(0|1|2)$", message = "登陆平台标识必须为0 sina, 1 tencent, 2 wechat")
-    private int thirdType;
+    private String thirdType;
 
     /** 验证码 */
     @NotNull(message = "4位随机验证码不能为空！")
@@ -34,7 +34,7 @@ public class ThirdLoginToken implements Serializable {
         super();
     }
 
-    public ThirdLoginToken(String tel, String thirdId, int thirdType, String code) {
+    public ThirdLoginToken(String tel, String thirdId, String thirdType, String code) {
         this.tel = tel;
         this.thirdId = thirdId;
         this.thirdType = thirdType;
@@ -57,11 +57,11 @@ public class ThirdLoginToken implements Serializable {
         this.thirdId = thirdId;
     }
 
-    public int getThirdType() {
+    public String getThirdType() {
         return thirdType;
     }
 
-    public void setThirdType(int thirdType) {
+    public void setThirdType(String thirdType) {
         this.thirdType = thirdType;
     }
 
