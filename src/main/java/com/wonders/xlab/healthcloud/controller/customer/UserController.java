@@ -14,8 +14,6 @@ import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindingResult;
@@ -68,26 +66,26 @@ public class UserController extends AbstractBaseController<User, Long> {
                 UserThird userThird = userThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
                 //找不到指定类型第三方，该第三方第一次登陆
                 if (null == userThird) {
-                    return new ControllerResult<>().setRet_code(-1).setRet_values("用户不存在!");
+                    return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("用户不存在!");
                 } else {
                     //通过第三方登陆返回第三方关联用户信息
-                    return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser());
+                    return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
                 }
             } else {
                 //电话号码格式验证不通过
                 if (!ValidateUtils.validateTel(token.getTel())) {
-                    return new ControllerResult<>().setRet_code(-1).setRet_values("关联的手机号格式不正确！");
+                    return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("关联的手机号格式不正确！");
                 }
 
                 // 获取指定手机号的验证编码缓存并，比较是否相同
                 Element element = idenCodeCache.get(token.getTel());
 
                 if (null == element || null == element.getObjectValue() ) {
-                    return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
+                    return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！");
                 } else {
                     if (!token.getCode().equals( element.getObjectValue())) {
                         // 前台输错验证码
-                        return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
+                        return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！");
                     } else {
                         //通过电话获取用户
                         User user = userRepository.findByTel(token.getTel());
@@ -103,12 +101,12 @@ public class UserController extends AbstractBaseController<User, Long> {
                         userThird.setThirdId(token.getThirdId());
                         userThird.setThirdType(ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())]);
                         userThird = userThirdRepository.save(userThird);
-                        return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser());
+                        return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
                     }
                 }
             }
         } catch (Exception exp) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values(exp.getLocalizedMessage());
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("exp.getLocalizedMessage()");
         }
     }
 
@@ -132,11 +130,11 @@ public class UserController extends AbstractBaseController<User, Long> {
             Element element = idenCodeCache.get(idenCode.getTel());
 
             if (null == element || null == element.getObjectValue()) {
-                return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
+                return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！");
             } else {
                 if (!idenCode.getCode().equals( element.getObjectValue()) ) {
                     // 前台输错验证码
-                    return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
+                    return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！");
                 } else {
                     User user = userRepository.findByTel(idenCode.getTel());
                     // 如果未找到用户则进行注册登陆
@@ -145,13 +143,13 @@ public class UserController extends AbstractBaseController<User, Long> {
                         user = new User();
                         user.setTel(idenCode.getTel());
                         user = userRepository.save(user);
-                        return new ControllerResult<>().setRet_code(0).setRet_values(user);
+                        return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
                     } else
-                        return new ControllerResult<>().setRet_code(0).setRet_values(user);
+                        return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
                 }
             }
         } catch (Exception e) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values(e.getLocalizedMessage());
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("exp.getLocalizedMessage()");
         }
     }
 
