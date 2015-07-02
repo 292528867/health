@@ -13,7 +13,7 @@ public class IdenCode implements Serializable {
 
     /** 手机 */
     @NotNull(message = "关联的手机号不能为空！")
-    @Pattern(regexp = "^1[0-9]{10}$", message = "关联的手机号格式不正确！")
+    @Pattern(regexp = "/^1((3|5|8){1}\\d{1}|70|77)\\d{8}$/", message = "关联的手机号格式不正确！")
     private String tel;
 
     /** 验证码 */
