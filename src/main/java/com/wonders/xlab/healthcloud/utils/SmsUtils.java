@@ -1,7 +1,6 @@
 package com.wonders.xlab.healthcloud.utils;
 
 import com.bcloud.msg.http.HttpSender;
-import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * Created by wangqiang on 15/7/2.
