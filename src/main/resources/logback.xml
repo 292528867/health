@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<!-- LevelChangePropagator会监听日志环境的合适的生命周期，并把日志级别的变化传播给JUL， 这样JUL关闭的日志不会再传递给slf4j，用这种方式对性能冲击较小，适合jul-to-slf4j的桥接包。 -->
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+		<resetJUL>true</resetJUL>
+	</contextListener>
+
+	<!-- logback高级特性，自定义格式转换符，这个是从springboot里拷过来的， 在logback.xml中注册转换器，并自定义转换符，然后就可以用在格式字符串中了 -->
+	<conversionRule conversionWord="clr"
+		converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+	<conversionRule conversionWord="wex"
+		converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+	<property name="CONSOLE_LOG_PATTERN"
+		value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex" />
+
+	<property name="MYSQLJDBCURL"
+		value="jdbc:mysql://10.1.64.179:3306/health_cloud" />
+	<property name="MYSQLUSERNAME" 
+		value="health_cloud"/>
+	<property name="MYSQLUSERPASSWORD" 
+		value="health_cloud"/>
+		
+	<!-- 定义 CONSOLE appender -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+			<charset>utf8</charset>
+		</encoder>
+	</appender>
+	<!-- 这个appender很妖，springboot内部定义的，貌似可以改变日志event级别，然后重新设置event级别 -->
+	<appender name="DEBUG_LEVEL_REMAPPER"
+		class="org.springframework.boot.logging.logback.LevelRemappingAppender">
+		<destinationLogger>org.springframework.boot</destinationLogger>
+	</appender>
+
+	<!-- 异步输出 console appender -->
+	<appender name="CONSOLE_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+		<!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+		<discardingThreshold>0</discardingThreshold>
+		<!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+		<queueSize>512</queueSize>
+		<!-- 添加附加的appender,最多只能添加一个 -->
+		<appender-ref ref="CONSOLE" />
+	</appender>
+
+	<!-- 定义数据库自定义log输出appender -->
+	<appender name="LOG2DB" class="com.wonders.xlab.nurse.service.log.MyDBAppender">
+		<connectionSource
+			class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+			<driverClass>com.mysql.jdbc.Driver</driverClass>
+			<url>${MYSQLJDBCURL}</url>
+			<user>${MYSQLUSERNAME}</user>
+			<password>${MYSQLUSERPASSWORD}</password>
+		</connectionSource>
+	</appender>
+
+	<!-- springboot 内部默认的日志配置（以下） -->
+	<logger name="org.apache.catalina.startup.DigesterFactory"
+		level="ERROR" />
+	<logger name="org.apache.catalina.util.LifecycleBase" level="ERROR" />
+	<logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN" />
+	<logger name="org.apache.sshd.common.util.SecurityUtils" level="WARN" />
+	<logger name="org.apache.tomcat.util.net.NioSelectorPool" level="WARN" />
+	<logger name="org.crsh.plugin" level="WARN" />
+	<logger name="org.crsh.ssh" level="WARN" />
+	<logger name="org.eclipse.jetty.util.component.AbstractLifeCycle"
+		level="ERROR" />
+	<logger name="org.hibernate.validator.internal.util.Version"
+		level="WARN" />
+	<logger
+		name="org.springframework.boot.actuate.autoconfigure.CrshAutoConfiguration"
+		level="WARN" />
+	<logger name="org.springframework.boot.actuate.endpoint.jmx"
+		additivity="false">
+		<appender-ref ref="DEBUG_LEVEL_REMAPPER" />
+	</logger>
+	<logger name="org.thymeleaf" additivity="false">
+		<appender-ref ref="DEBUG_LEVEL_REMAPPER" />
+	</logger>
+	<!-- springboot 内部默认的日志配置（以上） -->
+
+	<!-- To enable JMX Management -->
+	<jmxConfigurator />
+
+<!-- 
+	<logger name="com.wonders.xlab.nurse.controller.UserController" level="INFO" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="LOG2DB" />
+	</logger>
+ -->
+ 	
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+	</root>
+	
+</configuration>
