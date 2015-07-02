@@ -14,6 +14,7 @@ import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,6 @@ import java.net.URLDecoder;
 @RequestMapping("user")
 public class UserController extends AbstractBaseController<User, Long> {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     private UserRepository userRepository;
 
@@ -57,7 +56,6 @@ public class UserController extends AbstractBaseController<User, Long> {
      */
     @RequestMapping(value = "otherlogin", method = RequestMethod.POST)
     public Object otherLogin(@RequestBody @Valid ThirdLoginToken token, BindingResult result) {
-        logger.info("登陆调用");
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors())
@@ -66,14 +64,14 @@ public class UserController extends AbstractBaseController<User, Long> {
         }
         try {
             //登陆不带手机号
-            if (null == token.getTel()) {
-                logger.info("第三方登陆电话为空");
+            if (StringUtils.isEmpty(token.getTel())) {
+                logger.info("三方登陆时电话为空,thirdId={}",token.getThirdId());
                 UserThird userThird = userThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
                 //找不到指定类型第三方，该第三方第一次登陆
                 if (null == userThird) {
                     return new ControllerResult<>().setRet_code(1).setRet_values("").setMessage("用户不存在!");
                 } else {
-                    logger.info("第三方登陆获取到用户信息");
+                    logger.info("三方登陆获取到用户信息,userId={}",userThird.getUser().getId());
                     //通过第三方登陆返回第三方关联用户信息
                     return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
                 }
@@ -108,7 +106,7 @@ public class UserController extends AbstractBaseController<User, Long> {
                         userThird.setThirdId(token.getThirdId());
                         userThird.setThirdType(ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())]);
                         userThird = userThirdRepository.save(userThird);
-                        logger.info("第三方登陆新增用户");
+                        logger.info("三方登陆新增绑定,thirdId={},userId={}",token.getThirdId(),userThird.getUser().getId());
                         return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
                     }
                 }
