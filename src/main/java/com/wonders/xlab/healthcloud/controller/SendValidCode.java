@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by lixuanwu on 15/7/2.
  */
 @RestController
-@RequestMapping("sendValidCode")
+@RequestMapping("message")
 public class SendValidCode {
 
     @Autowired
@@ -31,7 +31,7 @@ public class SendValidCode {
      * @throws RuntimeException
      */
 
-    @RequestMapping(name = "sendValidCode/{telephone}", method = RequestMethod.GET)
+    @RequestMapping(name = "sendValidCode/{mobiles}", method = RequestMethod.GET)
     public ControllerResult sendValidCode(@PathVariable String mobiles) throws RuntimeException{
 
         String code = RandomStringUtils.random(4);

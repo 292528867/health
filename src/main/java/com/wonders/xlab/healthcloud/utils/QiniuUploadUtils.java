@@ -31,16 +31,6 @@ public class QiniuUploadUtils {
 			QiniuRet ret = res.jsonToObject(QiniuRet.class);
 			String address = url + ret.key;
 			return address;
-		} catch (QiniuException e) {
-			Response r = e.response;
-			// 请求失败时简单状态信息
-			log.error(r.toString());
-			try {
-				// 响应的文本信息
-				log.error(r.bodyString());
-			} catch (QiniuException e1) {
-				// ignore
-			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
