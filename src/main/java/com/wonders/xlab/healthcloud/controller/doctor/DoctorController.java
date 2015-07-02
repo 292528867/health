@@ -110,7 +110,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         }
         try {
             // 没有手机号登陆
-            if (token.getTel() != null) {
+            if (token.getTel() == null) {
 
                 DoctorThird third = this.doctorThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[token.getThirdType()]);
 
@@ -133,7 +133,6 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                 if (doctor == null) {
                     doctor = new Doctor();
                     doctor.setTel(token.getTel());
-                    doctor.setCreatedDate(token.getCreateTime());
                     doctor = this.doctorRepository.save(doctor);
                 }
 
@@ -141,7 +140,6 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                 dThird.setDoctor(doctor);
                 dThird.setThirdId(token.getThirdId());
                 dThird.setThirdType(ThirdBaseInfo.ThirdType.values()[token.getThirdType()]);
-                dThird.setCreatedDate(token.getCreateTime());
                 dThird = this.doctorThirdRepository.save(dThird);
                 return new ControllerResult<Long>().setRet_code(0).setRet_values(doctor.getId());
             }
