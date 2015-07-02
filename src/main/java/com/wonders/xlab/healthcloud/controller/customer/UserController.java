@@ -5,7 +5,6 @@ import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.IdenCode;
 import com.wonders.xlab.healthcloud.dto.ThirdLoginToken;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
-import com.wonders.xlab.healthcloud.entity.BaseInfo;
 import com.wonders.xlab.healthcloud.entity.ThirdBaseInfo;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.customer.UserThird;
@@ -13,12 +12,11 @@ import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,7 +44,12 @@ public class UserController extends AbstractBaseController<User, Long> {
     @Qualifier(value = "idenCodeCache")
     private Cache idenCodeCache;
 
-
+    /**
+     *  第三方登录
+     * @param token 第三方用户标识对象
+     * @param result
+     * @return ControllerResult
+     */
     @RequestMapping(value = "otherlogin", method = RequestMethod.POST)
     public Object otherLogin(@Valid ThirdLoginToken token, BindingResult result) {
         if (result.hasErrors()) {
@@ -132,6 +135,11 @@ public class UserController extends AbstractBaseController<User, Long> {
         }
     }
 
+    @RequestMapping(value = "test/{tel}")
+    public Object sendValid(@PathVariable String tel) {
+        return tel;
+    }
+    
     @Override
     protected MyRepository<User, Long> getRepository() {
         return userRepository;
