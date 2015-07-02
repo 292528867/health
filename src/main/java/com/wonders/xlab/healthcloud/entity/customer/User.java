@@ -9,7 +9,10 @@ import javax.persistence.Table;
 @Table(name = "HC_USER")
 public class User extends AbstractPersistable<Long> {
 
-    private String name;
+    /**
+     * 用户名
+     */
+    private String usserName;
 
     /**
      * 用户肖像
@@ -17,16 +20,16 @@ public class User extends AbstractPersistable<Long> {
     private String portrait;
 
     /**
-     *  用户电话
+     * 用户电话
      */
     private String telephone;
 
-    public String getName() {
-        return name;
+    public String getUsserName() {
+        return usserName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsserName(String usserName) {
+        this.usserName = usserName;
     }
 
     public String getPortrait() {
