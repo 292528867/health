@@ -60,7 +60,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     Doctor doctor = this.doctorRepository.findByPhone(iden_cached.getPhone());
                     if (doctor == null) { // 如果是新用户，插入记录
                         doctor = new Doctor();
-                        doctor.setPhone(iden.getPhone());
+                        doctor.setTel(iden.getPhone());
                         doctor = this.doctorRepository.save(doctor);
                         return new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor);
                     } else {
