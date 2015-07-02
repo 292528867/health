@@ -11,9 +11,10 @@ import java.io.Serializable;
 public abstract class ThirdBaseInfo<ID extends Serializable> extends AbstractBaseEntity<ID> {
 
 
-    /**  */
+    /** 第三方id */
     private String thirdId;
 
+    /** 第三方类型 */
     @Enumerated
     private ThirdType thirdType;
 

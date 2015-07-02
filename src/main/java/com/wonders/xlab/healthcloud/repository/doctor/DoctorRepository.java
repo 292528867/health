@@ -8,5 +8,5 @@ import com.wonders.xlab.healthcloud.entity.doctor.Doctor;
  */
 public interface DoctorRepository extends MyRepository<Doctor, Long> {
 
-    Doctor findByPhone(String phone);
+    Doctor findByTel(String tel);
 }
