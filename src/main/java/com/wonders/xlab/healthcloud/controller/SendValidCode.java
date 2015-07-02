@@ -43,9 +43,9 @@ public class SendValidCode {
 
             idenCodeCache.put(element);
 
-            return new ControllerResult().setRet_code(0).setRet_values("已成功发送，请耐心等待!");
+            return new ControllerResult().setRet_code(0).setRet_values("").setMessage("已成功发送，请耐心等待!");
         } else {
-            return new ControllerResult().setRet_code(-1).setRet_values("发送失败!");
+            return new ControllerResult().setRet_code(-1).setRet_values("").setMessage("发送失败!");
         }
 
     }
