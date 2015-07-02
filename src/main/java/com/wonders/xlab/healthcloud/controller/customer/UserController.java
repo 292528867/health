@@ -35,7 +35,7 @@ import java.net.URLDecoder;
 @RequestMapping("user")
 public class UserController extends AbstractBaseController<User, Long> {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+//    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private UserRepository userRepository;
@@ -82,10 +82,10 @@ public class UserController extends AbstractBaseController<User, Long> {
                 // 获取指定手机号的验证编码缓存并，比较是否相同
                 Element element = idenCodeCache.get(token.getTel());
 
-                if (null == element || null == (String) element.getObjectValue() ) {
+                if (null == element || null == element.getObjectValue() ) {
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
                 } else {
-                    if (!token.getCode().equals((String) element.getObjectValue())) {
+                    if (!token.getCode().equals( element.getObjectValue())) {
                         // 前台输错验证码
                         return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
                     } else {
@@ -131,17 +131,17 @@ public class UserController extends AbstractBaseController<User, Long> {
             // 获取指定手机号的验证编码缓存并，比较是否相同
             Element element = idenCodeCache.get(idenCode.getTel());
 
-            if (null == element || null == (String) element.getObjectValue()) {
+            if (null == element || null == element.getObjectValue()) {
                 return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
             } else {
-                if (!idenCode.getCode().equals((String) element.getObjectValue())) {
+                if (!idenCode.getCode().equals( element.getObjectValue()) ) {
                     // 前台输错验证码
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
                 } else {
                     User user = userRepository.findByTel(idenCode.getTel());
                     // 如果未找到用户则进行注册登陆
                     if (null == user) {
-                        logger.info("user is null");
+//                        logger.info("user is null");
                         user = new User();
                         user.setTel(idenCode.getTel());
                         user = userRepository.save(user);
