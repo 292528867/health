@@ -39,4 +39,24 @@ public class CacheConfiguration {
 		ehcacheManager.addCache(cache); // 必须加入缓存，不要忘了
 		return cache;
 	}
+	
+	@Bean
+	public Cache shiroCache(CacheManager ehcacheManager) {
+		// 创建shiro安全框架用缓存		
+		Cache cache = new Cache(
+			new net.sf.ehcache.config.CacheConfiguration(
+				"shiroCache", // 缓存名
+				10000 // 缓存最大个数
+			)
+			.memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.FIFO) // 当缓存满时，使用先进先出清理内存
+			.eternal(false) // 对象是否永久有效
+			.timeToIdleSeconds(120) // 对象失效前允许的闲置时间， 0，闲置时间无穷大
+			.timeToLiveSeconds(120) // 对象的失效时间，这里设置失效时间 120秒
+			.diskExpiryThreadIntervalSeconds(120) // 10秒间隔检测 idle 和 live状态
+			.persistence(new PersistenceConfiguration().strategy(Strategy.LOCALTEMPSWAP)) // 当缓存满了，或者重启时，不持久化数据
+		);
+		ehcacheManager.addCache(cache); // 必须加入缓存，不要忘了
+		return cache;
+	}
+	
 }
