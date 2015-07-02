@@ -53,12 +53,12 @@ public class UserController extends AbstractBaseController<User, Long> {
      * @return ControllerResult
      */
     @RequestMapping(value = "otherlogin", method = RequestMethod.POST)
-    public Object otherLogin(@Valid ThirdLoginToken token, BindingResult result) {
+    public Object otherLogin(@RequestBody @Valid ThirdLoginToken token, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors())
                 builder.append(error.getDefaultMessage());
-            return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString());
+            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(builder.toString());
         }
         try {
             //登陆不带手机号
@@ -118,12 +118,12 @@ public class UserController extends AbstractBaseController<User, Long> {
      * @return ControllerResult
      */
     @RequestMapping(value = "hclogin", method = RequestMethod.POST)
-    public Object hcLogin(@Valid IdenCode idenCode, BindingResult result) {
+    public Object hcLogin(@RequestBody @Valid IdenCode idenCode, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors())
                 builder.append(error.getDefaultMessage());
-            return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString());
+            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(builder.toString());
         }
         try {
             // 获取指定手机号的验证编码缓存并，比较是否相同
