@@ -11,8 +11,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "hc_doctor")
 public class Doctor extends AbstractBaseEntity<Long> {
-
-
+    
     /** 手机 */
     private String phone;
 
@@ -28,5 +27,21 @@ public class Doctor extends AbstractBaseEntity<Long> {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }
