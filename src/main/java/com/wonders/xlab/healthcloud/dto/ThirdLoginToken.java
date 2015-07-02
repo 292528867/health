@@ -1,6 +1,7 @@
 package com.wonders.xlab.healthcloud.dto;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 /**
@@ -19,12 +20,12 @@ public class ThirdLoginToken implements Serializable {
     private String thirdId;
 
     /** 第三方登陆平台 0 新浪 1 扣扣 2 微信 */
-//    @NotNull(message = "第三方登陆平台标识不能为空")
-//    @Pattern(regexp = "^(0|1|2)$", message = "登陆平台标识必须为0 sina, 1 tencent, 2 wechat")
+    @NotNull(message = "第三方登陆平台标识不能为空")
+    @Pattern(regexp = "^(0|1|2)$", message = "登陆平台标识必须为0 sina, 1 tencent, 2 wechat")
     private String thirdType;
 
     /** 验证码 */
-    @NotNull(message = "4位随机验证码不能为空！")
+//    @NotNull(message = "4位随机验证码不能为空！")
     private String code;
 
     public ThirdLoginToken() {
