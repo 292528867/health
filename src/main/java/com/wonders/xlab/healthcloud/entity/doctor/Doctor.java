@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "hc_doctor")
 public class Doctor extends AbstractBaseEntity<Long> {
-    
+
     /** 手机 */
     private String phone;
 

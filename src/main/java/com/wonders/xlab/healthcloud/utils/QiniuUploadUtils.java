@@ -1,15 +1,14 @@
 package com.wonders.xlab.healthcloud.utils;
 
-import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
-import com.wonders.xlab.healthcloud.controller.dto.QiniuRet;
+import com.wonders.xlab.healthcloud.dto.QiniuRet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * 上传图片到七牛云存储
