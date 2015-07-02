@@ -61,7 +61,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         try {
             //登陆不带手机号
             if (null == token.getTel()) {
-                UserThird userThird = userThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[token.getThirdType()]);
+                UserThird userThird = userThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
                 //找不到指定类型第三方，该第三方第一次登陆
                 if (null == userThird) {
                     return new ControllerResult<>().setRet_code(-1).setRet_values("用户不存在!");
@@ -85,7 +85,7 @@ public class UserController extends AbstractBaseController<User, Long> {
                 UserThird userThird = new UserThird();
                 userThird.setUser(user);
                 userThird.setThirdId(token.getThirdId());
-                userThird.setThirdType(ThirdBaseInfo.ThirdType.values()[token.getThirdType()]);
+                userThird.setThirdType(ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
                 userThird = userThirdRepository.save(userThird);
                 return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser().getId());
             }

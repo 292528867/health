@@ -64,17 +64,17 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         }
         try {
             // 获取指定手机号的验证编码缓存并，比较是否相同
-            IdenCode iden_cached = (IdenCode) idenCodeCache.get(iden.getTel()).getObjectValue();
+            String iden_code = (String) idenCodeCache.get(iden.getTel()).getObjectValue();
 
-            if (iden_cached == null) {
+            if (iden_code == null) {
                 // cache失效罗
                 return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
             } else {
-                if (!iden_cached.equals(iden)) {
+                if (!iden_code.equals(iden.getCode())) {
                     // 前台输错验证码罗
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
                 } else {
-                    Doctor doctor = this.doctorRepository.findByTel(iden_cached.getTel());
+                    Doctor doctor = this.doctorRepository.findByTel(iden.getTel());
                     if (doctor == null) { // 如果是新用户，插入记录
                         doctor = new Doctor();
                         doctor.setTel(iden.getTel());
@@ -132,7 +132,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     // cache失效罗
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
                 } else {
-                    if (!iden_cached.equals(token)) {
+                    if (!iden_cached.getCode().equals(token.getCode())) {
                         // 前台输错验证码罗
                         return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
                     } else {
