@@ -67,14 +67,7 @@ public class UserController extends AbstractBaseController<User, Long> {
             if (StringUtils.isEmpty(token.getTel())) {
                 logger.info("三方登陆时电话为空,thirdId={}",token.getThirdId());
                 UserThird userThird = userThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
-                //找不到指定类型第三方，该第三方第一次登陆
-                if (null == userThird) {
-                    return new ControllerResult<>().setRet_code(1).setRet_values("").setMessage("用户不存在!");
-                } else {
-                    logger.info("三方登陆获取到用户信息,userId={}",userThird.getUser().getId());
-                    //通过第三方登陆返回第三方关联用户信息
-                    return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
-                }
+                return resultUserWithoutTel(userThird);
             } else {
                 //电话号码格式验证不通过
                 if (!ValidateUtils.validateTel(token.getTel())) {
@@ -92,27 +85,52 @@ public class UserController extends AbstractBaseController<User, Long> {
                         // 前台输错验证码
                         return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！");
                     } else {
-                        //通过电话获取用户
-                        User user = userRepository.findByTel(token.getTel());
-
-                        //用户为空创建用户和第三方关联
-                        if (null == user) {
-                            user = new User();
-                            user.setTel(token.getTel());
-                        }
-
-                        UserThird userThird = new UserThird();
-                        userThird.setUser(user);
-                        userThird.setThirdId(token.getThirdId());
-                        userThird.setThirdType(ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())]);
-                        userThird = userThirdRepository.save(userThird);
-                        logger.info("三方登陆新增绑定,thirdId={},userId={}",token.getThirdId(),userThird.getUser().getId());
-                        return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
+                        return bindingThirdparty(token);
                     }
                 }
             }
         } catch (Exception exp) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("exp.getLocalizedMessage()");
+        }
+    }
+
+    /**
+     * 绑定合并或者创建用户三方
+     * @param token 三方登陆dto
+     * @return
+     */
+    private ControllerResult<?> bindingThirdparty(ThirdLoginToken token) {
+        //通过电话获取用户
+        User user = userRepository.findByTel(token.getTel());
+
+        //用户为空创建用户和第三方关联
+        if (null == user) {
+            user = new User();
+            user.setTel(token.getTel());
+        }
+
+        UserThird userThird = new UserThird();
+        userThird.setUser(user);
+        userThird.setThirdId(token.getThirdId());
+        userThird.setThirdType(ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())]);
+        userThird = userThirdRepository.save(userThird);
+        logger.info("三方登陆新增绑定,thirdId={},userId={}",token.getThirdId(),userThird.getUser().getId());
+        return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
+    }
+
+    /**
+     *  返回用户信息
+     * @param userThird 三方关联实体
+     * @return
+     */
+    private ControllerResult<?> resultUserWithoutTel(UserThird userThird){
+        //找不到指定类型第三方，该第三方第一次登陆
+        if (null == userThird) {
+            return new ControllerResult<>().setRet_code(1).setRet_values("").setMessage("用户不存在!");
+        } else {
+            logger.info("三方登陆获取到用户信息,userId={}",userThird.getUser().getId());
+            //通过第三方登陆返回第三方关联用户信息
+            return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
         }
     }
 
