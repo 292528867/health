@@ -5,12 +5,16 @@ import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
 
 /**
  * Created by lixuanwu on 15/7/2.
@@ -23,6 +27,7 @@ public class SendValidCode {
     @Qualifier("idenCodeCache")
     private Cache idenCodeCache;
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
      * 获取验证码，并且放入缓存中
      * @param mobiles
@@ -35,7 +40,10 @@ public class SendValidCode {
 
         String code = RandomStringUtils.randomNumeric(4);
 
+
         int resultCode = SmsUtils.sendValidCode(mobiles, code);
+
+        logger.info(new Date() +",验证码：" + code);
 
         if (resultCode == 0) {
 
