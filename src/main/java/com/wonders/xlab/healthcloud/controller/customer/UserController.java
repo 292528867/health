@@ -10,18 +10,18 @@ import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.customer.UserThird;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
+import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.net.URLDecoder;
 
 
 /**
@@ -133,6 +133,26 @@ public class UserController extends AbstractBaseController<User, Long> {
         } catch (Exception e) {
             return new ControllerResult<>().setRet_code(-1).setRet_values(e.getLocalizedMessage());
         }
+    }
+
+    /**
+     * 用户上传图片
+     * @param id  用户id
+     * @param file 用户图像
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "uploadPic/{id}" ,method = RequestMethod.POST)
+    public  String uploadPic(@PathVariable long id,@RequestParam("file") MultipartFile file) throws  Exception{
+        if (!file.isEmpty()) {
+            User user = userRepository.findOne(id);
+            String filename = URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
+            String url = QiniuUploadUtils.upload(file.getBytes(), filename);
+            user.setIconUrl(url);
+            userRepository.save(user);
+            return url;
+        }
+        return null;
     }
 
     @RequestMapping(value = "test/{tel}")
