@@ -24,8 +24,8 @@ public class Doctor extends BaseInfo<Long> {
         this.recordUrl = recordUrl;
     }
 
-    public Doctor(String recordUrl) {
-        this.recordUrl = recordUrl;
+    public Doctor() {
+        super();
     }
 
     public Doctor(String tel, String nickName, String iconUrl, Sex sex, double height, double weight, int age, Date birthday, Date createdDate, Date lastModifiedDate, String recordUrl) {
