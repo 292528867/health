@@ -14,6 +14,7 @@ import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindingResult;
@@ -64,7 +65,13 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         }
         try {
             // 获取指定手机号的验证编码缓存并，比较是否相同
-            String iden_code = (String) idenCodeCache.get(iden.getTel()).getObjectValue();
+            // 判断element是否为空
+            Element element = idenCodeCache.get(iden.getTel());
+            if (element == null) {
+                return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
+            }
+            // 获取验证码
+            String iden_code = (String)element.getObjectValue();
 
             if (iden_code == null) {
                 // cache失效罗
@@ -126,13 +133,19 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("关联的手机号格式不正确！");
                 }
 
-                IdenCode iden_cached = (IdenCode) idenCodeCache.get(token.getTel()).getObjectValue();
+                // 判断element是否为空
+                Element element = idenCodeCache.get(token.getTel());
+                if (element == null) {
+                    return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
+                }
+                // 获取验证码
+                String iden_code = (String)element.getObjectValue();
 
-                if (iden_cached == null) {
+                if (iden_code == null) {
                     // cache失效罗
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码失效！");
                 } else {
-                    if (!iden_cached.getCode().equals(token.getCode())) {
+                    if (!iden_code.equals(token.getCode())) {
                         // 前台输错验证码罗
                         return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
                     } else {
