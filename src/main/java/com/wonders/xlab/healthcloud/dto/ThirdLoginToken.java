@@ -1,13 +1,15 @@
 package com.wonders.xlab.healthcloud.dto;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.Date;
+import java.io.Serializable;
 
 /**
  * Created by mars on 15/7/2.
  */
-public class ThirdLoginToken {
+public class ThirdLoginToken implements Serializable {
 
 
     /** 手机 */
@@ -24,18 +26,14 @@ public class ThirdLoginToken {
     @Pattern(regexp = "^(0|1|2)$", message = "登陆平台标识必须为0 sina, 1 tencent, 2 wechat")
     private int thirdType;
 
-    /** 创建时间 */
-    private Date createTime;
-
     public ThirdLoginToken() {
         super();
     }
 
-    public ThirdLoginToken(String tel, String thirdId, int thirdType, Date createTime) {
+    public ThirdLoginToken(String tel, String thirdId, int thirdType) {
         this.tel = tel;
         this.thirdId = thirdId;
         this.thirdType = thirdType;
-        this.createTime = createTime;
     }
 
     public String getTel() {
@@ -62,11 +60,17 @@ public class ThirdLoginToken {
         this.thirdType = thirdType;
     }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof ThirdLoginToken))
+            return false;
+        ThirdLoginToken cast = (ThirdLoginToken) obj;
+        return new EqualsBuilder()
+                .append(this.thirdId, cast.thirdId)
+                .append(this.thirdType, cast.thirdType)
+                .isEquals();
     }
 }

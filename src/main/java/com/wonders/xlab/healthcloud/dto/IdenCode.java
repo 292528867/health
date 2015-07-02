@@ -1,13 +1,15 @@
 package com.wonders.xlab.healthcloud.dto;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.Date;
+import java.io.Serializable;
 
 /**
  * Created by mars on 15/7/2.
  */
-public class IdenCode {
+public class IdenCode implements Serializable {
 
     /** 手机 */
     @NotNull(message = "关联的手机号不能为空！")
@@ -18,17 +20,13 @@ public class IdenCode {
     @NotNull(message = "4位随机验证码不能为空！")
     private String code;
 
-    /** 创建时间 */
-    private Date createTime;
-
     public IdenCode() {
         super();
     }
 
-    public IdenCode(String tel, String code, Date createTime) {
+    public IdenCode(String tel, String code) {
         this.tel = tel;
         this.code = code;
-        this.createTime = createTime;
     }
 
     public String getTel() {
@@ -47,11 +45,16 @@ public class IdenCode {
         this.code = code;
     }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof IdenCode))
+            return false;
+        IdenCode cast = (IdenCode) obj;
+        return new EqualsBuilder()
+                .append(this.tel, cast.tel)
+                .append(this.code, cast.code)
+                .isEquals();
     }
 }

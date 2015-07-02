@@ -1,5 +1,6 @@
 package com.wonders.xlab.healthcloud.controller;
 
+import com.wonders.xlab.healthcloud.dto.IdenCode;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import net.sf.ehcache.Cache;
@@ -39,13 +40,14 @@ public class SendValidCode {
 
         if (resultCode == 0) {
 
-            Element element = new Element(mobiles, code);
+            IdenCode idenCode = new IdenCode(mobiles, code);
+            Element element = new Element(mobiles, idenCode);
 
             idenCodeCache.put(element);
 
             return new ControllerResult().setRet_code(0).setRet_values("已成功发送，请耐心等待!");
         } else {
-            return new ControllerResult().setRet_code(1).setRet_values("发送失败!");
+            return new ControllerResult().setRet_code(-1).setRet_values("发送失败!");
         }
 
     }
