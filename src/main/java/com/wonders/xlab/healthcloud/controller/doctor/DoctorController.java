@@ -10,12 +10,14 @@ import com.wonders.xlab.healthcloud.entity.doctor.Doctor;
 import com.wonders.xlab.healthcloud.entity.doctor.DoctorThird;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorThirdRepository;
+import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -63,7 +65,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         }
         try {
             // 获取指定手机号的验证编码缓存并，比较是否相同
-            IdenCode iden_cached = (IdenCode) idenCodeCache.get(iden.getPhone()).getObjectValue();
+            IdenCode iden_cached = (IdenCode) idenCodeCache.get(iden.getTel()).getObjectValue();
 
             if (iden_cached == null) {
                 // cache失效罗
@@ -73,10 +75,10 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     // 前台输错验证码罗
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("验证码输入错误！");
                 } else {
-                    Doctor doctor = this.doctorRepository.findByTel(iden_cached.getPhone());
+                    Doctor doctor = this.doctorRepository.findByTel(iden_cached.getTel());
                     if (doctor == null) { // 如果是新用户，插入记录
                         doctor = new Doctor();
-                        doctor.setTel(iden.getPhone());
+                        doctor.setTel(iden.getTel());
                         doctor = this.doctorRepository.save(doctor);
                         return new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor);
                     } else {
@@ -148,6 +150,13 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
             e.printStackTrace();
             return new ControllerResult<String>().setRet_code(-1).setRet_values(e.getLocalizedMessage());
         }
+    }
+
+    @RequestMapping("getCode/{tel}")
+    public Object getCode(@PathVariable String tel) {
+
+        String s = SmsUtils.sendValidCode(tel);
+        return new ControllerResult<String>().setRet_code(0).setRet_values(s);
     }
 
 }
