@@ -24,7 +24,7 @@ public class UserThird extends ThirdBaseInfo<Long> {
     /**
      * 用户信息
      */
-    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.REMOVE,CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.REMOVE,CascadeType.PERSIST})
     private User user;
 
     public User getUser() {
