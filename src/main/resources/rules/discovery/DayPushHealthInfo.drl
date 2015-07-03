@@ -1,0 +1,89 @@
+//created on: 2015-7-3
+package rules.feed
+
+//list any import classes here.
+
+import com.wonders.xlab.healthcloud.service.drools.fact.HealthInfoSample;
+import com.wonders.xlab.healthcloud.service.drools.fact.UserQuerySample;
+
+import java.util.ArrayList;
+import java.util.Collections;
+
+//declare any global variables here
+
+declare UserHealthInfoClickInfo
+	userId : Long // 用户id
+	healthInfoNotClickList : ArrayList // 未点击的健康信息文章列表（一般几次后就没有了）
+	healthInfoClickList : ArrayList // 已经点击过的健康信息文章列表（插入之前已经按点击量升序排序）
+	noClickListSize : Integer
+	clickListSize : Integer
+	totalSize : Integer
+end
+
+declare CalcuHealthInfoSampleCondition
+	userId : Long // 用户id
+	expectedSampleSize : Integer // 希望选择到的sample列表大小（目前为6个）
+	selectedSampleList : ArrayList // 已经选饿到的sample列表大小
+	selectedSampleListSize : Integer // 已经选择的sample列表大小
+	canSelectedSampleList : ArrayList // 能够被随机选择的sample列表大小
+end
+
+rule "load data 1"
+	when 
+		$userQuerySample : UserQuerySample ( $userId : userId )
+		$healthInfoNotClickList : ArrayList() from collect(HealthInfoSample( userId == $userId, clickCount > 0 ))
+		$healthInfoClickList : ArrayList() from collect(HealthInfoSample( userId == $userId, clickCount == 0 ))
+	then
+		UserHealthInfoClickInfo userHealthInfoClickInfo = new UserHealthInfoClickInfo();
+		userHealthInfoClickInfo.setUserId($userId);
+		userHealthInfoClickInfo.setHealthInfoClickList($healthInfoNotClickList);
+		Collections.sort($healthInfoClickList);
+		userHealthInfoClickInfo.setHealthInfoClickList($healthInfoClickList);
+		userHealthInfoClickInfo.setNoClickListSize($healthInfoNotClickList.size());
+		userHealthInfoClickInfo.setClickListSize($healthInfoClickList.size());
+		userHealthInfoClickInfo.setTotalSize($healthInfoNotClickList.size() + $healthInfoClickList.size());
+		
+		insert(userHealthInfoClickInfo);
+		
+end
+
+rule "condition 1"
+	when 
+		$userHealthInfoClickInfo : UserHealthInfoClickInfo ( 
+			$userId : userId, 
+			$healthInfoNotClickList : healthInfoNotClickList 
+			
+			$notClickSize : healthInfoNotClickList.size(), 
+			$clickSize :  )
+		eval ( $notClickSize >= 6 )
+	then
+		// 创建condition条件
+		CalcuHealthInfoSampleCondition calcuHealthInfoSampleCondition = new CalcuHealthInfoSampleCondition();
+		calcuHealthInfoSampleCondition.setUserId($userId);
+		calcuHealthInfoSampleCondition.setSelectedSampleListSize(0);
+		calcuHealthInfoSampleCondition.setExpectedSampleSize(6); 
+		calcuHealthInfoSampleCondition.setSelectedSampleList(new ArrayList());
+		calcuHealthInfoSampleCondition.setCanSelectedSampleList($healthInfoNotClickList);
+end
+
+rule "condition 2"
+	when 
+		$userHealthInfoClickInfo : UserHealthInfoClickInfo ( 
+			$userId : userId, 
+			$healthInfoNotClickList : healthInfoNotClickList
+			$notClickSize : healthInfoNotClickList.size() )
+		eval ( $notClickSize >= 6 )
+	then
+		// 创建condition条件
+		CalcuHealthInfoSampleCondition calcuHealthInfoSampleCondition = new CalcuHealthInfoSampleCondition();
+		calcuHealthInfoSampleCondition.setUserId($userId);
+		calcuHealthInfoSampleCondition.setSelectedSampleListSize(0);
+		calcuHealthInfoSampleCondition.setExpectedSampleSize(6); 
+		calcuHealthInfoSampleCondition.setSelectedSampleList(new ArrayList());
+		calcuHealthInfoSampleCondition.setCanSelectedSampleList($healthInfoNotClickList);
+end
+
+
+
+
+

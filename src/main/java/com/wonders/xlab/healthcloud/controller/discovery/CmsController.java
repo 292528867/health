@@ -1,14 +1,21 @@
 package com.wonders.xlab.healthcloud.controller.discovery;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URLDecoder;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.healthcloud.dto.discovery.HealthCatagoryDto;
 import com.wonders.xlab.healthcloud.dto.discovery.HealthInfoDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
@@ -37,6 +46,9 @@ public class CmsController {
 	/** 日志记录器 */
 	private static final Logger logger = LoggerFactory.getLogger("com.wonders.xlab.healthcloud.controller.discovery.CmsController");
 	
+    @Autowired
+    protected ObjectMapper objectMapper;
+    
 	@Autowired
 	private HealthCategoryRepository healthCategoryRepository;
 	@Autowired
@@ -149,6 +161,31 @@ public class CmsController {
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("上传文件为空！").setMessage("上传文件为空！");
 		}
 	}
+	
+	@RequestMapping(value = "fileUpLoad", method = RequestMethod.POST)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        Map<String, Object> map = new HashMap<>();
+        PrintWriter out = response.getWriter();
+        // 转型为MultipartHttpRequest
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        // 获得上传的文件
+        MultiValueMap<String, MultipartFile> multiValueMap = multipartRequest.getMultiFileMap();
+        String url = null;
+        for (String s : multiValueMap.keySet()) {
+            List<MultipartFile> multipartFile = multiValueMap.get(s);
+            for (MultipartFile file : multipartFile) {
+                System.out.println(file.getOriginalFilename());
+                url = QiniuUploadUtils.upload(file.getBytes(), URLDecoder.decode(file.getOriginalFilename(), "UTF-8"));
+                System.out.println(url);
+            }
+        }
+        map.put("error", 0);
+        map.put("url", url);
+        String json = objectMapper.writeValueAsString(map);
+        out.println(json);
+
+    }
 	
 
 }
