@@ -90,6 +90,7 @@ public class UserController extends AbstractBaseController<User, Long> {
 
                 // 获取指定手机号的验证编码缓存并，比较是否相同
                 String cascheValue = hcCache.getFromCache(token.getTel());
+                // 验证码失效 ？返回失效 ：（ 验证码匹配不正确 ？验证不通过 ：绑定和返回用户 ）
                 return StringUtils.isEmpty(cascheValue) ?
                         new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！") :
                         !token.getCode().equals(cascheValue) ?
@@ -151,6 +152,7 @@ public class UserController extends AbstractBaseController<User, Long> {
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！");
                 } else {
                     User user = userRepository.findByTel(idenCode.getTel());
+                    //用户不存在 ？创建并返回用户 ：直接返回用户
                     return null == user ? addUserBeforeLogin(idenCode) :
                             new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
                 }
