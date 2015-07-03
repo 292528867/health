@@ -16,7 +16,6 @@ import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URLDecoder;
 
 
@@ -196,6 +197,40 @@ public class UserController extends AbstractBaseController<User, Long> {
             }
         }
         return null;
+    }
+
+    @RequestMapping(
+            method = {RequestMethod.PUT}
+    )
+    @Override
+    public User modify(@RequestBody User entity) {
+        entity.setValid(User.Valid.valid);
+        User user = userRepository.findOne(entity.getId());
+        user = copyNotNullProperty(user, entity);
+        return super.modify(user);
+    }
+
+    private User copyNotNullProperty(User dest, User orig) {
+        Field[] destFields = dest.getClass().getDeclaredFields();
+        for (Field destField : destFields) {
+            destField.setAccessible(true);
+            Field origField = null;
+            try {
+                origField = orig.getClass().getDeclaredField(destField.getName());
+                origField.setAccessible(true);
+                Object propertyValue = origField.get(orig);
+                if (null != propertyValue)
+                    destField.set(dest, propertyValue);
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }finally {
+                origField.setAccessible(false);
+                destField.setAccessible(false);
+            }
+        }
+        return dest;
     }
 
     @Override

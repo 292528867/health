@@ -1,53 +1,73 @@
 package com.wonders.xlab.healthcloud.utils;
 
-import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
 import com.wonders.xlab.healthcloud.dto.QiniuRet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 /**
  * 上传图片到七牛云存储
- * 
  * @author yukui
- *
  */
 public class QiniuUploadUtils {
-	private static Logger log = LoggerFactory.getLogger(QiniuUploadUtils.class);
+
+    /**
+     * AK
+     */
 	private static String ACCESS_KEY = "yLpWgvVh5np4VkDwuxnVzRe8M5cB-9fXWl2EYrWi";
+
+    /**
+     * SK
+     */
 	private static String SECRET_KEY = "idB3vbPuyPPszN4D5Rz-QYts9RBbo2xcVVbXmFza";
+<<<<<<< HEAD
 	private static String url = "http://7xk3mz.com2.z0.glb.qiniucdn.com";
 	private static Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
+=======
+
+    /**
+     * 命名空间url
+     */
+
+	private static String url = "http://7xj64q.com2.z0.glb.qiniucdn.com/";
+
+    /**
+     * 命名空间
+     */
+    private static String data = "health-cloud";
+
+    private static Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
+>>>>>>> efb7dee60514d8dc9c9d17e7bf87fdb851864372
 
 	public static String upload(byte byteData[], String fileName) {
-		try {
+
+        String address = null;
+
+        try {
+
 			UploadManager uploadManager = new UploadManager();
-			Response res = uploadManager.put(byteData, fileName,
-					getUpToken(fileName));
+
+			Response res = uploadManager.put(byteData, fileName, getUpToken(fileName));
+
 			QiniuRet ret = res.jsonToObject(QiniuRet.class);
-			String address = url + ret.key;
-			return address;
+
+			address = url + ret.key;
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return null;
+        return address;
 	}
 
-	// 简单上传，使用默认策略
-	public static String getUpToken0() {
-		return auth.uploadToken("revivesh");
-	}
-
-	// 覆盖上传
+    /**
+     * 覆盖上传
+     */
 	public static String getUpToken(String fileName) {
-		return auth.uploadToken("revivesh", fileName);
+
+		return auth.uploadToken(data, fileName);
+
 	}
 
-	public static void main(String[] args) {
-		// QiniuUploadUtil.upload();
-	}
 }

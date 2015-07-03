@@ -16,11 +16,27 @@ public class User extends BaseInfo<Long> {
     @JoinTable(name = "hc_user_package_relation", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "package_id"))
     private Set<HcPackage> hcPackages;
 
+    //    invalid 用户无效（未完善用户信息），valid 用户有效
+    @Enumerated
+    private Valid valid = Valid.invalid;
+
+    public enum Valid {
+        invalid,valid
+    }
+
     public Set<HcPackage> getHcPackages() {
         return hcPackages;
     }
 
     public void setHcPackages(Set<HcPackage> hcPackages) {
         this.hcPackages = hcPackages;
+    }
+
+    public int getValid() {
+        return valid.ordinal();
+    }
+
+    public void setValid(Valid valid) {
+        this.valid = valid;
     }
 }
