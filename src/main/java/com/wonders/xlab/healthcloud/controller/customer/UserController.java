@@ -15,6 +15,8 @@ import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -179,14 +181,16 @@ public class UserController extends AbstractBaseController<User, Long> {
         if (!file.isEmpty()) {
             try {
                 User user = userRepository.findOne(id);
+                if (null == user)
+                    return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("用户不存在!");
                 String filename = URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
                 String url = QiniuUploadUtils.upload(file.getBytes(), filename);
                 user.setIconUrl(url);
-                userRepository.save(user);
-                return new ControllerResult<>().setRet_code(0).setRet_values(url);
+                user = userRepository.save(user);
+                return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("图片上传成功!");
             } catch (Exception e) {
                 e.printStackTrace();
-                return new ControllerResult<>().setRet_code(-1).setRet_values(e.getLocalizedMessage());
+                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage(e.getLocalizedMessage());
             }
         }
         return null;
