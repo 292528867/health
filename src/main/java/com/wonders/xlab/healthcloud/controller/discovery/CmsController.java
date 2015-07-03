@@ -63,7 +63,7 @@ public class CmsController {
 	
 	// 查询分类
 	@RequestMapping(value = "listCategory/{healthCategoryId}", method = RequestMethod.GET)
-	public ControllerResult<?> listHealthCategory(Long healthCategoryId) {
+	public ControllerResult<?> listHealthCategory(@PathVariable Long healthCategoryId) {
 		HealthCategory hc = this.healthCategoryRepository.findOne(healthCategoryId);
 		if (hc == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
