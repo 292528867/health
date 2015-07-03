@@ -32,33 +32,34 @@ public class SendValidCode {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private HCCache<String,String> cache;
+    private HCCache<String, String> cache;
 
     @PostConstruct
     private void init() {
-        cache = new HCCacheProxy<String,String>(idenCodeCache);
+        cache = new HCCacheProxy<String, String>(idenCodeCache);
     }
 
     /**
      * 获取验证码，并且放入缓存中
+     *
      * @param mobiles
      * @return
      * @throws RuntimeException
      */
 
     @RequestMapping(value = "sendValidCode/{mobiles}", method = RequestMethod.GET)
-    public ControllerResult sendValidCode(@PathVariable String mobiles) throws RuntimeException{
+    public ControllerResult sendValidCode(@PathVariable String mobiles) throws RuntimeException {
 
         String code = RandomStringUtils.randomNumeric(4);
 
 
         int resultCode = SmsUtils.sendValidCode(mobiles, code);
 
-        logger.info(new Date() +",验证码：" + code);
+        logger.info(new Date() + ",验证码：" + code);
 
         if (resultCode == 0) {
 
-            cache.addToCache(mobiles,code);
+            cache.addToCache(mobiles, code);
 
             return new ControllerResult().setRet_code(0).setRet_values("").setMessage("已成功发送，请耐心等待!");
         } else {
@@ -66,7 +67,6 @@ public class SendValidCode {
         }
 
     }
-
 
 
 }
