@@ -111,18 +111,25 @@ public class CmsController {
 	}
 	
 	// 修改分类健康信息
-	@RequestMapping(value = "updateInfo/{healthInfoId}", method = RequestMethod.POST)
-	public ControllerResult<?> updateHealthInfo(@PathVariable Long healthInfoId, @RequestBody @Valid HealthInfoDto dto, BindingResult result) {
+	@RequestMapping(value = "updateInfo/{healthCategoryId}/{healthInfoId}", method = RequestMethod.POST)
+	public ControllerResult<?> updateHealthInfo(@PathVariable Long healthCategoryId, @PathVariable Long healthInfoId, @RequestBody @Valid HealthInfoDto dto, BindingResult result) {
 		if (result.hasErrors()) {
 			StringBuilder builder = new StringBuilder();
 			for (ObjectError error : result.getAllErrors()) 
 				builder.append(error.getDefaultMessage());
 			return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败！");
 		}
+		HealthCategory hc = this.healthCategoryRepository.findOne(healthCategoryId);
+		if (hc == null)
+			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
 		HealthInfo hi = this.healthInfoRepository.findOne(healthInfoId);
 		if (hi == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
-		this.healthInfoRepository.save(dto.updateHealthInfo(hi));
+		
+		
+		HealthInfo hi_yl = dto.updateHealthInfo(hi);
+		hi_yl.setHealthCategory(hc);		
+		this.healthInfoRepository.save(hi_yl);
 		return new ControllerResult<String>().setRet_code(0).setRet_values("更新成功！").setMessage("成功！");
 	}
 	
