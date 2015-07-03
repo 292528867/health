@@ -21,12 +21,16 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    /** 是否推荐 */
+    private boolean recommend;
+
     public HcPackage() {
     }
 
-    public HcPackage(String title, String description) {
+    public HcPackage(String title, String description, boolean recommend) {
         this.title = title;
         this.description = description;
+        this.recommend = recommend;
     }
 
     public String getTitle() {
@@ -43,5 +47,13 @@ public class HcPackage extends AbstractBaseEntity<Long> {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isRecommend() {
+        return recommend;
+    }
+
+    public void setRecommend(boolean recommend) {
+        this.recommend = recommend;
     }
 }
