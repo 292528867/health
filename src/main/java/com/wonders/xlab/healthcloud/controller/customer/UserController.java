@@ -15,8 +15,6 @@ import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -196,6 +194,15 @@ public class UserController extends AbstractBaseController<User, Long> {
             }
         }
         return null;
+    }
+
+    @RequestMapping(
+            method = {RequestMethod.PUT}
+    )
+    @Override
+    public User modify(@RequestBody User entity) {
+        entity.setValid(User.Valid.valid);
+        return super.modify(entity);
     }
 
     @Override
