@@ -11,15 +11,23 @@ import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
  *
  */
 public class HealthInfoDto {
+	@NotNull(message = "标题不能为空")
+	private String title;
+	@NotNull(message = "图片不能为空")
+	private String pictureUrl;
+	@NotNull(message = "简述不能为空")
+	private String desc;
 	@NotNull(message = "健康信息不能为空")
 	private String htmlInfo;
-	
 	
 	/**
 	 * 转换成一个新的{@link HealthInfo}实体对象，临时状态。
 	 */
 	public HealthInfo toNewHealthInfo(HealthCategory hc) {
 		HealthInfo hi = new HealthInfo();
+		hi.setTitle(title);
+		hi.setPictureUrl(pictureUrl);
+		hi.setDescription(desc);
 		hi.setHtmlInfo(htmlInfo);
 		hi.setHealthCategory(hc);
 		return hi;
@@ -40,6 +48,9 @@ public class HealthInfoDto {
 	 * 更新一个{@link HealthInfo}实体对象，游离状态。
 	 */
 	public HealthInfo updateHealthInfo(HealthInfo hi) {
+		hi.setTitle(title);
+		hi.setPictureUrl(pictureUrl);
+		hi.setDescription(desc);
 		hi.setHtmlInfo(htmlInfo);
 		return hi;
 	}
@@ -50,6 +61,30 @@ public class HealthInfoDto {
 
 	public void setHtmlInfo(String htmlInfo) {
 		this.htmlInfo = htmlInfo;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getPictureUrl() {
+		return pictureUrl;
+	}
+
+	public void setPictureUrl(String pictureUrl) {
+		this.pictureUrl = pictureUrl;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
 	
 	

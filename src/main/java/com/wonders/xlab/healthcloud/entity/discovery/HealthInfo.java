@@ -4,10 +4,10 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -30,8 +30,15 @@ public class HealthInfo extends AbstractPersistable<Long> {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/** 标题 */
+	private String title;
+	/** 图片url */
+	private String pictureUrl;
+	/** 简述 */
+	private String description;
+	
 	/** html页面信息，暂定长度 */
-	@Column(length = 2000)
+	@Lob
 	private String htmlInfo;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -79,6 +86,30 @@ public class HealthInfo extends AbstractPersistable<Long> {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getPictureUrl() {
+		return pictureUrl;
+	}
+
+	public void setPictureUrl(String pictureUrl) {
+		this.pictureUrl = pictureUrl;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }
