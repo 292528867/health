@@ -4,6 +4,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
+import javax.persistence.Column;
 import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
@@ -19,6 +20,7 @@ import static javax.persistence.TemporalType.*;
 public abstract class BaseInfo<ID extends Serializable> extends AbstractPersistable<ID> {
 
     /** 手机 */
+    @Column(unique = true, length = 11)
     private String tel;
 
     /** 昵称 */
