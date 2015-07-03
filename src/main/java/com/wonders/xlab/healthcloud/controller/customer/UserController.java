@@ -117,23 +117,6 @@ public class UserController extends AbstractBaseController<User, Long> {
     }
 
     /**
-     * 返回用户信息
-     *
-     * @param userThird 三方关联实体
-     * @return
-     */
-    private ControllerResult<?> resultUserWithoutTel(UserThird userThird) {
-        //找不到指定类型第三方，该第三方第一次登陆
-        if (null == userThird) {
-            return new ControllerResult<>().setRet_code(1).setRet_values("").setMessage("用户不存在!");
-        } else {
-            logger.info("三方登陆获取到用户信息,userId={}", userThird.getUser().getId());
-            //通过第三方登陆返回第三方关联用户信息
-            return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
-        }
-    }
-
-    /**
      * 用户登陆
      *
      * @param idenCode {@link IdenCode} 用户标识对象
