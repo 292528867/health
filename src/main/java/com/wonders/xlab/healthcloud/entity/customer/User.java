@@ -32,8 +32,8 @@ public class User extends BaseInfo<Long> {
         this.hcPackages = hcPackages;
     }
 
-    public Valid getValid() {
-        return valid;
+    public int getValid() {
+        return valid.ordinal();
     }
 
     public void setValid(Valid valid) {
