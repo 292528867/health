@@ -210,7 +210,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         return super.modify(user);
     }
 
-    private static User copyNotNullProperty(User dest, User orig) {
+    private User copyNotNullProperty(User dest, User orig) {
         Field[] destFields = dest.getClass().getDeclaredFields();
         for (Field destField : destFields) {
             destField.setAccessible(true);
