@@ -15,6 +15,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
+import com.wonders.xlab.healthcloud.entity.customer.User;
+
 /**
  * 健康信息点击记录。
  * @author xu
@@ -35,6 +37,11 @@ public class HealthInfoClickInfo extends AbstractPersistable<Long> {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "HEALTHINFO_ID")
 	private HealthInfo healthInfo;
+	/** 关联的用户 */
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "USER_ID")
+	private User user;
+	
 	/** 点击日期（格式：yyyy-MM-dd） */
 	private Date clickDate;
 	
@@ -87,5 +94,14 @@ public class HealthInfoClickInfo extends AbstractPersistable<Long> {
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
     
 }
