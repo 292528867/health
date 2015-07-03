@@ -205,11 +205,17 @@ public class UserController extends AbstractBaseController<User, Long> {
     }
 
     @RequestMapping(value = "modify/{userId}", method = RequestMethod.POST)
-    public User modify(@PathVariable long userId,@RequestBody @Valid UserDto userDto,BindingResult result) {
+    public Object modify(@PathVariable long userId,@RequestBody @Valid UserDto userDto,BindingResult result) {
         userDto.setValid(User.Valid.valid);
         User user = userRepository.findOne(userId);
-        user = (User) ReflectionUtils.copyNotNullProperty(user, userDto);
-        return super.modify(user);
+        try {
+            user = (User) ReflectionUtils.copyNotNullProperty(user, userDto);
+            user = super.modify(user);
+            return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("图片上传成功!");
+        } catch (Exception exp) {
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("更新失败!");
+        }
+
     }
 
     @Override
