@@ -15,8 +15,6 @@ import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,9 +63,14 @@ public class UserController extends AbstractBaseController<User, Long> {
         try {
             //登陆不带手机号
             if (StringUtils.isEmpty(token.getTel())) {
-                logger.info("三方登陆时电话为空,thirdId={}",token.getThirdId());
-                UserThird userThird = userThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
-                return resultUserWithoutTel(userThird);
+                logger.info("三方登陆时电话为空,thirdId={}", token.getThirdId());
+                UserThird userThird = userThirdRepository.findByThirdIdAndThirdType(
+                        token.getThirdId(),
+                        ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]
+                );
+                return null == userThird ?
+                        new ControllerResult<>().setRet_code(1).setRet_values("").setMessage("用户不存在!") :
+                        new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
             } else {
                 //电话号码格式验证不通过
                 if (!ValidateUtils.validateTel(token.getTel())) {
@@ -77,25 +80,20 @@ public class UserController extends AbstractBaseController<User, Long> {
                 // 获取指定手机号的验证编码缓存并，比较是否相同
                 Element element = idenCodeCache.get(token.getTel());
 
-                if (null == element || null == element.getObjectValue()) {
-                    return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！");
-                } else {
-                    logger.info("tel={},code={},cascode={}", token.getTel(),token.getCode(),element.getObjectValue());
-                    if (!token.getCode().equals(element.getObjectValue())) {
-                        // 前台输错验证码
-                        return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！");
-                    } else {
-                        return bindingThirdparty(token);
-                    }
-                }
+                return null == element || null == element.getObjectValue() ?
+                        new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！") :
+                        !token.getCode().equals(element.getObjectValue()) ?
+                                new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！") :
+                                bindingThirdparty(token);
             }
         } catch (Exception exp) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("exp.getLocalizedMessage()");
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage(exp.getLocalizedMessage());
         }
     }
 
     /**
      * 绑定合并或者创建用户三方
+     *
      * @param token 三方登陆dto
      * @return
      */
@@ -114,21 +112,22 @@ public class UserController extends AbstractBaseController<User, Long> {
         userThird.setThirdId(token.getThirdId());
         userThird.setThirdType(ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())]);
         userThird = userThirdRepository.save(userThird);
-        logger.info("三方登陆新增绑定,thirdId={},userId={}",token.getThirdId(),userThird.getUser().getId());
+        logger.info("三方登陆新增绑定,thirdId={},userId={}", token.getThirdId(), userThird.getUser().getId());
         return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
     }
 
     /**
-     *  返回用户信息
+     * 返回用户信息
+     *
      * @param userThird 三方关联实体
      * @return
      */
-    private ControllerResult<?> resultUserWithoutTel(UserThird userThird){
+    private ControllerResult<?> resultUserWithoutTel(UserThird userThird) {
         //找不到指定类型第三方，该第三方第一次登陆
         if (null == userThird) {
             return new ControllerResult<>().setRet_code(1).setRet_values("").setMessage("用户不存在!");
         } else {
-            logger.info("三方登陆获取到用户信息,userId={}",userThird.getUser().getId());
+            logger.info("三方登陆获取到用户信息,userId={}", userThird.getUser().getId());
             //通过第三方登陆返回第三方关联用户信息
             return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
         }
@@ -161,20 +160,19 @@ public class UserController extends AbstractBaseController<User, Long> {
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！");
                 } else {
                     User user = userRepository.findByTel(idenCode.getTel());
-                    // 如果未找到用户则进行注册登陆
-                    if (null == user) {
-//                        logger.info("user is null");
-                        user = new User();
-                        user.setTel(idenCode.getTel());
-                        user = userRepository.save(user);
-                        return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
-                    } else
-                        return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
+                    return null == user ? addUserBeforeLogin(idenCode) : new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
                 }
             }
         } catch (Exception e) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("exp.getLocalizedMessage()");
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage(e.getLocalizedMessage());
         }
+    }
+
+    private ControllerResult<?> addUserBeforeLogin(IdenCode idenCode) {
+        User user = new User();
+        user.setTel(idenCode.getTel());
+        user = userRepository.save(user);
+        return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
     }
 
     /**
