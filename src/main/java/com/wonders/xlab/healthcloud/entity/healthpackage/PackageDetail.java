@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class PackageDetail extends AbstractBaseEntity<Long> {
 
     /** 健康包 */
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     private HcPackage hcPackage;
 
     /** 详细信息 */

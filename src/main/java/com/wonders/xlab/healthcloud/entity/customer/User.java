@@ -11,7 +11,7 @@ import java.util.Set;
 public class User extends BaseInfo<Long> {
 
     /** 用户健康包 */
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @OrderBy(value = "id asc")
     @JoinTable(name = "hc_user_package_relation", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "package_id"))
     private Set<HcPackage> hcPackages;
