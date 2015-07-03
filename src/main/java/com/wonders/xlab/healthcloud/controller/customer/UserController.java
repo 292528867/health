@@ -113,10 +113,11 @@ public class UserController extends AbstractBaseController<User, Long> {
             user = new User();
             user.setTel(token.getTel());
         }
-        UserThird userThird = new UserThird();
-        userThird.setUser(user);
-        userThird.setThirdId(token.getThirdId());
-        userThird.setThirdType(ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())]);
+        UserThird userThird = new UserThird(
+                token.getThirdId(),
+                ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())],
+                user
+        );
         userThird = userThirdRepository.save(userThird);
         logger.info("三方登陆新增绑定,thirdId={},userId={}", token.getThirdId(), userThird.getUser().getId());
         return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
