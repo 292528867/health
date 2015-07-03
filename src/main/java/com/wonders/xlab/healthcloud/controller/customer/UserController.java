@@ -211,7 +211,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         try {
             user = (User) ReflectionUtils.copyNotNullProperty(user, userDto);
             user = super.modify(user);
-            return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("图片上传成功!");
+            return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("用户更新成功!");
         } catch (Exception exp) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("更新失败!");
         }

@@ -19,31 +19,45 @@ import static javax.persistence.TemporalType.*;
 @MappedSuperclass
 public abstract class BaseInfo<ID extends Serializable> extends AbstractPersistable<ID> {
 
-    /** 手机 */
+    /**
+     * 手机
+     */
     @Column(unique = true, length = 11)
-    private String tel;
+    private String tel = "";
 
-    /** 昵称 */
-    private String nickName;
+    /**
+     * 昵称
+     */
+    private String nickName = "";
 
-    /** 头像地址 */
-    private String iconUrl;
+    /**
+     * 头像地址
+     */
+    private String iconUrl = "";
 
-    /** 性别 */
+    /**
+     * 性别
+     */
     @Enumerated
-    private Sex sex;
+    private Sex sex = Sex.Unkown;
 
     public enum Sex {
-        Male, Female
+        Male, Female, Unkown
     }
 
-    /** 身高 */
+    /**
+     * 身高
+     */
     private double height;
 
-    /** 体重 */
+    /**
+     * 体重
+     */
     private double weight;
 
-    /** 年龄 */
+    /**
+     * 年龄
+     */
     private int age;
 
     @Temporal(DATE)

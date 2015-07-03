@@ -1,5 +1,6 @@
 package com.wonders.xlab.healthcloud.dto.customer;
 
+import com.wonders.xlab.healthcloud.entity.BaseInfo;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 
 /**
@@ -47,18 +48,6 @@ public class UserDto {
      */
     private Integer age;
 
-    public void setHeight(Double height) {
-        this.height = height;
-    }
-
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
     public String getTel() {
         return tel;
     }
@@ -91,27 +80,27 @@ public class UserDto {
         this.sex = sex;
     }
 
-    public double getHeight() {
+    public Double getHeight() {
         return height;
     }
 
-    public void setHeight(double height) {
+    public void setHeight(Double height) {
         this.height = height;
     }
 
-    public double getWeight() {
+    public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(double weight) {
+    public void setWeight(Double weight) {
         this.weight = weight;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 
