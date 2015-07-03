@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "hc_package")
-public class Package extends AbstractBaseEntity<Long> {
+public class HcPackage extends AbstractBaseEntity<Long> {
 
     /** 标题 */
     private String title;
@@ -21,10 +21,10 @@ public class Package extends AbstractBaseEntity<Long> {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    public Package() {
+    public HcPackage() {
     }
 
-    public Package(String title, String description) {
+    public HcPackage(String title, String description) {
         this.title = title;
         this.description = description;
     }

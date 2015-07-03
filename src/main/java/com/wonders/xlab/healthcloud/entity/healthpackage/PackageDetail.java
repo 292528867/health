@@ -14,7 +14,7 @@ public class PackageDetail extends AbstractBaseEntity<Long> {
 
     /** 健康包 */
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
-    private Package hcPackage;
+    private HcPackage hcPackage;
 
     /** 详细信息 */
     @Column(columnDefinition = "TEXT")
@@ -24,16 +24,16 @@ public class PackageDetail extends AbstractBaseEntity<Long> {
     public PackageDetail() {
     }
 
-    public PackageDetail(Package hcPackage, String detail) {
+    public PackageDetail(HcPackage hcPackage, String detail) {
         this.hcPackage = hcPackage;
         this.detail = detail;
     }
 
-    public Package getHcPackage() {
+    public HcPackage getHcPackage() {
         return hcPackage;
     }
 
-    public void setHcPackage(Package hcPackage) {
+    public void setHcPackage(HcPackage hcPackage) {
         this.hcPackage = hcPackage;
     }
 

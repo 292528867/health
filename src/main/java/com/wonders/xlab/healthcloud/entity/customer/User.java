@@ -1,7 +1,7 @@
 package com.wonders.xlab.healthcloud.entity.customer;
 
 import com.wonders.xlab.healthcloud.entity.BaseInfo;
-import com.wonders.xlab.healthcloud.entity.healthpackage.Package;
+import com.wonders.xlab.healthcloud.entity.healthpackage.HcPackage;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -14,13 +14,13 @@ public class User extends BaseInfo<Long> {
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     @OrderBy(value = "id asc")
     @JoinTable(name = "hc_user_package_relation", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "package_id"))
-    private Set<Package> packages;
+    private Set<HcPackage> hcPackages;
 
-    public Set<Package> getPackages() {
-        return packages;
+    public Set<HcPackage> getHcPackages() {
+        return hcPackages;
     }
 
-    public void setPackages(Set<Package> packages) {
-        this.packages = packages;
+    public void setHcPackages(Set<HcPackage> hcPackages) {
+        this.hcPackages = hcPackages;
     }
 }
