@@ -7,40 +7,45 @@ import com.wonders.xlab.healthcloud.entity.customer.User;
  */
 public class UserDto {
 
-    private Long id;
-
-    //    invalid 用户无效（未完善用户信息），valid 用户有效
+    /**
+     * invalid 用户无效（未完善用户信息），valid 用户有效
+     */
     private User.Valid valid;
 
-
-    /** 手机 */
+    /**
+     * 手机
+     */
     private String tel;
 
-    /** 昵称 */
+    /**
+     * 昵称
+     */
     private String nickName;
 
-    /** 头像地址 */
+    /**
+     * 头像地址
+     */
     private String iconUrl;
 
-    /** 性别 */
+    /**
+     * 性别
+     */
     private User.Sex sex;
 
-    /** 身高 */
+    /**
+     * 身高
+     */
     private Double height;
 
-    /** 体重 */
+    /**
+     * 体重
+     */
     private Double weight;
 
-    /** 年龄 */
+    /**
+     * 年龄
+     */
     private Integer age;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public void setHeight(Double height) {
         this.height = height;

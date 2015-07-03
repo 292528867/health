@@ -23,7 +23,7 @@ public class ReflectionUtils {
                     String firstLetter = fieldName.substring(0, 1).toUpperCase();
                     String setMethodName = "set" + firstLetter + origField.getName().substring(1);
                     Class<?> claszz = origField.getType();
-                    System.out.println("claszz.getSimpleName() = " + claszz.getSimpleName());
+                    System.out.println("claszz.getSimpleName() = " + claszz.getSimpleName() + "origFields.size()" + origFields.length);
                     if (claszz.getSimpleName().toString().equals("Double")) {
                         Method method = dest.getClass().getMethod(setMethodName, new Class[]{double.class});
                         method.invoke(dest, propertyValue);

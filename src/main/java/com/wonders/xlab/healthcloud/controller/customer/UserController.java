@@ -204,13 +204,11 @@ public class UserController extends AbstractBaseController<User, Long> {
         return null;
     }
 
-    @RequestMapping(value = "modify", method = RequestMethod.PUT)
-    public User modify(@RequestBody UserDto entity) {
-        entity.setValid(User.Valid.valid);
-        User user = userRepository.findOne(entity.getId());
-        String[] ignoreProperties = {"age", "weight", "height"};
-        BeanUtils.copyProperties(entity, user, ignoreProperties);
-        user = (User) ReflectionUtils.copyNotNullProperty(user, entity);
+    @RequestMapping(value = "modify/{userId}", method = RequestMethod.POST)
+    public User modify(@PathVariable long userId,@RequestBody @Valid UserDto userDto,BindingResult result) {
+        userDto.setValid(User.Valid.valid);
+        User user = userRepository.findOne(userId);
+        user = (User) ReflectionUtils.copyNotNullProperty(user, userDto);
         return super.modify(user);
     }
 
