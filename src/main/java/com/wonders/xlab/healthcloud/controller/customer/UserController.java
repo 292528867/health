@@ -4,6 +4,7 @@ import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.IdenCode;
 import com.wonders.xlab.healthcloud.dto.ThirdLoginToken;
+import com.wonders.xlab.healthcloud.dto.customer.UserDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.ThirdBaseInfo;
 import com.wonders.xlab.healthcloud.entity.customer.User;
@@ -13,10 +14,11 @@ import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
+import com.wonders.xlab.healthcloud.utils.ReflectionUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +29,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
+import java.util.List;
 
 
 /**
@@ -199,38 +204,14 @@ public class UserController extends AbstractBaseController<User, Long> {
         return null;
     }
 
-    @RequestMapping(
-            method = {RequestMethod.PUT}
-    )
-    @Override
-    public User modify(@RequestBody User entity) {
+    @RequestMapping(value = "modify", method = RequestMethod.PUT)
+    public User modify(@RequestBody UserDto entity) {
         entity.setValid(User.Valid.valid);
         User user = userRepository.findOne(entity.getId());
-        user = copyNotNullProperty(user, entity);
+        String[] ignoreProperties = {"age", "weight", "height"};
+        BeanUtils.copyProperties(entity, user, ignoreProperties);
+        user = (User) ReflectionUtils.copyNotNullProperty(user, entity);
         return super.modify(user);
-    }
-
-    private User copyNotNullProperty(User dest, User orig) {
-        Field[] destFields = dest.getClass().getDeclaredFields();
-        for (Field destField : destFields) {
-            destField.setAccessible(true);
-            Field origField = null;
-            try {
-                origField = orig.getClass().getDeclaredField(destField.getName());
-                origField.setAccessible(true);
-                Object propertyValue = origField.get(orig);
-                if (null != propertyValue)
-                    destField.set(dest, propertyValue);
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }finally {
-                origField.setAccessible(false);
-                destField.setAccessible(false);
-            }
-        }
-        return dest;
     }
 
     @Override
