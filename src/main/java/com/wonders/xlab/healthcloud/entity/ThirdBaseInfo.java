@@ -12,7 +12,7 @@ public abstract class ThirdBaseInfo<ID extends Serializable> extends AbstractBas
 
 
     /** 第三方id */
-    private String thirdId;
+    private String thirdId = "";
 
     /** 第三方类型 */
     @Enumerated

@@ -1,0 +1,338 @@
+package com.wonders.xlab.healthcloud.service.security.filter;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
+
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
+import org.apache.shiro.web.util.WebUtils;
+import org.bsth.gjzgs.busbattery.core.security.shiro.principal.BasicPrincipal;
+import org.bsth.gjzgs.busbattery.core.security.shiro.realm.SysJDBCRealm;
+import org.bsth.gjzgs.busbattery.core.security.shiro.realm.SysUserAccountToken;
+import org.bsth.gjzgs.busbattery.dao.BaseRepository;
+import org.bsth.gjzgs.busbattery.entity.security.SysUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * ajax请求时的 验证过滤器。 可以处理所有请求，包括一般的form提交。
+ * 
+ * @author user
+ * 
+ */
+public class AjaxAuthenticationFilter extends FormAuthenticationFilter {
+	private SysJDBCRealm realm;
+
+	public SysJDBCRealm getRealm() {
+		return realm;
+	}
+
+	public void setRealm(SysJDBCRealm realm) {
+		this.realm = realm;
+	}
+
+	private BaseRepository br;
+
+	public BaseRepository getBr() {
+		return br;
+	}
+
+	public void setBr(BaseRepository br) {
+		this.br = br;
+	}
+
+	private static final Logger log = LoggerFactory
+			.getLogger(AjaxAuthenticationFilter.class);
+
+	protected static final String DEFAULT_LF_INC_MESSAGE = "密码错误";
+	protected static final String DEFAULT_LF_UA_MESSAGE = "账号不存在";
+	protected static final String DEFAULT_LF_LA_MESSAGE = "账号被锁定";
+	protected static final String DEFAULT_LF_UE_MESSAGE = "未知错误";
+	protected static final String DEFAULT_LOGIN_MESSAGE = "登录成功";
+	protected static final String DEFAULT_NOT_LOGIN_MESSAGE = "未登录系统";
+
+	protected String incorrectCredentialsmessage = DEFAULT_LF_INC_MESSAGE;
+	protected String unknownaccountmessage = DEFAULT_LF_UA_MESSAGE;
+	protected String lockedaccountmessage = DEFAULT_LF_LA_MESSAGE;
+	protected String unknownexceptionmessage = DEFAULT_LF_UE_MESSAGE;
+	protected String loginmessage = DEFAULT_LOGIN_MESSAGE;
+	protected String notloginmessage = DEFAULT_NOT_LOGIN_MESSAGE;
+
+	public String getIncorrectCredentialsmessage() {
+		return incorrectCredentialsmessage;
+	}
+
+	public void setIncorrectCredentialsmessage(
+			String incorrectCredentialsmessage) {
+		this.incorrectCredentialsmessage = incorrectCredentialsmessage;
+	}
+
+	public String getUnknownaccountmessage() {
+		return unknownaccountmessage;
+	}
+
+	public void setUnknownaccountmessage(String unknownaccountmessage) {
+		this.unknownaccountmessage = unknownaccountmessage;
+	}
+
+	public String getLockedaccountmessage() {
+		return lockedaccountmessage;
+	}
+
+	public void setLockedaccountmessage(String lockedaccountmessage) {
+		this.lockedaccountmessage = lockedaccountmessage;
+	}
+
+	public String getUnknownexceptionmessage() {
+		return unknownexceptionmessage;
+	}
+
+	public void setUnknownexceptionmessage(String unknownexceptionmessage) {
+		this.unknownexceptionmessage = unknownexceptionmessage;
+	}
+
+	public String getLoginmessage() {
+		return loginmessage;
+	}
+
+	public void setLoginmessage(String loginmessage) {
+		this.loginmessage = loginmessage;
+	}
+
+	public String getNotloginmessage() {
+		return notloginmessage;
+	}
+
+	public void setNotloginmessage(String notloginmessage) {
+		this.notloginmessage = notloginmessage;
+	}
+
+	@Override
+	protected boolean executeLogin(ServletRequest request,
+			ServletResponse response) throws Exception {
+		// 复写登录操作，使用自定义token，方便处理缓存
+		SysUserAccountToken token = new SysUserAccountToken(
+				getUsername(request), getPassword(request),
+				isRememberMe(request), getHost(request));
+		try {
+			Subject subject = getSubject(request, response);
+			subject.login(token);
+			return onLoginSuccess(token, subject, request, response);
+		} catch (AuthenticationException e) {
+			return onLoginFailure(token, e, request, response);
+		}
+	}
+
+	@Override
+	protected boolean onLoginSuccess(AuthenticationToken token,
+			Subject subject, ServletRequest request, ServletResponse response)
+			throws Exception {
+		HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
+		HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
+		
+		if (!"XMLHttpRequest".equalsIgnoreCase(httpServletRequest
+				.getHeader("x-requested-with"))) {
+			// 不是ajax请求，即登录的方式是一般的form提交
+			// super的方法返回的是false;
+			return super.onLoginSuccess(token, subject, httpServletRequest,
+					httpServletResponse);
+		} else {
+			// 是ajax请求
+			httpServletResponse.setCharacterEncoding("UTF-8");
+			
+			PrintWriter out = httpServletResponse.getWriter();
+			out.print(JSONObject.fromObject(
+					new AjaxAuthenticationFilterMessage().setLoginSuccess(true)
+							.setMessage(this.loginmessage)).toString());
+			out.flush();
+			out.close();
+			return false;
+		}
+	}
+
+	
+	@Override
+	protected boolean onLoginFailure(AuthenticationToken token,
+			AuthenticationException e, ServletRequest request,
+			ServletResponse response) {
+		HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
+		HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
+
+		if (!"XMLHttpRequest".equalsIgnoreCase(httpServletRequest
+				.getHeader("x-requested-with"))) {
+			// 不是ajax请求，即登录的方式是一般的form提交
+			// 保存登录的异常错误，放入request中
+			request.setAttribute(getFailureKeyAttribute(), e);
+			return true;
+			
+		} else {
+			// 是ajax请求
+			try {
+				httpServletResponse.setCharacterEncoding("UTF-8");
+				
+				PrintWriter out = httpServletResponse.getWriter();
+				String message = e.getClass().getSimpleName();
+				if ("IncorrectCredentialsException".equals(message)) {
+					out.print(JSONObject.fromObject(
+							new AjaxAuthenticationFilterMessage()
+									.setLoginSuccess(false).setMessage(
+											this.incorrectCredentialsmessage))
+							.toString());
+				} else if ("UnknownAccountException".equals(message)) {
+					out.print(JSONObject.fromObject(
+							new AjaxAuthenticationFilterMessage()
+									.setLoginSuccess(false).setMessage(
+											this.unknownaccountmessage))
+							.toString());
+				} else if ("LockedAccountException".equals(message)) {
+					out.print(JSONObject.fromObject(
+							new AjaxAuthenticationFilterMessage()
+									.setLoginSuccess(false).setMessage(
+											this.lockedaccountmessage))
+							.toString());
+				} else {
+					out.print(JSONObject.fromObject(
+							new AjaxAuthenticationFilterMessage()
+									.setLoginSuccess(false).setMessage(
+											this.unknownexceptionmessage))
+							.toString());
+				}
+				out.flush();
+				out.close();
+			} catch (IOException exp) {
+				exp.printStackTrace();
+			}
+			return false;
+		}
+	}
+
+	@Override
+	protected boolean onAccessDenied(ServletRequest request,
+			ServletResponse response) throws Exception {
+
+		HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
+		HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
+
+		if (isLoginRequest(request, response)) {
+			if (isLoginSubmission(request, response)) {
+				if (log.isTraceEnabled()) {
+					log.trace("Login submission detected.  Attempting to execute login.");
+				}
+
+				// if ("XMLHttpRequest".equalsIgnoreCase(httpServletRequest
+				// .getHeader("x-requested-with"))) {
+				// // 是ajax请求，以后要做验证码分析，代码如下，暂时不用
+				// String vcode = request.getParameter("vcode");
+				// HttpServletRequest httpservletrequest = (HttpServletRequest)
+				// request;
+				// String vvcode = (String) httpservletrequest
+				// .getSession()
+				// .getAttribute(
+				// com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY);
+				// if (vvcode == null || "".equals(vvcode)
+				// || !vvcode.equals(vcode)) {
+				// response.setCharacterEncoding("UTF-8");
+				// PrintWriter out = response.getWriter();
+				// out.println("{success:false,message:'验证码错误'}");
+				// out.flush();
+				// out.close();
+				// return false;
+				// }
+				// }
+
+				return executeLogin(request, response);
+			} else {
+				if (!"XMLHttpRequest".equalsIgnoreCase(httpServletRequest
+						.getHeader("x-requested-with"))) {
+					// 不是ajax请求，即登录的方式是一般的form提交
+					if (log.isTraceEnabled()) {
+						log.trace("Login page view.");
+					}
+					// allow them to see the login page ;)
+					return true;
+				} else {
+					// 是ajax请求
+					httpServletResponse.setCharacterEncoding("UTF-8");
+					
+					PrintWriter out = httpServletResponse.getWriter();
+					out.print(JSONObject.fromObject(
+							new AjaxAuthenticationFilterMessage()
+									.setLoginSuccess(false).setMessage(
+											this.notloginmessage)).toString());
+					out.flush();
+					out.close();
+					return false;
+				}
+			}
+		} else {
+			if (log.isTraceEnabled()) {
+				log.trace("Attempting to access a path which requires authentication.  Forwarding to the "
+						+ "Authentication url [" + getLoginUrl() + "]");
+			}
+
+			if (!"XMLHttpRequest".equalsIgnoreCase(httpServletRequest
+					.getHeader("x-requested-with"))) {
+				// 不是ajax请求，即登录的方式是一般的form提交
+				saveRequestAndRedirectToLogin(request, response);
+			} else {
+				// 是ajax请求
+				httpServletResponse.setCharacterEncoding("UTF-8");
+				
+				httpServletResponse
+						.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				PrintWriter out = httpServletResponse.getWriter();
+				out.print(JSONObject.fromObject(
+						new AjaxAuthenticationFilterMessage().setLoginSuccess(
+								false).setMessage(this.notloginmessage))
+						.toString());
+				out.flush();
+				out.close();
+			}
+			return false;
+		}
+
+	}
+
+	/**
+	 * 复写此方法，用于支持重置身份的操作。 重置身份：eg
+	 * 管理员修改了某个用户相关的权限，需要重置这个用户的身份信息（不需要此用户重新登录，就能启效果），
+	 * 一般而言，可以通过找到这个用户的session，然后作废session，默认shiro session管理使用的是
+	 * ServletContainerSessionManager， 没有办法修改，除非使用扩展的session管理（如shiro 的本地会话管理
+	 * DefaultWebSessionManager），因此只能通过变通的方法实现。
+	 * 实现原理：使用shiro缓存来判定是否重置了用户身份信息，也就是当subject已经验证了
+	 * ，但是realm的身份缓存中找不到subject的身份信息， 此时判定已经重置了subject的身份信息，然后通过filter logout
+	 * subject。 例外情况：因为使用了变通方法，如果没有设置缓存则没有办法处理了，直接返回了。
+	 * 
+	 */
+	@Override
+	protected boolean isAccessAllowed(ServletRequest request,
+			ServletResponse response, Object mappedValue) {
+		Subject subject = getSubject(request, response);
+		// 判定是否开启缓存及身份验证状态，没有缓存或没有身份则默认处理（如上注释）
+		if (!realm.isAuthenticationCachingEnabled()
+				|| !subject.isAuthenticated())
+			return subject.isAuthenticated();
+
+		// 如果缓存存在，重置身份（如上注释）
+		BasicPrincipal bp = (BasicPrincipal) subject.getPrincipal();
+		SysUser user = new SysUser();
+		user.setLoginname(bp.getLoginname());
+		user.setUserpassword(bp.getPassword());
+		if (realm.isCachedAuthenticationInfo(user, isRememberMe(request), getHost(request)))
+			return subject.isAuthenticated();
+		else {
+			// 当前验证通过的，并且身份缓存不存在，表明已重置身份，那么就退出logout
+			subject.logout();
+			return subject.isAuthenticated();
+		}
+	}
+}
