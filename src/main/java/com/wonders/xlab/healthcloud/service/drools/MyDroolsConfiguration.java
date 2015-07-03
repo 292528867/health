@@ -67,8 +67,8 @@ public class MyDroolsConfiguration {
 		
 		// 3.2，写入drl（写法众多，感觉有点乱）
 		// 注意kfs写的时候如果指定path，强制为src/main/resources/加上文件名，还有就是文件名不要重复否则会覆盖的
-		kfs.write("src/main/resources/DayPushHealthInfo.drl", kieServices.getResources().newInputStreamResource(
-				this.getClass().getResourceAsStream("/rules/discovery/DayPushHealthInfo.drl"), "UTF-8"));
+//		kfs.write("src/main/resources/DayPushHealthInfo.drl", kieServices.getResources().newInputStreamResource(
+//				this.getClass().getResourceAsStream("/rules/discovery/DayPushHealthInfo.drl"), "UTF-8"));
 		
 		// 4、创建KieBuilder，使用KieFileSystem构建
 		KieBuilder kieBuilder = kieServices.newKieBuilder(kfs).buildAll();
