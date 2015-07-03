@@ -20,7 +20,7 @@ public class QiniuUploadUtils {
 	private static Logger log = LoggerFactory.getLogger(QiniuUploadUtils.class);
 	private static String ACCESS_KEY = "yLpWgvVh5np4VkDwuxnVzRe8M5cB-9fXWl2EYrWi";
 	private static String SECRET_KEY = "idB3vbPuyPPszN4D5Rz-QYts9RBbo2xcVVbXmFza";
-	private static String url = "http://7xj64q.com2.z0.glb.qiniucdn.com/";
+	private static String url = "http://7xk3mz.com2.z0.glb.qiniucdn.com";
 	private static Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
 
 	public static String upload(byte byteData[], String fileName) {
