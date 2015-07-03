@@ -1,6 +1,5 @@
 package com.wonders.xlab.healthcloud.dto.customer;
 
-import com.wonders.xlab.healthcloud.entity.BaseInfo;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 
 /**

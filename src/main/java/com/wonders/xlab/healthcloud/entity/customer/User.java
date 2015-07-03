@@ -15,7 +15,7 @@ public class User extends BaseInfo<Long> {
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @OrderBy(value = "id asc")
     @JoinTable(name = "hc_user_package_relation", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "package_id"))
-    private Set<HcPackage> hcPackages = new HashSet<>();
+    private Set<HcPackage> hcPackages;
 
     //    invalid 用户无效（未完善用户信息），valid 用户有效
     @Enumerated
