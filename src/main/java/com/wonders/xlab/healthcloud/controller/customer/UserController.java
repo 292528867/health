@@ -202,11 +202,6 @@ public class UserController extends AbstractBaseController<User, Long> {
         return null;
     }
 
-    @RequestMapping(value = "test/{tel}")
-    public Object sendValid(@PathVariable String tel) {
-        return tel;
-    }
-
     @Override
     protected MyRepository<User, Long> getRepository() {
         return userRepository;
