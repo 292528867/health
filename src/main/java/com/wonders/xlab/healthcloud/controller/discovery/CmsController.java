@@ -61,6 +61,16 @@ public class CmsController {
 		return new ControllerResult<List<HealthCategory>>().setRet_code(0).setRet_values(this.healthCategoryRepository.findAll()).setMessage("成功");
 	}
 	
+	// 查询分类
+	@RequestMapping(value = "listCategory/{healthCategoryId}", method = RequestMethod.GET)
+	public ControllerResult<?> listHealthCategory(Long healthCategoryId) {
+		HealthCategory hc = this.healthCategoryRepository.findOne(healthCategoryId);
+		if (hc == null) 
+			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
+		else
+			return new ControllerResult<HealthCategory>().setRet_code(0).setRet_values(hc).setMessage("成功");
+	}
+	
 	// 修改分类
 	@RequestMapping(value = "updateCategory/{healthCategoryId}", method = RequestMethod.POST)
 	public ControllerResult<?> updateHealthCategory(@PathVariable Long healthCategoryId, @RequestBody @Valid HealthCatagoryDto dto, BindingResult result) {
