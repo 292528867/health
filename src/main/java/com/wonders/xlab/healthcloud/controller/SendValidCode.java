@@ -1,6 +1,8 @@
 package com.wonders.xlab.healthcloud.controller;
 
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
+import com.wonders.xlab.healthcloud.service.cache.HCCache;
+import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 
 /**
@@ -28,6 +31,14 @@ public class SendValidCode {
     private Cache idenCodeCache;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private HCCache<String,String> cache;
+
+    @PostConstruct
+    private void init() {
+        cache = new HCCacheProxy<String,String>(idenCodeCache);
+    }
+
     /**
      * 获取验证码，并且放入缓存中
      * @param mobiles
@@ -47,9 +58,7 @@ public class SendValidCode {
 
         if (resultCode == 0) {
 
-            Element element = new Element(mobiles, code);
-
-            idenCodeCache.put(element);
+            cache.addToCache(mobiles,code);
 
             return new ControllerResult().setRet_code(0).setRet_values("").setMessage("已成功发送，请耐心等待!");
         } else {
