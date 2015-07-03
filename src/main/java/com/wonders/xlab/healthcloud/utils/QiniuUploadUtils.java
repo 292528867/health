@@ -22,16 +22,12 @@ public class QiniuUploadUtils {
      * SK
      */
 	private static String SECRET_KEY = "idB3vbPuyPPszN4D5Rz-QYts9RBbo2xcVVbXmFza";
-<<<<<<< HEAD
-	private static String url = "http://7xk3mz.com2.z0.glb.qiniucdn.com";
-	private static Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
-=======
 
     /**
      * 命名空间url
      */
 
-	private static String url = "http://7xj64q.com2.z0.glb.qiniucdn.com/";
+	private static String url = "http://7xk3mz.com2.z0.glb.qiniucdn.com/";
 
     /**
      * 命名空间
@@ -39,7 +35,6 @@ public class QiniuUploadUtils {
     private static String data = "health-cloud";
 
     private static Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
->>>>>>> efb7dee60514d8dc9c9d17e7bf87fdb851864372
 
 	public static String upload(byte byteData[], String fileName) {
 
