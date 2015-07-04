@@ -4,7 +4,7 @@ import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.EmMessages;
-import com.wonders.xlab.healthcloud.repository.EmMessagesRePository;
+import com.wonders.xlab.healthcloud.repository.EmMessagesRepository;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -29,11 +29,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     @Autowired
     private EMUtils emUtils;
 
-    private EmMessagesRePository emMessagesRePository;
+    private EmMessagesRepository emMessagesRepository;
 
     @Override
     protected MyRepository<EmMessages, Long> getRepository() {
-        return emMessagesRePository;
+        return emMessagesRepository;
     }
 
     /**
