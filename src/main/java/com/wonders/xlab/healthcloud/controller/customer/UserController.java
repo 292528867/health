@@ -219,10 +219,6 @@ public class UserController extends AbstractBaseController<User, Long> {
             BeanUtils.copyNotNullProperties(userDto, user, "hcPackageId");
             final HcPackage hcPackage = hcPackageRepository.findOne(userDto.getHcPackageId());
 
-            if (null == hcPackage) {
-                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("套餐包不存在!");
-            }
-
             if (user.getHcPackages() == null) {
                 user.setHcPackages(new HashSet<HcPackage>() {{
                     add(hcPackage);
