@@ -2,7 +2,7 @@ package com.wonders.xlab.healthcloud.entity.customer;
 
 import com.wonders.xlab.healthcloud.entity.BaseInfo;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
-import com.wonders.xlab.healthcloud.entity.healthpackage.HcPackage;
+import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 
 import javax.persistence.*;
 

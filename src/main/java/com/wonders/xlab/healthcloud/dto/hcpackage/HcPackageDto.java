@@ -1,5 +1,7 @@
 package com.wonders.xlab.healthcloud.dto.hcpackage;
 
+import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
+
 import javax.validation.constraints.NotNull;
 
 /**
@@ -16,5 +18,46 @@ public class HcPackageDto {
     private String description;
 
     /** 是否推荐 */
-    private boolean recommend;
+    @NotNull(message = "推荐值不能为空")
+    private Boolean recommend;
+
+
+    public HcPackage toNewHcPackage() {
+        HcPackage hcPackage = new HcPackage();
+        hcPackage.setTitle(title);
+        hcPackage.setDescription(description);
+        hcPackage.setRecommend(recommend);
+        return hcPackage;
+    }
+
+    public HcPackage updateHcPackage(HcPackage hp) {
+        hp.setTitle(title);
+        hp.setDescription(description);
+        hp.setRecommend(recommend);
+        return hp;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Boolean getRecommend() {
+        return recommend;
+    }
+
+    public void setRecommend(Boolean recommend) {
+        this.recommend = recommend;
+    }
 }

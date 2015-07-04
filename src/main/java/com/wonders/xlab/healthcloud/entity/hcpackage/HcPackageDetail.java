@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.entity.healthpackage;
+package com.wonders.xlab.healthcloud.entity.hcpackage;
 
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 

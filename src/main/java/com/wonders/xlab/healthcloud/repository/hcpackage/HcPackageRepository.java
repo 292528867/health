@@ -1,7 +1,7 @@
-package com.wonders.xlab.healthcloud.repository.healthpackage;
+package com.wonders.xlab.healthcloud.repository.hcpackage;
 
 import com.wonders.xlab.framework.repository.MyRepository;
-import com.wonders.xlab.healthcloud.entity.healthpackage.HcPackage;
+import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 
 /**
  * Created by mars on 15/7/3.

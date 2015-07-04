@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.entity.healthpackage;
+package com.wonders.xlab.healthcloud.entity.hcpackage;
 
 /**
  * Created by mars on 15/7/3.
