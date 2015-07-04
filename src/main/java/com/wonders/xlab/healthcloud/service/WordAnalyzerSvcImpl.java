@@ -24,7 +24,7 @@ public class WordAnalyzerSvcImpl implements WordAnalyzerService {
     private LuceneCacheService luceneCache;
 
     /**
-     * 分析语音消息中是否包含药品名，如果有，生成URL扩展消息。没有则返回null
+     * 分析文本消息中是否包含药品名，如果有，生成URL扩展消息。没有则返回null
      * @param text
      * @return
      */
