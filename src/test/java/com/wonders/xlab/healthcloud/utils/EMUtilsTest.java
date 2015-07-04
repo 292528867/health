@@ -1,7 +1,6 @@
 package com.wonders.xlab.healthcloud.utils;
 
 
-import com.wonders.xlab.healthcloud.ApiProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.http.*;
