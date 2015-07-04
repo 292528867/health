@@ -1,6 +1,10 @@
 package com.wonders.xlab.healthcloud.controller;
 
+import com.wonders.xlab.framework.controller.AbstractBaseController;
+import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
+import com.wonders.xlab.healthcloud.entity.EmMessages;
+import com.wonders.xlab.healthcloud.repository.EmMessagesRePository;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -20,11 +24,17 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "em")
-public class EmController {
+public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     @Autowired
     private EMUtils emUtils;
 
+    private EmMessagesRePository emMessagesRePository;
+
+    @Override
+    protected MyRepository<EmMessages, Long> getRepository() {
+        return emMessagesRePository;
+    }
 
     /**
      * 发送文本消息
@@ -32,8 +42,8 @@ public class EmController {
      * @param body
      * @return
      */
-    @RequestMapping(value = "sendmessage" ,method = RequestMethod.POST)
-    public ControllerResult sendmessage(@RequestBody String body){
+    @RequestMapping(value = "sendmessage", method = RequestMethod.POST)
+    public ControllerResult sendmessage(@RequestBody String body) {
 
         List<MediaType> mediaTypes = new ArrayList<MediaType>() {{
             add(MediaType.APPLICATION_JSON);
@@ -51,7 +61,7 @@ public class EmController {
                 "        },\n" +
                 "    \"from\" : \"lixuanwu\"\n" +
                 "}";
-        ResponseEntity <String> responseEntity = (ResponseEntity<String>) emUtils.requstEMChart(header, HttpMethod.POST, body, "messages", String.class);
+        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requstEMChart(header, HttpMethod.POST, body, "messages", String.class);
 
         return new ControllerResult().setRet_code(0).setRet_values(responseEntity).setMessage("");
 
