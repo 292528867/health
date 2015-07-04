@@ -87,7 +87,11 @@ public class EMUtils {
         return result;
     }
 
+    public ResponseEntity<?> requstEMChart(HttpMethod method, String body, String path, Class<?> classz) {
+        return requstEMChart(null, method, body, path, classz);
+    }
 
-
-
+    public ResponseEntity<?> requstEMChart(HttpMethod method, String path, Class<?> classz){
+        return requstEMChart(null, method, null, path, classz);
+    }
 }
