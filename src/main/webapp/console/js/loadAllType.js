@@ -11,6 +11,7 @@ $.get(url, function (data) {
         value.id +
         "</td>" +
         "<td><a href='#'>" + value.title + "</a></td>" +
+        "<td class='am-hide-sm-only'>" + value.tag + "</td>" +
         "<td class='am-hide-sm-only'>" + value.description + "</td>" +
         "<td><div class='am-btn-toolbar'><div class='am-btn-group am-btn-group-xs'>" +
         "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick='changeType(" + value.id + ")'>" +

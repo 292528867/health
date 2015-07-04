@@ -20,6 +20,11 @@ public class HealthInfoDto {
 	@NotNull(message = "健康信息不能为空")
 	private String htmlInfo;
 	
+	/** 点击量 */
+	private Long clickCount;
+	/** 文章标题id */
+	private Long healthInfoId;
+	
 	/**
 	 * 转换成一个新的{@link HealthInfo}实体对象，临时状态。
 	 */
@@ -41,6 +46,10 @@ public class HealthInfoDto {
 	public HealthInfoDto toNewHealthInfoDto(HealthInfo hi) {
 		HealthInfoDto dto = new HealthInfoDto();
 		dto.setHtmlInfo(hi.getHtmlInfo());
+		dto.setDesc(hi.getDescription());
+		dto.setTitle(hi.getTitle());
+		dto.setPictureUrl(hi.getPictureUrl());
+		dto.setHealthInfoId(hi.getId());
 		return dto;
 	}
 	
@@ -85,6 +94,22 @@ public class HealthInfoDto {
 
 	public void setDesc(String desc) {
 		this.desc = desc;
+	}
+
+	public Long getClickCount() {
+		return clickCount;
+	}
+
+	public void setClickCount(Long clickCount) {
+		this.clickCount = clickCount;
+	}
+
+	public Long getHealthInfoId() {
+		return healthInfoId;
+	}
+
+	public void setHealthInfoId(Long healthInfoId) {
+		this.healthInfoId = healthInfoId;
 	}
 	
 	

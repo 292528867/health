@@ -5,3 +5,9 @@
     max-height: 200px;
 
 }
+#change-info-box {
+    /*display: none;*/
+}
+.admin-main {
+    min-height: 800px;
+}

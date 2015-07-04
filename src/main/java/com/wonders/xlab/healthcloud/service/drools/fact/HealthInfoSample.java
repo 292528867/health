@@ -16,12 +16,12 @@ public class HealthInfoSample implements Comparable<HealthInfoSample> {
 	/** 健康信息id */
 	private Long healthInfoId;
 	/** 健康信息标题 */
-	private Long healthInfoTitle;
+	private String healthInfoTitle;
 	/** 健康信息文章点击次数 */
 	private Integer clickCount;
 
 	public HealthInfoSample(Long userId, Long healthInfoId,
-			Long healthInfoTitle, Integer clickCount) {
+			String healthInfoTitle, Integer clickCount) {
 		super();
 		this.userId = userId;
 		this.healthInfoId = healthInfoId;
@@ -40,10 +40,11 @@ public class HealthInfoSample implements Comparable<HealthInfoSample> {
 	public void setHealthInfoId(Long healthInfoId) {
 		this.healthInfoId = healthInfoId;
 	}
-	public Long getHealthInfoTitle() {
+	
+	public String getHealthInfoTitle() {
 		return healthInfoTitle;
 	}
-	public void setHealthInfoTitle(Long healthInfoTitle) {
+	public void setHealthInfoTitle(String healthInfoTitle) {
 		this.healthInfoTitle = healthInfoTitle;
 	}
 	public Integer getClickCount() {

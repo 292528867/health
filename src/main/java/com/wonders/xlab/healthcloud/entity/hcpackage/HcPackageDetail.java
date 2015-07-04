@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.entity.healthpackage;
+package com.wonders.xlab.healthcloud.entity.hcpackage;
 
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 
@@ -10,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "hc_package_detail")
-public class PackageDetail extends AbstractBaseEntity<Long> {
+public class HcPackageDetail extends AbstractBaseEntity<Long> {
 
     /** 健康包 */
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
@@ -21,10 +21,10 @@ public class PackageDetail extends AbstractBaseEntity<Long> {
     private String detail;
 
 
-    public PackageDetail() {
+    public HcPackageDetail() {
     }
 
-    public PackageDetail(HcPackage hcPackage, String detail) {
+    public HcPackageDetail(HcPackage hcPackage, String detail) {
         this.hcPackage = hcPackage;
         this.detail = detail;
     }

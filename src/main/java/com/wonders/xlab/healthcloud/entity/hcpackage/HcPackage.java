@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.entity.healthpackage;
+package com.wonders.xlab.healthcloud.entity.hcpackage;
 
 /**
  * Created by mars on 15/7/3.
@@ -20,6 +20,9 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     /** 描述 */
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    /** 图片地址 */
+    private String iconUrl;
 
     /** 是否推荐 */
     private boolean recommend;
@@ -55,5 +58,13 @@ public class HcPackage extends AbstractBaseEntity<Long> {
 
     public void setRecommend(boolean recommend) {
         this.recommend = recommend;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 }

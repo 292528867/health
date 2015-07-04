@@ -3,6 +3,7 @@ package com.wonders.xlab.healthcloud.controller.discovery;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wonders.xlab.healthcloud.dto.discovery.HealthCatagoryDto;
+import com.wonders.xlab.healthcloud.dto.discovery.HealthCategoryDto;
 import com.wonders.xlab.healthcloud.dto.discovery.HealthInfoDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
@@ -56,7 +58,7 @@ public class CmsController {
 	
 	// 添加分类
 	@RequestMapping(value = "addCategory", method = RequestMethod.POST)
-	public ControllerResult<?> addHealthCategory(@RequestBody @Valid HealthCatagoryDto dto, BindingResult result) {
+	public ControllerResult<?> addHealthCategory(@RequestBody @Valid HealthCategoryDto dto, BindingResult result) {
 		if (result.hasErrors()) {
 			StringBuilder builder = new StringBuilder();
 			for (ObjectError error : result.getAllErrors()) 
@@ -79,13 +81,31 @@ public class CmsController {
 		HealthCategory hc = this.healthCategoryRepository.findOne(healthCategoryId);
 		if (hc == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
-		else
-			return new ControllerResult<HealthCategory>().setRet_code(0).setRet_values(hc).setMessage("成功");
+		return new ControllerResult<HealthCategory>().setRet_code(0).setRet_values(hc).setMessage("成功");
+	}
+	
+	// 查询分类1级关联分类
+	@RequestMapping(value = "listRelatedCategories/{healthCategoryId}", method = RequestMethod.GET)
+	public ControllerResult<?> listFirstRelatedCategories(@PathVariable Long healthCategoryId) {
+		HealthCategory hc = this.healthCategoryRepository.findOne(healthCategoryId);
+		if (hc == null) 
+			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
+		
+		if (StringUtils.isEmpty(hc.getFirstRelatedIds())) 
+			return new ControllerResult<List>().setRet_code(0).setRet_values(new ArrayList<>()).setMessage("没有1级关联！");
+		String[] str_ids = hc.getFirstRelatedIds().split(",");
+		Long[] long_ids = new Long[str_ids.length];
+		for (int i = 0; i < str_ids.length; i++) 
+			long_ids[i] = Long.parseLong(str_ids[i]);
+		
+		// TODO：
+		return null;
+		
 	}
 	
 	// 修改分类
 	@RequestMapping(value = "updateCategory/{healthCategoryId}", method = RequestMethod.POST)
-	public ControllerResult<?> updateHealthCategory(@PathVariable Long healthCategoryId, @RequestBody @Valid HealthCatagoryDto dto, BindingResult result) {
+	public ControllerResult<?> updateHealthCategory(@PathVariable Long healthCategoryId, @RequestBody @Valid HealthCategoryDto dto, BindingResult result) {
 		if (result.hasErrors()) {
 			StringBuilder builder = new StringBuilder();
 			for (ObjectError error : result.getAllErrors()) 
@@ -119,7 +139,15 @@ public class CmsController {
 	// 查询分类健康信息
 	@RequestMapping(value = "listInfo/{healthCategoryId}", method = RequestMethod.GET)
 	public ControllerResult<?> listHealthInfo(@PathVariable Long healthCategoryId) {
-		return new ControllerResult<List<HealthInfo>>().setRet_code(0).setRet_values(this.healthInfoRepository.findByHealthCategoryId(healthCategoryId)).setMessage("成功");
+		return new ControllerResult<List<HealthInfo>>().setRet_code(0).setRet_values(
+				this.healthInfoRepository.findByHealthCategoryId(healthCategoryId)).setMessage("成功");
+	}
+	
+	// 查询分类健康信息
+	@RequestMapping(value = "listInfo/{healthCategoryId}/{healthInfoId}", method = RequestMethod.GET)
+	public ControllerResult<?> listHealthInfo(@PathVariable Long healthCategoryId, @PathVariable Long healthInfoId) {
+		return new ControllerResult<HealthInfo>().setRet_code(0).setRet_values(
+				this.healthInfoRepository.findByHealthCategoryIdAndId(healthCategoryId, healthInfoId)).setMessage("成功");
 	}
 	
 	// 修改分类健康信息

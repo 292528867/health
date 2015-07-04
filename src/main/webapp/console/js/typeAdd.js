@@ -9,14 +9,16 @@ function openAddType() {
 function addType() {
     var title = $('#title').val();
     var desc = $('#desc').val();
-    if (title.length==0||desc.length==0) {
+    var tag = $('#tag').val();
+    if (title.length==0||desc.length==0||tag.length==0) {
         alert('有字段没有填写');
 
         return false;
     }
     var json ={
         "title": title,
-        "desc": desc
+        "desc": desc,
+        "tag":tag
     };
     json = JSON.stringify(json);
     $.ajax({
@@ -47,6 +49,7 @@ function changeTypeSub() {
     var title = $('#change-title').val();
     var desc = $('#change-desc').val();
     var id = $('#change-id').val();
+    var tag = $('#change-tag').val();
     if (title.length==0||desc.length==0) {
         alert('有字段没有填写');
 
@@ -54,7 +57,8 @@ function changeTypeSub() {
     }
     var json ={
         "title": title,
-        "desc": desc
+        "desc": desc,
+        "tag":tag
     };
     json = JSON.stringify(json);
     $.ajax({

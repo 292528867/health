@@ -91,7 +91,7 @@
                         <li><a href="articleAdd.html" class="am-cf"><span class="am-icon-check"></span> 新增文章<span
                                 class="am-icon-star am-fr am-margin-right admin-icon-yellow"></span></a></li>
                         <li><a href="articleCheck.html"><span class="am-icon-puzzle-piece"></span> 查看文章</a></li>
-                        <li><a href="typeAdd.html"><span class="am-icon-puzzle-piece"></span> 查看类别</a></li>
+                        <li><a href="typeAdd.html"><span class="am-icon-puzzle-piece"></span> 查看日程包</a></li>
                     </ul>
                 </li>
                 <li><a href="replyInfo.html"><span class="am-icon-home"></span>环信回复</a></li>
@@ -138,10 +138,16 @@
                             <label for="htmlInfo">课程介绍：（必填）</label>
                             <textarea id="htmlInfo"   name="htmlInfo" style="height:400px;"></textarea>
                         </div>
-                        <input type="hidden" id="pictureUrl"/>
                         <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="openImgUpload()">
                             <i class="am-icon-cloud-upload"></i> 选择要上传的首页展示图片(300*300)
                         </button>
+                        <br/>
+                        <br/>
+                        <div class="am-form-group">
+                            <label for="pictureUrl">可直接填写图片地址（如已本地上传请勿修改）：</label>
+                            <input type="text" id="pictureUrl"  placeholder=""
+                                   required name="pictureUrl"/>
+                        </div>
 <br/>
 <br/>
                         <img src="" alt="" id="index-img-index"/>

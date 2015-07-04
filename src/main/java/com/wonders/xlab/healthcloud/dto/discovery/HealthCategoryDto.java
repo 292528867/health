@@ -9,11 +9,17 @@ import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
  * @author xu
  *
  */
-public class HealthCatagoryDto {
+public class HealthCategoryDto {
+	@NotNull(message = "标题不能为空")
+	private String tag;
 	@NotNull(message = "分类标题不能为空")
 	private String title;
 	@NotNull(message = "分类描述不能为空")
 	private String desc;
+	
+	private String firstRelatedIds;
+	private String secondRelatedIds;
+	
 	/** 预留字段 */
 	private String type;
 	
@@ -25,6 +31,9 @@ public class HealthCatagoryDto {
 		hc.setTitle(title);
 		hc.setDescription(desc);
 		hc.setType(type);
+		hc.setTag(tag);
+		hc.setFirstRelatedIds(firstRelatedIds);
+		hc.setSecondRelatedIds(secondRelatedIds);
 		return hc;
 	}
 	/**
@@ -32,11 +41,14 @@ public class HealthCatagoryDto {
 	 * @param hc 游离对象
 	 * @return
 	 */
-	public HealthCatagoryDto toNewHealthCategoryDto(HealthCategory hc) {
-		HealthCatagoryDto dto = new HealthCatagoryDto();
+	public HealthCategoryDto toNewHealthCategoryDto(HealthCategory hc) {
+		HealthCategoryDto dto = new HealthCategoryDto();
 		dto.setTitle(hc.getTitle());
 		dto.setDesc(hc.getDescription());
 		dto.setType(hc.getType());
+		dto.setTag(hc.getTag());
+		dto.setFirstRelatedIds(hc.getFirstRelatedIds());
+		dto.setSecondRelatedIds(hc.getSecondRelatedIds());
 		return dto;
 	}
 	
@@ -47,6 +59,9 @@ public class HealthCatagoryDto {
 		hc.setTitle(title);
 		hc.setDescription(desc);
 		hc.setType(type);
+		hc.setTag(tag);
+		hc.setFirstRelatedIds(firstRelatedIds);
+		hc.setSecondRelatedIds(secondRelatedIds);
 		return hc;
 	}
 	
@@ -68,6 +83,23 @@ public class HealthCatagoryDto {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+	public String getTag() {
+		return tag;
+	}
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+	public String getFirstRelatedIds() {
+		return firstRelatedIds;
+	}
+	public void setFirstRelatedIds(String firstRelatedIds) {
+		this.firstRelatedIds = firstRelatedIds;
+	}
+	public String getSecondRelatedIds() {
+		return secondRelatedIds;
+	}
+	public void setSecondRelatedIds(String secondRelatedIds) {
+		this.secondRelatedIds = secondRelatedIds;
+	}
 	
 }
