@@ -111,6 +111,7 @@ function searchArticle(id) {
 
 }
 function changeArticle(id) {
+    //$('#change-info-box').css('display','block');
     var article = articles[id];
     data = article;
     $('#id').val(data.id);
