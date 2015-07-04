@@ -46,23 +46,13 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * @param body
      * @return
      */
-    @RequestMapping(value = "sendmessage", method = RequestMethod.POST)
-    public ControllerResult sendmessage(@RequestBody String body) {
+    @RequestMapping(value = "sendMessage", method = RequestMethod.POST)
+    public ControllerResult sendMessage(@RequestBody String body) {
 
-        HttpHeaders header = new HttpHeaders();
-
-        //配接获取环信token请求体
-        String dd = "{\"target_type\": \"users\",\n" +
-                "    \"target\": [\"lixuanwu\", \"qiuqiu\", \"chaochao\"], \n" +
-                "    \"msg\": {\n" +
-                "        \"type\":\"txt\",\n" +
-                "        \"msg\":\"hello from wanhua\"},\"from\":\"lixuanwu\"}";
+        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChart(HttpMethod.POST, body, "messages", String.class);
 
 
-        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChart(HttpMethod.POST, dd, "messages", String.class);
-
-
-        return new ControllerResult().setRet_code(0).setRet_values(responseEntity).setMessage("");
+        return new ControllerResult().setRet_code(0).setRet_values(responseEntity.getBody()).setMessage("消息发送成功");
 
     }
 
