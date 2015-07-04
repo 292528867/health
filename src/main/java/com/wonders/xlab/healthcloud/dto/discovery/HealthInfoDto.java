@@ -41,6 +41,9 @@ public class HealthInfoDto {
 	public HealthInfoDto toNewHealthInfoDto(HealthInfo hi) {
 		HealthInfoDto dto = new HealthInfoDto();
 		dto.setHtmlInfo(hi.getHtmlInfo());
+		dto.setDesc(hi.getDescription());
+		dto.setTitle(hi.getTitle());
+		dto.setPictureUrl(hi.getPictureUrl());
 		return dto;
 	}
 	

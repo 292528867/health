@@ -49,7 +49,7 @@ public class HealthInfo extends AbstractPersistable<Long> {
 	private HealthCategory healthCategory;
 	
 	/** 点击信息 */
-	@OneToMany(mappedBy = "healthInfo")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "healthInfo")
 	private Set<HealthInfoClickInfo> hicis = new HashSet<>();
 	
 	// TODO：其他字段再议
