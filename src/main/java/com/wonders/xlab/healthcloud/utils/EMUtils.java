@@ -54,7 +54,7 @@ public class EMUtils {
     @Value("${APP_CLIENT_SECRET}")
     public String APP_CLIENT_SECRET;
 
-    public void pushTokenToCache() {
+    public String pushTokenToCache() {
 
         List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
             add(MediaType.APPLICATION_JSON);
@@ -67,11 +67,21 @@ public class EMUtils {
                 APP_CLIENT_ID +
                 "\",\"client_secret\":\"" +
                 APP_CLIENT_SECRET + "\"}";
-
-        ResponseEntity result = requstEMChart(header, HttpMethod.POST, body, "token", EMToken.class);
-
+        HttpEntity<String> entity = new HttpEntity<>(body, header);
+        Map<String, Object> uriVariables = new HashMap<>();
+        uriVariables.put("key", "token");
+        ResponseEntity<EMToken> result = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                EMToken.class,
+                uriVariables
+        );
         if (HttpStatus.OK.equals(result.getStatusCode())) {
-            hcCache.addToCache("access_token", ((EMToken) result.getBody()).getAccess_token());
+
+            hcCache.addToCache("access_token", result.getBody().getAccess_token());
+            return result.getBody().getAccess_token();
+
         } else {
             throw new RuntimeException(result.getStatusCode().toString());
         }
