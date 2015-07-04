@@ -60,7 +60,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         //添加请求头
         header.setAccept(mediaTypes);
         //配接获取环信token请求体
-        String dd = "{\"target_type\":\"users\",\"target\":[\"lixuanwu\",\"qiuqiu\",\"chaochao\"],\"msg\": {\"type\":\"txt\",\"msg\":\"hello from wanhua\"},\"from\":\"lixuanwu\"}";
+        String dd = "{\"target_type\": \"users\",\n" +
+                "    \"target\": [\"lixuanwu\", \"qiuqiu\", \"chaochao\"], \n" +
+                "    \"msg\": {\n" +
+                "        \"type\":\"txt\",\n" +
+                "        \"msg\":\"hello from wanhua\"},\"from\":\"lixuanwu\"}";
         ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requstEMChart(header, HttpMethod.POST, dd, "messages", String.class);
 
         return new ControllerResult().setRet_code(0).setRet_values(responseEntity).setMessage("");

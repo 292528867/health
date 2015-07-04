@@ -54,7 +54,7 @@ public class EMUtils {
     @Value("${APP_CLIENT_SECRET}")
     public String APP_CLIENT_SECRET;
 
-    public String pushTokenToCache() {
+    public void pushTokenToCache() {
 
         List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
             add(MediaType.APPLICATION_JSON);
@@ -72,27 +72,12 @@ public class EMUtils {
 
         if (HttpStatus.OK.equals(result.getStatusCode())) {
             hcCache.addToCache("access_token", ((EMToken) result.getBody()).getAccess_token());
-            return ((EMToken) result.getBody()).getAccess_token();
         } else {
             throw new RuntimeException(result.getStatusCode().toString());
         }
     }
 
     public ResponseEntity<?> requstEMChart(HttpHeaders headers, HttpMethod method, String body, String path, Class<?> classz) {
-
-        String access_token = hcCache.getFromCache("access_token");
-
-        if (StringUtils.isEmpty(access_token)) {
-            access_token = pushTokenToCache();
-        }
-        if (headers == null) {
-            List<MediaType> mediaTypes = new ArrayList<MediaType>(){{
-                add(MediaType.APPLICATION_JSON);
-            }};
-            String authorization = "Bearer " + access_token;
-            headers.setAccept(mediaTypes);
-            headers.add("Authorization", authorization);
-        }
 
         HttpEntity<String> entity = null;
         if (StringUtils.isEmpty(body)) {
@@ -117,11 +102,6 @@ public class EMUtils {
 
     public ResponseEntity<?> requstEMChart(HttpMethod method, String body, String path, Class<?> classz) {
         return requstEMChart(null, method, body, path, classz);
-    }
-
-    public ResponseEntity<?> requstEMChart(HttpMethod method, String path, Class<?> classz) {
-        return requstEMChart(null, method, null, path, classz);
-
     }
 
 
@@ -156,5 +136,8 @@ public class EMUtils {
     public void setAPP_CLIENT_SECRET(String APP_CLIENT_SECRET) {
         this.APP_CLIENT_SECRET = APP_CLIENT_SECRET;
     }
+    public ResponseEntity<?> requstEMChart(HttpMethod method, String path, Class<?> classz){
+        return requstEMChart(null, method, null, path, classz);
 
+    }
 }
