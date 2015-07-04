@@ -2,6 +2,7 @@ package com.wonders.xlab.healthcloud.controller.customer;
 
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
+import com.wonders.xlab.healthcloud.dto.EMToken;
 import com.wonders.xlab.healthcloud.dto.IdenCode;
 import com.wonders.xlab.healthcloud.dto.ThirdLoginToken;
 import com.wonders.xlab.healthcloud.dto.customer.UserDto;
@@ -16,12 +17,16 @@ import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.utils.BeanUtils;
+import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -56,6 +61,9 @@ public class UserController extends AbstractBaseController<User, Long> {
     private Cache idenCodeCache;
 
     private HCCache<String, String> hcCache;
+
+    @Autowired
+    private EMUtils emUtils;
 
     @PostConstruct
     private void init() {
@@ -233,6 +241,16 @@ public class UserController extends AbstractBaseController<User, Long> {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("更新失败!");
         }
 
+    }
+
+
+    @RequestMapping(value = "test")
+    public String test() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization","Bearer YWMtAOHZhCIbEeWFUA9W7qmDRwAAAU-M35g1ZTkz4qF16sSpi8ZA0tsh1tCjBos");
+//        HttpEntity result =  emUtils.requstEMChart(headers, HttpMethod.GET, null, "chatgroups", String.class);
+        emUtils.pushTokenToCache();
+        return "1";
     }
 
     @Override
