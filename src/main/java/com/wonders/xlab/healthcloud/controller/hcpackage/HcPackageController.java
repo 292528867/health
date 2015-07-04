@@ -9,15 +9,16 @@ import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
+import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -65,7 +66,6 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
         try {
             this.hcPackageRepository.save(hcPackageDto.toNewHcPackage());
             return new ControllerResult<String>().setRet_code(0).setRet_values("添加成功").setMessage("成功");
-
         } catch (Exception exp) {
             exp.printStackTrace();
             return new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败");
@@ -100,6 +100,29 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             return new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败");
         }
     }
+
+
+    /**
+     * 上传图片
+     * @param file
+     * @return
+     */
+    @RequestMapping(value = "uploadPicture", method = RequestMethod.POST)
+    public ControllerResult<?> uploadPic(MultipartFile file) {
+        if (file != null && !file.isEmpty()) {
+            try {
+                String fileName = "hcpackage-icon-" + String.valueOf((new Date()).getTime());
+                String iconUrl = QiniuUploadUtils.upload(file.getBytes(), fileName);
+                return new ControllerResult<String>().setRet_code(0).setRet_values(iconUrl).setMessage("上传图片成功！");
+            } catch (IOException exp) {
+                exp.printStackTrace();
+                return new ControllerResult<String>().setRet_code(-1).setRet_values("上传图片失败：" + exp.getLocalizedMessage()).setMessage("失败！");
+            }
+        } else {
+            return new ControllerResult<String>().setRet_code(-1).setRet_values("上传文件为空！").setMessage("上传文件为空！");
+        }
+    }
+
 
     /**
      * 添加健康包详细
