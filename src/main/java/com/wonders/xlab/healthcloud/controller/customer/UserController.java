@@ -248,7 +248,7 @@ public class UserController extends AbstractBaseController<User, Long> {
     public String test() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization","Bearer YWMtAOHZhCIbEeWFUA9W7qmDRwAAAU-M35g1ZTkz4qF16sSpi8ZA0tsh1tCjBos");
-//        HttpEntity result =  emUtils.requstEMChart(headers, HttpMethod.GET, null, "chatgroups", String.class);
+//        HttpEntity result =  emUtils.requestEMChart(headers, HttpMethod.GET, null, "chatgroups", String.class);
         emUtils.pushTokenToCache();
         return "1";
     }

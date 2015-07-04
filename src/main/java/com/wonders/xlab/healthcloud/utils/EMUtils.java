@@ -87,7 +87,7 @@ public class EMUtils {
         }
     }
 
-    public ResponseEntity<?> requstEMChart(HttpHeaders headers, HttpMethod method, String body, String path, Class<?> classz) {
+    public ResponseEntity<?> requestEMChart(HttpHeaders headers, HttpMethod method, String body, String path, Class<?> classz) {
 
         HttpEntity<String> entity = null;
         if (StringUtils.isEmpty(body)) {
@@ -110,9 +110,15 @@ public class EMUtils {
         return result;
     }
 
-    public ResponseEntity<?> requstEMChart(HttpMethod method, String body, String path, Class<?> classz) {
-        return requstEMChart(null, method, body, path, classz);
+    public ResponseEntity<?> requestEMChart(HttpMethod method, String body, String path, Class<?> classz) {
+        return requestEMChart(null, method, body, path, classz);
     }
+
+    public ResponseEntity<?> requestEMChart(HttpMethod method, String path, Class<?> classz){
+        return requestEMChart(null, method, null, path, classz);
+
+    }
+
 
 
     public String getAPI_SERVER_HOST() {
@@ -145,9 +151,5 @@ public class EMUtils {
 
     public void setAPP_CLIENT_SECRET(String APP_CLIENT_SECRET) {
         this.APP_CLIENT_SECRET = APP_CLIENT_SECRET;
-    }
-    public ResponseEntity<?> requstEMChart(HttpMethod method, String path, Class<?> classz){
-        return requstEMChart(null, method, null, path, classz);
-
     }
 }
