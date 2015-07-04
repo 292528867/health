@@ -4,16 +4,21 @@ import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.IdenCode;
 import com.wonders.xlab.healthcloud.dto.ThirdLoginToken;
+import com.wonders.xlab.healthcloud.dto.customer.UserDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.ThirdBaseInfo;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.customer.UserThird;
+import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
+import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
+import com.wonders.xlab.healthcloud.service.cache.HCCache;
+import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
+import com.wonders.xlab.healthcloud.utils.BeanUtils;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,8 +28,10 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.net.URLDecoder;
+import java.util.HashSet;
 
 
 /**
@@ -42,8 +49,18 @@ public class UserController extends AbstractBaseController<User, Long> {
     private UserThirdRepository userThirdRepository;
 
     @Autowired
+    private HcPackageRepository hcPackageRepository;
+
+    @Autowired
     @Qualifier(value = "idenCodeCache")
     private Cache idenCodeCache;
+
+    private HCCache<String, String> hcCache;
+
+    @PostConstruct
+    private void init() {
+        hcCache = new HCCacheProxy<>(idenCodeCache);
+    }
 
     /**
      * 第三方登录
@@ -78,11 +95,11 @@ public class UserController extends AbstractBaseController<User, Long> {
                 }
 
                 // 获取指定手机号的验证编码缓存并，比较是否相同
-                Element element = idenCodeCache.get(token.getTel());
-
-                return null == element || null == element.getObjectValue() ?
+                String cascheValue = hcCache.getFromCache(token.getTel());
+                // 验证码失效 ？返回失效 ：（ 验证码匹配不正确 ？验证不通过 ：绑定和返回用户 ）
+                return StringUtils.isEmpty(cascheValue) ?
                         new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！") :
-                        !token.getCode().equals(element.getObjectValue()) ?
+                        !token.getCode().equals(cascheValue) ?
                                 new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！") :
                                 bindingThirdparty(token);
             }
@@ -100,17 +117,16 @@ public class UserController extends AbstractBaseController<User, Long> {
     private ControllerResult<?> bindingThirdparty(ThirdLoginToken token) {
         //通过电话获取用户
         User user = userRepository.findByTel(token.getTel());
-
         //用户为空创建用户和第三方关联
         if (null == user) {
             user = new User();
             user.setTel(token.getTel());
         }
-
-        UserThird userThird = new UserThird();
-        userThird.setUser(user);
-        userThird.setThirdId(token.getThirdId());
-        userThird.setThirdType(ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())]);
+        UserThird userThird = new UserThird(
+                token.getThirdId(),
+                ThirdBaseInfo.ThirdType.values()[Integer.valueOf(token.getThirdType())],
+                user
+        );
         userThird = userThirdRepository.save(userThird);
         logger.info("三方登陆新增绑定,thirdId={},userId={}", token.getThirdId(), userThird.getUser().getId());
         return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
@@ -133,17 +149,18 @@ public class UserController extends AbstractBaseController<User, Long> {
         }
         try {
             // 获取指定手机号的验证编码缓存并，比较是否相同
-            Element element = idenCodeCache.get(idenCode.getTel());
-
-            if (null == element || null == element.getObjectValue()) {
+            String cascheValue = hcCache.getFromCache(idenCode.getTel());
+            if (StringUtils.isEmpty(cascheValue)) {
                 return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！");
             } else {
-                if (!idenCode.getCode().equals(element.getObjectValue())) {
+                if (!idenCode.getCode().equals(cascheValue)) {
                     // 前台输错验证码
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！");
                 } else {
                     User user = userRepository.findByTel(idenCode.getTel());
-                    return null == user ? addUserBeforeLogin(idenCode) : new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
+                    //用户不存在 ？创建并返回用户 ：直接返回用户
+                    return null == user ? addUserBeforeLogin(idenCode) :
+                            new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
                 }
             }
         } catch (Exception e) {
@@ -172,21 +189,55 @@ public class UserController extends AbstractBaseController<User, Long> {
         if (!file.isEmpty()) {
             try {
                 User user = userRepository.findOne(id);
+                if (null == user)
+                    return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("用户不存在!");
                 String filename = URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
                 String url = QiniuUploadUtils.upload(file.getBytes(), filename);
                 user.setIconUrl(url);
-                userRepository.save(user);
-                return new ControllerResult<>().setRet_code(0).setRet_values(url);
+                user = userRepository.save(user);
+                return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("图片上传成功!");
             } catch (Exception e) {
                 e.printStackTrace();
-                return new ControllerResult<>().setRet_code(-1).setRet_values(e.getLocalizedMessage());
+                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage(e.getLocalizedMessage());
             }
         }
         return null;
+    }
+
+    @RequestMapping(value = "modify/{userId}", method = RequestMethod.POST)
+    public Object modify(@PathVariable long userId, @RequestBody @Valid UserDto userDto, BindingResult result) {
+
+        if (result.hasErrors()) {
+            StringBuilder builder = new StringBuilder();
+            for (ObjectError error : result.getAllErrors())
+                builder.append(error.getDefaultMessage());
+            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(builder.toString());
+        }
+        userDto.setValid(User.Valid.valid);
+        User user = userRepository.findOne(userId);
+        try {
+            BeanUtils.copyNotNullProperties(userDto, user, "hcPackageId");
+            final HcPackage hcPackage = hcPackageRepository.findOne(userDto.getHcPackageId());
+
+            if (user.getHcPackages() == null) {
+                user.setHcPackages(new HashSet<HcPackage>() {{
+                    add(hcPackage);
+                }});
+            } else {
+                user.getHcPackages().add(hcPackage);
+            }
+
+            user = modify(user);
+            return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("用户更新成功!");
+        } catch (Exception exp) {
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("更新失败!");
+        }
+
     }
 
     @Override
     protected MyRepository<User, Long> getRepository() {
         return userRepository;
     }
+
 }
