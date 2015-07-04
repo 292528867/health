@@ -1,7 +1,7 @@
 package com.wonders.xlab.healthcloud.utils;
 
+import com.wonders.xlab.healthcloud.ApiProperties;
 import com.wonders.xlab.healthcloud.dto.EMToken;
-import com.wonders.xlab.healthcloud.emchart.ApiProperties;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import net.sf.ehcache.Cache;
