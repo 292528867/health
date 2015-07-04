@@ -47,6 +47,8 @@ public class UserDto {
      */
     private Integer age;
 
+    private Long hcPackageId;
+
     public String getTel() {
         return tel;
     }
@@ -111,4 +113,11 @@ public class UserDto {
         this.valid = valid;
     }
 
+    public Long getHcPackageId() {
+        return hcPackageId;
+    }
+
+    public void setHcPackageId(Long hcPackageId) {
+        this.hcPackageId = hcPackageId;
+    }
 }
