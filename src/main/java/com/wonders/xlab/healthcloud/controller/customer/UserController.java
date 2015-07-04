@@ -9,10 +9,10 @@ import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.ThirdBaseInfo;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.customer.UserThird;
-import com.wonders.xlab.healthcloud.entity.healthpackage.HcPackage;
+import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
-import com.wonders.xlab.healthcloud.repository.healthpackage.HcPackageRepository;
+import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.utils.BeanUtils;
@@ -32,7 +32,6 @@ import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.net.URLDecoder;
 import java.util.HashSet;
-import java.util.Set;
 
 
 /**
@@ -225,7 +224,9 @@ public class UserController extends AbstractBaseController<User, Long> {
             }
 
             if (user.getHcPackages() == null) {
-                user.setHcPackages(new HashSet<HcPackage>() {{ add(hcPackage); }});
+                user.setHcPackages(new HashSet<HcPackage>() {{
+                    add(hcPackage);
+                }});
             } else {
                 user.getHcPackages().add(hcPackage);
             }
