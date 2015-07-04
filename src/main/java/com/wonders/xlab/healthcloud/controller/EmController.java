@@ -24,6 +24,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     @Autowired
     private EMUtils emUtils;
 
+    @Autowired
     private EmMessagesRepository emMessagesRepository;
 
     @Override
