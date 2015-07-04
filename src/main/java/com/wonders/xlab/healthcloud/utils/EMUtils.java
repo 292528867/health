@@ -43,16 +43,16 @@ public class EMUtils {
     public static final String url = "http://a1.easemob.com/xlab/ugyufuy/{key}";
 
     @Value("${API_SERVER_HOST}")
-    public String API_SERVER_HOST;
+    public String apiServerHost;
 
     @Value("${APPKEY}")
-    public String APPKEY;
+    public String appKey;
 
     @Value("${APP_CLIENT_ID}")
-    public String APP_CLIENT_ID;
+    public String appClientId;
 
     @Value("${APP_CLIENT_SECRET}")
-    public String APP_CLIENT_SECRET;
+    public String appClientSecret;
 
     public String pushTokenToCache() {
 
@@ -60,27 +60,25 @@ public class EMUtils {
             add(MediaType.APPLICATION_JSON);
         }};
         //添加请求头
-        HttpHeaders header = new HttpHeaders(){{
+        HttpHeaders header = new HttpHeaders() {{
             setAccept(acceptableMediaTypes);
         }};
         //配接获取环信token请求体
         String body = "{\"grant_type\":\"client_credentials\",\"client_id\":\"" +
-                APP_CLIENT_ID +
+                appClientId +
                 "\",\"client_secret\":\"" +
-                APP_CLIENT_SECRET + "\"}";
-        HttpEntity<String> entity = new HttpEntity<>(body, header);
-        Map<String, Object> uriVariables = new HashMap<String, Object>() {{
-            put("key", "token");
-        }};
+                appClientSecret + "\"}";
+        //发起HTTP请求
         ResponseEntity<EMToken> result = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
-                entity,
+                new HttpEntity<>(body, header),
                 EMToken.class,
-                uriVariables
+                new HashMap<String, Object>() {{
+                    put("key", "token");
+                }}
         );
         if (HttpStatus.OK.equals(result.getStatusCode())) {
-
             hcCache.addToCache("access_token", result.getBody().getAccess_token());
             return result.getBody().getAccess_token();
 
@@ -110,19 +108,14 @@ public class EMUtils {
             headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
         }
 
-        HttpEntity<String> entity = null;
-        if (StringUtils.isEmpty(body)) {
-            entity = new HttpEntity<>(headers);
-        } else {
-            entity = new HttpEntity<>(body, headers);
-        }
-
         Map<String, Object> uriVariables = new HashMap<>();
         uriVariables.put("key", path);
         ResponseEntity<?> result = restTemplate.exchange(
                 url,
                 method,
-                entity,
+                StringUtils.isEmpty(body) ?
+                        new HttpEntity<String>(headers) :
+                        new HttpEntity<>(body, headers),
                 classz,
                 uriVariables
         );
@@ -137,39 +130,41 @@ public class EMUtils {
 
     public ResponseEntity<?> requestEMChart(HttpMethod method, String path, Class<?> classz) {
         return requestEMChart(null, method, null, path, classz);
-
     }
 
-
-    public String getAPI_SERVER_HOST() {
-        return API_SERVER_HOST;
+    public ResponseEntity<?> requestEMChart(HttpHeaders headers, HttpMethod method, String path, Class<?> classz) {
+        return requestEMChart(headers, method, null, path, classz);
     }
 
-    public void setAPI_SERVER_HOST(String API_SERVER_HOST) {
-        this.API_SERVER_HOST = API_SERVER_HOST;
+    public String getApiServerHost() {
+        return apiServerHost;
     }
 
-    public String getAPPKEY() {
-        return APPKEY;
+    public void setApiServerHost(String apiServerHost) {
+        this.apiServerHost = apiServerHost;
     }
 
-    public void setAPPKEY(String APPKEY) {
-        this.APPKEY = APPKEY;
+    public String getAppKey() {
+        return appKey;
     }
 
-    public String getAPP_CLIENT_ID() {
-        return APP_CLIENT_ID;
+    public void setAppKey(String appKey) {
+        this.appKey = appKey;
     }
 
-    public void setAPP_CLIENT_ID(String APP_CLIENT_ID) {
-        this.APP_CLIENT_ID = APP_CLIENT_ID;
+    public String getAppClientId() {
+        return appClientId;
     }
 
-    public String getAPP_CLIENT_SECRET() {
-        return APP_CLIENT_SECRET;
+    public void setAppClientId(String appClientId) {
+        this.appClientId = appClientId;
     }
 
-    public void setAPP_CLIENT_SECRET(String APP_CLIENT_SECRET) {
-        this.APP_CLIENT_SECRET = APP_CLIENT_SECRET;
+    public String getAppClientSecret() {
+        return appClientSecret;
+    }
+
+    public void setAppClientSecret(String appClientSecret) {
+        this.appClientSecret = appClientSecret;
     }
 }
