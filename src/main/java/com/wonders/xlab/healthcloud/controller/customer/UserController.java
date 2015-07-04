@@ -206,10 +206,11 @@ public class UserController extends AbstractBaseController<User, Long> {
 
     @RequestMapping(value = "modify/{userId}", method = RequestMethod.POST)
     public Object modify(@PathVariable long userId,@RequestBody @Valid UserDto userDto,BindingResult result) {
-        userDto.setValid(User.Valid.valid);
+//        userDto.setValid(User.Valid.valid);
         User user = userRepository.findOne(userId);
         try {
-            user = (User) ReflectionUtils.copyNotNullProperty(user, userDto);
+//            user = (User) ReflectionUtils.copyNotNullProperty(user, userDto);
+            com.wonders.xlab.healthcloud.utils.BeanUtils.copyProperties(userDto, user);
             user = super.modify(user);
             return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("用户更新成功!");
         } catch (Exception exp) {
