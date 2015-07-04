@@ -23,6 +23,8 @@ public class HealthCategory extends AbstractPersistable<Long> {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	/** 标签 */
+	private String tag;
 	/** 标题 */
 	private String title;
 	/** 简述 */
@@ -78,6 +80,14 @@ public class HealthCategory extends AbstractPersistable<Long> {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
 	}
     
     

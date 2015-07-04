@@ -10,6 +10,8 @@ import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
  *
  */
 public class HealthCatagoryDto {
+	@NotNull(message = "标题不能为空")
+	private String tag;
 	@NotNull(message = "分类标题不能为空")
 	private String title;
 	@NotNull(message = "分类描述不能为空")
@@ -25,6 +27,7 @@ public class HealthCatagoryDto {
 		hc.setTitle(title);
 		hc.setDescription(desc);
 		hc.setType(type);
+		hc.setTag(tag);
 		return hc;
 	}
 	/**
@@ -37,6 +40,7 @@ public class HealthCatagoryDto {
 		dto.setTitle(hc.getTitle());
 		dto.setDesc(hc.getDescription());
 		dto.setType(hc.getType());
+		dto.setTag(hc.getTag());
 		return dto;
 	}
 	
@@ -47,6 +51,7 @@ public class HealthCatagoryDto {
 		hc.setTitle(title);
 		hc.setDescription(desc);
 		hc.setType(type);
+		hc.setTag(tag);
 		return hc;
 	}
 	
@@ -67,6 +72,12 @@ public class HealthCatagoryDto {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	public String getTag() {
+		return tag;
+	}
+	public void setTag(String tag) {
+		this.tag = tag;
 	}
 	
 	
