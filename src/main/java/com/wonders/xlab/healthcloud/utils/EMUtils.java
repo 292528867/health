@@ -89,6 +89,21 @@ public class EMUtils {
 
     public ResponseEntity<?> requestEMChart(HttpHeaders headers, HttpMethod method, String body, String path, Class<?> classz) {
 
+        String token = hcCache.getFromCache("access_token");
+
+        if (StringUtils.isEmpty(token)) {
+            token = pushTokenToCache();
+        }
+
+        if (null == headers) {
+            List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
+                add(MediaType.APPLICATION_JSON);
+            }};
+            headers = new HttpHeaders();
+            headers.setAccept(acceptableMediaTypes);
+            headers.add("Authorization", "Bearer " + token);
+        }
+
         HttpEntity<String> entity = null;
         if (StringUtils.isEmpty(body)) {
             entity = new HttpEntity<>(headers);
