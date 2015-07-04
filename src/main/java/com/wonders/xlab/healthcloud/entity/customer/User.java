@@ -6,6 +6,7 @@ import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 
 import javax.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -24,7 +25,7 @@ public class User extends BaseInfo<Long> {
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "HEALTHCATEGORY_ID")
     )
-    private Set<HealthCategory> hcs;
+    private Set<HealthCategory> hcs = new HashSet<>();
     
     //    invalid 用户无效（未完善用户信息），valid 用户有效
     @Enumerated

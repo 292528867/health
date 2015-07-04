@@ -4,7 +4,7 @@ package com.wonders.xlab.healthcloud.service.drools.inference.output;
  * 日显示健康信息输出。
  * @author xu
  */
-public class OutpuDaytHealthInfo {
+public class OutputDaytHealthInfo {
 	/** 用户id */
 	private Long userId;
 	/** 显示的健康信息个数 */

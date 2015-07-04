@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import org.apache.commons.lang3.RandomUtils;
 
+import com.wonders.xlab.healthcloud.service.drools.inference.output.OutputDaytHealthInfo;
+
 /**
  * 从size中随机选取一个数字。
  */
@@ -18,6 +20,8 @@ function Integer randomIndexFromSize(int size) {
 }
 
 //declare any global variables here
+
+global OutputDaytHealthInfo output
 
 // 用户关心的所有列表整合对象
 declare UserGroupHealthInfo
@@ -187,12 +191,21 @@ rule "result"
 		eval ( $selectedSampleListSize == $expectedSampleSize )
 	then
 		// 当期望的大小等于可选的大小，结束
-		// TODO：
 		System.out.println("result：" + 
 			"$userId=" + $userId + "，" + 
 			"$expectedSampleSize=" + $expectedSampleSize + "，" + 
 			"$selectedSampleListSize=" + $selectedSampleListSize + 
 			"$selectedSampleList=" + $selectedSampleList);
+			
+		output.setUserId($userId);
+		output.setHealthInfoCount($selectedSampleListSize);
+		Long[] ids = new Long[$selectedSampleListSize];
+		for (int i = 0; i < $selectedSampleListSize; i++) {
+			HealthInfoSample sample = (HealthInfoSample) $selectedSampleList.get(i);
+			ids[i] = sample.getHealthInfoId();
+		}
+		output.setHealthInfoIds(ids);
+		
 end
 
 //----------------------------- 第三阶段、根据推论数据2计算输出（以上） ------------------------------//
