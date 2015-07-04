@@ -38,7 +38,15 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     /**
      * 发送文本消息
-     *
+     body = "{\n" +
+     "    \"target_type\" : \"users\",\n" +
+     "    \"target\" : [\"lixuanwu\", \"qiuqiu\", \"chaochao\"], \n" +
+     "    \"msg\" : {\n" +
+     "        \"type\" : \"txt\",\n" +
+     "        \"msg\" : \"hello from rest\" \n" +
+     "        },\n" +
+     "    \"from\" : \"lixuanwu\"\n" +
+     "}";
      * @param body
      * @return
      */
@@ -52,16 +60,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         //添加请求头
         header.setAccept(mediaTypes);
         //配接获取环信token请求体
-        body = "{\n" +
-                "    \"target_type\" : \"users\",\n" +
-                "    \"target\" : [\"lixuanwu\", \"qiuqiu\", \"chaochao\"], \n" +
-                "    \"msg\" : {\n" +
-                "        \"type\" : \"txt\",\n" +
-                "        \"msg\" : \"hello from rest\" \n" +
-                "        },\n" +
-                "    \"from\" : \"lixuanwu\"\n" +
-                "}";
-        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requstEMChart(header, HttpMethod.POST, body, "messages", String.class);
+        String dd = "{\"target_type\":\"users\",\"target\":[\"lixuanwu\",\"qiuqiu\",\"chaochao\"],\"msg\": {\"type\":\"txt\",\"msg\":\"hello from wanhua\"},\"from\":\"lixuanwu\"}";
+        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requstEMChart(header, HttpMethod.POST, dd, "messages", String.class);
 
         return new ControllerResult().setRet_code(0).setRet_values(responseEntity).setMessage("");
 
