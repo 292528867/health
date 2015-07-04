@@ -56,20 +56,22 @@ public class EMUtils {
 
     public String pushTokenToCache() {
 
-        List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
+        final List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
             add(MediaType.APPLICATION_JSON);
         }};
-        HttpHeaders header = new HttpHeaders();
         //添加请求头
-        header.setAccept(acceptableMediaTypes);
+        HttpHeaders header = new HttpHeaders(){{
+            setAccept(acceptableMediaTypes);
+        }};
         //配接获取环信token请求体
         String body = "{\"grant_type\":\"client_credentials\",\"client_id\":\"" +
                 APP_CLIENT_ID +
                 "\",\"client_secret\":\"" +
                 APP_CLIENT_SECRET + "\"}";
         HttpEntity<String> entity = new HttpEntity<>(body, header);
-        Map<String, Object> uriVariables = new HashMap<>();
-        uriVariables.put("key", "token");
+        Map<String, Object> uriVariables = new HashMap<String, Object>() {{
+            put("key", "token");
+        }};
         ResponseEntity<EMToken> result = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
@@ -89,11 +91,12 @@ public class EMUtils {
 
     public ResponseEntity<?> requestEMChart(HttpHeaders headers, HttpMethod method, String body, String path, Class<?> classz) {
 
-        String token = hcCache.getFromCache("access_token");
-
-        if (StringUtils.isEmpty(token)) {
-            token = pushTokenToCache();
-        }
+//----------------发布时，需取消以下注释－－－－－－－－－－－－－－－－
+//        String token = hcCache.getFromCache("access_token");
+//        //缓存Cache失效，重新请求放到缓存
+//        if (StringUtils.isEmpty(token)) {
+//            token = pushTokenToCache();
+//        }
 
         if (null == headers) {
             List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
@@ -101,7 +104,10 @@ public class EMUtils {
             }};
             headers = new HttpHeaders();
             headers.setAccept(acceptableMediaTypes);
-            headers.add("Authorization", "Bearer " + token);
+
+//----------------发布时，需取消以下注释，并注释headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
+//            headers.add("Authorization", "Bearer " + token);
+            headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
         }
 
         HttpEntity<String> entity = null;
@@ -129,11 +135,10 @@ public class EMUtils {
         return requestEMChart(null, method, body, path, classz);
     }
 
-    public ResponseEntity<?> requestEMChart(HttpMethod method, String path, Class<?> classz){
+    public ResponseEntity<?> requestEMChart(HttpMethod method, String path, Class<?> classz) {
         return requestEMChart(null, method, null, path, classz);
 
     }
-
 
 
     public String getAPI_SERVER_HOST() {
