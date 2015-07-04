@@ -67,31 +67,41 @@ public class EMUtils {
                 APP_CLIENT_ID +
                 "\",\"client_secret\":\"" +
                 APP_CLIENT_SECRET + "\"}";
-
-        ResponseEntity result = requstEMChart(header, HttpMethod.POST, body, "token", EMToken.class);
-
+        HttpEntity<String> entity = new HttpEntity<>(body, header);
+        Map<String, Object> uriVariables = new HashMap<>();
+        uriVariables.put("key", "token");
+        ResponseEntity<EMToken> result = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                EMToken.class,
+                uriVariables
+        );
         if (HttpStatus.OK.equals(result.getStatusCode())) {
-            hcCache.addToCache("access_token", ((EMToken) result.getBody()).getAccess_token());
-            return ((EMToken) result.getBody()).getAccess_token();
+
+            hcCache.addToCache("access_token", result.getBody().getAccess_token());
+            return result.getBody().getAccess_token();
+
         } else {
             throw new RuntimeException(result.getStatusCode().toString());
         }
     }
 
-    public ResponseEntity<?> requstEMChart(HttpHeaders headers, HttpMethod method, String body, String path, Class<?> classz) {
+    public ResponseEntity<?> requestEMChart(HttpHeaders headers, HttpMethod method, String body, String path, Class<?> classz) {
 
-        String access_token = hcCache.getFromCache("access_token");
+        String token = hcCache.getFromCache("access_token");
 
-        if (StringUtils.isEmpty(access_token)) {
-            access_token = pushTokenToCache();
+        if (StringUtils.isEmpty(token)) {
+            token = pushTokenToCache();
         }
-        if (headers == null) {
-            List<MediaType> mediaTypes = new ArrayList<MediaType>(){{
+
+        if (null == headers) {
+            List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
                 add(MediaType.APPLICATION_JSON);
             }};
-            String authorization = "Bearer " + access_token;
-            headers.setAccept(mediaTypes);
-            headers.add("Authorization", authorization);
+            headers = new HttpHeaders();
+            headers.setAccept(acceptableMediaTypes);
+            headers.add("Authorization", "Bearer " + token);
         }
 
         HttpEntity<String> entity = null;
@@ -115,14 +125,15 @@ public class EMUtils {
         return result;
     }
 
-    public ResponseEntity<?> requstEMChart(HttpMethod method, String body, String path, Class<?> classz) {
-        return requstEMChart(null, method, body, path, classz);
+    public ResponseEntity<?> requestEMChart(HttpMethod method, String body, String path, Class<?> classz) {
+        return requestEMChart(null, method, body, path, classz);
     }
 
-    public ResponseEntity<?> requstEMChart(HttpMethod method, String path, Class<?> classz) {
-        return requstEMChart(null, method, null, path, classz);
+    public ResponseEntity<?> requestEMChart(HttpMethod method, String path, Class<?> classz){
+        return requestEMChart(null, method, null, path, classz);
 
     }
+
 
 
     public String getAPI_SERVER_HOST() {
@@ -156,5 +167,4 @@ public class EMUtils {
     public void setAPP_CLIENT_SECRET(String APP_CLIENT_SECRET) {
         this.APP_CLIENT_SECRET = APP_CLIENT_SECRET;
     }
-
 }
