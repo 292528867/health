@@ -26,7 +26,6 @@ public class QiniuUploadUtils {
     /**
      * 命名空间url
      */
-
 	private static String url = "http://7xk3mz.com2.z0.glb.qiniucdn.com/";
 
     /**

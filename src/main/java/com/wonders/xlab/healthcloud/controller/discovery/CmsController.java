@@ -119,7 +119,15 @@ public class CmsController {
 	// 查询分类健康信息
 	@RequestMapping(value = "listInfo/{healthCategoryId}", method = RequestMethod.GET)
 	public ControllerResult<?> listHealthInfo(@PathVariable Long healthCategoryId) {
-		return new ControllerResult<List<HealthInfo>>().setRet_code(0).setRet_values(this.healthInfoRepository.findByHealthCategoryId(healthCategoryId)).setMessage("成功");
+		return new ControllerResult<List<HealthInfo>>().setRet_code(0).setRet_values(
+				this.healthInfoRepository.findByHealthCategoryId(healthCategoryId)).setMessage("成功");
+	}
+	
+	// 查询分类健康信息
+	@RequestMapping(value = "listInfo/{healthCategoryId}/{healthInfoId}", method = RequestMethod.GET)
+	public ControllerResult<?> listHealthInfo(@PathVariable Long healthCategoryId, @PathVariable Long healthInfoId) {
+		return new ControllerResult<HealthInfo>().setRet_code(0).setRet_values(
+				this.healthInfoRepository.findByHealthCategoryIdAndId(healthCategoryId, healthInfoId)).setMessage("成功");
 	}
 	
 	// 修改分类健康信息

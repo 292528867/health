@@ -3,8 +3,14 @@ package com.wonders.xlab.healthcloud.entity.discovery;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 
@@ -31,6 +37,15 @@ public class HealthCategory extends AbstractPersistable<Long> {
 	private String description;
 	/** 类别类型（TODO：目前暂时不清楚，纵向、横向分类？） */
 	private String type;
+	
+	@OneToMany(mappedBy = "healthCategory")
+	/** 关联的健康信息文章 */
+	private Set<HealthInfo> hins = new HashSet<>();
+	
+	@OneToOne(optional = true, cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "HOME_HEALTH_INFO_ID")
+	/** 首页健康信息文章 */
+	private HealthInfo homeInfo;
 	
 	// TODO：其他字段再议论
 
@@ -88,6 +103,22 @@ public class HealthCategory extends AbstractPersistable<Long> {
 
 	public void setTag(String tag) {
 		this.tag = tag;
+	}
+
+	public Set<HealthInfo> getHins() {
+		return hins;
+	}
+
+	public void setHins(Set<HealthInfo> hins) {
+		this.hins = hins;
+	}
+
+	public HealthInfo getHomeInfo() {
+		return homeInfo;
+	}
+
+	public void setHomeInfo(HealthInfo homeInfo) {
+		this.homeInfo = homeInfo;
 	}
     
     

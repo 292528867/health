@@ -1,9 +1,9 @@
-package com.wonders.xlab.healthcloud.emchart.dto;
+package com.wonders.xlab.healthcloud.dto;
 
 /**
  * Created by Jeffrey on 15/7/4.
  */
-public class Token {
+public class EMToken {
 
     /**
      * 通行证

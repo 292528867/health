@@ -3,12 +3,15 @@ package com.wonders.xlab.healthcloud.entity.discovery;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 
@@ -44,6 +47,10 @@ public class HealthInfo extends AbstractPersistable<Long> {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "HEALTHCATEGORY_ID")
 	private HealthCategory healthCategory;
+	
+	/** 点击信息 */
+	@OneToMany(mappedBy = "healthInfo")
+	private Set<HealthInfoClickInfo> hicis = new HashSet<>();
 	
 	// TODO：其他字段再议
 	
@@ -110,6 +117,14 @@ public class HealthInfo extends AbstractPersistable<Long> {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Set<HealthInfoClickInfo> getHicis() {
+		return hicis;
+	}
+
+	public void setHicis(Set<HealthInfoClickInfo> hicis) {
+		this.hicis = hicis;
 	}
 	
 }

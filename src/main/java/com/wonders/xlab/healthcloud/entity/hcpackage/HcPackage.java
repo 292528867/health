@@ -21,6 +21,9 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    /** 图片地址 */
+    private String iconUrl;
+
     /** 是否推荐 */
     private boolean recommend;
 
@@ -55,5 +58,13 @@ public class HcPackage extends AbstractBaseEntity<Long> {
 
     public void setRecommend(boolean recommend) {
         this.recommend = recommend;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 }

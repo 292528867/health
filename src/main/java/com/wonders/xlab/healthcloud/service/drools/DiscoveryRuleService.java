@@ -6,8 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.wonders.xlab.healthcloud.entity.customer.User;
+import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
+import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
+import com.wonders.xlab.healthcloud.entity.discovery.HealthInfoClickInfo;
 import com.wonders.xlab.healthcloud.service.drools.fact.HealthInfoSample;
 import com.wonders.xlab.healthcloud.service.drools.fact.UserQuerySample;
+import com.wonders.xlab.healthcloud.service.drools.inference.output.OutputDaytHealthInfo;
+
 
 /**
  * discovery规则服务。
@@ -19,6 +25,45 @@ public class DiscoveryRuleService {
 	@Autowired
 	@Qualifier("discoveryKBase")
 	private KieBase kieBase;
+	
+	/**
+	 * 根据规则计算指定用户可推送健康信息文章id。
+	 * @param user user里的对象必须级连查出了
+	 */
+	public Long[] pushArticles(User user) {
+		// 1、创建session，内部配置的是stateful
+		KieSession session = kieBase.newKieSession();
+		// 2、构造global对象，分析后返回
+		OutputDaytHealthInfo output = new OutputDaytHealthInfo();
+		session.setGlobal("output", output);
+		
+		// 3、构建fact放入规则中
+		UserQuerySample userQuerySample = new UserQuerySample(user.getId());
+		session.insert(userQuerySample);
+		
+		for (HealthCategory category : user.getHcs()) {
+			for (HealthInfo healthInfo : category.getHins()) {
+				int clickCount = 0;
+				for (HealthInfoClickInfo healthInfoClickInfo : healthInfo.getHicis()) 
+					clickCount += healthInfoClickInfo.getClickCount();
+				// 创建sample fact
+				HealthInfoSample healthInfoSample = new HealthInfoSample(
+						user.getId(), 
+						healthInfo.getId(), 
+						healthInfo.getTitle(), 
+						clickCount);
+				session.insert(healthInfoSample);
+			}
+		}
+		
+		// 4、执行rule
+		session.fireAllRules();
+		// 5、销毁session
+		session.dispose();
+		
+		return output.getHealthInfoIds();
+	}
+	
 	
 	public void testRule() {
 		// 1、创建session，内部配置的是stateful
