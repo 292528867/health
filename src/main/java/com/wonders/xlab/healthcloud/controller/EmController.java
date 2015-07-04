@@ -57,7 +57,10 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 "    \"msg\": {\n" +
                 "        \"type\":\"txt\",\n" +
                 "        \"msg\":\"hello from wanhua\"},\"from\":\"lixuanwu\"}";
-        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requstEMChart(HttpMethod.POST, dd, "messages", String.class);
+
+
+        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChart(HttpMethod.POST, dd, "messages", String.class);
+
 
         return new ControllerResult().setRet_code(0).setRet_values(responseEntity).setMessage("");
 
