@@ -38,6 +38,11 @@ public class HealthCategory extends AbstractPersistable<Long> {
 	/** 类别类型（TODO：目前暂时不清楚，纵向、横向分类？） */
 	private String type;
 	
+	/** 1级关联标签ids（逗号连接） */
+	private String firstRelatedIds;
+	/** 2级关联标签ids（逗号连接） */
+	private String secondRelatedIds;
+	
 	@OneToMany(mappedBy = "healthCategory")
 	/** 关联的健康信息文章 */
 	private Set<HealthInfo> hins = new HashSet<>();
@@ -119,6 +124,22 @@ public class HealthCategory extends AbstractPersistable<Long> {
 
 	public void setHomeInfo(HealthInfo homeInfo) {
 		this.homeInfo = homeInfo;
+	}
+
+	public String getFirstRelatedIds() {
+		return firstRelatedIds;
+	}
+
+	public void setFirstRelatedIds(String firstRelatedIds) {
+		this.firstRelatedIds = firstRelatedIds;
+	}
+
+	public String getSecondRelatedIds() {
+		return secondRelatedIds;
+	}
+
+	public void setSecondRelatedIds(String secondRelatedIds) {
+		this.secondRelatedIds = secondRelatedIds;
 	}
     
     

@@ -1,6 +1,5 @@
 package com.wonders.xlab.healthcloud.utils;
 
-import com.wonders.xlab.healthcloud.ApiProperties;
 import com.wonders.xlab.healthcloud.dto.EMToken;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
@@ -8,6 +7,8 @@ import net.sf.ehcache.Cache;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -23,12 +24,10 @@ import java.util.Map;
  * Created by Jeffrey on 15/7/4.
  */
 @Component
+@PropertySource("classpath:emcart.api/emchartApi.properties")
 public class EMUtils {
 
     private RestTemplate restTemplate = new RestTemplate();
-
-    @Autowired
-    private ApiProperties apiProperties;
 
     @Autowired
     @Qualifier(value = "emCache")
@@ -41,7 +40,21 @@ public class EMUtils {
         hcCache = new HCCacheProxy<>(emCache);
     }
 
-    public void pushTokenToCache() {
+    public static final String url = "http://a1.easemob.com/xlab/ugyufuy/{key}";
+
+    @Value("${API_SERVER_HOST}")
+    public String API_SERVER_HOST;
+
+    @Value("${APPKEY}")
+    public String APPKEY;
+
+    @Value("${APP_CLIENT_ID}")
+    public String APP_CLIENT_ID;
+
+    @Value("${APP_CLIENT_SECRET}")
+    public String APP_CLIENT_SECRET;
+
+    public String pushTokenToCache() {
 
         List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
             add(MediaType.APPLICATION_JSON);
@@ -51,20 +64,35 @@ public class EMUtils {
         header.setAccept(acceptableMediaTypes);
         //配接获取环信token请求体
         String body = "{\"grant_type\":\"client_credentials\",\"client_id\":\"" +
-                apiProperties.APP_CLIENT_ID +
+                APP_CLIENT_ID +
                 "\",\"client_secret\":\"" +
-                apiProperties.APP_CLIENT_SECRET + "\"}";
+                APP_CLIENT_SECRET + "\"}";
 
         ResponseEntity result = requstEMChart(header, HttpMethod.POST, body, "token", EMToken.class);
 
         if (HttpStatus.OK.equals(result.getStatusCode())) {
             hcCache.addToCache("access_token", ((EMToken) result.getBody()).getAccess_token());
+            return ((EMToken) result.getBody()).getAccess_token();
         } else {
             throw new RuntimeException(result.getStatusCode().toString());
         }
     }
 
     public ResponseEntity<?> requstEMChart(HttpHeaders headers, HttpMethod method, String body, String path, Class<?> classz) {
+
+        String access_token = hcCache.getFromCache("access_token");
+
+        if (StringUtils.isEmpty(access_token)) {
+            access_token = pushTokenToCache();
+        }
+        if (headers == null) {
+            List<MediaType> mediaTypes = new ArrayList<MediaType>(){{
+                add(MediaType.APPLICATION_JSON);
+            }};
+            String authorization = "Bearer " + access_token;
+            headers.setAccept(mediaTypes);
+            headers.add("Authorization", authorization);
+        }
 
         HttpEntity<String> entity = null;
         if (StringUtils.isEmpty(body)) {
@@ -76,7 +104,7 @@ public class EMUtils {
         Map<String, Object> uriVariables = new HashMap<>();
         uriVariables.put("key", path);
         ResponseEntity<?> result = restTemplate.exchange(
-                ApiProperties.url,
+                url,
                 method,
                 entity,
                 classz,
@@ -91,7 +119,42 @@ public class EMUtils {
         return requstEMChart(null, method, body, path, classz);
     }
 
-    public ResponseEntity<?> requstEMChart(HttpMethod method, String path, Class<?> classz){
+    public ResponseEntity<?> requstEMChart(HttpMethod method, String path, Class<?> classz) {
         return requstEMChart(null, method, null, path, classz);
+
     }
+
+
+    public String getAPI_SERVER_HOST() {
+        return API_SERVER_HOST;
+    }
+
+    public void setAPI_SERVER_HOST(String API_SERVER_HOST) {
+        this.API_SERVER_HOST = API_SERVER_HOST;
+    }
+
+    public String getAPPKEY() {
+        return APPKEY;
+    }
+
+    public void setAPPKEY(String APPKEY) {
+        this.APPKEY = APPKEY;
+    }
+
+    public String getAPP_CLIENT_ID() {
+        return APP_CLIENT_ID;
+    }
+
+    public void setAPP_CLIENT_ID(String APP_CLIENT_ID) {
+        this.APP_CLIENT_ID = APP_CLIENT_ID;
+    }
+
+    public String getAPP_CLIENT_SECRET() {
+        return APP_CLIENT_SECRET;
+    }
+
+    public void setAPP_CLIENT_SECRET(String APP_CLIENT_SECRET) {
+        this.APP_CLIENT_SECRET = APP_CLIENT_SECRET;
+    }
+
 }
