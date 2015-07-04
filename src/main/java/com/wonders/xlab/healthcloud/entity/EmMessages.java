@@ -1,14 +1,19 @@
 package com.wonders.xlab.healthcloud.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by wukai on 15/7/4.
  */
 @Entity
 @Table(name = "EM_MESSAGES")
-public class EmMessages extends AbstractBaseEntity<Long> {
+public class EmMessages  extends AbstractBaseEntity<Long> {
     /**
      * 发消息用户ID
      */
@@ -17,7 +22,13 @@ public class EmMessages extends AbstractBaseEntity<Long> {
     /**
      * 接收用户ID
      */
-    private String[] toUser;
+    @JsonIgnore
+    private String toUser;
+    /**
+     * 返回前台数据
+     */
+    @Transient
+    private List<String> toUsers;
 
     /**
      * 文本消息内容
@@ -52,7 +63,7 @@ public class EmMessages extends AbstractBaseEntity<Long> {
     /**
      * 自定义消息扩展属性
      */
-    private String[] ext;
+    private String ext;
 
     /**
      * 消息是否是发送给医生的，方便过滤发送给医生的消息
@@ -67,11 +78,11 @@ public class EmMessages extends AbstractBaseEntity<Long> {
         this.fromUser = fromUser;
     }
 
-    public String[] getToUser() {
+    public String getToUser() {
         return toUser;
     }
 
-    public void setToUser(String[] toUser) {
+    public void setToUser(String toUser) {
         this.toUser = toUser;
     }
 
@@ -123,11 +134,11 @@ public class EmMessages extends AbstractBaseEntity<Long> {
         this.targetType = targetType;
     }
 
-    public String[] getExt() {
+    public String getExt() {
         return ext;
     }
 
-    public void setExt(String[] ext) {
+    public void setExt(String ext) {
         this.ext = ext;
     }
 
@@ -137,5 +148,9 @@ public class EmMessages extends AbstractBaseEntity<Long> {
 
     public void setDoctorFlag(boolean doctorFlag) {
         this.doctorFlag = doctorFlag;
+    }
+
+    public List<String> getToUsers() {
+        return Arrays.asList(toUser.split(","));
     }
 }
