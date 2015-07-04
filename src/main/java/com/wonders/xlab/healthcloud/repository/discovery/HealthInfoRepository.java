@@ -7,4 +7,5 @@ import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
 
 public interface HealthInfoRepository extends MyRepository<HealthInfo, Long> {
 	List<HealthInfo> findByHealthCategoryId(Long id);
+	HealthInfo findByHealthCategoryIdAndId(Long caid, Long infoid);
 }
