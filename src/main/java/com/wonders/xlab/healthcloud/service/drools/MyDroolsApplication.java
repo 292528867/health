@@ -1,9 +1,9 @@
 package com.wonders.xlab.healthcloud.service.drools;
 
-import java.util.ArrayList;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
+
+import com.wonders.xlab.healthcloud.service.drools.discovery.article.DiscoveryRuleService;
 
 /**
  * 测试MyDroolsConfiguration。

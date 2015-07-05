@@ -15,13 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wonders.xlab.healthcloud.dto.discovery.HealthInfoDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.customer.User;
+import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfoClickInfo;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoClickInfoRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoRepository;
-import com.wonders.xlab.healthcloud.service.drools.DiscoveryRuleService;
+import com.wonders.xlab.healthcloud.service.drools.discovery.article.DiscoveryRuleService;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
 
 /**
@@ -40,13 +41,32 @@ public class AppController {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
+	private HealthCategoryRepository healthCategoryRepository;
+	@Autowired
 	private HealthInfoRepository healthInfoRepository;
 	@Autowired
 	private HealthInfoClickInfoRepository healthInfoClickInfoRepository;
 	
-	// 首页显示推荐健康info信息，TODO：逻辑还要修正
+	// 显示更多信息，分类标签信息返回
+	@RequestMapping(value = "recommand/tags/{userId}")
+	public ControllerResult<?> getTagPushInfos(@PathVariable Long userId) {
+		// TODO：测试返回前4个分类信息，之后使用规则引擎解决
+		List<HealthCategory> hces = this.healthCategoryRepository.findTop4ByType(null);
+		return new ControllerResult<List<HealthCategory>>().setRet_code(0).setRet_values(hces).setMessage("成功");
+	}
+	
+	// 显示每个分类标签的健康info信息
+	@RequestMapping(value = "recommand/tag/articles/{categoryId}/{userId}")
+	public ControllerResult<?> getTagInfos(@PathVariable Long categoryId, @PathVariable Long userId) {
+		// TODO：暂时返回分类标签的所有文章，之后使用规则引擎解决
+		List<HealthInfo> hies = this.healthInfoRepository.findByHealthCategoryId(categoryId);
+		return new ControllerResult<List<HealthInfo>>().setRet_code(0).setRet_values(hies).setMessage("成功");
+	}
+	
+	
+	// 首页显示推荐健康info信息，TODO：逻辑还要修正，每天用户都一样
 	@RequestMapping(value = "recommand/articles/{userId}")
-	public ControllerResult<?> getHealthPUshInfos(@PathVariable Long userId) {
+	public ControllerResult<?> getHealthPushInfos(@PathVariable Long userId) {
 		// 级连查出用户所有健康信息
 		User user = userRepository.queryUserHealthInfo(userId);
 		if (user == null) 
@@ -91,10 +111,6 @@ public class AppController {
 		Long count = this.healthInfoClickInfoRepository.healthInfoTotalClickCount(infoId);
 		return new ControllerResult<Long>().setRet_code(0).setRet_values(count).setMessage("成功！");
 	}
-	
-	// 显示更多信息，分类标签信息返回
-	
-	// 显示每个分类标签的健康info信息
 	
 	// 显示具体的健康info信息
 	

@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.service.drools;
+package com.wonders.xlab.healthcloud.service.drools.discovery.article;
 
 import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
@@ -10,9 +10,9 @@ import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfoClickInfo;
-import com.wonders.xlab.healthcloud.service.drools.fact.HealthInfoSample;
-import com.wonders.xlab.healthcloud.service.drools.fact.UserQuerySample;
-import com.wonders.xlab.healthcloud.service.drools.inference.output.OutputDaytHealthInfo;
+import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoSample;
+import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.UserQuerySample;
+import com.wonders.xlab.healthcloud.service.drools.discovery.article.output.OutputDaytHealthInfo;
 
 
 /**

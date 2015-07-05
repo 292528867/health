@@ -3,14 +3,14 @@ package rules.feed
 
 //list any import classes here.
 
-import com.wonders.xlab.healthcloud.service.drools.fact.HealthInfoSample;
-import com.wonders.xlab.healthcloud.service.drools.fact.UserQuerySample;
+import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoSample;
+import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.UserQuerySample;
+import com.wonders.xlab.healthcloud.service.drools.discovery.article.output.OutputDaytHealthInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import org.apache.commons.lang3.RandomUtils;
 
-import com.wonders.xlab.healthcloud.service.drools.inference.output.OutputDaytHealthInfo;
 
 /**
  * 从size中随机选取一个数字。

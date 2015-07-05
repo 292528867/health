@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.service.drools.fact;
+package com.wonders.xlab.healthcloud.service.drools.discovery.article.input;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
