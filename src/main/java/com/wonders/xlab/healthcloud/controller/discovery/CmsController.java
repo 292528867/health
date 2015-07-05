@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.healthcloud.dto.discovery.HealthCategoryDto;
 import com.wonders.xlab.healthcloud.dto.discovery.HealthInfoDto;
+import com.wonders.xlab.healthcloud.dto.discovery.RelatedCategoryComboDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
@@ -76,6 +79,30 @@ public class CmsController {
 	}
 	
 	// 查询分类
+	@RequestMapping(value = "listCategory/groupinfo", method = RequestMethod.GET)
+	public ControllerResult<?> listHealthCategoryGroup() {
+		List<HealthCategory> hclist = this.healthCategoryRepository.findAll();
+		
+		// 计算分组输出信息
+		List<RelatedCategoryComboDto> groupInfo = new ArrayList<>();
+		Map<String, List<HealthCategoryDto>> map = new HashMap<>();
+		for (HealthCategory hc_t : hclist) {
+			String type = hc_t.getType() == null ? "其他类型" : hc_t.getType();
+			if (map.get(type) == null) 
+				map.put(type, new ArrayList<HealthCategoryDto>());
+			map.get(type).add(new HealthCategoryDto().toNewHealthCategoryDto(hc_t));
+		}
+		for (String key : map.keySet()) {
+			RelatedCategoryComboDto cdto = new RelatedCategoryComboDto();
+			cdto.setType(key);
+			cdto.setCategories(map.get(key));
+			groupInfo.add(cdto);
+		}
+		
+		return new ControllerResult<List<RelatedCategoryComboDto>>().setRet_code(0).setRet_values(groupInfo).setMessage("成功！");
+	}
+	
+	// 查询分类
 	@RequestMapping(value = "listCategory/{healthCategoryId}", method = RequestMethod.GET)
 	public ControllerResult<?> listHealthCategory(@PathVariable Long healthCategoryId) {
 		HealthCategory hc = this.healthCategoryRepository.findOne(healthCategoryId);
@@ -85,8 +112,8 @@ public class CmsController {
 	}
 	
 	// 查询分类1级关联分类
-	@RequestMapping(value = "listRelatedCategories/{healthCategoryId}", method = RequestMethod.GET)
-	public ControllerResult<?> listFirstRelatedCategories(@PathVariable Long healthCategoryId) {
+	@RequestMapping(value = "listCategory/groupinfo/releatedlevel/1/{healthCategoryId}", method = RequestMethod.GET)
+	public ControllerResult<?> listFirstRelatedGroupCategories(@PathVariable Long healthCategoryId) {
 		HealthCategory hc = this.healthCategoryRepository.findOne(healthCategoryId);
 		if (hc == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
@@ -98,9 +125,59 @@ public class CmsController {
 		for (int i = 0; i < str_ids.length; i++) 
 			long_ids[i] = Long.parseLong(str_ids[i]);
 		
-		// TODO：
-		return null;
+		List<HealthCategory> firstRelatedCategories = this.healthCategoryRepository.findAll(Arrays.asList(long_ids));
 		
+		// 计算分组输出信息
+		List<RelatedCategoryComboDto> groupInfo = new ArrayList<>();
+		Map<String, List<HealthCategoryDto>> map = new HashMap<>();
+		for (HealthCategory hc_t : firstRelatedCategories) {
+			String type = hc_t.getType() == null ? "其他类型" : hc_t.getType();
+			if (map.get(type) == null) 
+				map.put(type, new ArrayList<HealthCategoryDto>());
+			map.get(type).add(new HealthCategoryDto().toNewHealthCategoryDto(hc_t));
+		}
+		for (String key : map.keySet()) {
+			RelatedCategoryComboDto cdto = new RelatedCategoryComboDto();
+			cdto.setType(key);
+			cdto.setCategories(map.get(key));
+			groupInfo.add(cdto);
+		}
+		
+		return new ControllerResult<List<RelatedCategoryComboDto>>().setRet_code(0).setRet_values(groupInfo).setMessage("成功！");
+	}
+	// 查询分类2级关联分类
+	@RequestMapping(value = "listCategory/groupinfo/releatedlevel/2/{healthCategoryId}", method = RequestMethod.GET)
+	public ControllerResult<?> listSecondRelatedGroupCategories(@PathVariable Long healthCategoryId) {
+		HealthCategory hc = this.healthCategoryRepository.findOne(healthCategoryId);
+		if (hc == null) 
+			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
+		
+		if (StringUtils.isEmpty(hc.getSecondRelatedIds())) 
+			return new ControllerResult<List>().setRet_code(0).setRet_values(new ArrayList<>()).setMessage("没有2级关联！");
+		String[] str_ids = hc.getFirstRelatedIds().split(",");
+		Long[] long_ids = new Long[str_ids.length];
+		for (int i = 0; i < str_ids.length; i++) 
+			long_ids[i] = Long.parseLong(str_ids[i]);
+		
+		List<HealthCategory> secondRelatedCategories = this.healthCategoryRepository.findAll(Arrays.asList(long_ids));
+		
+		// 计算分组输出信息
+		List<RelatedCategoryComboDto> groupInfo = new ArrayList<>();
+		Map<String, List<HealthCategoryDto>> map = new HashMap<>();
+		for (HealthCategory hc_t : secondRelatedCategories) {
+			String type = hc_t.getType() == null ? "其他类型" : hc_t.getType();
+			if (map.get(type) == null) 
+				map.put(type, new ArrayList<HealthCategoryDto>());
+			map.get(type).add(new HealthCategoryDto().toNewHealthCategoryDto(hc_t));
+		}
+		for (String key : map.keySet()) {
+			RelatedCategoryComboDto cdto = new RelatedCategoryComboDto();
+			cdto.setType(key);
+			cdto.setCategories(map.get(key));
+			groupInfo.add(cdto);
+		}
+		
+		return new ControllerResult<List<RelatedCategoryComboDto>>().setRet_code(0).setRet_values(groupInfo).setMessage("成功！");
 	}
 	
 	// 修改分类
