@@ -5,6 +5,8 @@ import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import net.sf.ehcache.Cache;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,10 +17,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Jeffrey on 15/7/4.
@@ -28,6 +27,8 @@ import java.util.Map;
 public class EMUtils {
 
     private RestTemplate restTemplate = new RestTemplate();
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     @Qualifier(value = "emCache")
@@ -79,8 +80,10 @@ public class EMUtils {
                 }}
         );
         if (HttpStatus.OK.equals(result.getStatusCode())) {
-            hcCache.addToCache("access_token", result.getBody().getAccess_token());
-            return result.getBody().getAccess_token();
+            String accessToken = result.getBody().getAccess_token();
+            hcCache.addToCache("access_token", accessToken);
+            logger.info("access_token={},applyDate＝{}", accessToken, DateUtils.covertToYYYYMMDDStr(new Date()));
+            return accessToken;
 
         } else {
             throw new RuntimeException(result.getStatusCode().toString());

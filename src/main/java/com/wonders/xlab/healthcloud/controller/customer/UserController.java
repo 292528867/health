@@ -236,6 +236,7 @@ public class UserController extends AbstractBaseController<User, Long> {
             }
 
             user = modify(user);
+            user.setHcPackages(null);
             return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("用户更新成功!");
         } catch (Exception exp) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("更新失败!");

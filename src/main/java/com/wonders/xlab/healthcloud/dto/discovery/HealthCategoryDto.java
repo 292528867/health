@@ -22,6 +22,8 @@ public class HealthCategoryDto {
 	
 	/** 预留字段 */
 	private String type;
+	/** id */
+	private Long id;
 	
 	/**
 	 * 转换成一个新的{@link HealthCategory}实体对象，临时状态。
@@ -47,6 +49,7 @@ public class HealthCategoryDto {
 		dto.setDesc(hc.getDescription());
 		dto.setType(hc.getType());
 		dto.setTag(hc.getTag());
+		dto.setId(hc.getId());
 		dto.setFirstRelatedIds(hc.getFirstRelatedIds());
 		dto.setSecondRelatedIds(hc.getSecondRelatedIds());
 		return dto;
@@ -100,6 +103,12 @@ public class HealthCategoryDto {
 	}
 	public void setSecondRelatedIds(String secondRelatedIds) {
 		this.secondRelatedIds = secondRelatedIds;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
 	}
 	
 }
