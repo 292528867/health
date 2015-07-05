@@ -13,12 +13,17 @@ import java.util.Set;
 @Table(name = "HC_USER")
 public class User extends BaseInfo<Long> {
 
-    /** 用户健康包 */
+    /**
+     * 用户健康包
+     */
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @OrderBy(value = "id asc")
     @JoinTable(name = "hc_user_package_relation", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "package_id"))
     private Set<HcPackage> hcPackages;
 
+    /**
+     * 分类
+     */
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "HC_USER_HEALTHGATEGORY",
@@ -26,13 +31,13 @@ public class User extends BaseInfo<Long> {
             inverseJoinColumns = @JoinColumn(name = "HEALTHCATEGORY_ID")
     )
     private Set<HealthCategory> hcs = new HashSet<>();
-    
+
     //    invalid 用户无效（未完善用户信息），valid 用户有效
     @Enumerated
     private Valid valid = Valid.invalid;
 
     public enum Valid {
-        invalid,valid
+        invalid, valid
     }
 
     public Set<HcPackage> getHcPackages() {
@@ -51,12 +56,12 @@ public class User extends BaseInfo<Long> {
         this.valid = valid;
     }
 
-	public Set<HealthCategory> getHcs() {
-		return hcs;
-	}
+    public Set<HealthCategory> getHcs() {
+        return hcs;
+    }
 
-	public void setHcs(Set<HealthCategory> hcs) {
-		this.hcs = hcs;
-	}
-    
+    public void setHcs(Set<HealthCategory> hcs) {
+        this.hcs = hcs;
+    }
+
 }
