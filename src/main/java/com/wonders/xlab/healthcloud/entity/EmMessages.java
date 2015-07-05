@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "EM_MESSAGES")
-public class EmMessages  extends AbstractBaseEntity<Long> {
+public class EmMessages extends AbstractBaseEntity<Long> {
     /**
      * 发消息用户ID
      */
@@ -69,6 +69,31 @@ public class EmMessages  extends AbstractBaseEntity<Long> {
      * 消息是否是发送给医生的，方便过滤发送给医生的消息
      */
     private boolean doctorFlag;
+
+
+    public EmMessages() {
+    }
+
+    public EmMessages(String fromUser, List<String> toUsers, String msg, String messageType, String targetType, String ext, boolean isReplied, boolean doctorFlag) {
+        this.fromUser = fromUser;
+        this.toUsers = toUsers;
+        this.msg = msg;
+        this.messageType = messageType;
+        this.targetType = targetType;
+        this.ext = ext;
+        this.isReplied = isReplied;
+        this.doctorFlag = doctorFlag;
+    }
+
+    public EmMessages(String fromUser, List<String> toUsers, String msg, String messageType, String targetType, boolean isReplied, boolean doctorFlag) {
+        this.fromUser = fromUser;
+        this.toUsers = toUsers;
+        this.msg = msg;
+        this.messageType = messageType;
+        this.targetType = targetType;
+        this.isReplied = isReplied;
+        this.doctorFlag = doctorFlag;
+    }
 
     public String getFromUser() {
         return fromUser;
