@@ -81,25 +81,6 @@
 <div class="am-cf admin-main">
     <!-- sidebar start -->
     <div class="admin-sidebar am-offcanvas" id="admin-offcanvas">
-        <div class="am-offcanvas-bar admin-offcanvas-bar">
-            <ul class="am-list admin-sidebar-list">
-                <li><a href="admin-index.html"><span class="am-icon-home"></span> 首页</a></li>
-                <li class="admin-parent">
-                    <a class="am-cf" data-am-collapse="{target: '#collapse-nav'}"><span class="am-icon-file"></span>
-                        操作 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
-                    <ul class="am-list am-collapse admin-sidebar-sub am-in" id="collapse-nav">
-                        <li><a href="articleAdd.html" class="am-cf"><span class="am-icon-check"></span> 新增文章<span
-                                class="am-icon-star am-fr am-margin-right admin-icon-yellow"></span></a></li>
-                        <li><a href="articleCheck.html"><span class="am-icon-puzzle-piece"></span> 查看文章</a></li>
-                        <li><a href="typeAdd.html"><span class="am-icon-puzzle-piece"></span> 查看日程包</a></li>
-                    </ul>
-                </li>
-                <li><a href="replyInfo.html"><span class="am-icon-home"></span>环信回复</a></li>
-            </ul>
-
-
-
-        </div>
     </div>
     <!-- sidebar end -->
 
@@ -166,7 +147,7 @@
 
 <a class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
 
-<footer>
+<footer id="foot">
     <hr>
     <p class="am-padding-left">© 2015 By Wondersgroup.</p>
 </footer>
@@ -305,5 +286,8 @@
     });
 </script>
 <script src="js/articleAdd.js"></script>
+<script>
+    $('#admin-offcanvas').load('common/adminSidebar.html');
+</script>
 </body>
 </html>

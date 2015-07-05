@@ -1,0 +1,91 @@
+var url = 'http://127.0.0.1:8080/';
+
+$(document).ready(function () {
+
+    loadData(1);
+    //setInterval("loadData()", 1000 * 3);
+});
+
+
+//加载需要查看的信息
+function loadData(currentPage) {
+    console.log(currentPage);
+    $.ajax({
+        type: 'get',
+        url: url + 'em?page=' + currentPage,
+        success: function (result) {
+            var str = '';
+            pageStr = '';
+            data = result.content;
+            totalPages = result.totalPages;
+            for (var i = 0; i < data.length; i++) {
+                str += '<tr>';
+                str += '<td>' + data[i].fromUser + '</td>';
+                str += '<td>' + data[i].toUsers + '</td>';
+                str += '<td>' + data[i].msg + '</td>';
+                str += '<td class="am-hide-sm-only">' + data[i].createdDate + '</td>';
+                str += '<td>' + data[i].targetType + '</td>';
+                str += '<td><div class="am-btn-toolbar"><div class="am-btn-group am-btn-group-xs">';
+                // alert('replyInfo("+data[i].fromUser+","+data[i].toUsers.toString()+")');
+                str += "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick=\"replyInfo('" + data[i].fromUser + "','" + data[i].toUsers + "')\">";
+                str += '<span class="am-icon-pencil-square-o"></span>回复</button>';
+                str += '</div></div></td></tr>';
+            }
+            //分页
+            pageStr += '<ul class="am-pagination">';
+            var prePage = (currentPage = 1) ? 1 : (currentPage - 1);
+            nextPage = (currentPage = result.totalPages) ? result.totalPages : (currentPage + 1);
+            pageStr += '<li><a href="javascript:loadData(' + prePage + ')">上一页</a></li>';
+            for (var i = 1; i <= totalPages; i++) {
+                console.log(result.number+1);
+                if (i == (result.number+1)){
+                    pageStr += '<li class="am-active"><a href="javascript:loadData(' + i + ')">' + i + '</a></li>';
+                } else{
+                    pageStr += '<li> <a href="javascript:loadData(' + i + ')">' + i + '</a> </li>';
+                }
+                //pageStr += '<li><a href="javascript:loadData(' + i + ')">' + i + '</a></li>';
+            }
+            pageStr += '<li><a href="javascript:loadData(' + nextPage + ')">下一页</a></li> ';
+            $("#replyInfoList").html(str);
+            $("#pageDiv").html(pageStr);
+        }
+    });
+}
+
+function replyInfo(fromUser, toUser) {
+
+    $("#reply-modal").modal('toggle');
+
+
+    //提交回复信息
+    $("#type-reply").click(function () {
+        var content = $("#content").val();
+        //特别要注意 target必须是个数组
+        target = [];
+        target.push("" + fromUser + "");
+        message = {
+            'target_type': 'users',
+            'target': target,
+            'msg': {
+                'type': 'txt',
+                'msg': content
+            },
+            'from': toUser
+        };
+
+        $.ajax({
+            'url': url + '/em/sendMessage',
+            'type': 'POST',
+            'data': JSON.stringify(message),
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json; charset=UTF-8"
+            },
+            'dataType': 'json',
+            success: function (result) {
+                $("#reply-modal").modal('toggle');
+            }
+        });
+    });
+
+}

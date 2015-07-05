@@ -9,6 +9,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +31,10 @@ public class EMUtilsTest {
         }};
         HttpHeaders headers = new HttpHeaders();
 //        headers.add("Content-Type","application/json");
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.setAccept(mediaTypes);
-        headers.add("Authorization","Bearer YWMtLTlNuCI6EeWD--V4NuV_CgAAAU-Nq-Qskj9BKL_nnRqWuGLEIW8lACwLMp4");
+        headers.add("Authorization","Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
+        headers.add("restrict-access","true");
         String requestBody = "{" +
                 "    \"target_type\" : \"users\"," +
                 "    \"target\" : [\"Jeffery01\"]," +
@@ -45,7 +48,12 @@ public class EMUtilsTest {
                 "        \"attr2\" : \"v2\"" +
                 "    }    " +
                 "}";
-        ResponseEntity result = this.requstEMChart(headers, HttpMethod.POST, requestBody, "messages", String.class);
+
+        final File file = new File("/Users/Jeffrey/Documents/portrait.jpg");
+        Map<String, Object> request = new HashMap<String, Object>(){{
+            put("file", file);
+        }};
+        ResponseEntity result = this.requstEMChart(headers, HttpMethod.POST, request, "chatfiles", String.class);
         System.out.println("result.getBody() = " + result.getBody());
     }
 
@@ -55,25 +63,28 @@ public class EMUtilsTest {
             add(MediaType.APPLICATION_JSON);
         }};
         HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(mediaTypes);
+//        headers.setAccept(mediaTypes);
         headers.add("Authorization","Bearer YWMtLTlNuCI6EeWD--V4NuV_CgAAAU-Nq-Qskj9BKL_nnRqWuGLEIW8lACwLMp4");
 
         ResponseEntity result = this.requstEMChart(headers, HttpMethod.GET, null, "chatgroups", String.class);
         System.out.println("result.getBody() = " + result.getBody());
     }
 
-    public ResponseEntity<?> requstEMChart(HttpHeaders headers, HttpMethod method, String body, String path, Class<?> classz) {
+    public ResponseEntity<?> requstEMChart(HttpHeaders headers, HttpMethod method, Object body, String path, Class<?> classz) {
 
         if (headers == null) {
             headers = new HttpHeaders();
         }
+        Map<String, Object> requestBody = new HashMap<>();
+        MultiValueMap<String, Object> param = new LinkedMultiValueMap<>();
+        param.setAll((Map<String, Object>) body);
 
-        HttpEntity<String> entity = null;
-        if (StringUtils.isEmpty(body)) {
-            entity = new HttpEntity<>(headers);
-        } else {
-            entity = new HttpEntity<>(body, headers);
-        }
+        HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(param,headers);
+//        if (StringUtils.isEmpty(body)) {
+//            entity = new HttpEntity<>(headers);
+//        } else {
+//            entity = new HttpEntity<>(body, headers);
+//        }
 
         Map<String, Object> uriVariables = new HashMap<>();
         uriVariables.put("key", path);

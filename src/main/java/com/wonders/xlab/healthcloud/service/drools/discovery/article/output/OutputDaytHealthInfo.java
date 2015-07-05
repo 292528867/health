@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.service.drools.inference.output;
+package com.wonders.xlab.healthcloud.service.drools.discovery.article.output;
 
 /**
  * 日显示健康信息输出。

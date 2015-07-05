@@ -6,5 +6,5 @@ import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 
 public interface HealthCategoryRepository extends MyRepository<HealthCategory, Long> {
-//	List<HealthCategory> TODO
+	List<HealthCategory> findTop4ByType(String type);
 }

@@ -1,10 +1,12 @@
 package com.wonders.xlab.healthcloud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,7 +17,7 @@ import java.util.List;
 @Table(name = "EM_MESSAGES")
 public class EmMessages extends AbstractBaseEntity<Long> {
     /**
-     * 发消息用户ID
+     * 发消息用户ID / 如果是群聊，该字段为chatGroupId
      */
     private String fromUser;
 
@@ -94,6 +96,11 @@ public class EmMessages extends AbstractBaseEntity<Long> {
         this.isReplied = isReplied;
         this.doctorFlag = doctorFlag;
     }
+
+    /**
+     * 群聊的ID
+     */
+    private String groupChatId;
 
     public String getFromUser() {
         return fromUser;
@@ -176,6 +183,21 @@ public class EmMessages extends AbstractBaseEntity<Long> {
     }
 
     public List<String> getToUsers() {
-        return Arrays.asList(toUser.split(","));
+        if(StringUtils.isNotBlank(toUser)){
+            return Arrays.asList(toUser.split(","));
+        } else {
+            return new ArrayList<String>();
+        }
+    }
+
+    public String getGroupChatId() {
+        return groupChatId;
+    }
+
+    public void setGroupChatId(String groupChatId) {
+        if("".equals(this.targetType)){
+            this.groupChatId = this.toUser;
+        }
+        this.groupChatId = groupChatId;
     }
 }

@@ -1,7 +1,5 @@
 package com.wonders.xlab.healthcloud.controller;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.emchat.MessagesBody;
@@ -24,10 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
