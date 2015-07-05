@@ -319,3 +319,9 @@ gallery.html css
   width: 200px;
   margin: 0 auto;
 }
+.type-add-form label{
+    width: 30%;
+}
+.type-add-form>input {
+    width: 60%;
+}

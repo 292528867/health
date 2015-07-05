@@ -1,8 +1,10 @@
 /**
  * Created by wade on 15/5/25.
  */
-var url = commonUrl + "discovery/cms/listCategory/";
-$.get(url, function (data) {
+var allTypeUrl = commonUrl + "discovery/cms/listCategory/",
+    groupTypeUrl= commonUrl +'discovery/cms/listCategory/groupinfo';
+
+$.get(allTypeUrl, function (data) {
     console.log(data);
     //  location.reload();
     var datas = '';
@@ -28,17 +30,46 @@ $.get(url, function (data) {
     $("#allDatas tr").fadeIn(300);
     //customer = null;
 });
+
+//编辑
 function changeType(id) {
     $('#change-modal').modal('toggle');
-    $.get(url+id, function (data) {
+    $.get(allTypeUrl+id, function (data) {
         data = data.ret_values;
-        console.log(data);
+        //console.log(data);
         $('#change-title').val(data.title);
+        $('#change-tag').val(data.tag);
         $('#change-desc').val(data.description);
         $('#change-id').val(data.id);
+        var $changeFirst = $('#change-firstRelatedIds'),
+            firstRelatedIds=data.firstRelatedIds.split(','),
+            $changeSecond = $('#change-secondRelatedIds'),
+            secondRelatedIds =data.secondRelatedIds.split(',');
+
+        var $selectedOne = changeSelected($changeFirst, firstRelatedIds),
+            $selectedTwo = changeSelected($changeSecond, secondRelatedIds);
+
+        if (!$.AMUI.support.mutationobserver) {
+            $selectedOne.trigger('changed.selected.amui');
+            $selectedTwo.trigger('changed.selected.amui');
+        }
+
 
     })
 }
+//更改select选项框
+function changeSelected($change, relatedIds) {
+    $change.find('option').each(function () {
+        $(this).attr('selected', false);
+    });
+    for (var n in  relatedIds) {
+        //console.log(relatedIds[n]);
+        var $selected = $change.find('option[value="' + relatedIds[n] + '"]');
+        $selected.attr('selected', true);
+    }
+    return $selected;
+}
+
 function deleteCourse(course_id) {
     confirm_ = confirm('确定删除？');
     if (confirm_) {
@@ -55,3 +86,57 @@ function deleteCourse(course_id) {
         });
     }
 };
+
+$.get(groupTypeUrl, function (groupTypes) {
+
+    var groups = groupTypes.ret_values,
+        typeList = '',
+        categorieList= '';
+    $.each(groups, function (n, group) {
+        typeList += '<optgroup label=\''+group.type+'\'>';
+        $.each(group.categories, function (n, categorie) {
+            categorieList+= '<option value=\''+categorie.id+'\'>'+categorie.title+'</option>'
+        });
+        typeList+=categorieList;
+        typeList += '</optgroup>';
+    });
+    $('.type-select').append(typeList);
+    $('#firstRelatedIds').on('change', changeSecond);
+    $('#change-firstRelatedIds').on('change', changeSecondChange);
+});
+
+//一级关联分类选择好以后，对二级关联进行不可选操作
+function changeSecond() {
+    var $selected = $('#secondRelatedIds');
+    var categories = $(this).val();
+    if (categories) {
+        var options = $selected.find('option');
+        for (var n in options) {
+            options[n].disabled=false;
+        }
+        for (var i in categories) {
+            var $disabled = $selected.find('option[value="'+categories[i]+'"]');
+            $disabled[0].disabled = true;
+        }
+        if (!$.AMUI.support.mutationobserver) {
+            $selected.trigger('changed.selected.amui');
+        }
+    }
+}
+function changeSecondChange() {
+    var $selected = $('#change-secondRelatedIds');
+    var categories = $(this).val();
+    if (categories) {
+        var options = $selected.find('option');
+        for (var n in options) {
+            options[n].disabled=false;
+        }
+        for (var i in categories) {
+            var $disabled = $selected.find('option[value="'+categories[i]+'"]');
+            $disabled[0].disabled = true;
+        }
+        if (!$.AMUI.support.mutationobserver) {
+            $selected.trigger('changed.selected.amui');
+        }
+    }
+}
