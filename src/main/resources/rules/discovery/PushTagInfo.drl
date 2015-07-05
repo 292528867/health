@@ -1,0 +1,43 @@
+//created on: 2015-7-5
+package rules.discovery;
+
+//list any import classes here.
+
+import com.wonders.xlab.healthcloud.service.drools.discovery.tag.input.TagInfoSample;
+import com.wonders.xlab.healthcloud.service.drools.discovery.tag.input.UserQuerySample;
+import com.wonders.xlab.healthcloud.service.drools.discovery.tag.output.OutputTagInfo;
+
+import java.util.ArrayList;
+
+/**
+ * 从size中随机选取一个数字。
+ */
+function Integer randomIndexFromSize(int size) {
+	return RandomUtils.nextInt(0, size);
+}
+
+//declare any global variables here
+
+// 里面存放OutputTagInfo
+global ArrayList outputs
+
+
+
+
+rule "Your First Rule"
+
+    when
+        //conditions
+    then
+        //actions
+
+end
+
+rule "Your Second Rule"
+    //include attributes such as "salience" here...
+    when
+        //conditions
+    then
+        //actions
+
+end
