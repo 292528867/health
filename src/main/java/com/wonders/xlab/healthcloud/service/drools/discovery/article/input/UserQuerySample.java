@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.service.drools.fact;
+package com.wonders.xlab.healthcloud.service.drools.discovery.article.input;
 
 /**
  * 用户查询样本，用于分组。

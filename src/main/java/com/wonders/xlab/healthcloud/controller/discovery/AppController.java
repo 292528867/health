@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,7 @@ import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoClickInfoRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoRepository;
-import com.wonders.xlab.healthcloud.service.drools.DiscoveryRuleService;
+import com.wonders.xlab.healthcloud.service.drools.discovery.article.DiscoveryRuleService;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
 
 /**
