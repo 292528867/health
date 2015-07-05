@@ -142,7 +142,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * 上传图片消息
      */
     @RequestMapping (value = "chatfiles" ,method = RequestMethod.POST)
-    public ChatFilesResponseBody sendFiles(@RequestParam("file") MultipartFile file){
+    public ChatFilesResponseBody sendFiles(@RequestParam("file") MultipartFile file) throws IOException {
 
         List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
             add(MediaType.APPLICATION_JSON);
@@ -155,7 +155,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         HashMap <String ,Object> map = new HashMap<>();
-        map.put("file",new File("/Users/lixuanwu/Downloads/psb.jpeg"));
+        map.put("file",file.getInputStream());
 
         MultiValueMap multiValueMap = new LinkedMultiValueMap();
 

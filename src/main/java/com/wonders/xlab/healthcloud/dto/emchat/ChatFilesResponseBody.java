@@ -1,6 +1,7 @@
 package com.wonders.xlab.healthcloud.dto.emchat;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public class ChatFilesResponseBody {
 
     private List<ResponseUuidSecret> entities;
 
-    private Integer timestamp;
+    private Date timestamp;
 
     private Integer duration;
 
@@ -69,11 +70,11 @@ public class ChatFilesResponseBody {
         this.entities = entities;
     }
 
-    public Integer getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Integer timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 
