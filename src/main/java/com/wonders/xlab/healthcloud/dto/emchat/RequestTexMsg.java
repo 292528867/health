@@ -3,7 +3,7 @@ package com.wonders.xlab.healthcloud.dto.emchat;
 /**
  * Created by lixuanwu on 15/7/5.
  */
-public class Msg {
+public class RequestTexMsg {
 
     /**
      * 消息类型

@@ -9,7 +9,7 @@ import java.util.List;
  * Created by lixuanwu on 15/7/5.
  * 发送消息请求的参数实体
  */
-public class MessagesBody {
+public class TexMessagesRequestBody {
 
     /**
      * users 给用户发消息
@@ -25,7 +25,7 @@ public class MessagesBody {
     /**
      * 消息内容
      */
-    private Msg msg;
+    private RequestTexMsg msg;
 
     /**
      * 表示这个消息是谁发出来的
@@ -54,11 +54,11 @@ public class MessagesBody {
         this.target = target;
     }
 
-    public Msg getMsg() {
+    public RequestTexMsg getMsg() {
         return msg;
     }
 
-    public void setMsg(Msg msg) {
+    public void setMsg(RequestTexMsg msg) {
         this.msg = msg;
     }
 
