@@ -33,16 +33,20 @@ public class Banner extends AbstractBaseEntity<Long> {
     /** 外部链接地址 */
     private String linkUrl;
 
+    /** 是否启用 */
+    private boolean enabled;
+
     public Banner() {
     }
 
-    public Banner(BannerTag bannerTag, BannerType bannerType, Long articleId, String title, String picUrl, String linkUrl) {
+    public Banner(BannerTag bannerTag, BannerType bannerType, Long articleId, String title, String picUrl, String linkUrl, boolean enabled) {
         this.bannerTag = bannerTag;
         this.bannerType = bannerType;
         this.articleId = articleId;
         this.title = title;
         this.picUrl = picUrl;
         this.linkUrl = linkUrl;
+        this.enabled = enabled;
     }
 
     public BannerTag getBannerTag() {
@@ -91,5 +95,13 @@ public class Banner extends AbstractBaseEntity<Long> {
 
     public void setLinkUrl(String linkUrl) {
         this.linkUrl = linkUrl;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
