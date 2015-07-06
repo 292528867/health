@@ -9,9 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 public class SmsUtils {
 
     public static final String SMS_SRV_URL = "http://222.73.117.158/msg/";
-    public static final String SMS_ACT_USER = "jiekou-clcs-01";
-    public static final String SMS_ACT_PWD = "Tch498965";
-    public static final String SMS_VALID_CODE_CONTENT = "亲爱的用户，您的验证码是%s，5分钟内有效。";
+    public static final String SMS_ACT_USER = "wan-01";
+    public static final String SMS_ACT_PWD = "Txb123456";
+    public static final String SMS_VALID_CODE_CONTENT = "验证码为%s。我为感到高兴，你开始更关注自己健康了。别急，20分钟内输入还是有效的。";
 
     private SmsUtils() {
 

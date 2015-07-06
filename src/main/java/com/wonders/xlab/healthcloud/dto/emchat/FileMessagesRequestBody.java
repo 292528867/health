@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by lixuanwu on 15/7/5.
  */
-public class ImgMessagesRequestBody {
+public class FileMessagesRequestBody {
 
     /**
      * users 给用户发消息
@@ -24,7 +24,7 @@ public class ImgMessagesRequestBody {
     /**
      * 消息内容
      */
-    private RequestImgMsg msg;
+    private RequestFileMsg msg;
 
     /**
      * 表示这个消息是谁发出来的
@@ -53,11 +53,11 @@ public class ImgMessagesRequestBody {
         this.target = target;
     }
 
-    public RequestImgMsg getMsg() {
+    public RequestFileMsg getMsg() {
         return msg;
     }
 
-    public void setMsg(RequestImgMsg msg) {
+    public void setMsg(RequestFileMsg msg) {
         this.msg = msg;
     }
 

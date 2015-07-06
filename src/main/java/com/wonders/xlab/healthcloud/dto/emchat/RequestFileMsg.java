@@ -3,13 +3,15 @@ package com.wonders.xlab.healthcloud.dto.emchat;
 /**
  * Created by lixuanwu on 15/7/5.
  */
-public class RequestImgMsg {
+public class RequestFileMsg {
 
     private String type;
 
     private String url;
 
     private String filename;
+
+    private String length;
 
     private String secret;
 
@@ -37,6 +39,14 @@ public class RequestImgMsg {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public String getLength() {
+        return length;
+    }
+
+    public void setLength(String length) {
+        this.length = length;
     }
 
     public String getSecret() {

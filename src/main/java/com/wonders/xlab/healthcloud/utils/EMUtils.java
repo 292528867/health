@@ -1,6 +1,7 @@
 package com.wonders.xlab.healthcloud.utils;
 
 import com.wonders.xlab.healthcloud.dto.EMToken;
+import com.wonders.xlab.healthcloud.dto.emchat.ChatGroupsResponseBody;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import net.sf.ehcache.Cache;
@@ -126,7 +127,7 @@ public class EMUtils {
                                     setAll((Map<String, Object>) body);
                                 }}, headers) :
                                 new HttpEntity(body, headers),
-                classz,
+                String.class,
                 uriVariables
         );
 
