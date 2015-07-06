@@ -2,8 +2,26 @@ var url = 'http://127.0.0.1:8080/';
 
 $(document).ready(function () {
 
+    //加载医生下拉框信息
+    $.ajax({
+        'type':"get",
+        'url':url+'doctor/query',
+        success:function(result){
+            console.log(result[0].nickName);
+            var str = '';
+            for (var i=0;i <result.length ; i++) {
+                str += '<option selected value="'+result[i].tel+'">'+result[i].nickName+'</option>';
+            }
+            console.log(str);
+            $('#doctor_select').append(str);
+        }
+    });
+
+
     loadData(1);
     //setInterval("loadData()", 1000 * 3);
+
+
 });
 
 
@@ -70,11 +88,11 @@ function replyInfo(fromUser, toUser) {
                 'type': 'txt',
                 'msg': content
             },
-            'from': toUser
+            'from': $('#doctor_select').val()
         };
 
         $.ajax({
-            'url': url + '/em/sendMessage',
+            'url': url + '/em/replyMessage',
             'type': 'POST',
             'data': JSON.stringify(message),
             headers: {
