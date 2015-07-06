@@ -20,13 +20,13 @@ public class ApplicationStartUp implements ApplicationListener<ApplicationContex
         cacheSvc.initLuceneCache();
 
 
-//        // 初始内存问卷
-//        Cache questionnaireCache = (Cache) applicationContextEvent.getApplicationContext().getBean("questionnaireCache");
-//        DrugDictionaryRepository questionRepository = applicationContextEvent.getApplicationContext().getBean(DrugDictionaryRepository.class);
-//        LuceneCacheSvcImpl questionCacheSvc = new LuceneCacheSvcImpl();
-//        questionCacheSvc.setLuceneCache(questionnaireCache);
-//        questionCacheSvc.setDrugRepository(questionRepository);
-//        questionCacheSvc.initLuceneCache();
+        /*// 初始内存问卷
+        Cache questionnaireCache = (Cache) applicationContextEvent.getApplicationContext().getBean("questionnaireCache");
+        DrugDictionaryRepository questionRepository = applicationContextEvent.getApplicationContext().getBean(DrugDictionaryRepository.class);
+        LuceneCacheSvcImpl questionCacheSvc = new LuceneCacheSvcImpl();
+        questionCacheSvc.setLuceneCache(questionnaireCache);
+        questionCacheSvc.setDrugRepository(questionRepository);
+        questionCacheSvc.initLuceneCache();*/
 
     }
 }

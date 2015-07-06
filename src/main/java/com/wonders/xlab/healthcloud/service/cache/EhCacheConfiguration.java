@@ -98,7 +98,7 @@ public class EhCacheConfiguration {
         return cache;
     }
 
-    @Bean
+    /*@Bean
     public Cache questionnaireCache(CacheManager ehcacheManager) {
         // 创建lucene分词缓存
         Cache cache = new Cache(
@@ -115,6 +115,6 @@ public class EhCacheConfiguration {
         );
         ehcacheManager.addCache(cache); // 必须加入缓存，不要忘了
         return cache;
-    }
+    }*/
 
 }
