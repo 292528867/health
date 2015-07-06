@@ -27,13 +27,18 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     /** 是否推荐 */
     private boolean recommend;
 
+    /** 推荐值 */
+    private int recommendValue;
+
     public HcPackage() {
     }
 
-    public HcPackage(String title, String description, boolean recommend) {
+    public HcPackage(String title, String description, String iconUrl, boolean recommend, int recommendValue) {
         this.title = title;
         this.description = description;
+        this.iconUrl = iconUrl;
         this.recommend = recommend;
+        this.recommendValue = recommendValue;
     }
 
     public String getTitle() {
@@ -66,5 +71,13 @@ public class HcPackage extends AbstractBaseEntity<Long> {
 
     public void setIconUrl(String iconUrl) {
         this.iconUrl = iconUrl;
+    }
+
+    public int getRecommendValue() {
+        return recommendValue;
+    }
+
+    public void setRecommendValue(int recommendValue) {
+        this.recommendValue = recommendValue;
     }
 }

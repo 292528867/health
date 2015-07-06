@@ -98,4 +98,23 @@ public class EhCacheConfiguration {
         return cache;
     }
 
+    /*@Bean
+    public Cache questionnaireCache(CacheManager ehcacheManager) {
+        // 创建lucene分词缓存
+        Cache cache = new Cache(
+                new CacheConfiguration(
+                        "questionnaireCache", // 缓存名
+                        100 // 缓存最大个数（100个）
+                )
+                        .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.FIFO) // 当缓存满时，使用先进先出清理内存
+                        .eternal(false) // 对象是否永久有效
+                        .timeToIdleSeconds(0) // 对象失效前允许的闲置时间， 0，闲置时间无穷大
+                        .timeToLiveSeconds(7 * 24 * 60 * 60) // 对象的失效时间，0，永远有效
+                        .diskExpiryThreadIntervalSeconds(120) // 10秒间隔检测 idle 和 live状态
+                        .persistence(new PersistenceConfiguration().strategy(Strategy.LOCALTEMPSWAP)) // 当缓存满了，或者重启时，不持久化数据
+        );
+        ehcacheManager.addCache(cache); // 必须加入缓存，不要忘了
+        return cache;
+    }*/
+
 }

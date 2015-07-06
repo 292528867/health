@@ -106,55 +106,6 @@
                         </tr>
                         </thead>
                         <tbody id="allDatas">
-                        <!--
-                                                <tr>
-                                                    <td><input type="checkbox"/></td>
-                                                    <td>1</td>
-                                                    <td><a href="#">Business management</a></td>
-                                                    &lt;!&ndash;<td>default</td>&ndash;&gt;
-                                                    &lt;!&ndash;<td class="am-hide-sm-only">2014年9月4日 7:28:47</td>&ndash;&gt;
-                                                    <td>
-                                                        <div class="am-btn-toolbar">
-                                                            <div class="am-btn-group am-btn-group-xs">
-                                                                <button class="am-btn am-btn-default am-btn-xs am-text-secondary"><span
-                                                                        class="am-icon-pencil-square-o"></span> 编辑
-                                                                </button>
-                                                                <button class="am-btn am-btn-default am-btn-xs am-hide-sm-only"><span
-                                                                        class="am-icon-copy"></span> 复制
-                                                                </button>
-                                                                <button class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only">
-                                                                    <span class="am-icon-trash-o"></span> 删除
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                        -->
-                        <!--
-                                                <tr>
-                                                    <td><input type="checkbox"/></td>
-                                                    <td>1</td>
-                                                    <td><a href="#">Business management</a></td>
-                                                    <td>default</td>
-                                                    <td class="am-hide-sm-only">测试1号</td>
-                                                    <td class="am-hide-sm-only">2014年9月4日 7:28:47</td>
-                                                    <td>
-                                                        <div class="am-btn-toolbar">
-                                                            <div class="am-btn-group am-btn-group-xs">
-                                                                <button class="am-btn am-btn-default am-btn-xs am-text-secondary"><span
-                                                                        class="am-icon-pencil-square-o"></span> 编辑
-                                                                </button>
-                                                                <button class="am-btn am-btn-default am-btn-xs am-hide-sm-only"><span
-                                                                        class="am-icon-copy"></span> 复制
-                                                                </button>
-                                                                <button class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only">
-                                                                    <span class="am-icon-trash-o"></span> 删除
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                        -->
                         </tbody>
                     </table>
                     <!--
@@ -204,21 +155,34 @@
         </div>
         <div class="am-modal-bd">
             <fieldset>
-                <div class="am-form-group">
+                <div class="am-form-group type-add-form">
                     <label for="title">标题</label>
                     <input type="text" id="title" placeholder=""
                            required name="title"/>
                 </div>
-                <div class="am-form-group">
+                <div class="am-form-group type-add-form">
                     <label for="tag">简称</label>
                     <input type="text" id="tag" placeholder=""
                            required name="tag"/>
                 </div>
-                <div class="am-form-group">
+                <div class="am-form-group type-add-form">
                     <label for="desc">描述</label>
                     <input type="text" id="desc" placeholder=""
                            required name="desc"/>
                 </div>
+                <div class="am-form-group type-add-form">
+                    <label for="firstRelatedIds">一级关联</label>
+                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'secondary', searchBox:1}"
+                            id="firstRelatedIds" name="firstRelatedIds" class="type-select">
+                    </select>
+                </div>
+                <div class="am-form-group type-add-form">
+                    <label for="secondRelatedIds">二级关联</label>
+                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'warning', dropUp:1, searchBox:1}"
+                            id="secondRelatedIds" name="secondRelatedIds" class="type-select">
+                    </select>
+                </div>
+
             </fieldset>
 
             <button class="am-btn am-btn-secondary" type="button" id="type-add" onclick="addType()">提交</button>
@@ -250,6 +214,20 @@
                     <input type="text" id="change-desc" placeholder=""
                            required name="change-desc"/>
                 </div>
+                <div class="am-form-group type-add-form">
+                    <label for="change-firstRelatedIds">一级关联</label>
+                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'secondary', searchBox:1}"
+                            id="change-firstRelatedIds" name="change-firstRelatedIds" class="type-select">
+                    </select>
+                </div>
+                <div class="am-form-group type-add-form">
+                    <label for="change-secondRelatedIds">二级关联</label>
+                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'warning', dropUp:1, searchBox:1}"
+                            id="change-secondRelatedIds" name="change-secondRelatedIds" class="type-select">
+                    </select>
+                </div>
+
+
                 <input type="hidden" id="change-id"/>
             </fieldset>
 

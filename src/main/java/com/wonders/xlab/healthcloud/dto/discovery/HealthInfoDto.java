@@ -40,7 +40,7 @@ public class HealthInfoDto {
 	
 	/**
 	 * 根据{@link HealthInfo}实体对象转换成dto对象。
-	 * @param hc 游离对象
+	 * @param hi 游离对象
 	 * @return
 	 */
 	public HealthInfoDto toNewHealthInfoDto(HealthInfo hi) {

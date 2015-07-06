@@ -49,7 +49,7 @@ public class IKAnalzyerDemo {
 		//获取Lucene的TokenStream对象
 	    TokenStream ts = null;
 		try {
-			ts = analyzer.tokenStream("myfield", new StringReader("总统营养套餐礼盒(正方6号)推荐你使用阿卡波糖片！IKAnalyer can analysis english text too"));
+			ts = analyzer.tokenStream("myfield", new StringReader("总统营养套餐礼盒推荐你使用阿卡波糖片阿司匹林"));
 			//获取词元位置属性
 		    OffsetAttribute offset = ts.addAttribute(OffsetAttribute.class);
 		    //获取词元文本属性
@@ -62,9 +62,9 @@ public class IKAnalzyerDemo {
 			//迭代获取分词结果
 			while (ts.incrementToken()) {
 				//单个字单分词直接跳过
-//				if(term.toString().length() == 1){
-//					continue;
-//				}
+				if(term.toString().length() == 1){
+					continue;
+				}
 				//查询缓存中是否有药名匹配
 
 

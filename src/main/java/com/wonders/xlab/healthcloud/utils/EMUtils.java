@@ -14,6 +14,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
@@ -90,7 +92,7 @@ public class EMUtils {
         }
     }
 
-    public ResponseEntity<?> requestEMChart(HttpHeaders headers, HttpMethod method, String body, String path, Class<?> classz) {
+    public ResponseEntity<?> requestEMChart(HttpHeaders headers, HttpMethod method, final Object body, String path, Class<?> classz) {
 
 //----------------发布时，需取消以下注释－－－－－－－－－－－－－－－－
 //        String token = hcCache.getFromCache("access_token");
@@ -113,12 +115,17 @@ public class EMUtils {
 
         Map<String, Object> uriVariables = new HashMap<>();
         uriVariables.put("key", path);
+
         ResponseEntity<?> result = restTemplate.exchange(
                 url,
                 method,
-                StringUtils.isEmpty(body) ?
-                        new HttpEntity<String>(headers) :
-                        new HttpEntity<>(body, headers),
+                //null == body ? 返回没有参数的请求entity : ( 参数是键值MAP型请求 ?  返回LinkedMultiValueMap类型的请求entity : 返回传入参数的请求entity)
+                null == body ? new HttpEntity(headers) :
+                        body instanceof Map ?
+                                new HttpEntity(new LinkedMultiValueMap<String, Object>() {{
+                                    setAll((Map<String, Object>) body);
+                                }}, headers) :
+                                new HttpEntity(body, headers),
                 classz,
                 uriVariables
         );
@@ -127,7 +134,7 @@ public class EMUtils {
         return result;
     }
 
-    public ResponseEntity<?> requestEMChart(HttpMethod method, String body, String path, Class<?> classz) {
+    public ResponseEntity<?> requestEMChart(HttpMethod method, Object body, String path, Class<?> classz) {
         return requestEMChart(null, method, body, path, classz);
     }
 
@@ -138,6 +145,7 @@ public class EMUtils {
     public ResponseEntity<?> requestEMChart(HttpHeaders headers, HttpMethod method, String path, Class<?> classz) {
         return requestEMChart(headers, method, null, path, classz);
     }
+
 
     public String getApiServerHost() {
         return apiServerHost;
