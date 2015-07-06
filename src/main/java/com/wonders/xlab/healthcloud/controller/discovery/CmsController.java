@@ -152,19 +152,19 @@ public class CmsController {
 		if (hc == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
 		
-		if (StringUtils.isEmpty(hc.getSecondRelatedIds())) 
-			return new ControllerResult<List>().setRet_code(0).setRet_values(new ArrayList<>()).setMessage("没有2级关联！");
+		if (StringUtils.isEmpty(hc.getOtherRelatedIds())) 
+			return new ControllerResult<List>().setRet_code(0).setRet_values(new ArrayList<>()).setMessage("没有无关系关联！");
 		String[] str_ids = hc.getFirstRelatedIds().split(",");
 		Long[] long_ids = new Long[str_ids.length];
 		for (int i = 0; i < str_ids.length; i++) 
 			long_ids[i] = Long.parseLong(str_ids[i]);
 		
-		List<HealthCategory> secondRelatedCategories = this.healthCategoryRepository.findAll(Arrays.asList(long_ids));
+		List<HealthCategory> otherRelatedCategories = this.healthCategoryRepository.findAll(Arrays.asList(long_ids));
 		
 		// 计算分组输出信息
 		List<RelatedCategoryComboDto> groupInfo = new ArrayList<>();
 		Map<String, List<HealthCategoryDto>> map = new HashMap<>();
-		for (HealthCategory hc_t : secondRelatedCategories) {
+		for (HealthCategory hc_t : otherRelatedCategories) {
 			String type = hc_t.getType() == null ? "其他类型" : hc_t.getType();
 			if (map.get(type) == null) 
 				map.put(type, new ArrayList<HealthCategoryDto>());

@@ -40,8 +40,8 @@ public class HealthCategory extends AbstractPersistable<Long> {
 	
 	/** 1级关联标签ids（逗号连接） */
 	private String firstRelatedIds;
-	/** 2级关联标签ids（逗号连接） */
-	private String secondRelatedIds;
+	/** 无关联标签ids（逗号连接） */
+	private String otherRelatedIds;
 	
 	@OneToMany(mappedBy = "healthCategory")
 	/** 关联的健康信息文章 */
@@ -134,13 +134,12 @@ public class HealthCategory extends AbstractPersistable<Long> {
 		this.firstRelatedIds = firstRelatedIds;
 	}
 
-	public String getSecondRelatedIds() {
-		return secondRelatedIds;
+	public String getOtherRelatedIds() {
+		return otherRelatedIds;
 	}
 
-	public void setSecondRelatedIds(String secondRelatedIds) {
-		this.secondRelatedIds = secondRelatedIds;
+	public void setOtherRelatedIds(String otherRelatedIds) {
+		this.otherRelatedIds = otherRelatedIds;
 	}
-    
-    
+	
 }

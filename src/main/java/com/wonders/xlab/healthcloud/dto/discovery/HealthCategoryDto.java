@@ -18,7 +18,7 @@ public class HealthCategoryDto {
 	private String desc;
 	
 	private String firstRelatedIds;
-	private String secondRelatedIds;
+	private String otherRelatedIds;
 	
 	/** 预留字段 */
 	private String type;
@@ -35,7 +35,7 @@ public class HealthCategoryDto {
 		hc.setType(type);
 		hc.setTag(tag);
 		hc.setFirstRelatedIds(firstRelatedIds);
-		hc.setSecondRelatedIds(secondRelatedIds);
+		hc.setOtherRelatedIds(otherRelatedIds);
 		return hc;
 	}
 	/**
@@ -51,7 +51,7 @@ public class HealthCategoryDto {
 		dto.setTag(hc.getTag());
 		dto.setId(hc.getId());
 		dto.setFirstRelatedIds(hc.getFirstRelatedIds());
-		dto.setSecondRelatedIds(hc.getSecondRelatedIds());
+		dto.setOtherRelatedIds(hc.getOtherRelatedIds());
 		return dto;
 	}
 	
@@ -64,7 +64,7 @@ public class HealthCategoryDto {
 		hc.setType(type);
 		hc.setTag(tag);
 		hc.setFirstRelatedIds(firstRelatedIds);
-		hc.setSecondRelatedIds(secondRelatedIds);
+		hc.setOtherRelatedIds(otherRelatedIds);
 		return hc;
 	}
 	
@@ -98,11 +98,12 @@ public class HealthCategoryDto {
 	public void setFirstRelatedIds(String firstRelatedIds) {
 		this.firstRelatedIds = firstRelatedIds;
 	}
-	public String getSecondRelatedIds() {
-		return secondRelatedIds;
+	
+	public String getOtherRelatedIds() {
+		return otherRelatedIds;
 	}
-	public void setSecondRelatedIds(String secondRelatedIds) {
-		this.secondRelatedIds = secondRelatedIds;
+	public void setOtherRelatedIds(String otherRelatedIds) {
+		this.otherRelatedIds = otherRelatedIds;
 	}
 	public Long getId() {
 		return id;
