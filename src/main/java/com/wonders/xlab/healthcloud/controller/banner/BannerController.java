@@ -51,9 +51,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
      */
     @RequestMapping("listBanner")
     private Object listBanner() {
-
-        
-        return new ControllerResult<List<Banner>>().setRet_code(0).setRet_values(this.bannnerRepository.findAll()).setMessage("成功");
+        return new ControllerResult<List<Banner>>().setRet_code(0).setRet_values(this.bannnerRepository.findBannerOrderByLastModifiedDate()).setMessage("成功");
     }
 
     /**

@@ -49,16 +49,16 @@ public class Banner extends AbstractBaseEntity<Long> {
         this.enabled = enabled;
     }
 
-    public BannerTag getBannerTag() {
-        return bannerTag;
+    public int getBannerTag() {
+        return bannerTag.ordinal();
     }
 
     public void setBannerTag(BannerTag bannerTag) {
         this.bannerTag = bannerTag;
     }
 
-    public BannerType getBannerType() {
-        return bannerType;
+    public int getBannerType() {
+        return bannerType.ordinal();
     }
 
     public void setBannerType(BannerType bannerType) {
