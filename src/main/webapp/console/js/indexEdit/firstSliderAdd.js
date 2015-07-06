@@ -11,7 +11,7 @@ function addType() {
     var desc = $('#desc').val();
     var tag = $('#tag').val(),
         firstRelatedIds= $('#firstRelatedIds').val().join(','),
-        otherRelatedIds= $('#otherRelatedIds').val().join(',');
+        secondRelatedIds= $('#secondRelatedIds').val().join(',');
     if (title.length==0||desc.length==0||tag.length==0) {
         alert('有字段没有填写');
 
@@ -22,7 +22,7 @@ function addType() {
         "desc": desc,
         "tag":tag,
         "firstRelatedIds":firstRelatedIds,
-        "otherRelatedIds":otherRelatedIds
+        "secondRelatedIds":secondRelatedIds
     };
     json = JSON.stringify(json);
     $.ajax({
@@ -55,7 +55,7 @@ function changeTypeSub() {
     var id = $('#change-id').val();
     var tag = $('#change-tag').val(),
         firstRelatedIds= $('#change-firstRelatedIds').val().join(','),
-        otherRelatedIds= $('#change-otherRelatedIds').val().join(',');
+        secondRelatedIds= $('#change-secondRelatedIds').val().join(',');
     if (title.length==0||desc.length==0) {
         alert('有字段没有填写');
 
@@ -66,7 +66,7 @@ function changeTypeSub() {
         "desc": desc,
         "tag":tag,
         "firstRelatedIds":firstRelatedIds,
-        "otherRelatedIds":otherRelatedIds
+        "secondRelatedIds":secondRelatedIds
     };
     json = JSON.stringify(json);
     $.ajax({
