@@ -10,8 +10,10 @@ function addType() {
     var title = $('#title').val();
     var desc = $('#desc').val();
     var tag = $('#tag').val(),
-        firstRelatedIds= $('#firstRelatedIds').val().join(','),
-        otherRelatedIds= $('#otherRelatedIds').val().join(',');
+        firstRelatedIds= $('#firstRelatedIds').val()||[],
+        otherRelatedIds= $('#otherRelatedIds').val()||[];
+    firstRelatedIds = firstRelatedIds.join(',');
+    otherRelatedIds = otherRelatedIds.join(',');
     if (title.length==0||desc.length==0||tag.length==0) {
         alert('有字段没有填写');
 
@@ -54,8 +56,10 @@ function changeTypeSub() {
     var desc = $('#change-desc').val();
     var id = $('#change-id').val();
     var tag = $('#change-tag').val(),
-        firstRelatedIds= $('#change-firstRelatedIds').val().join(','),
-        otherRelatedIds= $('#change-otherRelatedIds').val().join(',');
+        firstRelatedIds= $('#change-firstRelatedIds').val()||',',
+        otherRelatedIds= $('#change-otherRelatedIds').val()||',';
+    firstRelatedIds = firstRelatedIds.join(',');
+    otherRelatedIds = otherRelatedIds.join(',');
     if (title.length==0||desc.length==0) {
         alert('有字段没有填写');
 
