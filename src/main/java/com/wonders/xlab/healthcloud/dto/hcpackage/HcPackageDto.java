@@ -25,6 +25,9 @@ public class HcPackageDto {
     @NotNull(message = "图片不能为空")
     private String prictureUrl;
 
+    /** 推荐值 */
+    @NotNull(message = "推荐值不能为空")
+    private Integer recommendValue;
 
     public HcPackage toNewHcPackage() {
         HcPackage hcPackage = new HcPackage();
@@ -32,6 +35,7 @@ public class HcPackageDto {
         hcPackage.setDescription(description);
         hcPackage.setRecommend(recommend);
         hcPackage.setIconUrl(prictureUrl);
+        hcPackage.setRecommendValue(recommendValue);
         return hcPackage;
     }
 
@@ -40,6 +44,7 @@ public class HcPackageDto {
         hp.setDescription(description);
         hp.setRecommend(recommend);
         hp.setIconUrl(prictureUrl);
+        hp.setRecommendValue(recommendValue);
         return hp;
     }
 
@@ -73,5 +78,13 @@ public class HcPackageDto {
 
     public void setPrictureUrl(String prictureUrl) {
         this.prictureUrl = prictureUrl;
+    }
+
+    public Integer getRecommendValue() {
+        return recommendValue;
+    }
+
+    public void setRecommendValue(Integer recommendValue) {
+        this.recommendValue = recommendValue;
     }
 }

@@ -11,6 +11,9 @@ import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailReposito
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
@@ -44,8 +47,10 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      * @return
      */
     @RequestMapping("listHcPackage")
-    private Object listHcPackage() {
-        return  new ControllerResult<List<HcPackage>>().setRet_code(0).setRet_values(hcPackageRepository.findAll()).setMessage("成功");
+    private Object listHcPackage(
+            @PageableDefault(sort = "recommendValue", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+        return  new ControllerResult<List<HcPackage>>().setRet_code(0).setRet_values(hcPackageRepository.findAll(pageable).getContent()).setMessage("成功");
     }
 
     /**
@@ -101,7 +106,6 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
         }
     }
 
-
     /**
      * 上传图片
      * @param file
@@ -122,7 +126,6 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             return new ControllerResult<String>().setRet_code(-1).setRet_values("上传文件为空！").setMessage("上传文件为空！");
         }
     }
-
 
     /**
      * 添加健康包详细
