@@ -27,8 +27,6 @@ import java.util.Map;
 @WebAppConfiguration   // 3
 public class EMUtilsTest {
 
-//    private RestTemplate restTemplate = new RestTemplate();
-
     @Autowired
     private EMUtils emUtils;
 
@@ -64,8 +62,10 @@ public class EMUtilsTest {
         Map<String, Object> request = new HashMap<String, Object>(){{
             put("file", file);
         }};
-        ResponseEntity result = emUtils.requestEMChart(headers, HttpMethod.POST, request, "chatfiles", String.class);
-        System.out.println("result.getBody() = " + result.getBody());
+        ResponseEntity result = emUtils.requestEMChart(headers, HttpMethod.POST, request, "chatfiles", Map.class);
+        Map body = (Map) result.getBody();
+        System.out.println("result.getBody() = " + body.size());
+//        System.out.println("result.getBody() = " + result.getBody());
     }
 
     @Test

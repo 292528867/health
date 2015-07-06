@@ -1,5 +1,7 @@
 package com.wonders.xlab.healthcloud.dto;
 
+import com.wonders.xlab.healthcloud.entity.customer.User;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
@@ -17,6 +19,9 @@ public class IdenCode implements Serializable {
     /** 验证码 */
     @NotNull(message = "4位随机验证码不能为空！")
     private String code;
+
+    @NotNull(message = "用户登陆平台不能为空！")
+    private User.AppPlatform appPlatform;
 
     public IdenCode() {
         super();
@@ -43,4 +48,11 @@ public class IdenCode implements Serializable {
         this.code = code;
     }
 
+    public User.AppPlatform getAppPlatform() {
+        return appPlatform;
+    }
+
+    public void setAppPlatform(User.AppPlatform appPlatform) {
+        this.appPlatform = appPlatform;
+    }
 }

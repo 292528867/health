@@ -40,6 +40,17 @@ public class User extends BaseInfo<Long> {
         invalid, valid
     }
 
+    /**
+     * 用户使用平台
+     */
+    @Enumerated
+    private AppPlatform appPlatform;
+
+    public enum AppPlatform {
+        Android,Ios
+    }
+
+
     public Set<HcPackage> getHcPackages() {
         return hcPackages;
     }
@@ -64,4 +75,11 @@ public class User extends BaseInfo<Long> {
         this.hcs = hcs;
     }
 
+    public AppPlatform getAppPlatform() {
+        return appPlatform;
+    }
+
+    public void setAppPlatform(AppPlatform appPlatform) {
+        this.appPlatform = appPlatform;
+    }
 }
