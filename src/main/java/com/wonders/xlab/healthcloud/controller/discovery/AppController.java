@@ -59,8 +59,18 @@ public class AppController {
 	@RequestMapping(value = "recommand/tag/articles/{categoryId}/{userId}")
 	public ControllerResult<?> getTagInfos(@PathVariable Long categoryId, @PathVariable Long userId) {
 		// TODO：暂时返回分类标签的所有文章，之后使用规则引擎解决
-		List<HealthInfo> hies = this.healthInfoRepository.findByHealthCategoryId(categoryId);
-		return new ControllerResult<List<HealthInfo>>().setRet_code(0).setRet_values(hies).setMessage("成功");
+		List<HealthInfo> healthInfos = this.healthInfoRepository.findByHealthCategoryId(categoryId);
+		
+		List<HealthInfoDto> healthInfoDtoes = new ArrayList<HealthInfoDto>();
+		for (HealthInfo h : healthInfos) {
+			HealthInfoDto dto = new HealthInfoDto().toNewHealthInfoDto(h); 
+			// TODO：获取点击数需要规则
+			Long count = this.healthInfoClickInfoRepository.healthInfoTotalClickCount(h.getId());
+			dto.setClickCount(count == null ? 0 : count);
+			healthInfoDtoes.add(dto);
+		}
+		
+		return new ControllerResult<List<HealthInfoDto>>().setRet_code(0).setRet_values(healthInfoDtoes).setMessage("成功");
 	}
 	
 	

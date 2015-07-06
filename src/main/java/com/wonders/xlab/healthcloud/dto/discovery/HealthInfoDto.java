@@ -23,7 +23,7 @@ public class HealthInfoDto {
 	/** 点击量 */
 	private Long clickCount;
 	/** 文章标题id */
-	private Long healthInfoId;
+	private Long Id;
 	
 	/**
 	 * 转换成一个新的{@link HealthInfo}实体对象，临时状态。
@@ -49,7 +49,7 @@ public class HealthInfoDto {
 		dto.setDesc(hi.getDescription());
 		dto.setTitle(hi.getTitle());
 		dto.setPictureUrl(hi.getPictureUrl());
-		dto.setHealthInfoId(hi.getId());
+		dto.setId(hi.getId());
 		return dto;
 	}
 	
@@ -104,14 +104,12 @@ public class HealthInfoDto {
 		this.clickCount = clickCount;
 	}
 
-	public Long getHealthInfoId() {
-		return healthInfoId;
+	public Long getId() {
+		return Id;
 	}
 
-	public void setHealthInfoId(Long healthInfoId) {
-		this.healthInfoId = healthInfoId;
-	}
-	
-	
+	public void setId(Long id) {
+		Id = id;
+	}	
 	
 }
