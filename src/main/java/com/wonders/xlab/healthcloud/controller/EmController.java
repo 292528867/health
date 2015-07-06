@@ -66,7 +66,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         //保存消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
-                body.getTarget(),
+                body.getTarget().get(0),
                 body.getMsg().getMsg(),
                 body.getMsg().getType(),
                 body.getTargetType(),
@@ -93,7 +93,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         //保存消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
-                body.getTarget(),
+                body.getTarget().get(0),
                 body.getMsg().getMsg(),
                 body.getMsg().getType(),
                 body.getTargetType(),
@@ -106,7 +106,6 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         return new ControllerResult().setRet_code(0).setRet_values("").setMessage("文本消息发送成功");
 
     }
-
 
     /**
      * 发送图片,语音信息
@@ -124,7 +123,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         //保存消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
-                body.getTarget(),
+                body.getTarget().get(0),
                 body.getMsg().getFilename(),
                 body.getMsg().getType(),
                 body.getTargetType(),
@@ -235,12 +234,21 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         try {
 
-            responseEntity = (ResponseEntity<ChatGroupsResponseBody>) emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "ChatGroupsResponseBody", String.class);
+            responseEntity = (ResponseEntity<ChatGroupsResponseBody>) emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", ChatGroupsResponseBody.class);
 
         } catch (HttpClientErrorException e) {
             return "-1";
         }
 
-        return responseEntity.getBody().getData().getGroupid();
+        return responseEntity.getBody().getData().get("groupid");
     }
+
+    @RequestMapping(value = "getTop5Messages" ,method = RequestMethod.POST)
+    public List<EmMessages> getTop5Messages(String fromUser,String toUser){
+
+        return emMessagesRepository.findTop5ByFromUserOrToUserOrderByCreatedDateAsc(fromUser, toUser);
+
+    }
+
+
 }

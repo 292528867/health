@@ -24,7 +24,6 @@ public class EmMessages extends AbstractBaseEntity<Long> {
     /**
      * 接收用户ID
      */
-    @JsonIgnore
     private String toUser;
     /**
      * 返回前台数据
@@ -76,9 +75,9 @@ public class EmMessages extends AbstractBaseEntity<Long> {
     public EmMessages() {
     }
 
-    public EmMessages(String fromUser, List<String> toUsers, String msg, String messageType, String targetType, String ext, boolean isReplied, boolean doctorFlag) {
+    public EmMessages(String fromUser, String toUser, String msg, String messageType, String targetType, String ext, boolean isReplied, boolean doctorFlag) {
         this.fromUser = fromUser;
-        this.toUsers = toUsers;
+        this.toUser = toUser;
         this.msg = msg;
         this.messageType = messageType;
         this.targetType = targetType;
@@ -87,9 +86,9 @@ public class EmMessages extends AbstractBaseEntity<Long> {
         this.doctorFlag = doctorFlag;
     }
 
-    public EmMessages(String fromUser, List<String> toUsers, String msg, String messageType, String targetType, boolean isReplied, boolean doctorFlag) {
+    public EmMessages(String fromUser, String toUser, String msg, String messageType, String targetType, boolean isReplied, boolean doctorFlag) {
         this.fromUser = fromUser;
-        this.toUsers = toUsers;
+        this.toUser = toUser;
         this.msg = msg;
         this.messageType = messageType;
         this.targetType = targetType;
