@@ -9,7 +9,7 @@ import javax.persistence.Table;
  * Created by lixuanwu on 15/7/7.
  */
 @Entity
-@Table(name = "HC_S_SERVICE")
+@Table(name = "HC_STEWARD_SERVICE")
 public class Services extends AbstractPersistable<Long> {
 
     /**
