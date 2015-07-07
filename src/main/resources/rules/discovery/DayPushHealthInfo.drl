@@ -20,7 +20,8 @@ function Integer randomIndexFromSize(int size) {
 
 //declare any global variables here
 
-global OutputDaytHealthInfo articleoutput
+global OutputDaytHealthInfo articleoutput // 显示输出
+global Integer articleCount // 显示的文章个数
 
 // 用户关心的所有列表整合对象
 declare UserGroupHealthInfo
@@ -35,7 +36,7 @@ end
 // 计算最终推送用的条件
 declare CalcuPushHealthInfoCondition
 	userId : Long // 用户id
-	expectedSampleSize : Integer // 希望选择到的sample列表大小（目前为6个）
+	expectedSampleSize : Integer // 希望选择到的sample列表大小（目前为articleCount个）
 	selectedSampleList : ArrayList // 已经选饿到的sample列表大小
 	selectedSampleListSize : Integer // 已经选择的sample列表大小
 	canSelectedSampleList : ArrayList // 能够被随机选择的sample列表大小
@@ -58,6 +59,8 @@ rule "load HealthInfoSample to create UserGroupHealthInfo"
 		userGroupHealthInfo.setClickListSize($healthInfoClickList.size());
 		userGroupHealthInfo.setTotalSize($healthInfoNotClickList.size() + $healthInfoClickList.size());
 		
+		System.out.println("load HealthInfoSample to create UserGroupHealthInfo：");
+		
 		insert(userGroupHealthInfo);
 		
 end
@@ -67,8 +70,8 @@ end
 
 //----------------------------- 第二阶段，根据推论数据1计算第三阶段用推论数据2（以下） ------------------------------//
 
-// 总文章数小于等于6篇
-rule "condition for totalSize <= 6"
+// 总文章数小于等于articleCount篇
+rule "condition for totalSize <= articleCount"
 	when 
 		$userGroupHealthInfo : UserGroupHealthInfo ( 
 			$userId : userId, 
@@ -76,7 +79,7 @@ rule "condition for totalSize <= 6"
 			$clickListSize : clickListSize,
 			$totalSize : totalSize
 		)
-		eval ( $totalSize <= 6 )
+		eval ( $totalSize <= articleCount )
 	then
 		// 创建condition条件
 		CalcuPushHealthInfoCondition calcuPushHealthInfoCondition = new CalcuPushHealthInfoCondition();
@@ -91,12 +94,12 @@ rule "condition for totalSize <= 6"
 		calcuPushHealthInfoCondition.setSelectedSampleList(list);
 		calcuPushHealthInfoCondition.setCanSelectedSampleList(new ArrayList());
 		
-		System.out.println("condition for totalSize <= 6");
+		System.out.println("condition for totalSize <= articleCount");
 		insert(calcuPushHealthInfoCondition);
 end
 
-// 总文章数大于6篇，没有点击的文章数大于等于6篇
-rule "condition for totalSize > 6, noClickListSize >= 6"
+// 总文章数大于articleCount篇，没有点击的文章数大于等于articleCount篇
+rule "condition for totalSize > articleCount, noClickListSize >= articleCount"
 	when 
 		$userGroupHealthInfo : UserGroupHealthInfo ( 
 			$userId : userId, 
@@ -104,23 +107,23 @@ rule "condition for totalSize > 6, noClickListSize >= 6"
 			$clickListSize : clickListSize,
 			$totalSize : totalSize
 		)
-		eval ( $totalSize > 6 )
-		eval ( $noClickListSize >= 6 )
+		eval ( $totalSize > articleCount )
+		eval ( $noClickListSize >= articleCount )
 	then
 		// 创建condition条件
 		CalcuPushHealthInfoCondition calcuPushHealthInfoCondition = new CalcuPushHealthInfoCondition();
 		calcuPushHealthInfoCondition.setUserId($userId);
 		calcuPushHealthInfoCondition.setSelectedSampleListSize(0);
-		calcuPushHealthInfoCondition.setExpectedSampleSize(6);
+		calcuPushHealthInfoCondition.setExpectedSampleSize(articleCount);
 		calcuPushHealthInfoCondition.setSelectedSampleList(new ArrayList());
 		calcuPushHealthInfoCondition.setCanSelectedSampleList($userGroupHealthInfo.getHealthInfoNotClickList());
 		
-		System.out.println("condition for totalSize > 6, noClickListSize >= 6");
+		System.out.println("condition for totalSize > articleCount, noClickListSize >= articleCount");
 		insert(calcuPushHealthInfoCondition);
 end
 
-// 总文章数大于6篇，没有点击的文章数小于6篇
-rule "condition for totalSize > 6, noClickListSize < 6"
+// 总文章数大于articleCount篇，没有点击的文章数小于articleCount篇
+rule "condition for totalSize > articleCount, noClickListSize < articleCount"
 	when 
 		$userGroupHealthInfo : UserGroupHealthInfo ( 
 			$userId : userId, 
@@ -128,24 +131,24 @@ rule "condition for totalSize > 6, noClickListSize < 6"
 			$clickListSize : clickListSize,
 			$totalSize : totalSize
 		)
-		eval ( $totalSize > 6 )
-		eval ( $noClickListSize < 6 )
+		eval ( $totalSize > articleCount )
+		eval ( $noClickListSize < articleCount )
 	then
 		// 创建condition条件
 		CalcuPushHealthInfoCondition calcuPushHealthInfoCondition = new CalcuPushHealthInfoCondition();
 		calcuPushHealthInfoCondition.setUserId($userId);
-		calcuPushHealthInfoCondition.setSelectedSampleListSize(6);
-		calcuPushHealthInfoCondition.setExpectedSampleSize(6);
+		calcuPushHealthInfoCondition.setSelectedSampleListSize(articleCount);
+		calcuPushHealthInfoCondition.setExpectedSampleSize(articleCount);
 		
 		ArrayList list = new ArrayList();
 		list.addAll($userGroupHealthInfo.getHealthInfoNotClickList());
 		Collections.sort($userGroupHealthInfo.getHealthInfoClickList());
-		for (int i = 0; i < 6 - $noClickListSize; i++) 
+		for (int i = 0; i < articleCount - $noClickListSize; i++) 
 			list.add($userGroupHealthInfo.getHealthInfoClickList().get(i));
 		calcuPushHealthInfoCondition.setSelectedSampleList(list);
 		calcuPushHealthInfoCondition.setCanSelectedSampleList(new ArrayList());
 		
-		System.out.println("condition for totalSize > 6, noClickListSize < 6");
+		System.out.println("condition for totalSize > articleCount, noClickListSize < articleCount");
 		insert(calcuPushHealthInfoCondition);
 end
 

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -147,15 +148,16 @@ public class AppController {
 		User user = userRepository.queryUserHealthInfo(userId);
 		if (user == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("用户不存在").setMessage("用户不存在！");
-		Long[] ids = discoveryArticleRuleService.pushArticles(user);
+		List<HealthCategory> hces = new ArrayList<>();
+		hces.addAll(user.getHcs());
 		
-		List<HealthInfo> healthInfos = this.healthInfoRepository.findAll(Arrays.asList(ids));
+		Map<Long, Long> idMaps = discoveryArticleRuleService.pushArticles(user, 6);
+		
+		List<HealthInfo> healthInfos = this.healthInfoRepository.findAll(idMaps.keySet());
 		List<HealthInfoDto> healthInfoDtoes = new ArrayList<HealthInfoDto>();
 		for (HealthInfo h : healthInfos) {
 			HealthInfoDto dto = new HealthInfoDto().toNewHealthInfoDto(h); 
-			// TODO：获取点击数需要规则
-			Long count = this.healthInfoClickInfoRepository.healthInfoTotalClickCount(h.getId());
-			dto.setClickCount(count == null ? 0 : count);
+			dto.setClickCount(idMaps.get(h.getId()));
 			healthInfoDtoes.add(dto);
 		}
 			
