@@ -1,18 +1,16 @@
 package com.wonders.xlab.healthcloud.entity.customer;
 
-import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 import com.wonders.xlab.healthcloud.entity.BaseInfo;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 
 import javax.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "HC_USER")
-public class User extends AbstractBaseEntity<Long> {
+public class User extends BaseInfo<Long> {
 
     /**
      * 用户健康包
