@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,10 +149,12 @@ public class AppController {
 		User user = userRepository.queryUserHealthInfo(userId);
 		if (user == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("用户不存在").setMessage("用户不存在！");
-		List<HealthCategory> hces = new ArrayList<>();
-		hces.addAll(user.getHcs());
 		
-		Map<Long, Long> idMaps = discoveryArticleRuleService.pushArticles(user, 6);
+		List<HealthInfo> healthInfos_1 = new ArrayList<>();
+		for (HealthCategory healthCategory : user.getHcs()) 
+			healthInfos_1.addAll(healthCategory.getHins());
+			
+		Map<Long, Long> idMaps = discoveryArticleRuleService.pushArticles(user.getId(), healthInfos_1, 6);
 		
 		List<HealthInfo> healthInfos = this.healthInfoRepository.findAll(idMaps.keySet());
 		List<HealthInfoDto> healthInfoDtoes = new ArrayList<HealthInfoDto>();
@@ -160,7 +163,59 @@ public class AppController {
 			dto.setClickCount(idMaps.get(h.getId()));
 			healthInfoDtoes.add(dto);
 		}
-			
+		
+		// 查出1级关联，无关级关联的文章各1篇
+		// 查询所有category
+		List<String> ids_1_strs = new ArrayList<>();
+		List<String> ids_n_strs = new ArrayList<>();
+		for (HealthCategory hc : user.getHcs()) {
+			ids_1_strs.addAll(Arrays.asList(StringUtils.split(hc.getFirstRelatedIds(), ",")));
+			ids_n_strs.addAll(Arrays.asList(StringUtils.split(hc.getOtherRelatedIds(), ",")));
+		}
+		List<Long> ids_1_long = new ArrayList<>();
+		List<Long> ids_n_long = new ArrayList<>();
+		for (String str : ids_1_strs) 
+			ids_1_long.add(Long.parseLong(str));
+		for (String str : ids_n_strs) 
+			ids_n_long.add(Long.parseLong(str));
+		List<HealthInfo> ids_1_long_infos = this.healthInfoRepository.findHealthCategoryIds(ids_1_long.toArray(new Long[0]));
+		List<HealthInfo> ids_n_long_infos = this.healthInfoRepository.findHealthCategoryIds(ids_n_long.toArray(new Long[0]));
+		
+		System.out.println("ids_1_long.size() - >" + ids_1_long_infos.size());
+		System.out.println("ids_n_long.size() - >" + ids_n_long_infos.size());
+		
+		Map<Long, Long> idMaps_2_1 = discoveryArticleRuleService.pushArticles(user.getId(), ids_1_long_infos, 1);
+		Map<Long, Long> idMaps_2_3 = discoveryArticleRuleService.pushArticles(user.getId(), ids_n_long_infos, 1);
+		
+		System.out.println("关联ids，1级别关联：" + idMaps_2_1);
+		System.out.println("关联ids，无关级别关联：" + idMaps_2_3);
+		
+		
+		List<HealthInfo> healthInfos_2_1_list = this.healthInfoRepository.findAll(idMaps_2_1.keySet());
+		List<HealthInfo> healthInfos_2_3_list = this.healthInfoRepository.findAll(idMaps_2_3.keySet());
+		
+		List<HealthInfoDto> healthInfoDtoes2 = new ArrayList<HealthInfoDto>();
+		for (HealthInfo h : healthInfos_2_1_list) {
+			HealthInfoDto dto = new HealthInfoDto().toNewHealthInfoDto(h); 
+			dto.setClickCount(idMaps_2_1.get(h.getId()));
+			healthInfoDtoes2.add(dto);
+		}
+		for (HealthInfo h : healthInfos_2_3_list) {
+			HealthInfoDto dto = new HealthInfoDto().toNewHealthInfoDto(h); 
+			dto.setClickCount(idMaps_2_3.get(h.getId()));
+			healthInfoDtoes2.add(dto);
+		}
+		
+		if (healthInfoDtoes2.size() == 1) {
+			healthInfoDtoes.remove(5);
+			healthInfoDtoes.addAll(healthInfoDtoes2);
+		}
+		if (healthInfoDtoes2.size() == 2) {
+			healthInfoDtoes.remove(5);
+			healthInfoDtoes.remove(4);
+			healthInfoDtoes.addAll(healthInfoDtoes2);
+		}
+		
 		return new ControllerResult<List<HealthInfoDto>>().setRet_code(0).setRet_values(healthInfoDtoes).setMessage("成功");
 	}
 	

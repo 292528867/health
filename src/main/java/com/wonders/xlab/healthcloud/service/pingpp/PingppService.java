@@ -1,11 +1,21 @@
 package com.wonders.xlab.healthcloud.service.pingpp;
 
 import com.wonders.xlab.healthcloud.dto.pingpp.PingDto;
+import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
+import com.wonders.xlab.healthcloud.entity.steward.StewardOrder;
+import com.wonders.xlab.healthcloud.repository.steward.OrderRepository;
 import com.wonders.xlab.healthcloud.service.pingplusplus.Pingpp;
 import com.wonders.xlab.healthcloud.service.pingplusplus.model.Channel;
 import com.wonders.xlab.healthcloud.service.pingplusplus.model.Charge;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,31 +26,32 @@ import java.util.Map;
 @Service
 public class PingppService {
 
-    public String payOrder(PingDto pingDto//, BindingResult result, HttpServletRequest req, HttpServletResponse resp
-    ) {
-//        PrintWriter out;
-//        resp.setContentType("application/json; charset=utf-8");
+    @Autowired
+    private OrderRepository orderRepository;
 
-//        if (result.hasErrors()) {
-//            if (result.hasErrors()) {
-//                StringBuilder builder = new StringBuilder();
-//                for (ObjectError error : result.getAllErrors()) {
-//                    builder.append(error.getDefaultMessage());
-//                }
-//               try {
-//                    out = resp.getWriter();
-//                    out.print(new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败"));
-//                    out.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        }
+    public void payOrder(Long userId, PingDto pingDto, BindingResult result, HttpServletRequest req, HttpServletResponse resp
+    ) {
+        PrintWriter out;
+        resp.setContentType("application/json; charset=utf-8");
+
+        if (result.hasErrors()) {
+            if (result.hasErrors()) {
+                StringBuilder builder = new StringBuilder();
+                for (ObjectError error : result.getAllErrors()) {
+                    builder.append(error.getDefaultMessage());
+                }
+               try {
+                    out = resp.getWriter();
+                    out.print(new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败"));
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
 
 //        Pingpp.apiKey = "app_KavHuL08GO8O4Wbn";
-
-
 
         Pingpp.apiKey = "sk_test_SOujjTjTar5KeP4a9OvvD4CG";
 
@@ -62,14 +73,21 @@ public class PingppService {
         try {
             Charge charge = Charge.create(chargeParams);
             String chargeID = charge.getId();
+            String tradeNo = "u" + userId + new Date().getTime();
+
+            StewardOrder stewardOrder = new StewardOrder(
+                    chargeID,
+                    tradeNo,
+                    Integer.parseInt(pingDto.getMoney())
+            );
+            this.orderRepository.save(stewardOrder);
             System.out.println(chargeID);
             System.out.println(charge);
             String credential = charge.getCredential();
             System.out.println(credential);
-//            out = resp.getWriter();
-//            out.print(charge);
-//            out.close();
-            return charge.toString();
+            out = resp.getWriter();
+            out.print(charge);
+            out.close();
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);

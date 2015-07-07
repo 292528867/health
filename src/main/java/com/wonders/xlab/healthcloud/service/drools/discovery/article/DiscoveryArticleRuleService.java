@@ -74,7 +74,7 @@ public class DiscoveryArticleRuleService {
 	 * 根据规则计算指定用户可推送健康信息文章id。
 	 * @param user user里的对象必须级连查出了
 	 */
-	public Map<Long, Long> pushArticles(User user, int articleCount) {
+	public Map<Long, Long> pushArticles(Long userId, List<HealthInfo> healthInfos, int articleCount) {
 		// 1、创建session，内部配置的是stateful
 		KieSession session = kieBase.newKieSession();
 		// 2、构造global对象，分析后返回
@@ -83,26 +83,24 @@ public class DiscoveryArticleRuleService {
 		session.setGlobal("articleCount", articleCount);
 		
 		// 3、构建fact放入规则中
-		UserQuerySample userQuerySample = new UserQuerySample(user.getId());
+		UserQuerySample userQuerySample = new UserQuerySample(userId);
 		session.insert(userQuerySample);
 		
 		List<HealthInfoSample> healthInfoSampleList = new ArrayList<>();
-		
-		for (HealthCategory category : user.getHcs()) {
-			for (HealthInfo healthInfo : category.getHins()) {
-				int clickCount = 0;
-				for (HealthInfoClickInfo healthInfoClickInfo : healthInfo.getHicis()) 
-					clickCount += healthInfoClickInfo.getClickCount();
-				// 创建sample fact
-				HealthInfoSample healthInfoSample = new HealthInfoSample(
-						user.getId(), 
-						healthInfo.getId(), 
-						healthInfo.getTitle(), 
-						clickCount);
-				healthInfoSample.setCreateTime(healthInfo.getCreatedDate());
-				healthInfoSampleList.add(healthInfoSample);
-			}
+		for (HealthInfo healthInfo : healthInfos) {
+			int clickCount = 0;
+			for (HealthInfoClickInfo healthInfoClickInfo : healthInfo.getHicis()) 
+				clickCount += healthInfoClickInfo.getClickCount();
+			// 创建sample fact
+			HealthInfoSample healthInfoSample = new HealthInfoSample(
+					userId, 
+					healthInfo.getId(), 
+					healthInfo.getTitle(), 
+					clickCount);
+			healthInfoSample.setCreateTime(healthInfo.getCreatedDate());
+			healthInfoSampleList.add(healthInfoSample);
 		}
+		
 		
 		// 重新计算clickCount
 		Map<Long, Long> clickCounts = this.calcuClickCount(20, 0.1, healthInfoSampleList);

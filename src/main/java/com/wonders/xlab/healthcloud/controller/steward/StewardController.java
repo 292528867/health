@@ -8,7 +8,6 @@ import com.wonders.xlab.healthcloud.dto.steward.ServiceDto;
 import com.wonders.xlab.healthcloud.entity.steward.RecommendPackage;
 import com.wonders.xlab.healthcloud.entity.steward.Services;
 import com.wonders.xlab.healthcloud.entity.steward.Steward;
-import com.wonders.xlab.healthcloud.entity.steward.StewardOrder;
 import com.wonders.xlab.healthcloud.repository.steward.OrderRepository;
 import com.wonders.xlab.healthcloud.repository.steward.RecommendPackageRepository;
 import com.wonders.xlab.healthcloud.repository.steward.ServicesRepository;
@@ -20,7 +19,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -154,18 +157,27 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @return
      */
     @RequestMapping("payServices/{userId}")
-    public Object payServices(@PathVariable Long userId, @RequestBody @Valid ServiceDto serviceDto, BindingResult result) {
+    public void payServices(@PathVariable Long userId, @RequestBody @Valid ServiceDto serviceDto, BindingResult result,
+                              HttpServletRequest req, HttpServletResponse resp) {
+
+        PrintWriter out;
+        resp.setContentType("application/json; charset=utf-8");
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
                 builder.append(error.getDefaultMessage());
             }
-            return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败");
+            try {
+                out = resp.getWriter();
+                out.print(new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败"));
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         try {
             int integration = 0;
             int amount = 0;
-            Map<String, Object> map = new HashMap<>();
 
             String[] strIds = serviceDto.getServiceIds().split(",");
             Long[] serviceIds = new Long[strIds.length];
@@ -198,22 +210,21 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 } else if (integration >= 18 && integration <= 48) {
                     amount = 158;
                 }
-                map.put("money", amount);
             }
 
             PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", String.valueOf(amount));
 
-
-            String tradeNo = "u" + userId + new Date().getTime();
-            StewardOrder stewardOrder = new StewardOrder(
-                    tradeNo,
-                    amount
-            );
-            this.orderRepository.save(stewardOrder);
-            return pingppService.payOrder(pingDto);
+            pingppService.payOrder(userId, pingDto, result, req, resp);
         } catch (Exception exp) {
             exp.printStackTrace();
-            return new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败");
+            try {
+                out = resp.getWriter();
+                out.print( new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败"));
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
 
     }

@@ -54,7 +54,8 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
     public StewardOrder() {
     }
 
-    public StewardOrder(String tradeNo, Integer money) {
+    public StewardOrder(String chargeId, String tradeNo, Integer money) {
+        this.chargeId = chargeId;
         this.tradeNo = tradeNo;
         this.money = money;
     }
