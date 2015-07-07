@@ -2,8 +2,8 @@ package com.wonders.xlab.healthcloud.entity.steward;
 
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
-import javax.persistence.*;
-import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Created by Jeffrey on 15/7/7.
@@ -28,7 +28,7 @@ public class RecommendPackage extends AbstractPersistable<Long> {
     private String price;
 
     /**
-     * 服务id
+     * 服务id，逗号分开
      */
     private String serviceIds;
 
