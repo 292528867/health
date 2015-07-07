@@ -124,10 +124,10 @@ public class EMUtils {
                 null == body ? new HttpEntity(headers) :
                         body instanceof Map ?
                                 new HttpEntity(new LinkedMultiValueMap<String, Object>() {{
-                                    setAll((Map<String, Object>) body);
+                                    setAll((Map) body);
                                 }}, headers) :
                                 new HttpEntity(body, headers),
-                ChatGroupsResponseBody.class,
+                classz,
                 uriVariables
         );
 

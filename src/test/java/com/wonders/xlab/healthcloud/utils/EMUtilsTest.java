@@ -1,6 +1,7 @@
 package com.wonders.xlab.healthcloud.utils;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.framework.Application;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +31,7 @@ public class EMUtilsTest {
     @Autowired
     private EMUtils emUtils;
 
-    private static final String Authorization = "Authorization:Bearer YWMt0Ujc-CGAEeWGzdFWKNW-6QAAAU-I7R8lpklXS8QMECBLBFGdAGxHXWcckj";
+    private static final String Authorization = "Authorization:Bearer Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw";
 
     @Test
     public void testRequstEMChart() throws Exception {
@@ -39,33 +40,36 @@ public class EMUtilsTest {
             add(MediaType.APPLICATION_JSON);
         }};
         HttpHeaders headers = new HttpHeaders();
-//        headers.add("Content-Type","application/json");
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        headers.add("Content-Type","application/json");
+//        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.setAccept(mediaTypes);
         headers.add("Authorization","Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
-        headers.add("restrict-access","true");
-        String requestBody = "{" +
-                "    \"target_type\" : \"users\"," +
-                "    \"target\" : [\"Jeffery01\"]," +
-                "    \"msg\" : {" +
-                "        \"type\" : \"txt\"," +
-                "        \"msg\" : \"hello from rest\" " +
-                "        }," +
-                "    \"from\" : \"Jeffery\", " +
-                "    \"ext\" : { " +
-                "        \"attr1\" : \"v1\"," +
-                "        \"attr2\" : \"v2\"" +
-                "    }    " +
-                "}";
+//        headers.add("restrict-access","true");
+//        String requestBody = "{" +
+//                "    \"target_type\" : \"users\"," +
+//                "    \"target\" : [\"Jeffery01\"]," +
+//                "    \"msg\" : {" +
+//                "        \"type\" : \"txt\"," +
+//                "        \"msg\" : \"hello from rest\" " +
+//                "        }," +
+//                "    \"from\" : \"Jeffery\", " +
+//                "    \"ext\" : { " +
+//                "        \"attr1\" : \"v1\"," +
+//                "        \"attr2\" : \"v2\"" +
+//                "    }    " +
+//                "}";
 
-        final File file = new File("/Users/Jeffrey/Documents/portrait.jpg");
+//        final File file = new File("/Users/Jeffrey/Documents/portrait.jpg");
         Map<String, Object> request = new HashMap<String, Object>(){{
-            put("file", file);
+            put("username", "17721013012");
+            put("password", "17721013012");
         }};
-        ResponseEntity result = emUtils.requestEMChart(headers, HttpMethod.POST, request, "chatfiles", Map.class);
-        Map body = (Map) result.getBody();
-        System.out.println("result.getBody() = " + body.size());
-//        System.out.println("result.getBody() = " + result.getBody());
+
+        String body = new ObjectMapper().writeValueAsString(request);
+        ResponseEntity result = emUtils.requestEMChart(HttpMethod.POST, body, "users", String.class);
+//        Map body = (Map) result.getBody();
+//        System.out.println("result.getBody() = " + body.size());
+        System.out.println("result.getBody() = " + result.getBody());
     }
 
     @Test
