@@ -64,7 +64,11 @@ public class ThirdAppController {
                     requestMap.put("freeProductInfo.pictureUrl", "");
                     //sign
                     requestMap.put("sign", UUID.randomUUID().toString().replaceAll("-", ""));
-                    ThirdAppConnUtils.requestEMChart(headers, HttpMethod.POST, requestMap, String.class, appAccount.getAskUrl(), null);
+
+                    Map<String, Object> uriVariables = new HashMap<>();
+                    uriVariables.put("m1", appAccount.getChannel());
+
+                    ThirdAppConnUtils.requestEMChart(headers, HttpMethod.POST, requestMap, String.class, appAccount.getAskUrl(), uriVariables);
                     break;
                 }
             case "ememed": {

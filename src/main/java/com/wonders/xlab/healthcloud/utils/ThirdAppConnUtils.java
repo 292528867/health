@@ -32,7 +32,7 @@ public final class ThirdAppConnUtils {
         appDatas.put("ememed", ememedAccount);
 
         //血糖高管提问打URL
-        String askurl = "http://doc.bskcare.com/bsk_doctor/pictureConsulting!createFreeProductInfo.action?mobileType={mobileType}&source={source}";
+        String askurl = "http://doc.bskcare.com/bsk_doctor/pictureConsulting!createFreeProductInfo.action?mobileType={m1}";
         String source = "bsksugar-340";
         String loginurl = "http://facade.bskcare.com/nac_login.do?mobileType={m1}&sign={s2}&pwd={p3}&account={a4}";
         String pwd = "a691e69e72681a2e44f26c2549c9bcf4900210b5";
