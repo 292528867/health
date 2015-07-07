@@ -1,6 +1,7 @@
 package com.wonders.xlab.healthcloud.controller.customer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.IdenCode;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -36,9 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -306,9 +306,12 @@ public class UserController extends AbstractBaseController<User, Long> {
         bodyMap.put("username", username);
         bodyMap.put("password", password);
 
+
         try {
-            emUtils.requestEMChart(HttpMethod.POST, bodyMap, "users", String.class);
+            emUtils.requestEMChart(HttpMethod.POST, new ObjectMapper().writeValueAsString(bodyMap), "users", String.class);
         } catch (HttpClientErrorException e) {
+            return -1;
+        } catch (JsonProcessingException e) {
             return -1;
         }
         return 0;

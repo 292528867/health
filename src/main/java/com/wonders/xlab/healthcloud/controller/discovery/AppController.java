@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wonders.xlab.healthcloud.dto.discovery.HealthCategoryDto;
@@ -188,5 +189,12 @@ public class AppController {
 	}
 	
 	// 显示具体的健康info信息
+	@RequestMapping(value = "listInfo/{healthInfoId}", method = RequestMethod.GET)
+	public ControllerResult<?> listHealthInfo(@PathVariable Long healthInfoId) {
+		HealthInfo hi = this.healthInfoRepository.findOne(healthInfoId);
+		if (hi == null)
+			return new ControllerResult<String>().setRet_code(0).setRet_values("文章不存在").setMessage("文章不存在");
+		return new ControllerResult<HealthInfoDto>().setRet_code(0).setRet_values(new HealthInfoDto().toNewHealthInfoDto(hi)).setMessage("成功");
+	}
 	
 }
