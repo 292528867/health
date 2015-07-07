@@ -53,28 +53,31 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * @param body
      * @return
      */
-    @RequestMapping(value = "replyMessage", method = RequestMethod.POST)
-    public ControllerResult replyMessage(@RequestBody TexMessagesRequestBody body) throws IOException {
-
+    @RequestMapping(value = "replyMessage/{id}", method = RequestMethod.POST)
+    public ControllerResult replyMessage(@PathVariable("id") long id, @RequestBody TexMessagesRequestBody body) throws IOException {
         String messagesJson = objectMapper.writeValueAsString(body);
         //扩展属性
         Map<String, String> extendAttr = wordAnalyzerService.analyzeText(body.getMsg().getMsg());
 
-        body.setExt(objectMapper.writeValueAsString(extendAttr));
+       // body.setExt(objectMapper.writeValueAsString(extendAttr));
         //发送信息
         ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChart(HttpMethod.POST, messagesJson, "messages", String.class);
-        //保存消息
+        //保存医生回复消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
                 body.getTarget().get(0),
                 body.getMsg().getMsg(),
                 body.getMsg().getType(),
                 body.getTargetType(),
-                body.getExt(),
-                false,
-                true
+             //   body.getExt(),
+                true,
+                false
         );
         emMessagesRepository.save(emMessages);
+        //修改app发送信息状态为已回复
+        EmMessages oldEm = emMessagesRepository.findOne(id);
+        oldEm.setIsReplied(true);
+        emMessagesRepository.save(oldEm);
 
         return new ControllerResult().setRet_code(0).setRet_values(responseEntity.getBody()).setMessage("消息发送成功");
 
@@ -86,7 +89,6 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     @RequestMapping(value = "sendTxtMessage", method = RequestMethod.POST)
         public ControllerResult sendTxtMessage(@RequestBody TexMessagesRequestBody body) throws IOException {
-
         String messagesJson = objectMapper.writeValueAsString(body);
         //发送信息
         emUtils.requestEMChart(HttpMethod.POST, messagesJson, "messages", String.class);

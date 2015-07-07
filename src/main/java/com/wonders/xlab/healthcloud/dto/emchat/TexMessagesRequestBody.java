@@ -32,10 +32,10 @@ public class TexMessagesRequestBody {
      */
     private String from;
 
-    /**
+   /* *//**
      * 扩展属性
-     */
-    private String ext;
+     *//*
+    private String ext;*/
 
 
     public String getTargetType() {
@@ -70,11 +70,11 @@ public class TexMessagesRequestBody {
         this.from = from;
     }
 
-    public String getExt() {
+    /*public String getExt() {
         return ext;
     }
 
     public void setExt(String ext) {
         this.ext = ext;
-    }
+    }*/
 }
