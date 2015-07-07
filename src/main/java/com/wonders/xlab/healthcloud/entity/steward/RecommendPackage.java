@@ -24,7 +24,7 @@ public class RecommendPackage extends AbstractPersistable<Long> {
     @JoinTable(
             name = "HC_PACKAGE_SERVICES_RALATION"
     )
-    private Set<StewardService> stewardServices;
+    private Set<Services> services;
 
     public Steward.Rank getRank() {
         return rank;
@@ -34,11 +34,11 @@ public class RecommendPackage extends AbstractPersistable<Long> {
         this.rank = rank;
     }
 
-    public Set<StewardService> getStewardServices() {
-        return stewardServices;
+    public Set<Services> getStewardServices() {
+        return services;
     }
 
-    public void setStewardServices(Set<StewardService> stewardServices) {
-        this.stewardServices = stewardServices;
+    public void setStewardServices(Set<Services> services) {
+        this.services = services;
     }
 }

@@ -9,13 +9,13 @@ import javax.persistence.Table;
  * Created by lixuanwu on 15/7/7.
  */
 @Entity
-@Table(name = "HC_STEWARD_SERVICE")
-public class StewardService extends AbstractPersistable<Long> {
+@Table(name = "HC_S_SERVICE")
+public class Services extends AbstractPersistable<Long> {
 
     /**
      * 服务id
      */
-    private String serviceId;
+    private Integer serviceId;
 
     /**
      * 服务名称
@@ -34,14 +34,14 @@ public class StewardService extends AbstractPersistable<Long> {
     /**
      * 服务积分
      */
-    private String serviceIntegration;
+    private Integer serviceIntegration;
 
 
-    public String getServiceId() {
+    public Integer getServiceId() {
         return serviceId;
     }
 
-    public void setServiceId(String serviceId) {
+    public void setServiceId(Integer serviceId) {
         this.serviceId = serviceId;
     }
 
@@ -61,11 +61,11 @@ public class StewardService extends AbstractPersistable<Long> {
         this.serviceArea = serviceArea;
     }
 
-    public String getServiceIntegration() {
+    public Integer getServiceIntegration() {
         return serviceIntegration;
     }
 
-    public void setServiceIntegration(String serviceIntegration) {
+    public void setServiceIntegration(Integer serviceIntegration) {
         this.serviceIntegration = serviceIntegration;
     }
 }
