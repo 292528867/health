@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="../assets/css/amazeui.min.css"/>
     <link rel="stylesheet" href="../assets/css/amazeui.flat.min.css"/>
     <link rel="stylesheet" href="../css/admin_emchat.css"/>
+    <script src="../js/common.js"></script>
     <script src="../js/Utils.js"></script>
     <script src="../assets/js/jquery.min.js"></script>
     <script src="../assets/js/amazeui.min.js"></script>
@@ -24,12 +25,43 @@
 <div class="am-container">
     <div class="message-body am-lg-text-left am-u-lg-12 border-box am-scrollable-vertical">
     </div>
-    <div class="send-message am-u-lg-12">
+    <div class="send-message am-u-lg-6 am-form-group">
+        <div class="am-form-group" id="appNames">
+            <label class="am-checkbox-inline">
+                <input type="checkbox" value="basksugar"> 血糖高管
+            </label>
+            <label class="am-checkbox-inline">
+                <input type="checkbox" value="ememed"> 薏米医生
+            </label>
+        </div>
         <form action="">
-            <textarea class="new-message am-u-lg-12 am-text-sm border-box" rows="5">
+            <textarea class="new-message am-u-lg-12 am-text-sm border-box" rows="5" id="question">
             </textarea>
-            <button type="button" class="message-commit am-btn am-btn-default">
-                发送
+            <button type="button" class="message-commit am-btn am-btn-default" onclick="submitQuestion()">
+                提问
+            </button>
+        </form>
+    </div>
+    <div class="send-message am-u-lg-6">
+        <div class="am-form-group">
+            <input type="hidden" id="answerAppKey" />
+            <input type="hidden" id="answerDoctor" />
+            <input type="hidden" id="answerUser" />
+        </div>
+        <!--<div class="am-form-group">
+            <label style="float:left">App</label>
+            <div style="float:left; width: 20%">
+                <input width="20" type="text" id="appPlatform">
+            </div>
+            <label style="float:left">医生</label>
+            <div style="float:right">
+                <input type="text" id="doctorAccount">
+            </div>
+        </div>-->
+        <form action="">
+            <textarea class="new-message am-u-lg-12 am-text-sm border-box" rows="5" id="answers"></textarea>
+            <button type="button" class="message-commit am-btn am-btn-default" onclick="sendText()">
+                答复医生
             </button>
         </form>
     </div>
