@@ -8,6 +8,8 @@ import com.wonders.xlab.healthcloud.dto.steward.ServiceDto;
 import com.wonders.xlab.healthcloud.entity.steward.RecommendPackage;
 import com.wonders.xlab.healthcloud.entity.steward.Services;
 import com.wonders.xlab.healthcloud.entity.steward.Steward;
+import com.wonders.xlab.healthcloud.entity.steward.StewardOrder;
+import com.wonders.xlab.healthcloud.repository.steward.OrderRepository;
 import com.wonders.xlab.healthcloud.repository.steward.RecommendPackageRepository;
 import com.wonders.xlab.healthcloud.repository.steward.ServicesRepository;
 import com.wonders.xlab.healthcloud.repository.steward.StewardRepository;
@@ -36,6 +38,9 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
     @Autowired
     private ServicesRepository servicesRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Autowired
     private PingppService pingppService;
@@ -111,10 +116,10 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     @RequestMapping("listCustomPackage")
     public Object listCustomPackage() {
 
-        List<RecommendPackage> recommendPackages = this.recommendPackageRepository.findAll();
+        List<Services> services = this.servicesRepository.findAll();
         List<Steward> stewards = this.stewardRepository.findAll();
         Map<String, Object> map = new HashMap<>();
-        map.put("package", recommendPackages);
+        map.put("services", services);
         map.put("steward", stewards);
         return new ControllerResult<>().setRet_code(0).setRet_values(map).setMessage("成功");
     }
@@ -148,8 +153,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @param result
      * @return
      */
-    @RequestMapping("payServices")
-    public Object payServices(@RequestBody @Valid ServiceDto serviceDto, BindingResult result) {
+    @RequestMapping("payServices/{userId}")
+    public Object payServices(@PathVariable Long userId, @RequestBody @Valid ServiceDto serviceDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -198,9 +203,14 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
             PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", String.valueOf(amount));
 
+
+            String tradeNo = "u" + userId + new Date().getTime();
+            StewardOrder stewardOrder = new StewardOrder(
+                    tradeNo,
+                    amount
+            );
+            this.orderRepository.save(stewardOrder);
             return pingppService.payOrder(pingDto);
-
-
         } catch (Exception exp) {
             exp.printStackTrace();
             return new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败");

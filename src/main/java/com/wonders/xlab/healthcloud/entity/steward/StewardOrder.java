@@ -51,6 +51,14 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
     }
     private OrderStatus orderStatus = OrderStatus.未支付;
 
+    public StewardOrder() {
+    }
+
+    public StewardOrder(String tradeNo, Integer money) {
+        this.tradeNo = tradeNo;
+        this.money = money;
+    }
+
     public String getTradeNo() {
         return tradeNo;
     }
