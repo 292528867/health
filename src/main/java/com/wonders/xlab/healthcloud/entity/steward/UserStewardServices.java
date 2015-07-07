@@ -1,15 +1,19 @@
 package com.wonders.xlab.healthcloud.entity.steward;
 
 import com.wonders.xlab.healthcloud.entity.customer.User;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
-import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * Created by Jeffrey on 15/7/7.
  */
-@Embeddable
-public class UserStewardServicesPK {
+@Entity
+@Table(name = "HC_USER_STEWARD_SERVICES")
+public class UserStewardServices extends AbstractPersistable<Long> {
 
     @ManyToOne
     private Steward steward;
