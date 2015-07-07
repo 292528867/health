@@ -1,5 +1,6 @@
 package com.wonders.xlab.healthcloud.controller.customer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.IdenCode;
@@ -24,16 +25,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 
 /**
@@ -100,6 +105,7 @@ public class UserController extends AbstractBaseController<User, Long> {
                     if (token.getAppPlatform().equals(userThird.getUser().getAppPlatform())) {
                         return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
                     } else {
+
                         User user = userThird.getUser();
                         user.setAppPlatform(token.getAppPlatform());
                         user = userRepository.save(user);
@@ -137,6 +143,11 @@ public class UserController extends AbstractBaseController<User, Long> {
         User user = userRepository.findByTel(token.getTel());
         //用户为空创建用户和第三方关联
         if (null == user) {
+            //创建环信账号
+            int result = registerEmUsers(token.getTel(), token.getTel());
+            if (-1 == result) {
+                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败!");
+            }
             user = new User();
             user.setTel(token.getTel());
             user.setAppPlatform(token.getAppPlatform());
@@ -199,6 +210,12 @@ public class UserController extends AbstractBaseController<User, Long> {
     }
 
     private ControllerResult<?> addUserBeforeLogin(IdenCode idenCode) {
+
+        //创建环信账号
+        int result = registerEmUsers(idenCode.getTel(), idenCode.getTel());
+        if (-1 == result) {
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败!");
+        }
         User user = new User();
         user.setTel(idenCode.getTel());
         user.setAppPlatform(idenCode.getAppPlatform());
@@ -282,4 +299,19 @@ public class UserController extends AbstractBaseController<User, Long> {
         return userRepository;
     }
 
+
+    private int registerEmUsers(String username, String password) {
+
+        Map<String, String> bodyMap = new HashMap<>();
+        bodyMap.put("username", username);
+        bodyMap.put("password", password);
+
+        try {
+            emUtils.requestEMChart(HttpMethod.POST, bodyMap, "users", String.class);
+        } catch (HttpClientErrorException e) {
+            return -1;
+        }
+        return 0;
+
+    }
 }
