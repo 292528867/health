@@ -173,6 +173,13 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- ping++ 支付 -->
+		<dependency>
+			<groupId>com.pingpp</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.2.4</version>
+		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>
