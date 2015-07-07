@@ -18,16 +18,7 @@ public class MyDroolsApplication {
 		ApplicationContext ctx = app.run(args);
 		
 		DiscoveryArticleRuleService discoveryArticleRuleService = ctx.getBean(DiscoveryArticleRuleService.class);
-//		discoveryRuleService.testRule();
 		discoveryArticleRuleService.testRule();
 		
-//		// 获取feed规则服务执行
-//		FeedRuleService feedRuleService = ctx.getBean(FeedRuleService.class);
-//		feedRuleService.feedRule();
-////		feedRuleService.feedInfoUpdate();
-//		
-//		// 获取poo规则服务执行
-//		PooRuleService pooRuleService = ctx.getBean(PooRuleService.class);
-////		pooRuleService.pooRule();
 	}
 }

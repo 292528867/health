@@ -1,9 +1,5 @@
 package com.wonders.xlab.healthcloud.service.drools;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
@@ -75,6 +71,8 @@ public class MyDroolsConfiguration {
 				this.getClass().getResourceAsStream("/rules/discovery/PushTagInfo.drl"), "UTF-8"));
 		kfs.write("src/main/resources/DayPushHealthInfo.drl", kieServices.getResources().newInputStreamResource(
 			this.getClass().getResourceAsStream("/rules/discovery/DayPushHealthInfo.drl"), "UTF-8"));
+		kfs.write("src/main/resources/ClickInfoCount.drl", kieServices.getResources().newInputStreamResource(
+				this.getClass().getResourceAsStream("/rules/discovery/ClickInfoCount.drl"), "UTF-8"));
 		
 		// 4、创建KieBuilder，使用KieFileSystem构建
 		KieBuilder kieBuilder = kieServices.newKieBuilder(kfs).buildAll();

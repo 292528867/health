@@ -74,7 +74,7 @@ public class DiscoveryArticleRuleService {
 		
 		// 1.1 设置gloable对象，在drl中通过别名使用
 		OutputDaytHealthInfo output = new OutputDaytHealthInfo();
-		session.setGlobal("output", output);
+		session.setGlobal("articleoutput", output);
 		
 		// 1.2 可以设置一些监听器，再议
 		
