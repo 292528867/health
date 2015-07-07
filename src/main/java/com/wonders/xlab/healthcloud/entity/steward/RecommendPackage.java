@@ -18,13 +18,19 @@ public class RecommendPackage extends AbstractPersistable<Long> {
     private Steward.Rank rank;
 
     /**
-     * 推荐包包含服务
+     * 包名
      */
-    @OneToMany
-    @JoinTable(
-            name = "HC_PACKAGE_SERVICES_RALATION"
-    )
-    private Set<Services> services;
+    private String packageName;
+
+    /**
+     * 价格
+     */
+    private String price;
+
+    /**
+     * 服务id
+     */
+    private String serviceIds;
 
     public Steward.Rank getRank() {
         return rank;
@@ -34,11 +40,27 @@ public class RecommendPackage extends AbstractPersistable<Long> {
         this.rank = rank;
     }
 
-    public Set<Services> getStewardServices() {
-        return services;
+    public String getPackageName() {
+        return packageName;
     }
 
-    public void setStewardServices(Set<Services> services) {
-        this.services = services;
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getServiceIds() {
+        return serviceIds;
+    }
+
+    public void setServiceIds(String serviceIds) {
+        this.serviceIds = serviceIds;
     }
 }
