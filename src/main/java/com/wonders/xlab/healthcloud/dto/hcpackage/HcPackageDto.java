@@ -1,7 +1,11 @@
 package com.wonders.xlab.healthcloud.dto.hcpackage;
 
+import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -9,44 +13,69 @@ import javax.validation.constraints.NotNull;
  */
 public class HcPackageDto {
 
-    /** 标题 */
+    /**
+     * 任务包名称
+     */
     @NotNull(message = "标题不能为空")
     private String title;
 
-    /** 描述 */
-    @NotNull(message = "描述不能为空")
+    /**
+     * 任务包简介
+     */
+    @NotNull(message = "任务包简介不能为空")
     private String description;
 
-    /** 是否推荐 */
-    @NotNull(message = "推荐值不能为空")
+    /**
+     * 任务包详细介绍
+     */
+    @NotNull(message = "任务包详细介绍不能为空")
+    private String detailDescription;
+
+    /**
+     * 持续时间－－以天为单位
+     */
+    @NotNull(message = "持续时间不能为空")
+    private int duration;
+
+//    /**
+//     * 图片地址
+//     */
+//    @NotNull(message = "图片地址不能为空")
+//    private String iconUrl;
+//
+//    /**
+//     * 详细介绍界面图片
+//     */
+//    @NotNull(message = "详细介绍配图地址不能为空")
+//    private String detailDescriptionIcon;
+
+    /**
+     * 是否推荐
+     */
+    @NotNull(message = "是否推荐不能为空")
     private Boolean recommend;
 
-    /** 图片地址 */
-    @NotNull(message = "图片不能为空")
-    private String prictureUrl;
-
-    /** 推荐值 */
+    /**
+     * 推荐值
+     */
     @NotNull(message = "推荐值不能为空")
-    private Integer recommendValue;
+    private int recommendValue;
 
-    public HcPackage toNewHcPackage() {
-        HcPackage hcPackage = new HcPackage();
-        hcPackage.setTitle(title);
-        hcPackage.setDescription(description);
-        hcPackage.setRecommend(recommend);
-        hcPackage.setIconUrl(prictureUrl);
-        hcPackage.setRecommendValue(recommendValue);
-        return hcPackage;
-    }
+    /**
+     * 是否需要补充内容
+     */
+    @NotNull(message = "是否需要不能为空")
+    private Boolean isNeedSupplemented;
 
-    public HcPackage updateHcPackage(HcPackage hp) {
-        hp.setTitle(title);
-        hp.setDescription(description);
-        hp.setRecommend(recommend);
-        hp.setIconUrl(prictureUrl);
-        hp.setRecommendValue(recommendValue);
-        return hp;
-    }
+
+    /**
+     * 补充内容
+     */
+    @NotNull(message = "补充内容不能为空")
+    private String supplemented;
+
+//    @NotNull(message = "三级分类不能为空")
+    private Long  healthCategoryId;
 
     public String getTitle() {
         return title;
@@ -64,6 +93,45 @@ public class HcPackageDto {
         this.description = description;
     }
 
+    public String getDetailDescription() {
+        return detailDescription;
+    }
+
+    public void setDetailDescription(String detailDescription) {
+        this.detailDescription = detailDescription;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+    public int getRecommendValue() {
+        return recommendValue;
+    }
+
+    public void setRecommendValue(int recommendValue) {
+        this.recommendValue = recommendValue;
+    }
+
+    public Boolean getIsNeedSupplemented() {
+        return isNeedSupplemented;
+    }
+
+    public void setIsNeedSupplemented(Boolean isNeedSupplemented) {
+        this.isNeedSupplemented = isNeedSupplemented;
+    }
+
+    public String getSupplemented() {
+        return supplemented;
+    }
+
+    public void setSupplemented(String supplemented) {
+        this.supplemented = supplemented;
+    }
+
     public Boolean getRecommend() {
         return recommend;
     }
@@ -72,19 +140,11 @@ public class HcPackageDto {
         this.recommend = recommend;
     }
 
-    public String getPrictureUrl() {
-        return prictureUrl;
+    public Long getHealthCategoryId() {
+        return healthCategoryId;
     }
 
-    public void setPrictureUrl(String prictureUrl) {
-        this.prictureUrl = prictureUrl;
-    }
-
-    public Integer getRecommendValue() {
-        return recommendValue;
-    }
-
-    public void setRecommendValue(Integer recommendValue) {
-        this.recommendValue = recommendValue;
+    public void setHealthCategoryId(Long healthCategoryId) {
+        this.healthCategoryId = healthCategoryId;
     }
 }
