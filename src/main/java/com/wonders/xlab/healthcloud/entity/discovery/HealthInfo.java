@@ -37,6 +37,8 @@ public class HealthInfo extends AbstractPersistable<Long> {
 	private String title;
 	/** 图片url */
 	private String pictureUrl;
+	/** banner图片url */
+	private String pictureUrl2;
 	/** 简述 */
 	private String description;
 	
@@ -126,5 +128,14 @@ public class HealthInfo extends AbstractPersistable<Long> {
 	public void setHicis(Set<HealthInfoClickInfo> hicis) {
 		this.hicis = hicis;
 	}
+
+	public String getPictureUrl2() {
+		return pictureUrl2;
+	}
+
+	public void setPictureUrl2(String pictureUrl2) {
+		this.pictureUrl2 = pictureUrl2;
+	}
+	
 	
 }

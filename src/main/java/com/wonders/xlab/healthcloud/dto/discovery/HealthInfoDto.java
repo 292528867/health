@@ -15,6 +15,8 @@ public class HealthInfoDto {
 	private String title;
 	@NotNull(message = "图片不能为空")
 	private String pictureUrl;
+	@NotNull(message = "banner图片不能为空")
+	private String pictureUrl2;
 	@NotNull(message = "简述不能为空")
 	private String desc;
 	@NotNull(message = "健康信息不能为空")
@@ -34,6 +36,7 @@ public class HealthInfoDto {
 		hi.setPictureUrl(pictureUrl);
 		hi.setDescription(desc);
 		hi.setHtmlInfo(htmlInfo);
+		hi.setPictureUrl2(pictureUrl2);
 		hi.setHealthCategory(hc);
 		return hi;
 	}
@@ -49,6 +52,7 @@ public class HealthInfoDto {
 		dto.setDesc(hi.getDescription());
 		dto.setTitle(hi.getTitle());
 		dto.setPictureUrl(hi.getPictureUrl());
+		dto.setPictureUrl2(hi.getPictureUrl2());
 		dto.setId(hi.getId());
 		return dto;
 	}
@@ -61,6 +65,7 @@ public class HealthInfoDto {
 		hi.setPictureUrl(pictureUrl);
 		hi.setDescription(desc);
 		hi.setHtmlInfo(htmlInfo);
+		hi.setPictureUrl2(pictureUrl2);
 		return hi;
 	}
 
@@ -110,6 +115,14 @@ public class HealthInfoDto {
 
 	public void setId(Long id) {
 		Id = id;
+	}
+
+	public String getPictureUrl2() {
+		return pictureUrl2;
+	}
+
+	public void setPictureUrl2(String pictureUrl2) {
+		this.pictureUrl2 = pictureUrl2;
 	}	
 	
 }
