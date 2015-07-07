@@ -2,7 +2,9 @@ package com.wonders.xlab.healthcloud.entity.steward;
 
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 
+import javax.persistence.Entity;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import java.util.Date;
 
@@ -11,7 +13,9 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 /**
  * Created by lixuanwu on 15/7/7.
  */
-public class Order extends AbstractBaseEntity<Long> {
+@Entity
+@Table(name = "HC_STEWRAD_ORDER")
+public class StewardOrder extends AbstractBaseEntity<Long> {
 
     /**
      * 订单号
