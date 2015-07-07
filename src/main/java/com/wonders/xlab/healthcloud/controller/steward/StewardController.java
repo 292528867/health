@@ -62,7 +62,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     @RequestMapping("getRecommendPackageDetail/{packageId}")
     public Object getRecommendPackageDetail(@PathVariable Long packageId){
 
-<<<<<<< HEAD
         RecommendPackage rp = this.recommendPackageRepository.findOne(packageId);
         String[] strIds = rp.getServiceIds().split(",");
         Long[] serviceIds = new Long[strIds.length];
@@ -70,15 +69,14 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             serviceIds[i] = Long.parseLong(strIds[i]);
         // 查询服务，管家
         List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
+        Set<Services> servicesSet = new HashSet<>();
+        servicesSet.addAll(services);
+        rp.setServices(servicesSet);
 
         Steward steward = this.stewardRepository.findOne(1l);
+        rp.setSteward(steward);
+        return new ControllerResult<RecommendPackage>().setRet_code(0).setRet_values(rp).setMessage("成功！");
 
-        return new ControllerResult<RecommendPackage>().setRet_code(0).setRet_values().setMessage("成功！");
-=======
-        return new ControllerResult<RecommendPackage>().setRet_code(0).setRet_values(this.recommendPackageRepository.findOne(packageId)).setMessage("成功！");
-
-
->>>>>>> cfe1c5ee3a370b750384aa0a77a7ad02884a6396
     }
 
     /**
