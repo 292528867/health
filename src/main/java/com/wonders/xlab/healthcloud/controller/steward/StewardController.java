@@ -12,6 +12,7 @@ import com.wonders.xlab.healthcloud.repository.steward.RecommendPackageRepositor
 import com.wonders.xlab.healthcloud.repository.steward.ServicesRepository;
 import com.wonders.xlab.healthcloud.repository.steward.StewardRepository;
 import com.wonders.xlab.healthcloud.service.pingpp.PingppService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -51,6 +52,25 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     @RequestMapping(value = "getAllRecommendPackage", method = RequestMethod.GET)
     public Object getAllRecommendPackage() {
 
+//        List<RecommendPackage> recommendPackages = this.recommendPackageRepository.findAll();
+//        for (RecommendPackage rp : recommendPackages) {
+//            if (!StringUtils.isEmpty(rp.getServiceIds())) {
+//                String[] strIds = rp.getServiceIds().split(",");
+//                Long[] serviceIds = new Long[strIds.length];
+//                for (int i = 0; i< strIds.length; i++)
+//                    serviceIds[i] = Long.parseLong(strIds[i]);
+//                // 查询服务，管家
+//                List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
+//                Set<Services> servicesSet = new HashSet<>();
+//                servicesSet.addAll(services);
+//                rp.setServices(servicesSet);
+//
+//                // TODO:管家
+//                Steward steward = this.stewardRepository.findOne(1l);
+//                rp.setSteward(steward);
+//            }
+//        }
+
         return new ControllerResult<List<RecommendPackage>>().setRet_code(0).setRet_values(this.recommendPackageRepository.findAll()).setMessage("成功！");
     }
 
@@ -63,18 +83,23 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     public Object getRecommendPackageDetail(@PathVariable Long packageId){
 
         RecommendPackage rp = this.recommendPackageRepository.findOne(packageId);
-        String[] strIds = rp.getServiceIds().split(",");
-        Long[] serviceIds = new Long[strIds.length];
-        for (int i = 0; i< strIds.length; i++)
-            serviceIds[i] = Long.parseLong(strIds[i]);
-        // 查询服务，管家
-        List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
-        Set<Services> servicesSet = new HashSet<>();
-        servicesSet.addAll(services);
-        rp.setServices(servicesSet);
 
-        Steward steward = this.stewardRepository.findOne(1l);
-        rp.setSteward(steward);
+        if (!StringUtils.isEmpty(rp.getServiceIds())) {
+            String[] strIds = rp.getServiceIds().split(",");
+            Long[] serviceIds = new Long[strIds.length];
+            for (int i = 0; i < strIds.length; i++)
+                serviceIds[i] = Long.parseLong(strIds[i]);
+            // 查询服务，管家
+            List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
+            Set<Services> servicesSet = new HashSet<>();
+            servicesSet.addAll(services);
+            rp.setServices(servicesSet);
+
+            // TODO:管家
+            Steward steward = this.stewardRepository.findOne(1l);
+            rp.setSteward(steward);
+        }
+
         return new ControllerResult<RecommendPackage>().setRet_code(0).setRet_values(rp).setMessage("成功！");
 
     }
