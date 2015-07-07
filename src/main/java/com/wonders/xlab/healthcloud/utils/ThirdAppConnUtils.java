@@ -161,8 +161,8 @@ public final class ThirdAppConnUtils {
         requestMap.put("memberid", appAccount.getClientId());
         requestMap.put("page", "1");
         requestMap.put("service_type", "1");
-        //地区ID 上海
-        requestMap.put("area_id", "45053");
+        //地区ID 上海45053 全国0
+        requestMap.put("area_id", "0");
         requestMap.put("orderby", "2");
         requestMap.put("channel", appAccount.getChannel());
         requestMap.put("search_app_version", appAccount.getAppVersion());
