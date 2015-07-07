@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,9 +22,9 @@ import java.util.Map;
 /**
  * Created by Jeffrey on 15/7/4.
  */
-@RunWith(SpringJUnit4ClassRunner.class)   // 1
-@SpringApplicationConfiguration(classes = Application.class)   // 2
-@WebAppConfiguration   // 3
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = Application.class)
+@WebAppConfiguration
 public class EMUtilsTest {
 
     @Autowired
@@ -61,7 +60,7 @@ public class EMUtilsTest {
 
 //        final File file = new File("/Users/Jeffrey/Documents/portrait.jpg");
         Map<String, Object> request = new HashMap<String, Object>(){{
-            put("username", "17721013012");
+            put("username", "2345678456");
             put("password", "17721013012");
         }};
 
