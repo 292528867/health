@@ -24,7 +24,7 @@ import java.util.*;
  * Created by lixuanwu on 15/7/7.
  */
 @RestController
-@RequestMapping(name = "steward")
+@RequestMapping(value = "steward")
 public class StewardController extends AbstractBaseController<Steward, Long> {
 
     @Autowired
@@ -62,6 +62,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     @RequestMapping("getRecommendPackageDetail/{packageId}")
     public Object getRecommendPackageDetail(@PathVariable Long packageId){
 
+<<<<<<< HEAD
         RecommendPackage rp = this.recommendPackageRepository.findOne(packageId);
         String[] strIds = rp.getServiceIds().split(",");
         Long[] serviceIds = new Long[strIds.length];
@@ -73,6 +74,11 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         Steward steward = this.stewardRepository.findOne(1l);
 
         return new ControllerResult<RecommendPackage>().setRet_code(0).setRet_values().setMessage("成功！");
+=======
+        return new ControllerResult<RecommendPackage>().setRet_code(0).setRet_values(this.recommendPackageRepository.findOne(packageId)).setMessage("成功！");
+
+
+>>>>>>> cfe1c5ee3a370b750384aa0a77a7ad02884a6396
     }
 
     /**
