@@ -8,7 +8,6 @@ import com.wonders.xlab.healthcloud.dto.steward.ServiceDto;
 import com.wonders.xlab.healthcloud.entity.steward.RecommendPackage;
 import com.wonders.xlab.healthcloud.entity.steward.Services;
 import com.wonders.xlab.healthcloud.entity.steward.Steward;
-import com.wonders.xlab.healthcloud.entity.steward.StewardOrder;
 import com.wonders.xlab.healthcloud.repository.steward.OrderRepository;
 import com.wonders.xlab.healthcloud.repository.steward.RecommendPackageRepository;
 import com.wonders.xlab.healthcloud.repository.steward.ServicesRepository;
@@ -179,7 +178,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         try {
             int integration = 0;
             int amount = 0;
-            Map<String, Object> map = new HashMap<>();
 
             String[] strIds = serviceDto.getServiceIds().split(",");
             Long[] serviceIds = new Long[strIds.length];
@@ -212,19 +210,11 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 } else if (integration >= 18 && integration <= 48) {
                     amount = 158;
                 }
-                map.put("money", amount);
             }
 
             PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", String.valueOf(amount));
 
-
-            String tradeNo = "u" + userId + new Date().getTime();
-            StewardOrder stewardOrder = new StewardOrder(
-                    tradeNo,
-                    amount
-            );
-            this.orderRepository.save(stewardOrder);
-            pingppService.payOrder(pingDto, result, req, resp);
+            pingppService.payOrder(userId, pingDto, result, req, resp);
         } catch (Exception exp) {
             exp.printStackTrace();
             try {
