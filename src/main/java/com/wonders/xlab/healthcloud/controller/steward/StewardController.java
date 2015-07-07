@@ -20,7 +20,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -154,13 +158,23 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @return
      */
     @RequestMapping("payServices/{userId}")
-    public Object payServices(@PathVariable Long userId, @RequestBody @Valid ServiceDto serviceDto, BindingResult result) {
+    public void payServices(@PathVariable Long userId, @RequestBody @Valid ServiceDto serviceDto, BindingResult result,
+                              HttpServletRequest req, HttpServletResponse resp) {
+
+        PrintWriter out;
+        resp.setContentType("application/json; charset=utf-8");
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
                 builder.append(error.getDefaultMessage());
             }
-            return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败");
+            try {
+                out = resp.getWriter();
+                out.print(new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败"));
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         try {
             int integration = 0;
@@ -210,10 +224,17 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                     amount
             );
             this.orderRepository.save(stewardOrder);
-            return pingppService.payOrder(pingDto);
+            pingppService.payOrder(pingDto, result, req, resp);
         } catch (Exception exp) {
             exp.printStackTrace();
-            return new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败");
+            try {
+                out = resp.getWriter();
+                out.print( new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败"));
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
 
     }
