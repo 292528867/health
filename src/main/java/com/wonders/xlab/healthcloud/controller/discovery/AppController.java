@@ -3,6 +3,7 @@ package com.wonders.xlab.healthcloud.controller.discovery;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -59,13 +60,49 @@ public class AppController {
 	@RequestMapping(value = "recommand/tags/{userId}")
 	public ControllerResult<?> getTagPushInfos(@PathVariable Long userId) {
 		// 查询所有category
-
 		List<HealthCategory> allCategories = this.healthCategoryRepository.findAll();
+		// 查询用户
 		User user = userRepository.queryUserHealthInfo(userId);
 		if (user == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("用户不存在").setMessage("用户不存在");
+		// 获取用户关联的分类
 		Set<HealthCategory> userCategories = user.getHcs();
 		
+		// 规则计算
+		Long[] ids = this.discoveryTagRuleService.pushTags(user, allCategories, userCategories);
+		List<HealthCategory> healthCategories = this.healthCategoryRepository.findAll(Arrays.asList(ids));
+		List<HealthCategory> healthCategories_order = new ArrayList<>();
+		for (int i = 0; i < ids.length; i++) {
+			for (HealthCategory hc : healthCategories) {
+				if (hc.getId() == ids[i]) {
+					healthCategories_order.add(hc);
+					break;
+				}
+			}
+		}
+		List<HealthCategoryDto> healthCategoryDtoes = new ArrayList<>();
+		for (HealthCategory hc : healthCategories_order) 
+			healthCategoryDtoes.add(new HealthCategoryDto().toNewHealthCategoryDto(hc));
+		return new ControllerResult<List<HealthCategoryDto>>().setRet_code(0).setRet_values(healthCategoryDtoes).setMessage("成功");
+	}
+	
+	// 根据选择的标签，再次变化推荐的标签
+	@RequestMapping(value = "recommand/tags/{userId}/{categoryId}")
+	public ControllerResult<?> getTagPushInfos(@PathVariable Long userId, @PathVariable Long categoryId) {
+		// 查询所有category
+		List<HealthCategory> allCategories = this.healthCategoryRepository.findAll();
+		// 查询用户
+		User user = userRepository.queryUserHealthInfo(userId);
+		if (user == null) 
+			return new ControllerResult<String>().setRet_code(-1).setRet_values("用户不存在").setMessage("用户不存在");
+		// 获取单个分类
+		HealthCategory healthCategory = this.healthCategoryRepository.findOne(categoryId);
+		if (healthCategory == null) 
+			return new ControllerResult<String>().setRet_code(-1).setRet_values("指定分类竟然不存在").setMessage("指定分类竟然不存在");
+		Set<HealthCategory> userCategories = new HashSet<>();
+		userCategories.add(healthCategory);
+		
+		// 规则计算
 		Long[] ids = this.discoveryTagRuleService.pushTags(user, allCategories, userCategories);
 		List<HealthCategory> healthCategories = this.healthCategoryRepository.findAll(Arrays.asList(ids));
 		List<HealthCategory> healthCategories_order = new ArrayList<>();
