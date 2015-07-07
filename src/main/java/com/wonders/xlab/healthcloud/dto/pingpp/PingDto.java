@@ -1,7 +1,5 @@
 package com.wonders.xlab.healthcloud.dto.pingpp;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
 import javax.validation.constraints.NotNull;
 
 /**
@@ -10,14 +8,13 @@ import javax.validation.constraints.NotNull;
 public class PingDto {
 
     @NotNull(message = "金额不能为空")
-    @NotEmpty(message = "金额不能为空")
-    private Integer money;
+    private String money;
 
-    public Integer getMoney() {
+    public String getMoney() {
         return money;
     }
 
-    public void setMoney(Integer money) {
+    public void setMoney(String money) {
         this.money = money;
     }
 }

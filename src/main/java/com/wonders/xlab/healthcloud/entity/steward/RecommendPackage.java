@@ -1,8 +1,11 @@
 package com.wonders.xlab.healthcloud.entity.steward;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.Set;
 
 /**
@@ -37,6 +40,16 @@ public class RecommendPackage extends AbstractPersistable<Long> {
 //    )
 //    private Set<Services> services;
 
+    @Transient
+    private Set<Services> services;
+
+    @Transient
+    private Steward steward;
+
+    /**
+     * 服务id，逗号分开
+     */
+    @JsonIgnore
     private String serviceIds;
 
     public Steward.Rank getRank() {
@@ -61,6 +74,22 @@ public class RecommendPackage extends AbstractPersistable<Long> {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public Set<Services> getServices() {
+        return services;
+    }
+
+    public void setServices(Set<Services> services) {
+        this.services = services;
+    }
+
+    public Steward getSteward() {
+        return steward;
+    }
+
+    public void setSteward(Steward steward) {
+        this.steward = steward;
     }
 
     public String getServiceIds() {

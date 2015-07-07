@@ -44,6 +44,43 @@ public class Steward extends BaseInfo<Long> {
     @Enumerated
     private Location location;
 
+    public Rank getRank() {
+        return rank;
+    }
 
+    public void setRank(Rank rank) {
+        this.rank = rank;
+    }
 
+    public int getStewardIntegration() {
+        return stewardIntegration;
+    }
+
+    public void setStewardIntegration(int stewardIntegration) {
+        this.stewardIntegration = stewardIntegration;
+    }
+
+    public int getServicedPeriod() {
+        return servicedPeriod;
+    }
+
+    public void setServicedPeriod(int servicedPeriod) {
+        this.servicedPeriod = servicedPeriod;
+    }
+
+    public String getLicense() {
+        return License;
+    }
+
+    public void setLicense(String license) {
+        License = license;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
 }
