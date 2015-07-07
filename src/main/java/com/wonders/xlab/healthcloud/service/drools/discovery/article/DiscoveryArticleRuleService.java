@@ -16,12 +16,16 @@ import com.wonders.xlab.healthcloud.service.drools.discovery.article.output.Outp
 
 
 /**
- * discovery规则服务。
+ * 发现文章规则服务，
+ * 1、找出用户关心分类的所有文章
+ * 2、找出所有文章中所有点击数为0的文章
+ * 3、如果点击数为0的文章数大于等于需要的文章数，随机选取需要的文章数
+ * 4、如果点击数为0的文章数不够，多余到点击数大于0的文章
+ * 5、点击数超过0的文章点击数从小到大排序，然后取剩余未选择的文章数
  * @author xu
- *
  */
 @Service
-public class DiscoveryRuleService {
+public class DiscoveryArticleRuleService {
 	@Autowired
 	@Qualifier("discoveryKBase")
 	private KieBase kieBase;
@@ -35,7 +39,7 @@ public class DiscoveryRuleService {
 		KieSession session = kieBase.newKieSession();
 		// 2、构造global对象，分析后返回
 		OutputDaytHealthInfo output = new OutputDaytHealthInfo();
-		session.setGlobal("output", output);
+		session.setGlobal("articleoutput", output);
 		
 		// 3、构建fact放入规则中
 		UserQuerySample userQuerySample = new UserQuerySample(user.getId());
@@ -64,14 +68,13 @@ public class DiscoveryRuleService {
 		return output.getHealthInfoIds();
 	}
 	
-	
 	public void testRule() {
 		// 1、创建session，内部配置的是stateful
 		KieSession session = kieBase.newKieSession();
 		
 		// 1.1 设置gloable对象，在drl中通过别名使用
-//		List<FeedDayDiagnoseOutput> diagnoseList = new ArrayList<FeedDayDiagnoseOutput>();
-//		session.setGlobal("diagnoseList", diagnoseList);
+		OutputDaytHealthInfo output = new OutputDaytHealthInfo();
+		session.setGlobal("output", output);
 		
 		// 1.2 可以设置一些监听器，再议
 		

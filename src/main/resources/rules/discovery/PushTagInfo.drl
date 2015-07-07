@@ -1,13 +1,16 @@
 //created on: 2015-7-5
-package rules.discovery;
+package rules.discovery.tag;
 
 //list any import classes here.
 
 import com.wonders.xlab.healthcloud.service.drools.discovery.tag.input.TagInfoSample;
-import com.wonders.xlab.healthcloud.service.drools.discovery.tag.input.UserQuerySample;
+import com.wonders.xlab.healthcloud.service.drools.discovery.tag.input.UserTagQuerySample;
 import com.wonders.xlab.healthcloud.service.drools.discovery.tag.output.OutputTagInfo;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.RandomUtils;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * 从size中随机选取一个数字。
@@ -19,25 +22,430 @@ function Integer randomIndexFromSize(int size) {
 //declare any global variables here
 
 // 里面存放OutputTagInfo
-global ArrayList outputs
+global ArrayList tagoutput
 
-
-
-
-rule "Your First Rule"
-
-    when
-        //conditions
-    then
-        //actions
-
+// 针对某个用户，传入所有的标签，
+// 这些id要参与交集，删除等操作
+declare TotalTagIdsWithUser
+	userId : Long // 用户id
+	totalIds : HashSet //总的标签ids
 end
 
-rule "Your Second Rule"
-    //include attributes such as "salience" here...
-    when
-        //conditions
-    then
-        //actions
-
+// 用户选择的标签，关联的标签，不关联的标签
+declare UserRelatedTagInfo
+	userId : Long // 用户Id
+	calcuTagIdSize : Integer // 已经处理的标签数
+	totalTagIdSize : Integer // 总共标签数
+	tagIds : HashSet // 用户关心的标签ids
+	related_1_tagIds : HashSet // 1级关联标签ids
+	related_2_tagIds : HashSet // 2级关联标签ids
+	no_related_tagIds : HashSet // 不关联标签ids
 end
+
+// 1级关联随机选择用条件
+declare Related_1_id_selected_condition
+	userId : Long // 用户id
+	expectedIdListSize : Integer // 希望选择到的ids大小
+	currentSelectedId : Long // 当前随机选中的id
+	selectedIdList : ArrayList // 已经选择到的list列表
+	selectedIdListSize : Integer // 已经选择的liste列表大小
+	canSelectedIdList : ArrayList // 能够被随机选择的list列表
+end
+
+// 2级关联随机选择用条件（暂时不用）
+declare Related_2_id_selected_condition
+	userId : Long // 用户id
+	expectedIdListSize : Integer // 希望选择到的ids大小
+	currentSelectedId : Long // 当前随机选中的id
+	selectedIdList : ArrayList // 已经选择到的list列表
+	selectedIdListSize : Integer // 已经选择的liste列表大小
+	canSelectedIdList : ArrayList // 能够被随机选择的list列表
+end
+
+// 无关级关联随机选择用条件
+declare Related_n_id_selected_condition
+	userId : Long // 用户id
+	expectedIdListSize : Integer // 希望选择到的ids大小
+	currentSelectedId : Long // 当前随机选中的id
+	selectedIdList : ArrayList // 已经选择到的list列表
+	selectedIdListSize : Integer // 已经选择的liste列表大小
+	canSelectedIdList : ArrayList // 能够被随机选择的list列表
+end
+
+//----------------------------- 第一阶段、整合用户关心标签，关联标签（以下） ------------------------------//
+
+// 整合所有标签id，并绑定到每个用户
+// 总的标签必须大于等于4才能计算
+rule "load tagInfoSample to TotalTagIdsWithUser"
+	no-loop 
+	when
+		UserTagQuerySample ( $userId : userId )
+		not (exists TotalTagIdsWithUser())
+		$tagInfoSampleSet : HashSet(size() >= 4) from collect(TagInfoSample())
+	then
+		TotalTagIdsWithUser totalTagIdsWithUser = new TotalTagIdsWithUser();
+		totalTagIdsWithUser.setUserId($userId);
+		totalTagIdsWithUser.setTotalIds(new HashSet());
+		HashSet totalIds = new HashSet();
+		for (Object obj : $tagInfoSampleSet) {
+			Long id = ((TagInfoSample) obj).getId();
+			totalIds.add(id);
+		}
+		totalTagIdsWithUser.getTotalIds().addAll(totalIds);
+		
+		System.out.println("userId=" + $userId + " load tagInfoSample to TotalTagIdsWithUser ");
+		insert(totalTagIdsWithUser);
+end
+
+// 创建用户关联标签信息，整合用户的选择的标签信息
+// 限定用户选择的标签数小于等于2个
+rule "load TotalTagIdsWithUser to create UserRelatedTagInfo and exact selectedtagids "
+	when
+		TotalTagIdsWithUser ( $userId : userId )
+		not (exists UserRelatedTagInfo ( userId == $userId ))
+		$userTagQuerySampleSet : HashSet(size() > 0 && size() <= 2) from collect(UserTagQuerySample( userId == $userId ))
+	then
+		UserRelatedTagInfo userRelatedTagInfo = new UserRelatedTagInfo();
+		userRelatedTagInfo.setUserId($userId);
+		HashSet tagIds = new HashSet();
+		for (Object obj : $userTagQuerySampleSet) {
+			Long tagId = ((UserTagQuerySample) obj).getTagId();
+			tagIds.add(tagId);
+		}
+		userRelatedTagInfo.setTagIds(tagIds);
+		userRelatedTagInfo.setRelated_1_tagIds(new HashSet());
+		userRelatedTagInfo.setRelated_2_tagIds(new HashSet());
+		userRelatedTagInfo.setNo_related_tagIds(new HashSet());
+		
+		userRelatedTagInfo.setTotalTagIdSize($userTagQuerySampleSet.size());
+		userRelatedTagInfo.setCalcuTagIdSize(0);
+		
+		System.out.println("userId=" + $userId + " load UserTagQuerySample to create UserRelatedTagInfo ");
+		insert(userRelatedTagInfo);
+end
+
+// 根据用户关联标签信息，整合用户选择的标签，关联的标签，不关联的标签
+// 判定第2级关联标签的是把所有的1级关联、无关关联合并后再和总的取差集
+rule "extract TagInfoSample to UserRelatedTagInfo"
+	when
+		UserTagQuerySample ( $userId : userId, $tagId : tagId )
+		TotalTagIdsWithUser ( userId == $userId, $totalIds : totalIds )
+		TagInfoSample ( 
+			id == $tagId, 
+			$relation_1_ids : relation_1_ids, 
+			$no_relation_ids : no_relation_ids 
+		)
+		$userRelatedTagInfo : UserRelatedTagInfo ( 
+			userId == $userId, 
+			$tagIds : tagIds, 
+			$related_1_tagIds : related_1_tagIds, 
+			$related_2_tagIds : related_2_tagIds,
+			$no_related_tagIds : no_related_tagIds
+		)
+	then
+		// 假设1级标签中有其他标签，需要用总标签取交集，交集
+		$related_1_tagIds.addAll(CollectionUtils.intersection($relation_1_ids, $totalIds)); 
+		$related_1_tagIds.removeAll($tagIds);
+		
+		// 假设无关级标签中有其他标签，需要用总标签取交集，不需要和1级标签比较去重，交集
+		$no_related_tagIds.addAll(CollectionUtils.intersection($no_relation_ids, $totalIds));
+		$no_related_tagIds.removeAll($tagIds);
+		// 剩余的就是2级关联的ids，取差集
+		HashSet set_r1_nr = new HashSet();
+		set_r1_nr.addAll($related_1_tagIds);
+		set_r1_nr.addAll($no_related_tagIds);
+		$related_2_tagIds.addAll(CollectionUtils.subtract($totalIds, set_r1_nr));
+		$related_2_tagIds.removeAll($tagIds);
+		
+		$userRelatedTagInfo.setCalcuTagIdSize($userRelatedTagInfo.getCalcuTagIdSize() + 1);
+		
+		System.out.println("用户id=" + $userId);
+		System.out.println("总关心的标签=" + $tagIds);
+		System.out.println("1级关联标签=" + $related_1_tagIds);
+		System.out.println("2级关联标签=" + $related_2_tagIds);
+		System.out.println("无关联标签=" + $no_related_tagIds);
+end
+
+//----------------------------- 第一阶段、整合用户关心标签，关联标签（以上） ------------------------------//
+
+//----------------------------- 第二阶段，生成随机选取关联id条件（以下）----------------------------//
+
+rule "Related_1_id_selected_condition for tagIds.size() = 1 and related_1_tagIds.size() <= 3"
+	when
+		$userRelatedTagInfo : UserRelatedTagInfo ( 
+			$userId : userId, 
+			$calcuTagIdSize : calcuTagIdSize, 
+			$totalTagIdSize : totalTagIdSize,
+			$tagIds : tagIds,
+			$related_1_tagIds : related_1_tagIds, 
+			$related_2_tagIds : related_2_tagIds,
+			$no_related_tagIds : no_related_tagIds
+		)
+		eval ( $calcuTagIdSize == $totalTagIdSize )
+		eval ( $tagIds.size() == 1 && $related_1_tagIds.size() <= 3 )
+	then
+		// 生成1级关联随机选择用条件
+		Related_1_id_selected_condition related_1_id_selected_condition = new Related_1_id_selected_condition();
+		related_1_id_selected_condition.setUserId($userId);
+		related_1_id_selected_condition.setExpectedIdListSize($related_1_tagIds.size());
+		related_1_id_selected_condition.setSelectedIdList(new ArrayList());
+		related_1_id_selected_condition.setSelectedIdListSize(0);
+		related_1_id_selected_condition.setCanSelectedIdList(new ArrayList());
+		related_1_id_selected_condition.getCanSelectedIdList().addAll($related_1_tagIds);
+		insert(related_1_id_selected_condition);
+		
+		System.out.println("userId=" + $userId + ",Related_1_id_selected_condition for tagIds.size() = 1 and related_1_tagIds.size() <= 3");
+end
+rule "Related_1_id_selected_condition for tagIds.size() = 1 and related_1_tagIds.size() > 3"
+	when
+		$userRelatedTagInfo : UserRelatedTagInfo ( 
+			$userId : userId, 
+			$calcuTagIdSize : calcuTagIdSize, 
+			$totalTagIdSize : totalTagIdSize,
+			$tagIds : tagIds,
+			$related_1_tagIds : related_1_tagIds, 
+			$related_2_tagIds : related_2_tagIds,
+			$no_related_tagIds : no_related_tagIds
+		)
+		eval ( $calcuTagIdSize == $totalTagIdSize )
+		eval ( $tagIds.size() == 1 && $related_1_tagIds.size() > 3 )
+	then
+		// 生成1级关联随机选择用条件
+		Related_1_id_selected_condition related_1_id_selected_condition = new Related_1_id_selected_condition();
+		related_1_id_selected_condition.setUserId($userId);
+		related_1_id_selected_condition.setExpectedIdListSize(3);
+		related_1_id_selected_condition.setSelectedIdList(new ArrayList());
+		related_1_id_selected_condition.setSelectedIdListSize(0);
+		related_1_id_selected_condition.setCanSelectedIdList(new ArrayList());
+		related_1_id_selected_condition.getCanSelectedIdList().addAll($related_1_tagIds);
+		insert(related_1_id_selected_condition);
+		
+		System.out.println("userId=" + $userId + ",Related_1_id_selected_condition for tagIds.size() = 1 and related_1_tagIds.size() > 3");
+end
+rule "Related_1_id_selected_condition for tagIds.size() = 2 and related_1_tagIds.size() <= 2"
+	when
+		$userRelatedTagInfo : UserRelatedTagInfo ( 
+			$userId : userId, 
+			$calcuTagIdSize : calcuTagIdSize, 
+			$totalTagIdSize : totalTagIdSize,
+			$tagIds : tagIds,
+			$related_1_tagIds : related_1_tagIds, 
+			$related_2_tagIds : related_2_tagIds,
+			$no_related_tagIds : no_related_tagIds
+		)
+		eval ( $calcuTagIdSize == $totalTagIdSize )
+		eval ( $tagIds.size() == 2 && $related_1_tagIds.size() <= 2 )
+	then
+		// 生成1级关联随机选择用条件
+		Related_1_id_selected_condition related_1_id_selected_condition = new Related_1_id_selected_condition();
+		related_1_id_selected_condition.setUserId($userId);
+		related_1_id_selected_condition.setExpectedIdListSize($related_1_tagIds.size());
+		related_1_id_selected_condition.setSelectedIdList(new ArrayList());
+		related_1_id_selected_condition.setSelectedIdListSize(0);
+		related_1_id_selected_condition.setCanSelectedIdList(new ArrayList());
+		related_1_id_selected_condition.getCanSelectedIdList().addAll($related_1_tagIds);
+		insert(related_1_id_selected_condition);
+		
+		System.out.println("userId=" + $userId + ",Related_1_id_selected_condition for tagIds.size() == 2 and related_1_tagIds.size() <= 2");
+end
+rule "Related_1_id_selected_condition for tagIds.size() = 2 and related_1_tagIds.size() > 2"
+	when
+		$userRelatedTagInfo : UserRelatedTagInfo ( 
+			$userId : userId, 
+			$calcuTagIdSize : calcuTagIdSize, 
+			$totalTagIdSize : totalTagIdSize,
+			$tagIds : tagIds,
+			$related_1_tagIds : related_1_tagIds, 
+			$related_2_tagIds : related_2_tagIds,
+			$no_related_tagIds : no_related_tagIds
+		)
+		eval ( $calcuTagIdSize == $totalTagIdSize )
+		eval ( $tagIds.size() == 2 && $related_1_tagIds.size() > 2 )
+	then
+		// 生成1级关联随机选择用条件
+		Related_1_id_selected_condition related_1_id_selected_condition = new Related_1_id_selected_condition();
+		related_1_id_selected_condition.setUserId($userId);
+		related_1_id_selected_condition.setExpectedIdListSize(2);
+		related_1_id_selected_condition.setSelectedIdList(new ArrayList());
+		related_1_id_selected_condition.setSelectedIdListSize(0);
+		related_1_id_selected_condition.setCanSelectedIdList(new ArrayList());
+		related_1_id_selected_condition.getCanSelectedIdList().addAll($related_1_tagIds);
+		insert(related_1_id_selected_condition);
+		
+		System.out.println("userId=" + $userId + ",Related_1_id_selected_condition for tagIds.size() = 2 and related_1_tagIds.size() > 2");
+end
+
+rule "Related_n_id_selected_condition for related_n_tagIds.size() <= 1"
+	when
+		$userRelatedTagInfo : UserRelatedTagInfo ( 
+			$userId : userId, 
+			$calcuTagIdSize : calcuTagIdSize, 
+			$totalTagIdSize : totalTagIdSize,
+			$tagIds : tagIds,
+			$related_1_tagIds : related_1_tagIds, 
+			$related_2_tagIds : related_2_tagIds,
+			$no_related_tagIds : no_related_tagIds
+		)
+		eval ( $calcuTagIdSize == $totalTagIdSize )
+		eval ( $no_related_tagIds.size() <= 1 )
+	then
+		// 生成1级关联随机选择用条件
+		Related_n_id_selected_condition related_n_id_selected_condition = new Related_n_id_selected_condition();
+		related_n_id_selected_condition.setUserId($userId);
+		related_n_id_selected_condition.setExpectedIdListSize($no_related_tagIds.size());
+		related_n_id_selected_condition.setSelectedIdList(new ArrayList());
+		related_n_id_selected_condition.setSelectedIdListSize(0);
+		related_n_id_selected_condition.setCanSelectedIdList(new ArrayList());
+		related_n_id_selected_condition.getCanSelectedIdList().addAll($no_related_tagIds);
+		insert(related_n_id_selected_condition);
+		
+		System.out.println("userId=" + $userId + ",Related_n_id_selected_condition for related_n_tagIds.size() <= 1");
+end
+rule "Related_n_id_selected_condition for related_1_tagIds.size() > 1"
+	when
+		$userRelatedTagInfo : UserRelatedTagInfo ( 
+			$userId : userId, 
+			$calcuTagIdSize : calcuTagIdSize, 
+			$totalTagIdSize : totalTagIdSize,
+			$tagIds : tagIds,
+			$related_1_tagIds : related_1_tagIds, 
+			$related_2_tagIds : related_2_tagIds,
+			$no_related_tagIds : no_related_tagIds
+		)
+		eval ( $calcuTagIdSize == $totalTagIdSize )
+		eval ( $no_related_tagIds.size() > 1 )
+	then
+		// 生成1级关联随机选择用条件
+		Related_n_id_selected_condition related_n_id_selected_condition = new Related_n_id_selected_condition();
+		related_n_id_selected_condition.setUserId($userId);
+		related_n_id_selected_condition.setExpectedIdListSize(1);
+		related_n_id_selected_condition.setSelectedIdList(new ArrayList());
+		related_n_id_selected_condition.setSelectedIdListSize(0);
+		related_n_id_selected_condition.setCanSelectedIdList(new ArrayList());
+		related_n_id_selected_condition.getCanSelectedIdList().addAll($no_related_tagIds);
+		insert(related_n_id_selected_condition);
+		
+		System.out.println("userId=" + $userId + ",Related_n_id_selected_condition for related_1_tagIds.size() > 1");
+end
+
+//----------------------------- 第二阶段，生成随机选取关联id条件（以上）----------------------------//
+
+//----------------------------- 第三阶段，随机选取关联（以下）----------------------------//
+
+rule "condition1 recursion"
+	when
+		$Related_1_id_selected_condition : Related_1_id_selected_condition ( 
+			$userId : userId, 
+			$expectedIdListSize : expectedIdListSize, 
+			$selectedIdList : selectedIdList, 
+			$selectedIdListSize : selectedIdListSize, 
+			$canSelectedIdList : canSelectedIdList
+		)
+		eval ( $selectedIdListSize < $expectedIdListSize )
+	then
+		int index = randomIndexFromSize($canSelectedIdList.size());
+		Long obj = (Long) $canSelectedIdList.get(index);
+		$Related_1_id_selected_condition.setCurrentSelectedId(obj);
+		$selectedIdList.add(obj);
+		$canSelectedIdList.remove(obj);
+		$Related_1_id_selected_condition.setSelectedIdListSize(++ $selectedIdListSize);
+		update($Related_1_id_selected_condition);
+		
+		System.out.println("condition1 recursion");
+end
+
+rule "condition2 recursion"
+	when
+		$Related_1_id_selected_condition : Related_1_id_selected_condition ( 
+			$userId : userId, 
+			$expectedIdListSize : expectedIdListSize, 
+			$selectedIdListSize : selectedIdListSize
+		)
+		eval ( $selectedIdListSize == $expectedIdListSize )
+		$Related_n_id_selected_condition : Related_n_id_selected_condition ( 
+			userId == $userId, 
+			$expectedIdListSize_n : expectedIdListSize, 
+			$selectedIdList_n : selectedIdList, 
+			$selectedIdListSize_n : selectedIdListSize, 
+			$canSelectedIdList_n : canSelectedIdList
+		)
+		eval ( $selectedIdListSize_n < $expectedIdListSize_n )
+	then
+		int index = randomIndexFromSize($canSelectedIdList_n.size());
+		Long obj = (Long) $canSelectedIdList_n.get(index);
+		$Related_n_id_selected_condition.setCurrentSelectedId(obj);
+		$selectedIdList_n.add(obj);
+		$canSelectedIdList_n.remove(obj);
+		$Related_n_id_selected_condition.setSelectedIdListSize(++ $selectedIdListSize_n);
+		update($Related_n_id_selected_condition);
+		
+		System.out.println("condition2 recursion");
+end
+
+rule "condition2 recursion callback"
+	when
+		$related_n_id_selected_condition : Related_n_id_selected_condition ( 
+			$userId : userId, 
+			$currentSelectedId_n : currentSelectedId,
+			$expectedIdListSize_n : expectedIdListSize, 
+			$selectedIdList_n : selectedIdList, 
+			$selectedIdListSize_n : selectedIdListSize, 
+			$canSelectedIdList_n : canSelectedIdList
+		)
+		$related_1_id_selected_condition : Related_1_id_selected_condition ( 
+			userId == $userId, 
+			$selectedIdListSize : selectedIdListSize, 
+			$expectedIdListSize : expectedIdListSize,
+			$selectedIdList : selectedIdList
+		)
+		eval ( $selectedIdListSize == $expectedIdListSize )
+		eval ( $selectedIdList.contains( $currentSelectedId_n ) )
+	then
+		$selectedIdList_n.remove($currentSelectedId_n);
+		$related_n_id_selected_condition.setCurrentSelectedId(null);
+		$related_n_id_selected_condition.setSelectedIdListSize(-- $selectedIdListSize_n);
+		update($related_n_id_selected_condition);
+		
+		System.out.println("condition2 recursion callback");
+end
+
+//----------------------------- 第三阶段，随机选取关联（以上）----------------------------//
+
+rule "articlesoutput"
+	when
+		$Related_1_id_selected_condition : Related_1_id_selected_condition ( 
+			$userId : userId, 
+			$expectedIdListSize : expectedIdListSize, 
+			$selectedIdList : selectedIdList, 
+			$selectedIdListSize : selectedIdListSize, 
+			$canSelectedIdList : canSelectedIdList
+		)
+		eval ( $selectedIdListSize == $expectedIdListSize )
+		$Related_n_id_selected_condition : Related_n_id_selected_condition ( 
+			userId == $userId, 
+			$expectedIdListSize_n : expectedIdListSize, 
+			$selectedIdList_n : selectedIdList, 
+			$selectedIdListSize_n : selectedIdListSize, 
+			$canSelectedIdList_n : canSelectedIdList
+		)
+		eval ( $selectedIdListSize_n == $expectedIdListSize_n )
+		UserRelatedTagInfo (
+			userId == $userId,
+			$tagIds : tagIds
+		)
+	then
+		System.out.println($selectedIdList);
+		System.out.println($selectedIdList_n);
+		
+		OutputTagInfo output = new OutputTagInfo();
+		output.setUserId($userId);
+		output.setOtherDesc("Yeah");
+		output.getPushTagIds().addAll($tagIds);
+		output.getPushTagIds().addAll($selectedIdList);
+		output.getPushTagIds().addAll($selectedIdList_n);
+		
+		tagoutput.add(output);
+end
+
+
+

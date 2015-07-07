@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wonders.xlab.healthcloud.dto.discovery.HealthCategoryDto;
 import com.wonders.xlab.healthcloud.dto.discovery.HealthInfoDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.customer.User;
@@ -22,7 +25,8 @@ import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoClickInfoRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoRepository;
-import com.wonders.xlab.healthcloud.service.drools.discovery.article.DiscoveryRuleService;
+import com.wonders.xlab.healthcloud.service.drools.discovery.article.DiscoveryArticleRuleService;
+import com.wonders.xlab.healthcloud.service.drools.discovery.tag.DiscoveryTagRuleService;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
 
 /**
@@ -37,7 +41,11 @@ public class AppController {
 	private static final Logger logger = LoggerFactory.getLogger("com.wonders.xlab.healthcloud.controller.discovery.AppController");
 	
 	@Autowired
-	private DiscoveryRuleService discoveryRuleService;
+	@Qualifier("discoveryArticleRuleService")
+	private DiscoveryArticleRuleService discoveryArticleRuleService;
+	@Autowired
+	@Qualifier("discoveryTagRuleService")
+	private DiscoveryTagRuleService discoveryTagRuleService;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -50,9 +58,29 @@ public class AppController {
 	// 显示更多信息，分类标签信息返回
 	@RequestMapping(value = "recommand/tags/{userId}")
 	public ControllerResult<?> getTagPushInfos(@PathVariable Long userId) {
-		// TODO：测试返回前4个分类信息，之后使用规则引擎解决
-		List<HealthCategory> hces = this.healthCategoryRepository.findTop4ByType(null);
-		return new ControllerResult<List<HealthCategory>>().setRet_code(0).setRet_values(hces).setMessage("成功");
+		// 查询所有category
+
+		List<HealthCategory> allCategories = this.healthCategoryRepository.findAll();
+		User user = userRepository.queryUserHealthInfo(userId);
+		if (user == null) 
+			return new ControllerResult<String>().setRet_code(-1).setRet_values("用户不存在").setMessage("用户不存在");
+		Set<HealthCategory> userCategories = user.getHcs();
+		
+		Long[] ids = this.discoveryTagRuleService.pushTags(user, allCategories, userCategories);
+		List<HealthCategory> healthCategories = this.healthCategoryRepository.findAll(Arrays.asList(ids));
+		List<HealthCategory> healthCategories_order = new ArrayList<>();
+		for (int i = 0; i < ids.length; i++) {
+			for (HealthCategory hc : healthCategories) {
+				if (hc.getId() == ids[i]) {
+					healthCategories_order.add(hc);
+					break;
+				}
+			}
+		}
+		List<HealthCategoryDto> healthCategoryDtoes = new ArrayList<>();
+		for (HealthCategory hc : healthCategories_order) 
+			healthCategoryDtoes.add(new HealthCategoryDto().toNewHealthCategoryDto(hc));
+		return new ControllerResult<List<HealthCategoryDto>>().setRet_code(0).setRet_values(healthCategoryDtoes).setMessage("成功");
 	}
 	
 	// 显示每个分类标签的健康info信息
@@ -81,7 +109,7 @@ public class AppController {
 		User user = userRepository.queryUserHealthInfo(userId);
 		if (user == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("用户不存在").setMessage("用户不存在！");
-		Long[] ids = discoveryRuleService.pushArticles(user);
+		Long[] ids = discoveryArticleRuleService.pushArticles(user);
 		
 		List<HealthInfo> healthInfos = this.healthInfoRepository.findAll(Arrays.asList(ids));
 		List<HealthInfoDto> healthInfoDtoes = new ArrayList<HealthInfoDto>();
