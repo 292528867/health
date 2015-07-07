@@ -70,6 +70,7 @@
                 <small>Info</small>
             </div>
         </div>
+<!--
         <div class="am-g">
             <div class="am-u-sm-12 am-u-md-6">
                 <div class="am-btn-toolbar">
@@ -89,6 +90,7 @@
                 </div>
             </div>
         </div>
+-->
 
 
         <div class="am-g">
@@ -99,13 +101,117 @@
                         <tr>
                             <th class="table-check"><input type="checkbox"/></th>
                             <th class="table-id">ID</th>
-                            <th class="table-title">名称</th>
-                            <th class="table-title">简称</th>
+                            <th class="table-title">板块名称</th>
+                            <th class="table-title">标题</th>
                             <th class="table-title">描述</th>
                             <th class="table-set">操作</th>
                         </tr>
                         </thead>
                         <tbody id="allDatas">
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>1</td>
+                            <td><a href="#">发现</a></td>
+                            <td class="am-hide-sm-only">banner底下显示文字</td>
+                            <td class="am-hide-sm-only">如果有什么描述。</td>
+                            <td>
+                                <div class="am-btn-toolbar">
+                                    <div class="am-btn-group am-btn-group-xs">
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-pencil-square-o"></span> 编辑
+                                        </button>
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-arrow-up"></span> 置顶
+                                        </button>
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-check"></span> 启用
+                                        </button>
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-close"></span> 下架
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>2</td>
+                            <td><a href="#">日程</a></td>
+                            <td class="am-hide-sm-only">banner底下显示文字</td>
+                            <td class="am-hide-sm-only">如果有什么描述。</td>
+                            <td>
+                                <div class="am-btn-toolbar">
+                                    <div class="am-btn-group am-btn-group-xs">
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-pencil-square-o"></span> 编辑
+                                        </button>
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-arrow-up"></span> 置顶
+                                        </button>
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-check"></span> 启用
+                                        </button>
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-close"></span> 下架
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>3</td>
+                            <td><a href="#">管家</a></td>
+                            <td class="am-hide-sm-only">banner底下显示文字</td>
+                            <td class="am-hide-sm-only">如果有什么描述。</td>
+                            <td>
+                                <div class="am-btn-toolbar">
+                                    <div class="am-btn-group am-btn-group-xs">
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-pencil-square-o"></span> 编辑
+                                        </button>
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-arrow-up"></span> 置顶
+                                        </button>
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-check"></span> 启用
+                                        </button>
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-close"></span> 下架
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>4</td>
+                            <td><a href="#">轻问诊</a></td>
+                            <td class="am-hide-sm-only">banner底下显示文字</td>
+                            <td class="am-hide-sm-only">如果有什么描述。</td>
+                            <td>
+                                <div class="am-btn-toolbar">
+                                    <div class="am-btn-group am-btn-group-xs">
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-pencil-square-o"></span> 编辑
+                                        </button>
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-arrow-up"></span> 置顶
+                                        </button>
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-check"></span> 启用
+                                        </button>
+                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
+                                                onclick="changeType(1)"><span class="am-icon-close"></span> 下架
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                     <!--
@@ -148,53 +254,9 @@
 </footer>
 
 
-<div class="am-modal " tabindex="-1" id="add-modal">
-    <div class="am-modal-dialog">
-        <div class="am-modal-hd">添加分类
-            <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
-        </div>
-        <div class="am-modal-bd">
-            <fieldset>
-                <div class="am-form-group type-add-form">
-                    <label for="title">标题</label>
-                    <input type="text" id="title" placeholder=""
-                           required name="title"/>
-                </div>
-                <div class="am-form-group type-add-form">
-                    <label for="tag">简称</label>
-                    <input type="text" id="tag" placeholder=""
-                           required name="tag"/>
-                </div>
-                <div class="am-form-group type-add-form">
-                    <label for="desc">描述</label>
-                    <input type="text" id="desc" placeholder=""
-                           required name="desc"/>
-                </div>
-                <div class="am-form-group type-add-form">
-                    <label for="firstRelatedIds">一级关联</label>
-                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'secondary', searchBox:1}"
-                            id="firstRelatedIds" name="firstRelatedIds" class="type-select">
-                    </select>
-                </div>
-                <div class="am-form-group type-add-form">
-                    <label for="otherRelatedIds">三级关联</label>
-                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'warning', dropUp:1, searchBox:1}"
-                            id="otherRelatedIds" name="otherRelatedIds" class="type-select">
-                    </select>
-                </div>
-
-            </fieldset>
-
-            <button class="am-btn am-btn-secondary" type="button" id="type-add" onclick="addType()">提交</button>
-            <br/>
-
-
-        </div>
-    </div>
-</div>
 <div class="am-modal " tabindex="-1" id="change-modal">
     <div class="am-modal-dialog">
-        <div class="am-modal-hd">修改分类
+        <div class="am-modal-hd">修改banner
             <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
         </div>
         <div class="am-modal-bd">
@@ -216,14 +278,16 @@
                 </div>
                 <div class="am-form-group type-add-form">
                     <label for="change-firstRelatedIds">一级关联</label>
-                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'secondary', searchBox:1}"
+                    <select multiple
+                            data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'secondary', searchBox:1}"
                             id="change-firstRelatedIds" name="change-firstRelatedIds" class="type-select">
                     </select>
                 </div>
                 <div class="am-form-group type-add-form">
-                    <label for="change-otherRelatedIds">三级关联</label>
-                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'warning', dropUp:1, searchBox:1}"
-                            id="change-otherRelatedIds" name="change-otherRelatedIds" class="type-select">
+                    <label for="change-secondRelatedIds">二级关联</label>
+                    <select multiple
+                            data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'warning', dropUp:1, searchBox:1}"
+                            id="change-secondRelatedIds" name="change-secondRelatedIds" class="type-select">
                     </select>
                 </div>
 
@@ -292,8 +356,8 @@
         }
     });
 </script>
-<script src="js/typeAdd.js"></script>
-<script src="js/loadAllType.js"></script>
+<script src="js/indexEdit/firstSliderAdd.js"></script>
+<script src="js/indexEdit/firstSliderLoad.js"></script>
 <script>
     $('#admin-offcanvas').load('common/adminSidebar.html');
 </script>

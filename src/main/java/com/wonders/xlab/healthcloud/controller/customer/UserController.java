@@ -2,7 +2,6 @@ package com.wonders.xlab.healthcloud.controller.customer;
 
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
-import com.wonders.xlab.healthcloud.dto.EMToken;
 import com.wonders.xlab.healthcloud.dto.IdenCode;
 import com.wonders.xlab.healthcloud.dto.ThirdLoginToken;
 import com.wonders.xlab.healthcloud.dto.customer.UserDto;
@@ -24,9 +23,7 @@ import net.sf.ehcache.Cache;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -88,14 +85,27 @@ public class UserController extends AbstractBaseController<User, Long> {
         try {
             //登陆不带手机号
             if (StringUtils.isEmpty(token.getTel())) {
-                logger.info("三方登陆时电话为空,thirdId={}", token.getThirdId());
+                logger.info("三方登陆时电话为空,thirdId={},AppPlatform={}", token.getThirdId(), token.getAppPlatform());
                 UserThird userThird = userThirdRepository.findByThirdIdAndThirdType(
                         token.getThirdId(),
                         ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]
                 );
-                return null == userThird ?
-                        new ControllerResult<>().setRet_code(1).setRet_values("").setMessage("用户不存在!") :
-                        new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
+//                return null == userThird ?
+//                        new ControllerResult<>().setRet_code(1).setRet_values("").setMessage("用户不存在!") :
+//                        new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
+                if (null == userThird) {
+                    return new ControllerResult<>().setRet_code(1).setRet_values("").setMessage("用户不存在!");
+                } else {
+                    //判断数据库平台是否与登陆一致，不一致更新数据库
+                    if (token.getAppPlatform().equals(userThird.getUser().getAppPlatform())) {
+                        return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
+                    } else {
+                        User user = userThird.getUser();
+                        user.setAppPlatform(token.getAppPlatform());
+                        user = userRepository.save(user);
+                        return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
+                    }
+                }
             } else {
                 //电话号码格式验证不通过
                 if (!ValidateUtils.validateTel(token.getTel())) {
@@ -129,6 +139,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         if (null == user) {
             user = new User();
             user.setTel(token.getTel());
+            user.setAppPlatform(token.getAppPlatform());
         }
         UserThird userThird = new UserThird(
                 token.getThirdId(),
@@ -136,7 +147,7 @@ public class UserController extends AbstractBaseController<User, Long> {
                 user
         );
         userThird = userThirdRepository.save(userThird);
-        logger.info("三方登陆新增绑定,thirdId={},userId={}", token.getThirdId(), userThird.getUser().getId());
+        logger.info("三方登陆新增绑定,thirdId={},userId={},AppPlatform={}", token.getThirdId(), userThird.getUser().getId(), token.getAppPlatform());
         return new ControllerResult<>().setRet_code(0).setRet_values(userThird.getUser()).setMessage("获取用户成功!");
     }
 
@@ -167,8 +178,19 @@ public class UserController extends AbstractBaseController<User, Long> {
                 } else {
                     User user = userRepository.findByTel(idenCode.getTel());
                     //用户不存在 ？创建并返回用户 ：直接返回用户
-                    return null == user ? addUserBeforeLogin(idenCode) :
-                            new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
+//                    return null == user ? addUserBeforeLogin(idenCode) :
+//                            new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
+                    if (null == user) {
+                        return addUserBeforeLogin(idenCode);
+                    } else {
+                        //判断数据库平台是否与登陆一致，不一致更新数据库
+                        if (idenCode.getAppPlatform().equals(user.getAppPlatform())) {
+                            return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
+                        } else {
+                            user.setAppPlatform(idenCode.getAppPlatform());
+                            return new ControllerResult<>().setRet_code(0).setRet_values(userRepository.save(user)).setMessage("获取用户成功!");
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
@@ -179,6 +201,7 @@ public class UserController extends AbstractBaseController<User, Long> {
     private ControllerResult<?> addUserBeforeLogin(IdenCode idenCode) {
         User user = new User();
         user.setTel(idenCode.getTel());
+        user.setAppPlatform(idenCode.getAppPlatform());
         user = userRepository.save(user);
         return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
     }
@@ -248,7 +271,7 @@ public class UserController extends AbstractBaseController<User, Long> {
     @RequestMapping(value = "test")
     public String test() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization","Bearer YWMtAOHZhCIbEeWFUA9W7qmDRwAAAU-M35g1ZTkz4qF16sSpi8ZA0tsh1tCjBos");
+        headers.add("Authorization", "Bearer YWMtAOHZhCIbEeWFUA9W7qmDRwAAAU-M35g1ZTkz4qF16sSpi8ZA0tsh1tCjBos");
 //        HttpEntity result =  emUtils.requestEMChart(headers, HttpMethod.GET, null, "chatgroups", String.class);
         emUtils.pushTokenToCache();
         return "1";

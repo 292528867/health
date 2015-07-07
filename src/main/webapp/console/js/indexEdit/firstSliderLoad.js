@@ -4,6 +4,7 @@
 var allTypeUrl = commonUrl + "discovery/cms/listCategory/",
     groupTypeUrl= commonUrl +'discovery/cms/listCategory/groupinfo';
 
+/*
 $.get(allTypeUrl, function (data) {
     console.log(data);
     //  location.reload();
@@ -19,17 +20,20 @@ $.get(allTypeUrl, function (data) {
         "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick='changeType(" + value.id + ")'>" +
         "<span class='am-icon-pencil-square-o'></span> 编辑</button>" ;
         datas += "</button>" +
+*/
 /*
         "<button type='button' class='am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only' " +
         "onclick='deleteCourse(" + value.id + ")'  >" +
         "<span class='am-icon-trash-o'></span> 删除</button>" +
-*/
+*//*
+
         "</div></div></td></tr>";
     });
     $("#allDatas").append(datas);
     $("#allDatas tr").fadeIn(300);
     //customer = null;
 });
+*/
 
 //编辑
 function changeType(id) {
@@ -43,11 +47,11 @@ function changeType(id) {
         $('#change-id').val(data.id);
         var $changeFirst = $('#change-firstRelatedIds'),
             firstRelatedIds=data.firstRelatedIds.split(','),
-            $changeOther = $('#change-otherRelatedIds'),
-            otherRelatedIds =data.otherRelatedIds.split(',');
+            $changeSecond = $('#change-secondRelatedIds'),
+            secondRelatedIds =data.secondRelatedIds.split(',');
 
         var $selectedOne = changeSelected($changeFirst, firstRelatedIds),
-            $selectedTwo = changeSelected($changeOther, otherRelatedIds);
+            $selectedTwo = changeSelected($changeSecond, secondRelatedIds);
 
         if (!$.AMUI.support.mutationobserver) {
             $selectedOne.trigger('changed.selected.amui');
@@ -101,13 +105,13 @@ $.get(groupTypeUrl, function (groupTypes) {
         typeList += '</optgroup>';
     });
     $('.type-select').append(typeList);
-    $('#firstRelatedIds').on('change', changeOther);
-    $('#change-firstRelatedIds').on('change', changeOtherChange);
+    $('#firstRelatedIds').on('change', changeSecond);
+    $('#change-firstRelatedIds').on('change', changeSecondChange);
 });
 
 //一级关联分类选择好以后，对二级关联进行不可选操作
-function changeOther() {
-    var $selected = $('#otherRelatedIds');
+function changeSecond() {
+    var $selected = $('#secondRelatedIds');
     var categories = $(this).val();
     if (categories) {
         var options = $selected.find('option');
@@ -123,8 +127,8 @@ function changeOther() {
         }
     }
 }
-function changeOtherChange() {
-    var $selected = $('#change-otherRelatedIds');
+function changeSecondChange() {
+    var $selected = $('#change-secondRelatedIds');
     var categories = $(this).val();
     if (categories) {
         var options = $selected.find('option');

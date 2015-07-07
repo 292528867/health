@@ -10,10 +10,8 @@ function addType() {
     var title = $('#title').val();
     var desc = $('#desc').val();
     var tag = $('#tag').val(),
-        firstRelatedIds= $('#firstRelatedIds').val()||[],
-        otherRelatedIds= $('#otherRelatedIds').val()||[];
-    firstRelatedIds = firstRelatedIds.join(',');
-    otherRelatedIds = otherRelatedIds.join(',');
+        firstRelatedIds= $('#firstRelatedIds').val().join(','),
+        secondRelatedIds= $('#secondRelatedIds').val().join(',');
     if (title.length==0||desc.length==0||tag.length==0) {
         alert('有字段没有填写');
 
@@ -24,7 +22,7 @@ function addType() {
         "desc": desc,
         "tag":tag,
         "firstRelatedIds":firstRelatedIds,
-        "otherRelatedIds":otherRelatedIds
+        "secondRelatedIds":secondRelatedIds
     };
     json = JSON.stringify(json);
     $.ajax({
@@ -56,10 +54,8 @@ function changeTypeSub() {
     var desc = $('#change-desc').val();
     var id = $('#change-id').val();
     var tag = $('#change-tag').val(),
-        firstRelatedIds= $('#change-firstRelatedIds').val()||',',
-        otherRelatedIds= $('#change-otherRelatedIds').val()||',';
-    firstRelatedIds = firstRelatedIds.join(',');
-    otherRelatedIds = otherRelatedIds.join(',');
+        firstRelatedIds= $('#change-firstRelatedIds').val().join(','),
+        secondRelatedIds= $('#change-secondRelatedIds').val().join(',');
     if (title.length==0||desc.length==0) {
         alert('有字段没有填写');
 
@@ -70,7 +66,7 @@ function changeTypeSub() {
         "desc": desc,
         "tag":tag,
         "firstRelatedIds":firstRelatedIds,
-        "otherRelatedIds":otherRelatedIds
+        "secondRelatedIds":secondRelatedIds
     };
     json = JSON.stringify(json);
     $.ajax({

@@ -9,13 +9,30 @@
     <ul class="am-list admin-sidebar-list">
         <li><a href="admin-index.html"><span class="am-icon-home"></span> 首页</a></li>
         <li class="admin-parent">
+            <a class="am-cf" data-am-collapse="{target: '#type-nav'}"><span class="am-icon-file"></span>
+                分类 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
+            <ul class="am-list am-collapse admin-sidebar-sub am-in" id="type-nav">
+                <li><a href="#" class="am-cf"><span class="am-icon-check"></span> 一级包<span
+                        class="am-icon-star am-fr am-margin-right admin-icon-yellow"></span></a></li>
+                <li><a href="typeAdd.html"><span class="am-icon-puzzle-piece"></span> 二级分类</a></li>
+            </ul>
+        </li>
+        <li class="admin-parent">
             <a class="am-cf" data-am-collapse="{target: '#collapse-nav'}"><span class="am-icon-file"></span>
                 发现 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
             <ul class="am-list am-collapse admin-sidebar-sub am-in" id="collapse-nav">
                 <li><a href="articleAdd.html" class="am-cf"><span class="am-icon-check"></span> 新增文章<span
                         class="am-icon-star am-fr am-margin-right admin-icon-yellow"></span></a></li>
                 <li><a href="articleCheck.html"><span class="am-icon-puzzle-piece"></span> 查看文章</a></li>
-                <li><a href="typeAdd.html"><span class="am-icon-puzzle-piece"></span> 查看日程包</a></li>
+            </ul>
+        </li>
+        <li class="admin-parent">
+            <a class="am-cf" data-am-collapse="{target: '#index-nav'}"><span class="am-icon-file"></span>
+                首页图文编辑 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
+            <ul class="am-list am-collapse admin-sidebar-sub am-in" id="index-nav">
+                <li><a href="firstSlider.html"><span class="am-icon-puzzle-piece"></span> 轮播图</a></li>
+                <li><a href="secondSlider.html"><span class="am-icon-puzzle-piece"></span> 二级轮播图</a></li>
+                <li><a href="todayTop.html"><span class="am-icon-puzzle-piece"></span> 今日头条</a></li>
             </ul>
         </li>
         <li><a href="replyInfo.html"><span class="am-icon-home"></span>环信回复</a></li>
