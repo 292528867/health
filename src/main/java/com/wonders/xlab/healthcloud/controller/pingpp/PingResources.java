@@ -62,7 +62,7 @@ public class PingResources {
 
         Map<String, Object> chargeParams = new HashMap<String, Object>();
         chargeParams.put("order_no",  new Date().getTime());
-        chargeParams.put("amount", pingDto.getMoney());
+        chargeParams.put("amount", Long.parseLong(pingDto.getMoney()));
         Map<String, String> app = new HashMap<String, String>();
         app.put("id", "app_KavHuL08GO8O4Wbn");
         chargeParams.put("app", app);
