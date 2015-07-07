@@ -25,12 +25,13 @@ function articleAdd() {
     var title = $('#title').val();
     var desc = $('#desc').val();
     var pictureUrl = $('#pictureUrl').val();
+    var pictureUrl2 = $('#pictureUrl2').val();
     var type = $('#type').val();
 
     var htmlInfo = editor.html();
     //$('#courseDetail').val(editor.html());
 
-    if (title.length==0||desc.length==0||pictureUrl.length==0||htmlInfo.length==0||type.length==0) {
+    if (title.length==0||desc.length==0||pictureUrl.length==0||pictureUrl2.length==0||htmlInfo.length==0||type.length==0) {
         alert('有字段没有填写');
         return false;
     }
@@ -38,6 +39,7 @@ function articleAdd() {
     var json ={
         "title": title,
         "pictureUrl": pictureUrl,
+        "pictureUrl2": pictureUrl2,
         "htmlInfo": htmlInfo,
         "desc": desc
     };

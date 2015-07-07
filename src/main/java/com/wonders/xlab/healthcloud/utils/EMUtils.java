@@ -127,7 +127,7 @@ public class EMUtils {
                                     setAll((Map<String, Object>) body);
                                 }}, headers) :
                                 new HttpEntity(body, headers),
-                String.class,
+                ChatGroupsResponseBody.class,
                 uriVariables
         );
 

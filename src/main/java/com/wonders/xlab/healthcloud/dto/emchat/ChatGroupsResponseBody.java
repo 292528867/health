@@ -1,8 +1,6 @@
 package com.wonders.xlab.healthcloud.dto.emchat;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by lixuanwu on 15/7/6.
@@ -13,13 +11,11 @@ public class ChatGroupsResponseBody {
 
     private String application;
 
-    private Object params;
-
     private String uri;
 
     private List<Object> entities = new ArrayList<Object>();
 
-    private Data data;
+    private Map <String,String>data;
 
     private Date timestamp;
 
@@ -53,14 +49,6 @@ public class ChatGroupsResponseBody {
         this.application = application;
     }
 
-    public Object getParams() {
-        return params;
-    }
-
-    public void setParams(Object params) {
-        this.params = params;
-    }
-
     public String getUri() {
         return uri;
     }
@@ -75,14 +63,6 @@ public class ChatGroupsResponseBody {
 
     public void setEntities(List<Object> entities) {
         this.entities = entities;
-    }
-
-    public Data getData() {
-        return data;
-    }
-
-    public void setData(Data data) {
-        this.data = data;
     }
 
     public Date getTimestamp() {
@@ -107,5 +87,13 @@ public class ChatGroupsResponseBody {
 
     public void setOrganization(String organization) {
         this.organization = organization;
+    }
+
+    public Map <String,String>getData() {
+        return data;
+    }
+
+    public void setData(Map<String,String> data) {
+        this.data = data;
     }
 }
