@@ -2,6 +2,7 @@ package com.wonders.xlab.healthcloud.controller.steward;
 
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
+import com.wonders.xlab.healthcloud.dto.pingpp.PingDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.dto.steward.ServiceDto;
 import com.wonders.xlab.healthcloud.entity.steward.RecommendPackage;
@@ -10,6 +11,7 @@ import com.wonders.xlab.healthcloud.entity.steward.Steward;
 import com.wonders.xlab.healthcloud.repository.steward.RecommendPackageRepository;
 import com.wonders.xlab.healthcloud.repository.steward.ServicesRepository;
 import com.wonders.xlab.healthcloud.repository.steward.StewardRepository;
+import com.wonders.xlab.healthcloud.service.pingpp.PingppService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -34,6 +36,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     @Autowired
     private ServicesRepository servicesRepository;
 
+    @Autowired
+    private PingppService pingppService;
     @Override
     protected MyRepository<Steward, Long> getRepository() {
         return stewardRepository;
@@ -58,7 +62,17 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     @RequestMapping("getRecommendPackageDetail/{packageId}")
     public Object getRecommendPackageDetail(@PathVariable Long packageId){
 
-        return new ControllerResult<RecommendPackage>().setRet_code(0).setRet_values(this.recommendPackageRepository.findOne(packageId)).setMessage("成功！");
+        RecommendPackage rp = this.recommendPackageRepository.findOne(packageId);
+        String[] strIds = rp.getServiceIds().split(",");
+        Long[] serviceIds = new Long[strIds.length];
+        for (int i = 0; i< strIds.length; i++)
+            serviceIds[i] = Long.parseLong(strIds[i]);
+        // 查询服务，管家
+        List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
+
+        Steward steward = this.stewardRepository.findOne(1l);
+
+        return new ControllerResult<RecommendPackage>().setRet_code(0).setRet_values().setMessage("成功！");
     }
 
     /**
@@ -105,8 +119,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @param result
      * @return
      */
-    @RequestMapping("calculateServiceAmount")
-    public Object calculateServiceAmount(@RequestBody @Valid ServiceDto serviceDto, BindingResult result) {
+    @RequestMapping("payServices")
+    public Object payServices(@RequestBody @Valid ServiceDto serviceDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -115,47 +129,49 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败");
         }
         try {
-            double amount = 0;
-            // 存在推荐包
-            if (serviceDto.getPackageId() != null) {
-                // 获取推荐包
-                RecommendPackage rp = this.recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
-                amount = Double.parseDouble(rp.getPrice());
-                Steward steward = this.stewardRepository.findOne(Long.parseLong(serviceDto.getStewardId()));
-//                amount += steward.get
+            int integration = 0;
+            int amount = 0;
+            Map<String, Object> map = new HashMap<>();
 
-                String strSeviceIds = this.recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId())).getServiceIds();
-                String[] serviceIds = strSeviceIds.split(",");
-                Long[] longServiceIds = new Long[serviceIds.length];
-                for (int i = 0; i < serviceIds.length; i++)
-                    longServiceIds[i] = Long.parseLong(serviceIds[i]);
-                List<Services> packageServices = this.servicesRepository.findAll(Arrays.asList(longServiceIds));
-
-            }
             String[] strIds = serviceDto.getServiceIds().split(",");
             Long[] serviceIds = new Long[strIds.length];
             for (int i = 0; i< strIds.length; i++)
                 serviceIds[i] = Long.parseLong(strIds[i]);
+            // 查询服务，管家
             List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
             Steward steward = this.stewardRepository.findOne(Long.parseLong(serviceDto.getStewardId()));
+            // 计算积分
             for (Services service : services)
-                amount += service.getServiceIntegration();
-            amount += steward.getStewardIntegration();
+                integration += service.getServiceIntegration();
+            integration += steward.getStewardIntegration();
 
-            int cash = 0;
-            if (amount >= 0 && amount <= 4) {
-                cash = 0;
-            } else if (amount >= 5 && amount <= 10) {
-                cash = 28;
-            } else if (amount >= 11 && amount <= 17) {
-                cash = 78;
-            } else if (amount >= 18 && amount <= 48) {
-                cash = 158;
+            // 存在推荐包
+            if (serviceDto.getPackageId() != null) {
+                // 获取推荐包，管家
+                RecommendPackage rp = this.recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
+
+                amount = Integer.parseInt(rp.getPrice());
+//                return new ControllerResult<Map<String, Object>>().setRet_code(0).setRet_values(map).setMessage("成功！");
+
+            }  else {
+                // 判断自定义积分换算金额
+                if (integration >= 0 && integration <= 4) {
+                    amount = 0;
+                } else if (integration >= 5 && integration <= 10) {
+                    amount = 28;
+                } else if (integration >= 11 && integration <= 17) {
+                    amount = 78;
+                } else if (integration >= 18 && integration <= 48) {
+                    amount = 158;
+                }
+                map.put("money", amount);
             }
 
-            Map<String, Object> map = new HashMap<>();
+            PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", String.valueOf(amount));
 
-            return new ControllerResult<>().setRet_code(0).setRet_values(map).setMessage("成功");
+            return pingppService.payOrder(pingDto);
+
+
         } catch (Exception exp) {
             exp.printStackTrace();
             return new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败");
