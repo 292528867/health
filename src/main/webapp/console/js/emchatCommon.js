@@ -87,9 +87,9 @@ var handleTextMessage = function (conn,message) {
     var messageContent = message.data;//文本消息体
     //TODO  根据消息体的to值去定位那个群组的聊天记录
     if (mestype == 'groupchat') {
-        appendMsg(from, to, messageContent, mestype,conn);
+        appendMsg(from, to, messageContent, mestype,conn, null);
     } else {
-        appendMsg(from, to, messageContent, mestype,conn);
+        appendMsg(from, to, messageContent, mestype,conn, null);
     }
 };
 
@@ -186,15 +186,32 @@ var delFriend = function(conn, user) {
 };
 
 //显示聊天记录的统一处理方法
-var appendMsg = function (who, contact, message, chattype,conn) {
+var appendMsg = function (who, contact, message, chattype,conn, local) {
     console.log("--------------------------");
-    var appPlatform = userMap.get(contact + "#" + conn.context.appKey);
+    var appPlatform = null;
+    var appKey = null;
+    if(conn){
+        appPlatform = userMap.get(contact + "#" + conn.context.appKey);
+        appKey = conn.context.appKey;
+    }
+    var divTag = "<div onclick='chooseApp(this)'>";
+    if(local){
+        divTag = "<div class=\"am-lg-text-right\">"
+        appPlatform = "运营同学";
+    }
 
-    var messageContent = "<div>" +
-        "<p1>" + null == appPlatform ? "" : (appPlatform + "  ")  + who + " <span></span></p1>" +
-        "<p2>" + getLoacalTimeString() + "<b></b><br></p2>" +
+
+    var messageContent = divTag +
+        "<p1>" + (null == appPlatform ? "" : (appPlatform + "  ")) + " <span>"+who+"</span></p1>" +
+        "<p2> " + getLoacalTimeString() + "<b></b><br></p2>" +
         "<p3 class='message-content' style='background-color: rgb(235, 235, 235);'> " + message +
-        " </p3> </div>";
+        " </p3> " +
+        "<div style='display:none'>"+
+        "<span class='appkey'>" +  appKey + "</span>"+
+        "<span class='doctor'>"+ who +"</span>"+
+        "<span class='user'>"+ contact +"</span>"+
+        "</div>"+
+        "</div>";
     $(".message-body").append(messageContent);
 };
 
@@ -216,4 +233,58 @@ var login = function (user,pass,appkey,conn) {
         appKey: appkey
     });
     return false;
+};
+
+var sendText = function() {
+    if (textSending) {
+        return;
+    }
+    textSending = true;
+
+    //var msgInput = $("answers").val();
+
+    var msg = $("#answers").val();
+
+    var appKey = $("#answerAppKey").val();
+    var doctor = $("#answerDoctor").val();
+    var user = $("#answerUser").val();
+
+    if(appKey == null || appKey.length == 0){
+        alert("请点击需要回复的消息");
+        return;
+    }
+    if (msg == null || msg.length == 0) {
+        alert("请输入回复内容");
+        return;
+    }
+
+    var connKey = user + "#" + appKey;
+    debugger;
+
+    var conn = connMap.get(connKey);
+    var to = doctor;
+    if (to == null) {
+        return;
+    }
+    var options = {
+        to : to,
+        msg : msg,
+        type : "chat"
+    };
+    // 群组消息和个人消息的判断分支
+    //if (curChatUserId.indexOf(groupFlagMark) >= 0) {
+    //    options.type = 'groupchat';
+    //    options.to = curRoomId;
+    //}
+    //easemobwebim-sdk发送文本消息的方法 to为发送给谁，meg为文本消息对象
+    conn.sendTextMessage(options);
+    //将发送的消息，显示到屏幕上方对话框
+    appendMsg("运营", user, msg, "", conn, "local");
+    //清空发送框
+    $("#answers").val("");
+    //当前登录人发送的信息在聊天窗口中原样显示
+
+    setTimeout(function() {
+        textSending = false;
+    }, 1000);
 };

@@ -1,6 +1,7 @@
 package com.wonders.xlab.healthcloud.service.cache;
 
 import com.wonders.xlab.healthcloud.repository.DrugDictionaryRepository;
+import com.wonders.xlab.healthcloud.utils.ThirdAppConnUtils;
 import net.sf.ehcache.Cache;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ApplicationContextEvent;
@@ -19,6 +20,7 @@ public class ApplicationStartUp implements ApplicationListener<ApplicationContex
         cacheSvc.setDrugRepository(drugRepository);
         cacheSvc.initLuceneCache();
 
+        ThirdAppConnUtils.initAppDatas();
 
         /*// 初始内存问卷
         Cache questionnaireCache = (Cache) applicationContextEvent.getApplicationContext().getBean("questionnaireCache");
