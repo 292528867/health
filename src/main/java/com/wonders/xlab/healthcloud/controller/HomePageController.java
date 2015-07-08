@@ -140,7 +140,7 @@ public class HomePageController {
                 // 持续时间
                 int duration = upo.getHcPackage().getDuration();
 
-                int progress = (currentTime - startTime - duration * upo.getHcPackage().getCycleIndex()) * 100 / duration ;
+                int progress = (currentTime - startTime - duration * upo.getHcPackage().getCycleLimit()) * 100 / duration ;
 
 
                 progressDtos.add(
