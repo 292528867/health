@@ -12,8 +12,8 @@ import javax.persistence.Table;
  * Created by mars on 15/7/8.
  */
 @Entity
-@Table(name = "hc_user_package_complete")
-public class UserPackageComplete extends AbstractBaseEntity<Long> {
+@Table(name = "hc_user_package_order")
+public class UserPackageOrder extends AbstractBaseEntity<Long> {
 
     /** 用户 */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,11 +29,11 @@ public class UserPackageComplete extends AbstractBaseEntity<Long> {
     /** 循环次数 */
     private int cycleIndex;
 
+    /** 当前循环次数 */
+    private int currentCycleIndex;
+
     /** 是否完成包 同一时间只能存在两个没有完成的包 */
     private boolean packageComplete;
-
-    /** 是否完成包计划 */
-    private boolean packageDetailComplete;
 
     public User getUser() {
         return user;
@@ -75,11 +75,11 @@ public class UserPackageComplete extends AbstractBaseEntity<Long> {
         this.packageComplete = packageComplete;
     }
 
-    public boolean isPackageDetailComplete() {
-        return packageDetailComplete;
+    public int getCurrentCycleIndex() {
+        return currentCycleIndex;
     }
 
-    public void setPackageDetailComplete(boolean packageDetailComplete) {
-        this.packageDetailComplete = packageDetailComplete;
+    public void setCurrentCycleIndex(int currentCycleIndex) {
+        this.currentCycleIndex = currentCycleIndex;
     }
 }

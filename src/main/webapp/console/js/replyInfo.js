@@ -98,7 +98,7 @@ function replyInfo(fromUser, toUser,msgId) {
         };
 
         $.ajax({
-            'url': url + '/em/replyMessage/'+msgId+'',
+            'url': url + '/em/replyMessage/'+msgId+'/'+fromUser+'',
             'type': 'POST',
             'data': JSON.stringify(message),
             headers: {
