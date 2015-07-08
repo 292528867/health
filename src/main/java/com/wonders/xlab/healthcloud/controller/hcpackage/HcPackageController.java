@@ -59,23 +59,25 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
     /**
      * 查询健康包
+     *
      * @return
      */
     @RequestMapping("listHcPackage")
     private Object listHcPackage(
             @PageableDefault(sort = "recommendValue", direction = Sort.Direction.DESC)
             Pageable pageable) {
-        return  new ControllerResult<List<HcPackage>>().setRet_code(0).setRet_values(hcPackageRepository.findAll(pageable).getContent()).setMessage("成功");
+        return new ControllerResult<List<HcPackage>>().setRet_code(0).setRet_values(hcPackageRepository.findAll(pageable).getContent()).setMessage("成功");
     }
 
     /**
      * 添加健康包
+     *
      * @param hcPackageDto
      * @param result
      * @return
      */
-    @RequestMapping(value = "addHcPackage/{healthCategoryId}",method = RequestMethod.POST)
-    private Object addHcPackage(@RequestBody HcPackageDto hcPackageDto,@PathVariable Long healthCategoryId,BindingResult result) {
+    @RequestMapping(value = "addHcPackage/{healthCategoryId}", method = RequestMethod.POST)
+    private Object addHcPackage(@RequestBody HcPackageDto hcPackageDto, @PathVariable Long healthCategoryId, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -103,13 +105,14 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
     /**
      * 更新健康包
+     *
      * @param hcPackageId
      * @param hcPackageDto
      * @param result
      * @return
      */
     @RequestMapping("updateHcPackage/{hcPackageId}")
-    private Object updateHcPackage(@PathVariable Long hcPackageId, @Valid HcPackageDto hcPackageDto, MultipartFile icon,MultipartFile detailDescriptionIcon, BindingResult result) {
+    private Object updateHcPackage(@PathVariable Long hcPackageId, @Valid HcPackageDto hcPackageDto, MultipartFile icon, MultipartFile detailDescriptionIcon, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -125,7 +128,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             String iconUrl = QiniuUploadUtils.upload(icon.getBytes(), URLDecoder.decode(icon.getOriginalFilename(), "UTF-8"));
             String detailDescriptionIconUrl = QiniuUploadUtils.upload(detailDescriptionIcon.getBytes(), URLDecoder.decode(detailDescriptionIcon.getOriginalFilename(), "UTF-8"));
 
-            BeanUtils.copyProperties(hcPackageDto,hcPackage,"healthCategoryId");
+            BeanUtils.copyProperties(hcPackageDto, hcPackage, "healthCategoryId");
             hcPackage.setIcon(iconUrl);
             hcPackage.setDetailDescriptionIcon(detailDescriptionIconUrl);
             hcPackageRepository.save(hcPackage);
@@ -139,6 +142,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
     /**
      * 添加健康包详细
+     *
      * @param hcPackageId
      * @param hcPackageDetailDto
      * @param result
@@ -203,6 +207,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
     /**
      * 查询健康包
+     *
      * @return
      */
     @RequestMapping("listPackageInfo")
@@ -224,11 +229,12 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
     /**
      * 查询计划包
+     *
      * @param categoryId
      * @return
      */
     @RequestMapping("listPackage/{categoryId}/{userId}")
-    public Object listPackageInfoByCategoryId(@PathVariable long categoryId,@PathVariable long userId) {
+    public Object listPackageInfoByCategoryId(@PathVariable long categoryId, @PathVariable long userId) {
 
         Map<String, Object> filterMap = new HashMap<>();
         filterMap.put("healthCategory.id_equal", categoryId);
@@ -237,37 +243,32 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
         List<UserPackageOrder> list = userPackageOrderRepository.findByUserId(userId);
 
         List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
-        
-        if (list != null) {
-            for (UserPackageOrder userPackageOrder : list) {
-                for (HcPackage hcPackage : hcPackages) {
+
+
+        for (HcPackage hcPackage : hcPackages) {
+            if (list != null && list.size() != 0) {
+                for (UserPackageOrder userPackageOrder : list) {
                     UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
                     BeanUtils.copyProperties(hcPackage, userPackageOrderDto);
                     userPackageOrderDto.setId(hcPackage.getId());
                     if (userPackageOrder.getHcPackage().getId() == hcPackage.getId()) {
                         userPackageOrderDto.setIsJoin(true);
-                    }else {
+                    } else {
                         userPackageOrderDto.setIsJoin(false);
                     }
                     userPackageOrderDtos.add(userPackageOrderDto);
                 }
+            }else {
+                UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
+                BeanUtils.copyProperties(hcPackage, userPackageOrderDto);
+                userPackageOrderDto.setId(hcPackage.getId());
+                userPackageOrderDto.setIsJoin(false);
+                userPackageOrderDtos.add(userPackageOrderDto);
             }
         }
 
         return new ControllerResult<List<UserPackageOrderDto>>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("成功");
     }
 
-    /**
-     * 根据集合中对象属性值查找元素
-     *
-     * @param collection 给定的集合
-     * @param propertyName 集合中的元素的属性名
-     * @param propertyValue 集合中元素属性名对应的属性值
-     * @param <T> 集合的类型参数
-     * @return 返回匹配的第一个元素
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T find(Collection<T> collection, String propertyName, Object propertyValue) {
-        return (T) org.apache.commons.collections.CollectionUtils.find(collection, new BeanPropertyValueEqualsPredicate(propertyName, propertyValue));
-    }
+
 }
