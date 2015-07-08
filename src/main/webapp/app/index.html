@@ -13,7 +13,7 @@
     }
 
     #header .swiper-slide {
-      padding: 0 15px;
+      padding: 0 10px;
       width: auto;
       text-align: center;
       font-size: 1.4rem;
@@ -22,8 +22,12 @@
     .swiper-wrapper .swiper-slide:nth-last-child(1){
       margin-right: 20px;
     }
+    .swiper-wrapper .swiper-slide:nth-child(1){
+      padding-right: 15px;
+    }
 
-  </style></head><body><img src=i/icon/loading.gif alt=读取 id=articles-loading height=80><div class="am-tabs am-tabs-d2 app-body"><div class=today-bar>今日推荐</div><div class=today-white><img src=i/header/white.png></div><div id=header><div class=swiper-wrapper><div class=swiper-slide style="width: 100px;"></div></div></div><div class=am-tabs-bd><div class="am-tab-panel am-active today-body"><div id=banners><div class=banner-today><div class=banner-today-img></div><div class="banner-today-title-bg am-cf"><div class=banner-today-title></div><div class=banner-today-click><img src=i/icon/read.png alt=阅读></div></div></div></div><div data-am-widget=list_news class="am-list-news am-list-news-default today-list"><div class=am-list-news-bd><ul class="am-list article" id=article><li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left" style="display: none;"><div class="am-u-sm-4 am-list-thumb article-img-box"><a href=# class=article-href><img class=article-img></a></div><div class="am-u-sm-8 am-list-main article-content-box"><h3 class=am-list-item-hd><a href=# class="article-title article-href"></a></h3><div class="am-list-item-text article-description"></div><div class=article-clickCount></div></div></li></ul></div></div></div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script src=js/main.js></script><script src=js/swiper.js></script><script type=text/javascript>
+
+  </style></head><body><img src=i/icon/loading.gif alt=读取 id=articles-loading height=80><div class="am-tabs am-tabs-d2 app-body"><div class=today-bar>今日推荐</div><div class=today-white><img src=i/header/white.png></div><div id=header><div class=swiper-wrapper><div class=swiper-slide style="width: 100px;"></div></div></div><div class=am-tabs-bd><div class="am-tab-panel am-active today-body"><div id=banners><div class=banner-today><div class=banner-today-img></div><div class="banner-today-title-bg am-cf"><div class="banner-today-title am-text-truncate"></div><div class=banner-today-click><img src=i/icon/read.png alt=阅读></div></div></div></div><div data-am-widget=list_news class="am-list-news am-list-news-default today-list"><div class=am-list-news-bd><ul class="am-list article" id=article><li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left" style="display: none;"><div class="am-u-sm-4 am-list-thumb article-img-box"><a href=# class=article-href><img class=article-img></a></div><div class="am-u-sm-8 am-list-main article-content-box"><h3 class=am-list-item-hd><a href=# class="article-title article-href"></a></h3><div class="am-list-item-text article-description"></div><div class=article-clickCount></div></div></li></ul></div></div></div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script src=js/main.js></script><script src=js/swiper.js></script><script type=text/javascript>
   window.onload = function () {
   }
   var articleList;
@@ -94,6 +98,7 @@
     console.log((articleList[id]));
     localStorage.setItem('article', JSON.stringify(articleList[id]));
     localStorage.setItem('articleList', JSON.stringify(articleList));
+    console.log($(this));
     window.location.href = 'detail.html?'+articleId;
   }
 

@@ -1,0 +1,185 @@
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=description content="An Amaze UI template that helps you build fast, modern mobile web apps."><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>详细介绍</title><meta name=renderer content=webkit><meta http-equiv=Cache-Control content=no-siteapp><link rel=icon type=image/png href=i/favicon.png><link rel=manifest href=manifest.json><meta name=mobile-web-app-capable content=yes><meta name=application-name content="Web Starter Kit"><link rel=icon sizes=192x192 href=i/touch/chrome-touch-icon-192x192.png><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black><meta name=apple-mobile-web-app-title content="Amaze UI Sfavicon.pngtarter Kit"><link rel=apple-touch-icon href=i/touch/apple-touch-icon.png><meta name=msapplication-TileImage content=i/touch/ms-touch-icon-144x144-precomposed.png><meta name=msapplication-TileColor content=#0e90d2><link rel=stylesheet href=css/amazeui.min.css><link rel=stylesheet href=css/main.css></head><style>
+  .detail-body img {
+    max-width: 100%;
+  }
+
+  .detail-body {
+    background: #f6f6f6;
+    padding: 0 2rem;
+    margin: 0 !important;
+    /*display: none;*/
+  }
+
+  #detail-title {
+    color: #333333;
+    margin-top: 2rem;
+    font-size: 2.1rem;
+  }
+
+  #detail-img {
+    margin-bottom: 1.5rem;
+  }
+
+  #detail-img {
+    width: 100%;
+  }
+
+  #detail-count {
+    color: #999999 !important;
+    font-size: 1.4rem;
+    /*padding-left: 5px;*/
+  }
+
+  .schedule-foot {
+    padding-top: 2rem;
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  .finish-btn {
+    text-align: center;
+    margin: auto;
+    width: 170px;
+    height: 46px;
+    line-height: 44px;
+    font-size: 1.8rem;
+    color: #40ced9;
+    border: 1px solid #40ced9;
+    -webkit-border-radius: 23px;
+    -moz-border-radius: 23px;
+    border-radius: 23px;
+    background: none;
+    outline: none;
+
+  }
+  .finish-btn-ed{
+    color: #999999;
+    border-color: #999999;
+  }
+
+  .btn-divider {
+    border-top: 1px solid #dadada;
+  }
+  .finish-divider{
+    margin-top: 70px;
+    margin-bottom: 30px;
+    width: 100%;
+    position: relative;
+    height: 30px;
+  }
+  .finish-move{
+    position: absolute;
+    left: 50%;
+    top: 0;
+    margin-left: -53px;
+    margin-top: -35px;
+    background: #f6f6f6;
+    color: #999999;
+    letter-spacing: 5px;
+
+  }
+  .finish-move img{
+    height: 70px;
+    margin-right: 10px;
+  }
+  .foot-title{
+    color: #666666;
+    text-align: center;
+    margin:0 auto 24px ;
+    font-size: 1.8rem;
+  }
+  *::-webkit-input-placeholder {
+    color: #cccccc;
+    text-align: center;
+  }
+
+  *:-moz-placeholder {
+    color: #cccccc;
+    text-align: center;
+  }
+
+  *:-ms-input-placeholder {
+    /* IE10+ */
+    color: #cccccc;
+    text-align: center;
+  }
+  .foot-form{
+    position: relative;
+  }
+  .foot-input{
+    width: 8.8rem;
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+    margin: 30px auto 30px;
+  }
+  .foot-input input{
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    outline: none;
+    background: none;
+    border: none;
+    font-size: 2.4rem;
+    color: #40ced9;
+    text-align: center;
+  }
+  .foot-input-text{
+    color: #40ced9;
+    position: absolute;
+    left: 50%;
+    top: 16px;
+    margin-left: -65px;
+    font-size: 1.8rem;
+  }
+  .foot-input-span{
+    border: 1px solid #40ced9;
+    border-top:none ;
+    width: 130px;
+    height: 3px;
+    display: inline-block;
+    margin: 0;
+  }
+  .schedule-content {
+    width: 100%;
+    color: #333333;
+  }
+  .schedule-content div{
+    float: left;
+  }
+</style><body class=detail-body><div id=detail-title></div><div><img src=i/schedule/eye.jpg width=25 style="margin-right: 0px" class=am-text-middle> <span id=detail-count class=am-text-middle></span></div><div id=details></div><div class=schedule-foot><div class="schedule-content am-cf"><div style="width: 10%;text-align: left;height: 25px;" class=am-vertical-align><img src=i/schedule/check.jpg width=25 style="vertical-align: top" class=am-vertical-align-middle></div><div style="width: 60%">2015年07月08日 上午07:08</div><div style="width: 30%">7.5mmol/L</div></div><hr data-am-widget=divider class="am-divider am-divider-dashed"><div class=foot-title>请填写您的血糖值</div><div class=foot-form><div class=foot-input><input type=tel id=getValue placeholder=如:7.5 maxlength=4></div><div class=foot-input-text><label class=foot-input-span for=getValue></label> <span style="margin-bottom: 15px;">mmol/L</span></div></div><button class=finish-btn type=button data-am-loading="{spinner: 'circle-o-notch', loadingText: '跳转中..', resetText: '重新点击'}" onclick=finishTask()>确定已完成</button><div class=finish-divider><hr data-am-widget=divider class="am-divider am-divider-default btn-divider"><div class=finish-move><img src=i/schedule/man.png>动起来！</div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
+  var article = localStorage.getItem('article');
+  var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
+  var url = commonUrl + 'discovery/app/listInfo/';
+  var articleId = window.location.search.substring(1);
+  var ids = articleId.split('&');
+  var userId = ids[0];
+  articleId = ids[1];
+  if (localStorage.getItem('article') != null && JSON.parse(article).id == articleId) {
+    article = JSON.parse(article);
+    $('#detail-img').attr('src', article.pictureUrl);
+    $('#details').html(article.htmlInfo);
+    $('#detail-title').html(article.title);
+    $('title').html(article.title);
+  }
+  else {
+    $.get(url + articleId, function (data) {
+      article = data.ret_values;
+      $('#detail-img').attr('src', article.pictureUrl);
+      $('#details').html(article.htmlInfo);
+      $('#detail-title').html(article.title);
+//      $('#detail-count').html(article.clickCount);
+      $('title').html(article.title);
+      console.log(article);
+//      console.log(window.document.body.offsetHeight);
+    });
+    $('#detail-count').html('666人阅读');
+  }
+  function finishTask() {
+    var $finish = $('.finish-btn');
+    $finish.addClass('finish-btn-ed');
+    $finish.html('已完成');
+    $('.finish-divider').remove();
+//    noticePhone('2222');
+    activityList({'finish':'1'});
+  }
+</script></html>

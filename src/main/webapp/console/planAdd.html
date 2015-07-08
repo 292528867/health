@@ -13,6 +13,7 @@
     <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
     <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
     <link rel="stylesheet" href="assets/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="common/css/amazeui.datetimepicker.css"/>
     <link rel="stylesheet" href="assets/css/admin.css">
     <style>
         img {
@@ -65,80 +66,149 @@
     <!-- content start -->
     <div class="admin-content">
 
-        <div class="am-cf am-padding">
-            <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">信息</strong> /
-                <small>Info</small>
-            </div>
-        </div>
-        <div class="am-g">
-            <div class="am-u-sm-12 am-u-md-6">
-                <div class="am-btn-toolbar">
-                    <div class="am-btn-group am-btn-group-xs">
-                        <button type="button" class="am-btn am-btn-default" onclick="openAddType()"><span
-                                class="am-icon-plus"></span> 新增
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="am-u-sm-12 am-u-md-3">
-                <div class="am-input-group am-input-group-sm">
-                    <input type="text" class="am-form-field">
-          <span class="am-input-group-btn">
-            <button class="am-btn am-btn-default" type="button">搜索</button>
-          </span>
-                </div>
-            </div>
-        </div>
+        <hr/>
 
-
-        <div class="am-g">
-            <div class="am-u-sm-12">
-                <form class="am-form">
-                    <table class="am-table am-table-striped am-table-hover table-main">
-                        <thead>
-                        <tr>
-                            <th class="table-check"><input type="checkbox"/></th>
-                            <th class="table-id">ID</th>
-                            <th class="table-title">名称</th>
-                            <th class="table-title">简称</th>
-                            <th class="table-title">描述</th>
-                            <th class="table-set">操作</th>
-                        </tr>
-                        </thead>
-                        <tbody id="allDatas">
-                        </tbody>
-                    </table>
-                    <!--
-                                        <div class="am-cf">
-                                            共 15 条记录
-                                            <div class="am-fr">
-                                                <ul class="am-pagination">
-                                                    <li class="am-disabled"><a href="#">«</a></li>
-                                                    <li class="am-active"><a href="#">1</a></li>
-                                                    <li><a href="#">2</a></li>
-                                                    <li><a href="#">3</a></li>
-                                                    <li><a href="#">4</a></li>
-                                                    <li><a href="#">5</a></li>
-                                                    <li><a href="#">»</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                    -->
-                    <hr/>
-                    <!--<p>注：.....</p>-->
-                </form>
-            </div>
-
-        </div>
         <div class="am-g">
 
             <div class="am-u-sm-12 am-u-md-4 am-u-md-push-8"></div>
 
-        </div>
+            <div class="am-u-sm-12 am-u-md-8 am-u-md-pull-4">
+                <!--<form action="http://101.231.124.8:45677/xlab-reindeerjob-rest-srv/course/saveCourse" class="am-form"-->
+                <form action="http://10.10.11.10:8080/task/addTask" class="am-form" id="form1" method="post"
+                      id="form1" method="post"
+                      enctype="multipart/form-data">
+                    <fieldset>
+                        <div class="am-form-group">
+                            <label for="taskName">任务名称：</label>
+                            <input type="text" id="taskName" placeholder=""
+                                   required name="taskName"/>
+                        </div>
+                        <div class="am-form-group">
+                            <label for="packageId" class="about-color">所属任务包:</label>
+                            <br/>
+                            <select data-am-selected="{maxHeight:200, btnSize: 'sm',  searchBox:1}" id="packageId" name="packageId" >
+                                <option selected>点击选择</option>
+                            </select>
+                        </div>
+                        <div class="am-form-group">
+                            <label >是否需要补充内容:</label>
+                            <!--<label for="type" class="about-color">是否需要补充内容:</label>-->
+                            <label class="am-radio">
+                                <input type="radio" name="isNeedSupplemented" value="false" data-am-ucheck checked>
+                                不需要
+                            </label>
+                            <label class="am-radio">
+                                <input type="radio" name="isNeedSupplemented" value="true" data-am-ucheck>
+                                需要
+                            </label>
+                        </div>
+<!--
+                        <div class="am-form-group">
+                            <label >性别:</label>
+                            &lt;!&ndash;<label for="type" class="about-color">是否需要补充内容:</label>&ndash;&gt;
+                            <label class="am-radio">
+                                <input type="radio" name="sex" value="0" data-am-ucheck checked>
+                                男
+                            </label>
+                            <label class="am-radio">
+                                <input type="radio" name="sex" value="1" data-am-ucheck>
+                                女
+                            </label>
+                            <label class="am-radio">
+                                <input type="radio" name="sex" value="2" data-am-ucheck>
+                                不分
+                            </label>
+                        </div>
+-->
+                        <div class="am-form-group">
+                            <label >是否全天:</label>
+                            <!--<label for="type" class="about-color">是否需要补充内容:</label>-->
+                            <label class="am-radio">
+                                <input type="radio" name="isFullDay" value="false" data-am-ucheck checked>
+                                不是
+                            </label>
+                            <label class="am-radio">
+                                <input type="radio" name="isFullDay" value="true" data-am-ucheck>
+                                是
+                            </label>
+                        </div>
+                        <div class="am-form-group">
+                            <label for="recommendTimeFrom">任务推荐时间：（全天的话不选时间）</label>
+                            <input size="16" type="text" value="" readonly class="form-datetime am-form-field"
+                                   id="recommendTimeFrom"  name="recommendTimeFrom"  required>
+                        </div>
+                        <div class="am-form-group">
+                            <label for="integration">任务积分：（填写整数）</label>
+                            <input type="text" id="integration" placeholder=""
+                                   required name="integration"/>
+                        </div>
+                        <div class="am-form-group">
+                            <label for="detail">任务详细：（必填）</label>
+                            <textarea id="detail" name="detail" style="height:400px;"></textarea>
+                        </div>
+                        <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="openImgUpload()">
+                            <i class="am-icon-cloud-upload"></i> 选择要上传的展示图片
+                        </button>
+                        <br/>
+                        <br/>
 
+                        <div class="am-form-group">
+                            <label for="icon">可直接填写图片地址（如已本地上传请勿修改）：</label>
+                            <input type="text" id="icon" placeholder=""
+                                   required name="icon"/>
+                        </div>
+                        <br/>
+                        <br/>
+                        <img src="" alt="" id="index-img-index"/>
+                        <br/>
+                        <br/>
+
+
+                        <button class="am-btn am-btn-secondary" type="submit" id="formSub" onclick="articleAdd()">提交
+                        </button>
+                    </fieldset>
+                </form>
+
+            </div>
+        </div>
     </div>
     <!-- content end -->
 </div>
+
+
+<div class="am-modal " tabindex="-1" id="change-modal">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">新增图片
+            <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+        </div>
+        <div class="am-modal-bd">
+            <form action="http://101.231.124.8:45677/xlab-healthcloud/discovery/cms/uploadPicture" class="am-form"
+                  id="index-img-form" method="post"
+                  enctype="multipart/form-data">
+                <fieldset>
+                    <h2>首页图片,长宽相等</h2>
+                    <img src="" alt="" id="index-img" style="height: 100px;"/>
+                    <input type="file" multiple accept="image/*" name="file"/>
+
+                    <button class="am-btn am-btn-secondary" type="submit" id="index-img-sub">提交</button>
+                </fieldset>
+            </form>
+            <div class="progress">
+                <div class="bar"></div>
+                <div class="percent">0%</div>
+            </div>
+
+            <div id="status"></div>
+
+            <br/>
+            <!--<form action="http://10.10.10.231:8080/course/updateCoursePicture" class="am-form" id="detail-img-form" method="post"-->
+
+
+        </div>
+    </div>
+</div>
+
+
 
 <a class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
 
@@ -147,97 +217,6 @@
     <p class="am-padding-left">© 2015 By Wondersgroup.</p>
 </footer>
 
-
-<div class="am-modal " tabindex="-1" id="add-modal">
-    <div class="am-modal-dialog">
-        <div class="am-modal-hd">添加分类
-            <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
-        </div>
-        <div class="am-modal-bd">
-            <fieldset>
-                <div class="am-form-group type-add-form">
-                    <label for="title">标题</label>
-                    <input type="text" id="title" placeholder=""
-                           required name="title"/>
-                </div>
-                <div class="am-form-group type-add-form">
-                    <label for="tag">简称</label>
-                    <input type="text" id="tag" placeholder=""
-                           required name="tag"/>
-                </div>
-                <div class="am-form-group type-add-form">
-                    <label for="desc">描述</label>
-                    <input type="text" id="desc" placeholder=""
-                           required name="desc"/>
-                </div>
-                <div class="am-form-group type-add-form">
-                    <label for="firstRelatedIds">一级关联</label>
-                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'secondary', searchBox:1}"
-                            id="firstRelatedIds" name="firstRelatedIds" class="type-select">
-                    </select>
-                </div>
-                <div class="am-form-group type-add-form">
-                    <label for="otherRelatedIds">三级关联</label>
-                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'warning', dropUp:1, searchBox:1}"
-                            id="otherRelatedIds" name="otherRelatedIds" class="type-select">
-                    </select>
-                </div>
-
-            </fieldset>
-
-            <button class="am-btn am-btn-secondary" type="button" id="type-add" onclick="addType()">提交</button>
-            <br/>
-
-
-        </div>
-    </div>
-</div>
-<div class="am-modal " tabindex="-1" id="change-modal">
-    <div class="am-modal-dialog">
-        <div class="am-modal-hd">修改分类
-            <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
-        </div>
-        <div class="am-modal-bd">
-            <fieldset>
-                <div class="am-form-group">
-                    <label for="change-title">标题</label>
-                    <input type="text" id="change-title" placeholder=""
-                           required name="change-title"/>
-                </div>
-                <div class="am-form-group">
-                    <label for="change-tag">简称</label>
-                    <input type="text" id="change-tag" placeholder=""
-                           required name="change-tag"/>
-                </div>
-                <div class="am-form-group">
-                    <label for="change-desc">描述</label>
-                    <input type="text" id="change-desc" placeholder=""
-                           required name="change-desc"/>
-                </div>
-                <div class="am-form-group type-add-form">
-                    <label for="change-firstRelatedIds">一级关联</label>
-                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'secondary', searchBox:1}"
-                            id="change-firstRelatedIds" name="change-firstRelatedIds" class="type-select">
-                    </select>
-                </div>
-                <div class="am-form-group type-add-form">
-                    <label for="change-otherRelatedIds">三级关联</label>
-                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'warning', dropUp:1, searchBox:1}"
-                            id="change-otherRelatedIds" name="change-otherRelatedIds" class="type-select">
-                    </select>
-                </div>
-
-
-                <input type="hidden" id="change-id"/>
-            </fieldset>
-
-            <button class="am-btn am-btn-secondary" type="button" id="type-chage" onclick="changeTypeSub()">提交</button>
-            <br/>
-
-
-        </div>
-    </div>
-</div>
 
 <!--[if lt IE 9]>
 <script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
@@ -255,6 +234,37 @@
 <script src="js/common.js"></script>
 <script src="js/jsform.js"></script>
 
+<link rel="stylesheet" href="kindeditor/themes/default/default.css"/>
+<script charset="utf-8" src="kindeditor/kindeditor.js"></script>
+<script charset="utf-8" src="kindeditor/lang/zh_CN.js"></script>
+<script>
+    var editor;
+    var editor;
+    KindEditor.ready(function (K) {
+        var options = {
+            filterMode: true,
+            themeType: 'default',
+            uploadJson: commonUrl + 'discovery/cms/fileUpLoad',
+            allowFileManager: false,
+            afterCreate: function () {
+                var self = this;
+                K.ctrl(document, 13, function () {
+                    debugger;
+                    self.sync();
+                });
+                K.ctrl(self.edit.doc, 13, function () {
+                    debugger;
+                    self.sync();
+                });
+            },
+            fileManagerJson: '',
+            resizeType: 1
+        };
+        editor = K.create('#detail', options);
+    });
+</script>
+
+
 <script type="text/javascript">
     $(document).ready(function () {
         var bar = $('.bar');
@@ -263,6 +273,7 @@
         $('#form1').on('submit', function (e) {
             e.preventDefault(); // prevent native submit
             console.log('正在提交');
+            $('#detail').val(editor.html());
             $('#formSub').attr('disabled', 'disabled');
             $(this).ajaxSubmit({
                         target: '.am-padding-left',
@@ -279,9 +290,6 @@
                     function () {
                     })
         });
-        function progressLoad(event, position, total, percentComplete) {
-            console.log(percentComplete);
-        }
 
         function showResponse(responseText, statusText, xhr, $form) {
             console.log('status: ' + statusText + '\n\nresponseText: \n' + responseText);
@@ -290,12 +298,69 @@
                 location.reload();
             }
         }
+        function showResponseIndex(responseText, statusText, xhr, $form) {
+            console.log('status: ' + statusText + '\n\nresponseText: \n' + responseText);
+            console.log(responseText);
+            if (responseText.ret_code == '0') {
+                $('#index-img').attr('src', responseText.ret_values);
+                $('#index-img-index').attr('src', responseText.ret_values);
+                $('#icon').val(responseText.ret_values);
+                $('#index-img-sub').attr('disabled', false);
+                $('#change-modal').modal('toggle'),
+                percent.html('上传成功');
+            }
+        }
+
+
+        $('#index-img-form').on('submit', function (e) {
+            e.preventDefault(); // prevent native submit
+            console.log('正在提交');
+            $('#index-img-sub').attr('disabled', 'disabled');
+            $(this).ajaxSubmit({
+                        target: '.am-padding-left',
+                        success: showResponseIndex,
+                        uploadProgress: function (event, position, total, percentComplete) {
+                            var percentVal = percentComplete + '%';
+                            bar.width(percentVal)
+                            if (percentComplete == 100) {
+                                percentVal = "<i class='am-icon-spinner am-icon-spin'></i> 请等待服务器提交";
+                            }
+                            percent.html(percentVal);
+                        }
+                    },
+                    function () {
+                    })
+        });
+
     });
 </script>
 <script src="js/typeAdd.js"></script>
 <script src="js/loadAllType.js"></script>
+<script src="common/js/amazeui.datetimepicker.min.js"></script>
 <script>
     $('#admin-offcanvas').load('common/adminSidebar.html');
+    $(function() {
+        $('.form-datetime').datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+    });
+    var urlType = 'http://10.10.11.10:8080/hcPackage/query/';
+    $.get(urlType, function (groupTypes) {
+        var groups = groupTypes,
+                typeList = '',
+                categorieList= '';
+        $.each(groups, function (n, group) {
+            console.log(group);
+                categorieList+= '<option value=\''+group.id+'\'>'+group.title+'</option>'
+        });
+        console.log(categorieList);
+
+        $('#packageId').append(categorieList);
+    });
+    function openImgUpload() {
+        $('#change-modal').modal('toggle');
+    }
+
+
+
 </script>
 </body>
 </html>
