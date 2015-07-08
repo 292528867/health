@@ -9,7 +9,11 @@ import com.wonders.xlab.healthcloud.entity.EmMessages;
 import com.wonders.xlab.healthcloud.repository.EmMessagesRepository;
 import com.wonders.xlab.healthcloud.service.WordAnalyzerService;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
+import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -22,10 +26,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.logging.SimpleFormatter;
 
 /**
  * Created by lixuanwu on 15/7/4.
@@ -50,16 +52,17 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     /**
      * 医生回复消息
+     *
      * @param body
      * @return
      */
-    @RequestMapping(value = "replyMessage/{id}", method = RequestMethod.POST)
-    public ControllerResult replyMessage(@PathVariable("id") long id, @RequestBody TexMessagesRequestBody body) throws IOException {
+    @RequestMapping(value = "replyMessage/{id}/{username}", method = RequestMethod.POST)
+    public ControllerResult replyMessage(@PathVariable("id") long id, @PathVariable("username") String username, @RequestBody TexMessagesRequestBody body) throws IOException {
         String messagesJson = objectMapper.writeValueAsString(body);
         //扩展属性
-        Map<String, String> extendAttr = wordAnalyzerService.analyzeText(body.getMsg().getMsg());
+        //   Map<String, String> extendAttr = wordAnalyzerService.analyzeText(body.getMsg().getMsg());
 
-       // body.setExt(objectMapper.writeValueAsString(extendAttr));
+        // body.setExt(objectMapper.writeValueAsString(extendAttr));
         //发送信息
         ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChart(HttpMethod.POST, messagesJson, "messages", String.class);
         //保存医生回复消息
@@ -69,15 +72,22 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 body.getMsg().getMsg(),
                 body.getMsg().getType(),
                 body.getTargetType(),
-             //   body.getExt(),
+                //   body.getExt(),
                 true,
                 false
         );
-        emMessagesRepository.save(emMessages);
+        EmMessages newMessage = emMessagesRepository.save(emMessages);
         //修改app发送信息状态为已回复
         EmMessages oldEm = emMessagesRepository.findOne(id);
         oldEm.setIsReplied(true);
         emMessagesRepository.save(oldEm);
+
+        //回复后发送信息给用户
+        SmsUtils.sendEmReplyInfo(username, body.getFrom());
+
+        //回复信息耗时 TODO 耗时建议用信鸽推app端
+        Period period = new Period(new DateTime(newMessage.getCreatedDate()), new DateTime(oldEm.getCreatedDate()), PeriodType.minutes());
+        int time = period.getSeconds();
 
         return new ControllerResult().setRet_code(0).setRet_values(responseEntity.getBody()).setMessage("消息发送成功");
 
@@ -88,7 +98,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      */
 
     @RequestMapping(value = "sendTxtMessage", method = RequestMethod.POST)
-        public ControllerResult sendTxtMessage(@RequestBody TexMessagesRequestBody body) throws IOException {
+    public ControllerResult sendTxtMessage(@RequestBody TexMessagesRequestBody body) throws IOException {
         String messagesJson = objectMapper.writeValueAsString(body);
         //发送信息
         emUtils.requestEMChart(HttpMethod.POST, messagesJson, "messages", String.class);
@@ -194,6 +204,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     /**
      * 修改昵称
+     *
      * @param username
      * @param nickname
      * @return
@@ -224,9 +235,9 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * 新增群组
      */
     @RequestMapping(value = "newChatgroups", method = RequestMethod.POST)
-    public String newChatgroups(@RequestBody TexMessagesRequestBody body) throws JsonProcessingException {
+    public String newChatgroups(String username) throws JsonProcessingException {
 
-        ChatGroupsRequestBody groupsBody = new ChatGroupsRequestBody(body.getFrom(), "万达健康云", true, 300, false, body.getFrom());
+        ChatGroupsRequestBody groupsBody = new ChatGroupsRequestBody(username, "万达健康云_" + username, true, 1, false, username);
 
         String requestBody = objectMapper.writeValueAsString(groupsBody);
 
@@ -245,13 +256,25 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         return responseEntity.getBody().getData().get("groupid");
     }
 
-    @RequestMapping(value = "getTop5Messages" ,method = RequestMethod.POST)
-    public List<EmMessages> getTop5Messages(String fromUser,String toUser){
+    @RequestMapping(value = "getTop5Messages", method = RequestMethod.POST)
+    public List<EmMessages> getTop5Messages(String fromUser, String toUser) {
 
         return emMessagesRepository.findTop5ByFromUserOrToUserOrderByCreatedDateAsc(fromUser, toUser);
 
     }
 
+    /**
+     * 根据当前时间确定返回的医生的数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "emRules", method = RequestMethod.GET)
+    public ControllerResult emRules() {
+        String greetings = "欢迎提问，我们将有专业的医生解决您的问题";
+        String questionSample = "最近3天感到省体无力，经常性腹泻xxxxx";
+        int doctorNumber = emUtils.getDoctorNumber();
+        return new ControllerResult().setRet_code(doctorNumber).setRet_values(greetings).setMessage(questionSample);
+    }
 
 
 }

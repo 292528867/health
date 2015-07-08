@@ -86,12 +86,13 @@ public class DateUtils {
 	}
 
 	/**
-	 * huoqu
+	 * 获取所有的节假日
 	 * @return
 	 */
 	public static List getAlLHoliday() {
 		List list = new ArrayList();
-		File file = new File("classpath:holiday.txt");
+        String path = DateUtils.class.getClassLoader().getResource("holiday.txt").getPath();
+        File file = new File(path);
 		if (file.isFile() && file.exists()) {
 			try {
 				InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
