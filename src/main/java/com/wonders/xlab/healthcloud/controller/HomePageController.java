@@ -1,11 +1,16 @@
 package com.wonders.xlab.healthcloud.controller;
 
 import com.wonders.xlab.healthcloud.dto.hcpackage.DailyPackageDto;
+import com.wonders.xlab.healthcloud.dto.hcpackage.ProgressDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
+import com.wonders.xlab.healthcloud.entity.banner.Banner;
+import com.wonders.xlab.healthcloud.entity.banner.BannerType;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
+import com.wonders.xlab.healthcloud.repository.banner.BannnerRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageCompleteRepository;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,11 +31,30 @@ public class HomePageController {
     @Autowired
     private HcPackageDetailRepository hcPackageDetailRepository;
 
+    @Autowired
+    private BannnerRepository bannnerRepository;
+
     @RequestMapping("listHomePage/{userId}")
     public Object listHomePage(@PathVariable Long userId) {
-
         try {
-// 查找没有完成的健康包
+            Map<String, Object> map = new HashMap<>();
+            // 查询所有的标语
+            List<Banner> banners = this.bannnerRepository.findAll();
+            List<Banner> topBanners = new ArrayList<>();
+            List<Banner> bottomBanners = new ArrayList<>();
+            for (Banner banner : banners) {
+                if (banner.getBannerType() == BannerType.Top.ordinal())
+                    topBanners.add(banner);
+                if (banner.getBannerType() == BannerType.Bottom.ordinal())
+                    bottomBanners.add(banner);
+            }
+            Map<String, Object> bannerMap = new HashMap<>();
+            bannerMap.put("topBanners", topBanners);
+            bannerMap.put("bottomBanners", bottomBanners);
+
+            map.put("banner", bannerMap);
+
+         // 查找没有完成的健康包
             List<UserPackageOrder> userPackageCompletes = this.userPackageCompleteRepository.findByUserIdAndPackageComplete(userId, false);
 
             // 包id
@@ -84,9 +108,26 @@ public class HomePageController {
                     }
                 }
             }
-            Map<String, Object> map = new HashMap<>();
-            map.put("hourTask", hourTask);
-            map.put("dayTask", dayTask);
+
+            Map<String, Object> taskMap = new HashMap<>();
+            taskMap.put("currentDay", DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
+            taskMap.put("hourTask", hourTask);
+            taskMap.put("dayTask", dayTask);
+
+            map.put("task", taskMap);
+
+            // 查看完成度
+            Map<String, Object> progressMap = new HashMap<>();
+            List<ProgressDto> progressDtos = new ArrayList<>();
+            // 现有包 userPackageCompletes
+            for (UserPackageOrder upo : userPackageCompletes) {
+                progressDtos.add(
+                        new ProgressDto(upo.getHcPackage().getTitle(),
+                        upo.getHcPackage().getDescription(),
+                        upo.getHcPackage().getIcon(),
+                        56));
+            }
+            map.put("progress", progressDtos);
 
             return new ControllerResult<Map<String, Object>>().setRet_code(0).setRet_values(map).setMessage("成功");
         } catch (Exception exp) {

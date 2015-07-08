@@ -22,7 +22,7 @@ public class DailyPackageDto {
     @JsonIgnore
     private boolean complete;
 
-    private int isComplete;
+    private int isCompleted;
 
     public DailyPackageDto() {
     }
@@ -67,12 +67,13 @@ public class DailyPackageDto {
         this.complete = complete;
     }
 
-    public int getIsComplete() {
+    public int getIsCompleted() {
         if (complete) return 1;
         else return 0;
     }
 
-    public void setIsComplete(int isComplete) {
-        this.isComplete = isComplete;
+    public void setIsCompleted(int isCompleted) {
+        this.isCompleted = isCompleted;
     }
+
 }
