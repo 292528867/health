@@ -2,9 +2,12 @@ package com.wonders.xlab.healthcloud.service.pingpp;
 
 import com.wonders.xlab.healthcloud.dto.pingpp.PingDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
+import com.wonders.xlab.healthcloud.entity.steward.StewardOrder;
+import com.wonders.xlab.healthcloud.repository.steward.OrderRepository;
 import com.wonders.xlab.healthcloud.service.pingplusplus.Pingpp;
 import com.wonders.xlab.healthcloud.service.pingplusplus.model.Channel;
 import com.wonders.xlab.healthcloud.service.pingplusplus.model.Charge;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -23,7 +26,10 @@ import java.util.Map;
 @Service
 public class PingppService {
 
-    public void payOrder(PingDto pingDto, BindingResult result, HttpServletRequest req, HttpServletResponse resp
+    @Autowired
+    private OrderRepository orderRepository;
+
+    public void payOrder(Long userId, PingDto pingDto, BindingResult result, HttpServletRequest req, HttpServletResponse resp
     ) {
         PrintWriter out;
         resp.setContentType("application/json; charset=utf-8");
@@ -67,6 +73,14 @@ public class PingppService {
         try {
             Charge charge = Charge.create(chargeParams);
             String chargeID = charge.getId();
+            String tradeNo = "u" + userId + new Date().getTime();
+
+            StewardOrder stewardOrder = new StewardOrder(
+                    chargeID,
+                    tradeNo,
+                    Integer.parseInt(pingDto.getMoney())
+            );
+            this.orderRepository.save(stewardOrder);
             System.out.println(chargeID);
             System.out.println(charge);
             String credential = charge.getCredential();

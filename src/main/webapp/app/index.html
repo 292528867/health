@@ -1,50 +1,4 @@
-<!doctype html>
-<html lang="">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="description"
-        content="An Amaze UI template that helps you build fast, modern mobile web apps.">
-  <meta name="viewport"
-        content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>发现</title>
-
-  <!-- Set render engine for 360 browser -->
-  <meta name="renderer" content="webkit">
-
-  <!-- No Baidu Siteapp-->
-  <meta http-equiv="Cache-Control" content="no-siteapp"/>
-
-  <link rel="icon" type="image/png" href="i/favicon.png">
-
-  <!-- Add to homescreen -->
-  <link rel="manifest" href="manifest.json">
-
-  <!-- Fallback to homescreen for Chrome <39 on Android -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="Web Starter Kit">
-  <link rel="icon" sizes="192x192" href="i/touch/chrome-touch-icon-192x192.png">
-
-  <!-- Add to homescreen for Safari on iOS -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title"
-        content="Amaze UI Sfavicon.pngtarter Kit">
-  <link rel="apple-touch-icon" href="i/touch/apple-touch-icon.png">
-
-  <!-- Tile icon for Win8 (144x144 + tile color) -->
-  <meta name="msapplication-TileImage"
-        content="i/touch/ms-touch-icon-144x144-precomposed.png">
-  <meta name="msapplication-TileColor" content="#0e90d2">
-
-  <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
-  <!--
-  <link rel="canonical" href="http://www.example.com/">
-  -->
-  <link rel="stylesheet" href="css/amazeui.min.css"/>
-  <link rel="stylesheet" href="css/swiper.min.css"/>
-  <link rel="stylesheet" href="css/main.min.css">
-  <style>
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=description content="An Amaze UI template that helps you build fast, modern mobile web apps."><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>发现</title><meta name=renderer content=webkit><meta http-equiv=Cache-Control content=no-siteapp><link rel=icon type=image/png href=i/favicon.png><link rel=manifest href=manifest.json><meta name=mobile-web-app-capable content=yes><meta name=application-name content="Web Starter Kit"><link rel=icon sizes=192x192 href=i/touch/chrome-touch-icon-192x192.png><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black><meta name=apple-mobile-web-app-title content="Amaze UI Sfavicon.pngtarter Kit"><link rel=apple-touch-icon href=i/touch/apple-touch-icon.png><meta name=msapplication-TileImage content=i/touch/ms-touch-icon-144x144-precomposed.png><meta name=msapplication-TileColor content=#0e90d2><link rel=stylesheet href=css/amazeui.min.css><link rel=stylesheet href=css/swiper.min.css><link rel=stylesheet href=css/main.min.css><style>
     #header {
       position: fixed;
       left: 0;
@@ -65,73 +19,11 @@
       font-size: 1.4rem;
 
     }
-  </style>
-</head>
-<body>
-<img src="i/icon/loading.gif" alt="读取"  id="articles-loading" height="80"/>
-<div class="am-tabs am-tabs-d2 app-body">
-  <div class="today-bar">今日推荐</div>
-  <div class="today-white">
-    <img src="i/header/white.png" alt=""/>
-  </div>
-  <div id="header">
-    <!--<div id="top-line"></div>-->
-    <div class="swiper-wrapper">
-      <div class="swiper-slide" style="width: 100px;"></div>
-    </div>
-  </div>
-  <div class="am-tabs-bd">
-    <div class="am-tab-panel am-active today-body">
-      <div id="banners">
-        <div class="banner-today">
-          <div class="banner-today-img">
-          </div>
-          <div class="banner-today-title-bg am-cf">
-            <div class="banner-today-title"></div>
-            <div class="banner-today-click">
-              <img src="i/icon/read.png" alt="阅读"/>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div data-am-widget="list_news" class="am-list-news am-list-news-default today-list">
-        <!--列表标题-->
-        <div class="am-list-news-bd">
-          <ul class="am-list article" id="article">
-            <!--缩略图在标题左边-->
-            <li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left" style="display: none;">
-              <div class="am-u-sm-4 am-list-thumb article-img-box">
-                <a href="#" class="article-href">
-                  <img src="" class="article-img"/>
-                </a>
-              </div>
-              <div class=" am-u-sm-8 am-list-main article-content-box">
-                <h3 class="am-list-item-hd">
-                  <a href="#" class="article-title article-href"></a>
-                </h3>
+    .swiper-wrapper .swiper-slide:nth-last-child(1){
+      margin-right: 20px;
+    }
 
-                <div class="am-list-item-text article-description">
-
-                </div>
-                <div class="article-clickCount">
-
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
-</body>
-<script src="js/jquery.min.js"></script>
-<script src="js/amazeui.min.js"></script>
-<script src="js/main.js"></script>
-<script src="js/swiper.js"></script>
-
-<script type="text/javascript">
+  </style></head><body><img src=i/icon/loading.gif alt=读取 id=articles-loading height=80><div class="am-tabs am-tabs-d2 app-body"><div class=today-bar>今日推荐</div><div class=today-white><img src=i/header/white.png></div><div id=header><div class=swiper-wrapper><div class=swiper-slide style="width: 100px;"></div></div></div><div class=am-tabs-bd><div class="am-tab-panel am-active today-body"><div id=banners><div class=banner-today><div class=banner-today-img></div><div class="banner-today-title-bg am-cf"><div class=banner-today-title></div><div class=banner-today-click><img src=i/icon/read.png alt=阅读></div></div></div></div><div data-am-widget=list_news class="am-list-news am-list-news-default today-list"><div class=am-list-news-bd><ul class="am-list article" id=article><li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left" style="display: none;"><div class="am-u-sm-4 am-list-thumb article-img-box"><a href=# class=article-href><img class=article-img></a></div><div class="am-u-sm-8 am-list-main article-content-box"><h3 class=am-list-item-hd><a href=# class="article-title article-href"></a></h3><div class="am-list-item-text article-description"></div><div class=article-clickCount></div></div></li></ul></div></div></div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script src=js/main.js></script><script src=js/swiper.js></script><script type=text/javascript>
   window.onload = function () {
   }
   var articleList;
@@ -179,7 +71,7 @@
           $article.find('.article-description').html(value.desc);
           $article.find('.article-clickCount').html('<img src="i/icon/read-grey.png" alt="阅读"/>'+value.clickCount+'阅读');
           $article.find('.article-href').attr('href', 'javascript:getDetails(\'' + n + '\');');
-//          $article.attr('onclick','getDetails(\'' + n + '\')');
+          $article.find('li').attr('onclick','getDetails(\'' + n + '\')');
           u = u + $article.html();
         }
       });
@@ -327,6 +219,7 @@
           $article.find('.article-href').attr('href', 'javascript:getDetails(\'' + n + '\');');
 //          $article.attr('onclick','getDetails(\'' + n + '\')');
 //          $article.attr('onclick','getDetails(\'' + n + '\')');
+          $article.find('li').attr('onclick','getDetails(\'' + n + '\')');
           $article.find('.article-clickCount').html('<img src="i/icon/read-grey.png" alt="阅读"/>'+value.clickCount+'阅读');
           u = u + $article.html();
         }
@@ -359,5 +252,4 @@
 
   });
 
-</script>
-</html>
+</script></html>

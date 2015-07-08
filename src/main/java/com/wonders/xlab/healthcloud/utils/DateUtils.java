@@ -1,6 +1,10 @@
 package com.wonders.xlab.healthcloud.utils;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -66,4 +70,41 @@ public class DateUtils {
 		Period period = new Period(new DateTime(fromDate), new DateTime(toDate), PeriodType.minutes());
 		return period.getMinutes();
 	}
+
+	/**
+	 * 判断当前时间是星期几
+	 */
+	public static int calculateTodayForWeek(){
+		Calendar c = Calendar.getInstance();
+		int dayForWeek = 0;
+		if (c.get(Calendar.DAY_OF_WEEK) == 1) {
+			dayForWeek = 7;
+		} else {
+			dayForWeek = c.get(Calendar.DAY_OF_WEEK) - 1;
+		}
+		return dayForWeek;
+	}
+
+	/**
+	 * huoqu
+	 * @return
+	 */
+	public static List getAlLHoliday() {
+		List list = new ArrayList();
+		File file = new File("classpath:holiday.txt");
+		if (file.isFile() && file.exists()) {
+			try {
+				InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
+				BufferedReader bufferedReader = new BufferedReader(isr);
+				String holiday = null;
+				while ((holiday = bufferedReader.readLine()) != null) {
+					list.add(holiday);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
+	}
+
 }

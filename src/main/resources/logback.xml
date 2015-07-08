@@ -13,9 +13,9 @@
 	<property name="CONSOLE_LOG_PATTERN"
 		value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex" />
 
-	<property name="MYSQLJDBCURL"
-		value="jdbc:mysql://10.1.64.179:3306/health_cloud" />
-	<property name="MYSQLUSERNAME" 
+	<property name="MYSQLJDBCURL" value="jdbc:mysql://10.1.64.179:3306/health_cloud" />
+	<!--<property name="MYSQLJDBCURL" value="jdbc:mysql://101.231.124.8:45687/health_cloud/health_cloud" />-->
+	<property name="MYSQLUSERNAME"
 		value="health_cloud"/>
 	<property name="MYSQLUSERPASSWORD" 
 		value="health_cloud"/>
