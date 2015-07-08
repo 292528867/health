@@ -13,8 +13,8 @@ package com.wonders.xlab.healthcloud.repository.hcpackage;
  */
 public interface HcPackageDetailRepository extends MyRepository<HcPackageDetail, Long> {
 
-    @Query("select pgd from HcPackageDetail pgd left join pgd.hcPackage pg left join pg.users us where us.id = :id")
-    List<HcPackageDetail> findByUserid(@Param("id")Long userId);
+//    @Query("select pgd from HcPackageDetail pgd left join pgd.hcPackage pg left join pg.users us where us.id = :id")
+//    List<HcPackageDetail> findByUserid(@Param("id")Long userId);
 
     List<HcPackageDetail> findByHcPackageId(Long id);
 

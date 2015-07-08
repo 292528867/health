@@ -1,5 +1,7 @@
 package com.wonders.xlab.healthcloud.dto.hcpackage;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 /**
@@ -13,17 +15,24 @@ public class DailyPackageDto {
     /** 开始时间 */
     private Date recommendTimeFrom;
 
-    /** 结束时间 */
-    private Date recommendTimeTo;
-
     /** 任务名称 */
     private String taskName;
 
     /** 是否完成 */
+    @JsonIgnore
     private boolean complete;
 
-    /** 过期 */
-    private boolean outdated;
+    private int isComplete;
+
+    public DailyPackageDto() {
+    }
+
+    public DailyPackageDto(Long packageDetailId, Date recommendTimeFrom, String taskName, boolean complete) {
+        this.packageDetailId = packageDetailId;
+        this.recommendTimeFrom = recommendTimeFrom;
+        this.taskName = taskName;
+        this.complete = complete;
+    }
 
     public Long getPackageDetailId() {
         return packageDetailId;
@@ -41,13 +50,6 @@ public class DailyPackageDto {
         this.recommendTimeFrom = recommendTimeFrom;
     }
 
-    public Date getRecommendTimeTo() {
-        return recommendTimeTo;
-    }
-
-    public void setRecommendTimeTo(Date recommendTimeTo) {
-        this.recommendTimeTo = recommendTimeTo;
-    }
 
     public String getTaskName() {
         return taskName;
@@ -65,11 +67,12 @@ public class DailyPackageDto {
         this.complete = complete;
     }
 
-    public boolean isOutdated() {
-        return outdated;
+    public int getIsComplete() {
+        if (complete) return 1;
+        else return 0;
     }
 
-    public void setOutdated(boolean outdated) {
-        this.outdated = outdated;
+    public void setIsComplete(int isComplete) {
+        this.isComplete = isComplete;
     }
 }

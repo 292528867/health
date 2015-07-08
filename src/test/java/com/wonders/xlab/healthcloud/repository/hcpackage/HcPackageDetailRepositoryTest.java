@@ -24,11 +24,11 @@ public class HcPackageDetailRepositoryTest {
     private HcPackageDetailRepository hcPackageDetailRepository;
 
 
-    @Test
-    public void testFindByUserid() throws Exception {
-        List<HcPackageDetail> hcPackageDetail = hcPackageDetailRepository.findByUserid(47l);
-        System.out.println(new ObjectMapper().writeValueAsString(hcPackageDetail));
-    }
+//    @Test
+//    public void testFindByUserid() throws Exception {
+//        List<HcPackageDetail> hcPackageDetail = hcPackageDetailRepository.findByUserid(47l);
+//        System.out.println(new ObjectMapper().writeValueAsString(hcPackageDetail));
+//    }
 
     @Test
     public void testFindByHcPackageId() throws Exception {
