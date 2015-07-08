@@ -69,6 +69,7 @@ public class HcPackageDetail extends AbstractBaseEntity<Long> {
      */
     private boolean isFullDay;
 
+    /** 计划第几天做 */
     private Integer taskDay;
 
     public HcPackageDetail() {

@@ -39,7 +39,7 @@ public class HomePageController {
         try {
             Map<String, Object> map = new HashMap<>();
             // 查询所有的标语
-            List<Banner> banners = this.bannnerRepository.findAll();
+            List<Banner> banners = this.bannnerRepository.findByEnabled(true);
             List<Banner> topBanners = new ArrayList<>();
             List<Banner> bottomBanners = new ArrayList<>();
             for (Banner banner : banners) {
@@ -73,8 +73,9 @@ public class HomePageController {
             List<DailyPackageDto> dayTask = new ArrayList<>();
             // 存在包id，说明有在完成的健康包
             if (packageIds.size() > 0) {
+
                 // 查询所有任务，按照时间升序
-                List<HcPackageDetail> hcPackageDetails = this.hcPackageDetailRepository.findByHcPackageIdsOrderByRecommendTimeFrom(packageIds);
+                List<HcPackageDetail> hcPackageDetails = this.hcPackageDetailRepository.findByHcPackageIdsOrderByRecommendTimeFrom(packageIds, 1);
 
                 for (HcPackageDetail hcPackageDetail : hcPackageDetails) {
                     if (hcPackageDetail.isFullDay()) {
@@ -83,13 +84,19 @@ public class HomePageController {
                                     hcPackageDetail.getId(),
                                     hcPackageDetail.getRecommendTimeFrom(),
                                     hcPackageDetail.getTaskName(),
-                                    true));
+                                    true,
+                                    hcPackageDetail.getClickAmount()
+                                    )
+                            );
                         } else {
                             dayTask.add(new DailyPackageDto(
                                     hcPackageDetail.getId(),
                                     hcPackageDetail.getRecommendTimeFrom(),
                                     hcPackageDetail.getTaskName(),
-                                    false));
+                                    false,
+                                    hcPackageDetail.getClickAmount()
+                                    )
+                            );
                         }
                     } else {
                         if (packageDetailIds.contains(hcPackageDetail.getId())) {
@@ -97,13 +104,19 @@ public class HomePageController {
                                     hcPackageDetail.getId(),
                                     hcPackageDetail.getRecommendTimeFrom(),
                                     hcPackageDetail.getTaskName(),
-                                    true));
+                                    true,
+                                    hcPackageDetail.getClickAmount()
+                                    )
+                            );
                         } else {
                             hourTask.add(new DailyPackageDto(
                                     hcPackageDetail.getId(),
                                     hcPackageDetail.getRecommendTimeFrom(),
                                     hcPackageDetail.getTaskName(),
-                                    false));
+                                    false,
+                                    hcPackageDetail.getClickAmount()
+                                    )
+                            );
                         }
                     }
                 }
@@ -117,15 +130,27 @@ public class HomePageController {
             map.put("task", taskMap);
 
             // 查看完成度
-            Map<String, Object> progressMap = new HashMap<>();
             List<ProgressDto> progressDtos = new ArrayList<>();
-            // 现有包 userPackageCompletes
+            // 用户正在完成的包 userPackageCompletes
             for (UserPackageOrder upo : userPackageCompletes) {
+                // 计划开始时间
+                int startTime = Integer.parseInt(DateFormatUtils.format(upo.getCreatedDate(), "yyyyMMdd"));
+                // 当前时间
+                int currentTime = Integer.parseInt(DateFormatUtils.format(new Date(), "yyyyMMdd"));
+                // 持续时间
+                int duration = upo.getHcPackage().getDuration();
+
+                int progress = (currentTime - startTime - duration * upo.getHcPackage().getCycleIndex()) * 100 / duration ;
+
+
                 progressDtos.add(
-                        new ProgressDto(upo.getHcPackage().getTitle(),
-                        upo.getHcPackage().getDescription(),
-                        upo.getHcPackage().getIcon(),
-                        56));
+                        new ProgressDto(
+                                upo.getHcPackage().getTitle(),
+                                upo.getHcPackage().getDescription(),
+                                upo.getHcPackage().getIcon(),
+                                progress
+                        )
+                );
             }
             map.put("progress", progressDtos);
 

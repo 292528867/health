@@ -24,10 +24,21 @@ public class DailyPackageDto {
 
     private int isCompleted;
 
+    /** 点击次数 */
+    private int clickAmount;
+
     public DailyPackageDto() {
     }
 
     public DailyPackageDto(Long packageDetailId, Date recommendTimeFrom, String taskName, boolean complete) {
+        this.packageDetailId = packageDetailId;
+        this.recommendTimeFrom = recommendTimeFrom;
+        this.taskName = taskName;
+        this.complete = complete;
+    }
+
+    public DailyPackageDto(Long packageDetailId, Date recommendTimeFrom, String taskName, boolean complete, int clickAmount) {
+        this.clickAmount = clickAmount;
         this.packageDetailId = packageDetailId;
         this.recommendTimeFrom = recommendTimeFrom;
         this.taskName = taskName;
@@ -76,4 +87,11 @@ public class DailyPackageDto {
         this.isCompleted = isCompleted;
     }
 
+    public int getClickAmount() {
+        return clickAmount;
+    }
+
+    public void setClickAmount(int clickAmount) {
+        this.clickAmount = clickAmount;
+    }
 }

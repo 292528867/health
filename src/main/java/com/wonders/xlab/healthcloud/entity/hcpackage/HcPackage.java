@@ -86,6 +86,9 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     private HealthCategory healthCategory;
 
+    /** 循环次数 */
+    private int cycleIndex = 4;
+
 //    /**
 //     * 用户健康包
 //     */
@@ -246,5 +249,13 @@ public class HcPackage extends AbstractBaseEntity<Long> {
 
     public void setSex(Sex sex) {
         this.sex = sex;
+    }
+
+    public int getCycleIndex() {
+        return cycleIndex;
+    }
+
+    public void setCycleIndex(int cycleIndex) {
+        this.cycleIndex = cycleIndex;
     }
 }
