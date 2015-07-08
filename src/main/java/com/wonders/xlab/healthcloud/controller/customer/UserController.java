@@ -192,6 +192,7 @@ public class UserController extends AbstractBaseController<User, Long> {
 //                    return null == user ? addUserBeforeLogin(idenCode) :
 //                            new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
                     if (null == user) {
+                        //创建环信账号并创建一个群组
                         return addUserBeforeLogin(idenCode);
                     } else {
                         //判断数据库平台是否与登陆一致，不一致更新数据库
@@ -220,6 +221,8 @@ public class UserController extends AbstractBaseController<User, Long> {
         user.setTel(idenCode.getTel());
         user.setAppPlatform(idenCode.getAppPlatform());
         user = userRepository.save(user);
+        //创建一个群组
+
         return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
     }
 
