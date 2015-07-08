@@ -76,9 +76,6 @@ public class HcPackageDto {
     @NotBlank(message = "补充内容不能为空")
     private String supplemented;
 
-//    @NotNull(message = "三级分类不能为空")
-    private Long  healthCategoryId;
-
     public String getTitle() {
         return title;
     }
@@ -140,37 +137,5 @@ public class HcPackageDto {
 
     public void setRecommend(Boolean recommend) {
         this.recommend = recommend;
-    }
-
-    public Long getHealthCategoryId() {
-        return healthCategoryId;
-    }
-
-    public void setHealthCategoryId(Long healthCategoryId) {
-        this.healthCategoryId = healthCategoryId;
-    }
-
-    public String getIconUrl() {
-        return iconUrl;
-    }
-
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
-    }
-
-    public String getDetailDescriptionIcon() {
-        return detailDescriptionIcon;
-    }
-
-    public void setDetailDescriptionIcon(String detailDescriptionIcon) {
-        this.detailDescriptionIcon = detailDescriptionIcon;
-    }
-
-    public String getLoops() {
-        return loops;
-    }
-
-    public void setLoops(String loops) {
-        this.loops = loops;
     }
 }

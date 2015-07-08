@@ -36,6 +36,11 @@ public class Services extends AbstractPersistable<Long> {
      */
     private Integer serviceIntegration;
 
+    /**
+     * 服务描述
+     * @return
+     */
+    private String ServiceDescription;
 
     public Integer getServiceId() {
         return serviceId;
@@ -67,5 +72,13 @@ public class Services extends AbstractPersistable<Long> {
 
     public void setServiceIntegration(Integer serviceIntegration) {
         this.serviceIntegration = serviceIntegration;
+    }
+
+    public String getServiceDescription() {
+        return ServiceDescription;
+    }
+
+    public void setServiceDescription(String serviceDescription) {
+        ServiceDescription = serviceDescription;
     }
 }
