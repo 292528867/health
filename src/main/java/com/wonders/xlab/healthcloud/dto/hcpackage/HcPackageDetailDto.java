@@ -10,7 +10,7 @@ public class HcPackageDetailDto {
 
     /** 健康包 */
     @NotNull(message = "健康包id不能为空")
-    private String hcPackageId;
+    private String packageId;
 
     /**
      * 任务名称
@@ -18,10 +18,11 @@ public class HcPackageDetailDto {
     @NotNull(message = "任务名称不能为空")
     private String taskName;
 
-//    /**
-//     * 任务配图
-//     */
-//    private String icon;
+    /**
+     * 任务配图
+     */
+    @NotNull(message = "配图不能为空")
+    private String icon;
 
     /** 任务详细信息 */
     @NotNull(message = "任务详细介绍不能为空")
@@ -44,20 +45,18 @@ public class HcPackageDetailDto {
     @NotNull(message = "任务推荐开始时间不能为空")
     private String recommendTimeFrom;
 
-    @NotNull(message = "任务推荐结束时间不能为空")
-    private String recommendTimeTo;
+//    @NotNull(message = "任务推荐结束时间不能为空")
+//    private String recommendTimeTo;
     /**
      * 任务积分
      */
     private Integer integration;
 
-    public String getHcPackageId() {
-        return hcPackageId;
-    }
 
-    public void setHcPackageId(String hcPackageId) {
-        this.hcPackageId = hcPackageId;
-    }
+    /**
+     * 是否全天
+     */
+    private Boolean isFullDay;
 
     public String getTaskName() {
         return taskName;
@@ -99,13 +98,13 @@ public class HcPackageDetailDto {
         this.recommendTimeFrom = recommendTimeFrom;
     }
 
-    public String getRecommendTimeTo() {
-        return recommendTimeTo;
-    }
-
-    public void setRecommendTimeTo(String recommendTimeTo) {
-        this.recommendTimeTo = recommendTimeTo;
-    }
+//    public String getRecommendTimeTo() {
+//        return recommendTimeTo;
+//    }
+//
+//    public void setRecommendTimeTo(String recommendTimeTo) {
+//        this.recommendTimeTo = recommendTimeTo;
+//    }
 
     public Integer getIntegration() {
         return integration;
@@ -113,5 +112,29 @@ public class HcPackageDetailDto {
 
     public void setIntegration(Integer integration) {
         this.integration = integration;
+    }
+
+    public String getPackageId() {
+        return packageId;
+    }
+
+    public void setPackageId(String packageId) {
+        this.packageId = packageId;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public Boolean getIsFullDay() {
+        return isFullDay;
+    }
+
+    public void setIsFullDay(Boolean isFullDay) {
+        this.isFullDay = isFullDay;
     }
 }

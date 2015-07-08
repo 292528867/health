@@ -41,9 +41,6 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     private HcPackageRepository hcPackageRepository;
 
     @Autowired
-    private HcPackageDetailRepository hcPackageDetailRepository;
-
-    @Autowired
     private HealthCategoryRepository healthCategoryRepository;
 
     @Override
@@ -68,8 +65,8 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      * @param result
      * @return
      */
-    @RequestMapping(value = "addHcPackage",method = RequestMethod.POST)
-    private Object addHcPackage(@Valid HcPackageDto hcPackageDto, MultipartFile icon,MultipartFile detailDescriptionIcon,BindingResult result) {
+    @RequestMapping(value = "addHcPackage/{healthCategoryId}",method = RequestMethod.POST)
+    private Object addHcPackage(@PathVariable Long healthCategoryId, @Valid HcPackageDto hcPackageDto, MultipartFile icon,MultipartFile detailDescriptionIcon,BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -81,7 +78,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             String iconUrl = QiniuUploadUtils.upload(icon.getBytes(), URLDecoder.decode(icon.getOriginalFilename(), "UTF-8"));
             String detailDescriptionIconUrl = QiniuUploadUtils.upload(detailDescriptionIcon.getBytes(), URLDecoder.decode(detailDescriptionIcon.getOriginalFilename(), "UTF-8"));
 
-            HealthCategory healthCategory = healthCategoryRepository.findOne(hcPackageDto.getHealthCategoryId());
+            HealthCategory healthCategory = healthCategoryRepository.findOne(healthCategoryId);
 
             HcPackage hcPackage = new HcPackage();
             hcPackage.setHealthCategory(healthCategory);
@@ -133,68 +130,6 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
         }
     }
 
-    /**
-     * 添加健康包详细
-     * @param hcPackageId
-     * @param hcPackageDetailDto
-     * @param result
-     * @return
-     */
-    @RequestMapping("addHcPackageDetail/{hcPackageId}")
-    private Object addHcPackageDetail(@PathVariable Long hcPackageId, @Valid HcPackageDetailDto hcPackageDetailDto, MultipartFile icon, BindingResult result) {
-//        if (result.hasErrors()) {
-//            StringBuilder builder = new StringBuilder();
-//            for (ObjectError error : result.getAllErrors()) {
-//                builder.append(error.getDefaultMessage());
-//            }
-//            return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败");
-//        }
-//        try {
-//            HcPackage hp = this.hcPackageRepository.findOne(hcPackageId);
-//            if (hp == null)
-//                return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没找到！").setMessage("竟然没找到！");
-//            this.hcPackageDetailRepository.save(hcPackageDetailDto.toNewHcPackageDetail(hp));
-//            return new ControllerResult<String>().setRet_code(0).setRet_values("添加成功").setMessage("成功");
-//        } catch (Exception exp) {
-//            exp.printStackTrace();
-//            return new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败");
-//        }
-        return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("");
-    }
-//
-//    public Object findHcPackageDetail(@PathVariable Long userId) {
-//
-//
-//    }
-
-//
-//    /**
-//     * 更新健康包详细
-//     * @param detailId
-//     * @param hcPackageDetailDto
-//     * @param result
-//     * @return
-//     */
-//    @RequestMapping("updateHcPackageDetail/{detailId}")
-//    private Object updateHcPackageDetail(@PathVariable Long detailId, @RequestBody @Valid HcPackageDetailDto hcPackageDetailDto, BindingResult result) {
-//        if (result.hasErrors()) {
-//            StringBuilder builder = new StringBuilder();
-//            for (ObjectError error : result.getAllErrors()) {
-//                builder.append(error.getDefaultMessage());
-//            }
-//            return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败");
-//        }
-//        try {
-//            HcPackageDetail hpd = this.hcPackageDetailRepository.findOne(detailId);
-//            if (hpd == null)
-//                return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没找到！").setMessage("竟然没找到！");
-//            this.hcPackageDetailRepository.save(hcPackageDetailDto.updateHcPackageDetail(hpd));
-//            return new ControllerResult<String>().setRet_code(0).setRet_values("更新成功").setMessage("成功");
-//        } catch (Exception exp) {
-//            exp.printStackTrace();
-//            return new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败");
-//        }
-//    }
 
 
 
