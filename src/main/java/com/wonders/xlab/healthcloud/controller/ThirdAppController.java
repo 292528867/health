@@ -32,11 +32,24 @@ public class ThirdAppController {
      */
     @RequestMapping(value = "ask", method = RequestMethod.POST)
     public ControllerResult sendMessages(@RequestBody QuestionRequestBody requestBody) throws Exception {
+        Integer success = -1;
         for(String appName : requestBody.getAppName()){
-            askQuestions(appName, requestBody);
+            //每个平台尝试发送3次，一次成功以后不重复发送
+            int i = 0;
+            while(i < 3){
+                String result = askQuestions(appName, requestBody);
+                if("1".equals(result)){
+                    success = 0;
+                    break;
+                }
+            }
         }
 
-        return new ControllerResult().setRet_code(0).setRet_values("").setMessage("发送成功");
+        if(success == -1){
+            return new ControllerResult().setRet_code(success).setRet_values("").setMessage("发送失败");
+        } else {
+            return new ControllerResult().setRet_code(success).setRet_values("").setMessage("发送成功");
+        }
     }
 
     /**
