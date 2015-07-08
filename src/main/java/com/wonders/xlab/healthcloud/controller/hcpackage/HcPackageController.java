@@ -200,10 +200,12 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
 
 //    @RequestMapping("listPackagePlan/{userId}")
-//    public Object listPackagePlan(@PathVariable) {
+//    public Object listPackagePlan(@PathVariable Long userId) {
 //
-//        List<HcPackageDetail> hcPackageDetails = hcPackageDetailRepository.findByUserid()
+//        List<HcPackageDetail> hcPackageDetails = hcPackageDetailRepository.findByUserid(userId);
 //
+//
+//        return null;
 //    }
 
 

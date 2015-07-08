@@ -14,4 +14,7 @@ public interface HcPackageDetailRepository extends MyRepository<HcPackageDetail,
 
     @Query("select pgd from HcPackageDetail pgd left join pgd.hcPackage pg left join pg.users us where us.id = :id")
     List<HcPackageDetail> findByUserid(@Param("id")Long userId);
+
+    @Query("from HcPackageDetail hpd where hpd.hcPackage.id in (?1) order by hpd.recommendTimeFrom asc")
+    List<HcPackageDetail> findByHcPackageIds(List<Long> packageIds);
 }
