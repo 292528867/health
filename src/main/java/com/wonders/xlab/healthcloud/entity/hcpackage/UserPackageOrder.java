@@ -12,8 +12,8 @@ import javax.persistence.Table;
  * Created by mars on 15/7/8.
  */
 @Entity
-@Table(name = "hc_user_package_complete")
-public class UserPackageComplete extends AbstractBaseEntity<Long> {
+@Table(name = "hc_user_package_order")
+public class UserPackageOrder extends AbstractBaseEntity<Long> {
 
     /** 用户 */
     @ManyToOne(fetch = FetchType.LAZY)
