@@ -222,6 +222,8 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 				healthInfoDiscovery = new HealthInfoDiscovery();
 				healthInfoDiscovery.setDiscoveryDate(date);
 				healthInfoDiscovery.setDiscoveryHealthInfoIds(toHealthInfoDtoIdStrs(dtoes));
+				healthInfoDiscovery.setUser(user);
+				healthInfoDiscovery.setCreatedDate(DateUtils.covertToYYYYMMDD(date));
 				this.healthInfoDiscoveryRepository.save(healthInfoDiscovery);
 				this.proxyCache.addToCache(key, healthInfoDiscovery);
 				return dtoes;
