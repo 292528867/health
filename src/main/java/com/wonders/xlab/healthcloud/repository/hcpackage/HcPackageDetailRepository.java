@@ -16,5 +16,5 @@ public interface HcPackageDetailRepository extends MyRepository<HcPackageDetail,
     List<HcPackageDetail> findByUserid(@Param("id")Long userId);
 
     @Query("from HcPackageDetail hpd where hpd.hcPackage.id in (?1) order by hpd.recommendTimeFrom asc")
-    List<HcPackageDetail> findByHcPackageIds(List<Long> packageIds);
+    List<HcPackageDetail> findByHcPackageIdsOrderByRecommendTimeFrom(List<Long> packageIds);
 }
