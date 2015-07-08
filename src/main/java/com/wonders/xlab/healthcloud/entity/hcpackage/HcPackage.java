@@ -94,6 +94,9 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     /** 循环次数 */
     private int cycleLimit;
 
+    /** 首页小图 */
+    private String smaillIcon;
+
 //    /**
 //     * 用户健康包
 //     */
@@ -270,5 +273,13 @@ public class HcPackage extends AbstractBaseEntity<Long> {
 
     public void setLoops(String loops) {
         this.loops = loops;
+    }
+
+    public String getSmaillIcon() {
+        return smaillIcon;
+    }
+
+    public void setSmaillIcon(String smaillIcon) {
+        this.smaillIcon = smaillIcon;
     }
 }
