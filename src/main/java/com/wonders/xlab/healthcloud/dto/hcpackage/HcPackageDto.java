@@ -74,9 +74,6 @@ public class HcPackageDto {
     @NotNull(message = "补充内容不能为空")
     private String supplemented;
 
-//    @NotNull(message = "三级分类不能为空")
-    private Long  healthCategoryId;
-
     public String getTitle() {
         return title;
     }
@@ -138,13 +135,5 @@ public class HcPackageDto {
 
     public void setRecommend(Boolean recommend) {
         this.recommend = recommend;
-    }
-
-    public Long getHealthCategoryId() {
-        return healthCategoryId;
-    }
-
-    public void setHealthCategoryId(Long healthCategoryId) {
-        this.healthCategoryId = healthCategoryId;
     }
 }

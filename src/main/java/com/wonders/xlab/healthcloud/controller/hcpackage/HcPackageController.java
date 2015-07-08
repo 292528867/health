@@ -44,10 +44,10 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     private HcPackageRepository hcPackageRepository;
 
     @Autowired
-    private HcPackageDetailRepository hcPackageDetailRepository;
+    private HealthCategoryRepository healthCategoryRepository;
 
     @Autowired
-    private HealthCategoryRepository healthCategoryRepository;
+    private HcPackageDetailRepository hcPackageDetailRepository;
 
     @Override
     protected MyRepository<HcPackage, Long> getRepository() {
@@ -71,8 +71,8 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      * @param result
      * @return
      */
-    @RequestMapping(value = "addHcPackage",method = RequestMethod.POST)
-    private Object addHcPackage(@Valid HcPackageDto hcPackageDto, MultipartFile icon,MultipartFile detailDescriptionIcon,BindingResult result) {
+    @RequestMapping(value = "addHcPackage/{healthCategoryId}",method = RequestMethod.POST)
+    private Object addHcPackage(@PathVariable Long healthCategoryId, @Valid HcPackageDto hcPackageDto, MultipartFile icon,MultipartFile detailDescriptionIcon,BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -84,7 +84,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             String iconUrl = QiniuUploadUtils.upload(icon.getBytes(), URLDecoder.decode(icon.getOriginalFilename(), "UTF-8"));
             String detailDescriptionIconUrl = QiniuUploadUtils.upload(detailDescriptionIcon.getBytes(), URLDecoder.decode(detailDescriptionIcon.getOriginalFilename(), "UTF-8"));
 
-            HealthCategory healthCategory = healthCategoryRepository.findOne(hcPackageDto.getHealthCategoryId());
+            HealthCategory healthCategory = healthCategoryRepository.findOne(healthCategoryId);
 
             HcPackage hcPackage = new HcPackage();
             hcPackage.setHealthCategory(healthCategory);
@@ -197,16 +197,6 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 //            exp.printStackTrace();
 //            return new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败");
 //        }
-//    }
-
-
-//    @RequestMapping("listPackagePlan/{userId}")
-//    public Object listPackagePlan(@PathVariable Long userId) {
-//
-//        List<HcPackageDetail> hcPackageDetails = hcPackageDetailRepository.findByUserid(userId);
-//
-//
-//        return null;
 //    }
 
 

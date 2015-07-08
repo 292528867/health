@@ -1,6 +1,7 @@
 package com.wonders.xlab.healthcloud.repository.hcpackage;
 
         import com.wonders.xlab.framework.repository.MyRepository;
+        import com.wonders.xlab.healthcloud.dto.IdenCode;
         import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
         import org.springframework.data.jpa.repository.Query;
         import org.springframework.data.repository.query.Param;
@@ -14,6 +15,8 @@ public interface HcPackageDetailRepository extends MyRepository<HcPackageDetail,
 
     @Query("select pgd from HcPackageDetail pgd left join pgd.hcPackage pg left join pg.users us where us.id = :id")
     List<HcPackageDetail> findByUserid(@Param("id")Long userId);
+
+    List<HcPackageDetail> findByHcPackageId(Long id);
 
     @Query("from HcPackageDetail hpd where hpd.hcPackage.id in (?1) order by hpd.recommendTimeFrom asc")
     List<HcPackageDetail> findByHcPackageIdsOrderByRecommendTimeFrom(List<Long> packageIds);

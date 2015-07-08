@@ -17,7 +17,7 @@ public class HcPackageDetailDto {
 
     /** 健康包 */
     @NotNull(message = "健康包id不能为空")
-    private String hcPackageId;
+    private String packageId;
 
     /**
      * 任务名称
@@ -25,10 +25,11 @@ public class HcPackageDetailDto {
     @NotNull(message = "任务名称不能为空")
     private String taskName;
 
-//    /**
-//     * 任务配图
-//     */
-//    private String icon;
+    /**
+     * 任务配图
+     */
+    @NotNull(message = "配图不能为空")
+    private String icon;
 
     /** 任务详细信息 */
     @NotNull(message = "任务详细介绍不能为空")
@@ -54,17 +55,12 @@ public class HcPackageDetailDto {
     @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$", message = "时间格式必须为HH:mm:ss")
     private String recommendTimeFrom;
 
-    @NotNull(message = "任务推荐结束时间不能为空")
-    @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$", message = "时间格式必须为HH:mm:ss")
-    private String recommendTimeTo;
     /**
      * 任务积分
      */
     @NotNull(message = "积分不能为空")
     private String integration;
 
-    @NotNull(message = "是否全天不能为空")
-    @Pattern(regexp = "^$", message = "时间格式必须为HH:mm:ss")
     private String isFullDay;
 
     private MultipartFile file;
@@ -81,7 +77,6 @@ public class HcPackageDetailDto {
 
         try {
             hcPackageDetail.setRecommendTimeFrom(DateUtils.parseDate(recommendTimeFrom, "H:m:s"));
-            hcPackageDetail.setRecommendTimeTo(DateUtils.parseDate(recommendTimeTo, "H:m:s"));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -89,12 +84,12 @@ public class HcPackageDetailDto {
 
     }
 
-    public String getHcPackageId() {
-        return hcPackageId;
+    public String getPackageId() {
+        return packageId;
     }
 
-    public void setHcPackageId(String hcPackageId) {
-        this.hcPackageId = hcPackageId;
+    public void setPackageId(String packageId) {
+        this.packageId = packageId;
     }
 
     public String getTaskName() {
@@ -103,6 +98,14 @@ public class HcPackageDetailDto {
 
     public void setTaskName(String taskName) {
         this.taskName = taskName;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public String getDetail() {
@@ -135,14 +138,6 @@ public class HcPackageDetailDto {
 
     public void setRecommendTimeFrom(String recommendTimeFrom) {
         this.recommendTimeFrom = recommendTimeFrom;
-    }
-
-    public String getRecommendTimeTo() {
-        return recommendTimeTo;
-    }
-
-    public void setRecommendTimeTo(String recommendTimeTo) {
-        this.recommendTimeTo = recommendTimeTo;
     }
 
     public String getIntegration() {

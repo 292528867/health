@@ -29,4 +29,10 @@ public class HcPackageDetailRepositoryTest {
         List<HcPackageDetail> hcPackageDetail = hcPackageDetailRepository.findByUserid(47l);
         System.out.println(new ObjectMapper().writeValueAsString(hcPackageDetail));
     }
+
+    @Test
+    public void testFindByHcPackageId() throws Exception {
+        List<HcPackageDetail> hcPackageDetails = hcPackageDetailRepository.findByHcPackageId(1l);
+        System.out.println(new ObjectMapper().writeValueAsString(hcPackageDetails));
+    }
 }
