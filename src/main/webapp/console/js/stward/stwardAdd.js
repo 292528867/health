@@ -19,43 +19,98 @@ $.get(stewardAddUrl, function (data) {
 
 
 var stewardServiceUrl = commonUrl + 'steward/listCustomPackage';
+var addServiceUrl = commonUrl + 'services/saveService';
+var addStewardUrl = commonUrl + 'steward/saveSteward';
 
 $.get(stewardServiceUrl, function (data) {
     console.log(data);
     //  location.reload();
     var datas = '';
     $.each(data.ret_values.services, function (n, value) {
-        datas += "<option value='"+value.id+"'>"+value.serviceName+"</option>";
+        datas += "<tr style='display: none' ><td><input type='checkbox'/></td><td>" + value.id +
+            "</td>" +
+            "<td><a href='#'>" + value.serviceName + "</a></td>" +
+            "<td class='am-hide-sm-only'>" + value.serviceDescription + "</td>" +
+            "<td class='am-hide-sm-only'>" + value.serviceIntegration + "</td>" +
+            "<td class='am-hide-sm-only'>" + value.serviceId + "</td>" +
+            "<td class='am-hide-sm-only'>" + value.serviceArea + "</td>" +
+            "<td><div class='am-btn-toolbar'><div class='am-btn-group am-btn-group-xs'>" +
+            "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick='searchCourse(" + value.id + ")'>" +
+            "<span class='am-icon-pencil-square-o'></span> 编辑</button>" +
+            "</button><button type='button' class='am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only' " +
+            "onclick='deleteService(" + value.id + ")'  >" +
+            "<span class='am-icon-trash-o'></span> 删除</button></div></div></td></tr>";
 
     });
+    //console.lg(datas);
+
     $("#allServiceDatas").append(datas);
+    $("#allServiceDatas tr").fadeIn(300);
 });
 
-function articleAdd() {
-    var title = $('#title').val();
-    var desc = $('#desc').val();
-    var pictureUrl = $('#pictureUrl').val();
-    var pictureUrl2 = $('#pictureUrl2').val();
-    var type = $('#type').val();
 
-    var htmlInfo = editor.html();
+
+$.get(stewardServiceUrl, function (data) {
+    console.log(data);
+    //  location.reload();
+    var datas = '';
+    $.each(data.ret_values.steward, function (n, value) {
+        datas += "<tr style='display: none' ><td><input type='checkbox'/></td><td>" + value.id +
+            "</td>" +
+            "<td><a href='#'>" + value.nickName + "</a></td>" +
+            "<td class='am-hide-sm-only'>" + value.tel + "</td>" +
+            "<td class='am-hide-sm-only'>" + value.height + "</td>" +
+            "<td class='am-hide-sm-only'>" + value.weight + "</td>" +
+            "<td class='am-hide-sm-only'>" + value.rank + "</td>" +
+            "<td class='am-hide-sm-only'>" + value.birthday + "</td>" +
+            "<td class='am-hide-sm-only'>" + value.iconUrl + "</td>" +
+            "<td class='am-hide-sm-only'>" + value.levelUrl + "</td>" +
+            "<td class='am-hide-sm-only'>" + value.location.address + "</td>" +
+            "<td><div class='am-btn-toolbar'><div class='am-btn-group am-btn-group-xs'>" +
+            "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick='searchCourse(" + value.id + ")'>" +
+            "<span class='am-icon-pencil-square-o'></span> 编辑</button>" +
+            "</button><button type='button' class='am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only' " +
+            "onclick='deleteService(" + value.id + ")'  >" +
+            "<span class='am-icon-trash-o'></span> 删除</button></div></div></td></tr>";
+
+    });
+    //console.lg(datas);
+
+    $("#allStewardDatas").append(datas);
+    $("#allStewardDatas tr").fadeIn(300);
+});
+
+
+
+
+function stewardAdd() {
+    var serviceName = $('#serviceName').val();
+    var description = $('#description').val();
+    var integration = $('#integration').val();
+    var serverId = $('#serverId').val();
+    var serviceArea = $('#serviceArea').val();
+    var isForce = $('#isForce').val();
+
+    //var htmlInfo = editor.html();
     //$('#courseDetail').val(editor.html());
 
-    if (title.length==0||desc.length==0||pictureUrl.length==0||pictureUrl2.length==0||htmlInfo.length==0||type.length==0) {
+    if (serviceName.length==0||description.length==0||integration.length==0||serverId.length==0||serviceArea.length==0) {
         alert('有字段没有填写');
         return false;
     }
-    articleAddUrl += type;
+    //addServiceUrl += type;
     var json ={
-        "title": title,
-        "pictureUrl": pictureUrl,
-        "pictureUrl2": pictureUrl2,
-        "htmlInfo": htmlInfo,
-        "desc": desc
+        "serviceName": serviceName,
+        "serviceDescription": description,
+        "serviceIntegration": integration,
+        "serviceId": serverId,
+        "serviceArea": serviceArea,
+        "isForce":isForce
     };
     json = JSON.stringify(json);
+    console.log(json);
     $.ajax({
-        url: articleAddUrl,
+        url: addServiceUrl,
         type: "POST",
         data: json,
         dataType: "json",
@@ -76,3 +131,20 @@ function articleAdd() {
 
     });
 }
+
+function deleteService(servicesId) {
+    confirm_ = confirm('确定删除？');
+    if (confirm_) {
+        $.ajax({
+            type: "DELETE",
+            url: commonUrl + '/services/' + servicesId,
+            success: function (msg) {
+                location.reload();
+            },
+            error: function () {
+                alert('删除错误');
+            }
+
+        });
+    }
+};

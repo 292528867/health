@@ -20,7 +20,8 @@ public class Steward extends BaseInfo<Long> {
     private Rank rank;
 
     public enum Rank {
-        S, A, B, C
+//        S, A, B, C
+        金牌管家,银牌管家,铜牌管家,铁牌管家
     }
 
     /**
@@ -43,6 +44,18 @@ public class Steward extends BaseInfo<Long> {
      */
     @Enumerated
     private Location location;
+
+    /**
+     * color
+     * @return
+     */
+    private String color;
+    /**
+     * levelUrl
+     * @return
+     */
+    private String levelUrl;
+
 
     public Rank getRank() {
         return rank;
@@ -82,5 +95,21 @@ public class Steward extends BaseInfo<Long> {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public String getColour() {
+        return color;
+    }
+
+    public void setColour(String color) {
+        this.color = color;
+    }
+
+    public String getLevelUrl() {
+        return levelUrl;
+    }
+
+    public void setLevelUrl(String levelUrl) {
+        this.levelUrl = levelUrl;
     }
 }

@@ -96,51 +96,69 @@
             <div class="am-u-sm-12 am-u-md-8 am-u-md-pull-4">
                 <!--<form action="http://101.231.124.8:45677/xlab-reindeerjob-rest-srv/course/saveCourse" class="am-form" id="form1" method="post" enctype="multipart/form-data"-->
                 <form class="am-form" id="form1" method="post"
-                       ng-app="" ng-controller="teacherController">
+                      ng-app="" ng-controller="teacherController">
                     <fieldset>
                         <div class="am-form-group">
-                            <label for="serviceName">服务名称：</label>
+                            <label for="serviceName">管家名字：</label>
                             <input type="text" id="serviceName" placeholder=""
                                    required name="serviceName"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="description">服务描述：</label>
+                            <label for="description">联系电话：</label>
                             <input type="text" id="description" placeholder=""
                                    required name="serviceDescription"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="integration">服务积分：</label>
+                            <label for="integration">身高：</label>
                             <input type="text" id="integration" placeholder=""
                                    required name="serviceIntegration"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="integration">服务id：</label>
-                            <input type="text" id="serverId" placeholder=""
+                            <label for="integration">体重：</label>
+                            <input type="text" id="weight" placeholder=""
                                    required name="serviceId"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="serviceArea" class="about-color">范围:</label>
+                            <label for="integration">年龄：</label>
+                            <input type="text" id="ege" placeholder=""
+                                   required name="serviceId"/>
+                        </div>
+                        <div class="am-form-group">
+                            <label for="serviceArea" class="about-color">性别:</label>
                             <br/>
                             <select data-am-selected="{btnSize: 'sm'}" id="serviceArea" name="serviceArea" >
-                                <option selected>上海</option>
-                                <option selected>全国</option>
+                                <option selected value="0">男</option>
+                                <option selected value="1">女</option>
                             </select>
                         </div>
                         <div class="am-form-group">
-                            <label for="isForce" class="about-color">范围:</label>
+                            <label for="serviceArea" class="about-color">性别:</label>
                             <br/>
-                            <select data-am-selected="{btnSize: 'sm'}" id="isForce" name="isForce" >
-                                <option selected value="true">是</option>
-                                <option selected value="false">否</option>
+                            <select data-am-selected="{btnSize: 'sm'}" id="rank" name="rank" >
+                                <option selected >男</option>
+                                <option selected >女</option>
                             </select>
                         </div>
-                        <!--<div class="am-form-group">-->
-                            <!--<label for="steward" class="about-color">管家:</label>-->
-                            <!--<br/>-->
-                            <!--<select data-am-selected="{maxHeight:200, btnSize: 'sm',  searchBox:1}" id="steward" name="type" >-->
-                                <!--<option selected>请选择</option>-->
-                            <!--</select>-->
-                        <!--</div>-->
+                        <div class="am-form-group am-form-file">
+                            <button type="button" class="am-btn am-btn-primary am-btn-sm">
+                                <i class="am-icon-cloud-upload"></i> 选择要上传的管家头像
+                            </button>
+                            <input id="image-form-iconUrl" type="file" multiple accept="image/*" name="file" class="image-form">
+                            <div id="iconUrl" class="image-text"></div>
+
+                        </div>
+                        <button type="button" class="am-btn am-btn-warning am-round" id="addIconUrl" onclick="addImages()"> 添加图片</button>
+
+                        <div class="am-form-group am-form-file">
+                            <button type="button" class="am-btn am-btn-primary am-btn-sm">
+                                <i class="am-icon-cloud-upload"></i> 选择要上传的等级图片
+                            </button>
+                            <input id="image-form-levelUrl" type="file" multiple accept="image/*" name="file" class="image-form">
+                            <div id="levelUrl" class="image-text"></div>
+
+                        </div>
+                        <button type="button" class="am-btn am-btn-warning am-round" id="addLevelUrl" onclick="addImages()"> 添加图片</button>
+
                         <button class="am-btn am-btn-secondary" type="button" id="formSub" onclick="stewardAdd()">提交
                         </button>
                     </fieldset>
@@ -153,15 +171,19 @@
                                 <tr>
                                     <th class="table-check"><input type="checkbox"/></th>
                                     <th class="table-id">ID</th>
-                                    <th class="table-title">服务名称</th>
-                                    <th class="table-title">服务描述</th>
-                                    <th class="table-title">服务积分</th>
-                                    <th class="table-set">服务id</th>
-                                    <th class="table-set">服务类别</th>
+                                    <th class="table-title">管家名字</th>
+                                    <th class="table-title">联系电话</th>
+                                    <th class="table-title">身高</th>
+                                    <th class="table-set">体重</th>
+                                    <th class="table-set">等级</th>
+                                    <th class="table-set">生日</th>
+                                    <th class="table-set">头像</th>
+                                    <th class="table-set">等级图像</th>
+                                    <th class="table-title">位置</th>
                                     <th class="table-set">操作</th>
                                 </tr>
                                 </thead>
-                                <tbody id="allServiceDatas">
+                                <tbody id="allStewardDatas">
                                 </tbody>
                             </table>
                             <!--
