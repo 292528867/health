@@ -5,9 +5,11 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -21,6 +23,8 @@ import com.wonders.xlab.healthcloud.entity.customer.User;
  * @author xu
  *
  */
+@Entity
+@Table(name = "HC_HEALTH_CATEGORY_DISCOVERY")
 public class HealthCategoryDiscovery extends AbstractPersistable<Long> {
 	/**
 	 * 
