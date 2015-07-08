@@ -224,7 +224,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
                     hcPackage.getIcon()
             ));
         }
-        return new ControllerResult<List<ThirdPackageDto>>().setRet_values(thirdPackageDtos).setMessage("成功");
+        return new ControllerResult<List<ThirdPackageDto>>().setRet_code(0).setRet_values(thirdPackageDtos).setMessage("成功");
     }
 
 }
