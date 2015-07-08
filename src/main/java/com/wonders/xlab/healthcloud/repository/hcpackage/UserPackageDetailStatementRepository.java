@@ -2,7 +2,7 @@ package com.wonders.xlab.healthcloud.repository.hcpackage;
 
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageDetailStatement;
-import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageStatement;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -11,5 +11,6 @@ import java.util.List;
  */
 public interface UserPackageDetailStatementRepository extends MyRepository<UserPackageDetailStatement, Long> {
 
-    List<UserPackageStatement> findByHcPackageDetail(Long detailId);
+    @Query("from UserPackageDetailStatement upds where upds.user.id = ?1 and upds.hcPackageDetail.id = ?2")
+    List<UserPackageDetailStatement> findByUserIdHcPackageDetail(Long userId, Long detailId);
 }

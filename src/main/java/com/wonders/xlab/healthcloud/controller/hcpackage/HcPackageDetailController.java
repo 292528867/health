@@ -84,15 +84,16 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
      * @param detailId
      * @return
      */
-    @RequestMapping("retrievePackageDetail/{detailId}")
-    public Object retrievePackageDetail(@PathVariable Long detailId) {
+    @RequestMapping("retrievePackageDetail/{userId}/{detailId}")
+    public Object retrievePackageDetail(@PathVariable Long userId, @PathVariable Long detailId) {
 
         HcPackageDetail detail = this.hcPackageDetailRepository.findOne(detailId);
-        List<UserPackageStatement> userPackageStatements = this.userPackageDetailStatementRepository.findByHcPackageDetail(detailId);
+
+        List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdHcPackageDetail(userId, detailId);
 
         Set<UserStatementDto> statementDtos = new HashSet<>();
 
-        for (UserPackageStatement packageStatement : userPackageStatements) {
+        for (UserPackageDetailStatement packageStatement : userStatements) {
             UserStatementDto statement = new UserStatementDto(
                     packageStatement.getId(),
                     packageStatement.getStatement(),
