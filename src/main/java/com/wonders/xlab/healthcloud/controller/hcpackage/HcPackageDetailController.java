@@ -7,13 +7,17 @@ import com.wonders.xlab.healthcloud.dto.hcpackage.HcPackageDetailDto;
 import com.wonders.xlab.healthcloud.dto.hcpackage.UserStatementDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.customer.User;
-import com.wonders.xlab.healthcloud.entity.hcpackage.*;
+import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
+import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
+import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageDetailStatement;
+import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageDetailStatementRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderRepository;
 import com.wonders.xlab.healthcloud.utils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -114,23 +118,46 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         return new ControllerResult<DayPackageDetailDto>().setRet_code(0).setRet_values(dto).setMessage("成功");
     }
 
+    /**
+     * 确认信息
+     * @param userId
+     * @param detailId
+     * @param content
+     * @return
+     */
     @RequestMapping("confirmDetail/{userId}/{detailId}/{content}")
     public Object confirmDetail(@PathVariable Long userId, @PathVariable Long detailId, @PathVariable String content) {
 
         User user = this.userRepository.findOne(userId);
 
         HcPackageDetail hpDetail = this.hcPackageDetailRepository.findOne(detailId);
-
+        if (hpDetail == null)
+            return new ControllerResult<String>().setRet_code(-1).setRet_values("找不到任务").setMessage("成功");
         UserPackageOrder order = this.userPackageOrderRepository.findByUserAndHcPackageAndPackageComplete(user, hpDetail.getHcPackage(), false);
         if (order == null)
             return new ControllerResult<String>().setRet_code(-1).setRet_values("找不到订单").setMessage("成功");
 
-        UserPackageDetailStatement statement = new UserPackageDetailStatement(
-                user,
-                hpDetail,
-                content
-        );
-        this.userPackageDetailStatementRepository.save(statement);
+        if (hpDetail.isNeedSupplemented()) {
+            UserPackageDetailStatement statement = new UserPackageDetailStatement(
+                    user,
+                    hpDetail,
+                    content
+            );
+            this.userPackageDetailStatementRepository.save(statement);
+        }
+        if (order.getHcPackageDetailIds() != null) {
+            String[] detailIds = order.getHcPackageDetailIds().split(",");
+            Long[] longDetailIds = new Long[detailIds.length + 1];
+            for (int i = 0; i < detailIds.length; i++)
+                longDetailIds[i] = Long.parseLong(detailIds[i]);
+            longDetailIds[detailIds.length -1] = detailId;
+            order.setHcPackageDetailIds(StringUtils.join(longDetailIds, ","));
+        } else {
+            Long[] longDetailIds = new Long[1];
+            longDetailIds[0] = detailId;
+            order.setHcPackageDetailIds(StringUtils.join(longDetailIds, ","));
+        }
+        this.userPackageOrderRepository.save(order);
         return new ControllerResult<String>().setRet_code(0).setRet_values("添加成功").setMessage("成功");
 
     }
