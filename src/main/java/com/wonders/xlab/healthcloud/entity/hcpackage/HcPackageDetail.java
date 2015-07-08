@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by mars on 15/7/3.
@@ -42,17 +43,22 @@ public class HcPackageDetail extends AbstractBaseEntity<Long> {
      */
     private boolean isNeedSupplemented;
 
+    /**
+     * 补充内容
+     */
     private String supplemented;
 
     /**
      * 任务推荐开始时间
      */
-    private String recommendTimeFrom;
+    @Temporal(TemporalType.TIME)
+    private Date recommendTimeFrom;
 
     /**
      * 任务推荐结束时间
      */
-    private String recommendTimeTo;
+    @Temporal(TemporalType.TIME)
+    private Date recommendTimeTo;
     /**
      * 任务积分
      */
@@ -69,6 +75,16 @@ public class HcPackageDetail extends AbstractBaseEntity<Long> {
     public HcPackageDetail(HcPackage hcPackage, String detail) {
         this.hcPackage = hcPackage;
         this.detail = detail;
+    }
+
+    public HcPackageDetail(HcPackage hcPackage, String taskName, String detail, boolean isNeedSupplemented, String supplemented, int integration, boolean isFullDay) {
+        this.hcPackage = hcPackage;
+        this.taskName = taskName;
+        this.detail = detail;
+        this.isNeedSupplemented = isNeedSupplemented;
+        this.supplemented = supplemented;
+        this.integration = integration;
+        this.isFullDay = isFullDay;
     }
 
     public HcPackage getHcPackage() {
@@ -135,20 +151,20 @@ public class HcPackageDetail extends AbstractBaseEntity<Long> {
         this.supplemented = supplemented;
     }
 
-    public String getRecommendTimeFrom() {
-        return recommendTimeFrom;
-    }
-
-    public void setRecommendTimeFrom(String recommendTimeFrom) {
-        this.recommendTimeFrom = recommendTimeFrom;
-    }
-
-    public String getRecommendTimeTo() {
+    public Date getRecommendTimeTo() {
         return recommendTimeTo;
     }
 
-    public void setRecommendTimeTo(String recommendTimeTo) {
+    public void setRecommendTimeTo(Date recommendTimeTo) {
         this.recommendTimeTo = recommendTimeTo;
+    }
+
+    public Date getRecommendTimeFrom() {
+        return recommendTimeFrom;
+    }
+
+    public void setRecommendTimeFrom(Date recommendTimeFrom) {
+        this.recommendTimeFrom = recommendTimeFrom;
     }
 
     public boolean isFullDay() {
