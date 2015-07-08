@@ -80,6 +80,11 @@ public class HcPackage extends AbstractBaseEntity<Long> {
      */
     private String supplemented;
 
+    /**
+     * 是否循环
+     */
+    private String loops;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private HealthCategory healthCategory;
 
@@ -235,5 +240,13 @@ public class HcPackage extends AbstractBaseEntity<Long> {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public String getLoops() {
+        return loops;
+    }
+
+    public void setLoops(String loops) {
+        this.loops = loops;
     }
 }

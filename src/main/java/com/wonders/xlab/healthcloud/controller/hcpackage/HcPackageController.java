@@ -69,7 +69,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      * @return
      */
     @RequestMapping(value = "addHcPackage",method = RequestMethod.POST)
-    private Object addHcPackage(@Valid HcPackageDto hcPackageDto, MultipartFile icon,MultipartFile detailDescriptionIcon,BindingResult result) {
+    private Object addHcPackage(@RequestBody HcPackageDto hcPackageDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -78,21 +78,19 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败");
         }
         try {
-            String iconUrl = QiniuUploadUtils.upload(icon.getBytes(), URLDecoder.decode(icon.getOriginalFilename(), "UTF-8"));
-            String detailDescriptionIconUrl = QiniuUploadUtils.upload(detailDescriptionIcon.getBytes(), URLDecoder.decode(detailDescriptionIcon.getOriginalFilename(), "UTF-8"));
+//            String iconUrl = QiniuUploadUtils.upload(icon.getBytes(), URLDecoder.decode(icon.getOriginalFilename(), "UTF-8"));
+//            String detailDescriptionIconUrl = QiniuUploadUtils.upload(detailDescriptionIcon.getBytes(), URLDecoder.decode(detailDescriptionIcon.getOriginalFilename(), "UTF-8"));
 
             HealthCategory healthCategory = healthCategoryRepository.findOne(hcPackageDto.getHealthCategoryId());
 
             HcPackage hcPackage = new HcPackage();
             hcPackage.setHealthCategory(healthCategory);
             BeanUtils.copyProperties(hcPackageDto,hcPackage,"healthCategoryId");
-            hcPackage.setIcon(iconUrl);
-            hcPackage.setDetailDescriptionIcon(detailDescriptionIconUrl);
+            hcPackage.setIcon(hcPackageDto.getIconUrl());
+//            hcPackage.setDetailDescriptionIcon(detailDescriptionIconUrl);
             hcPackageRepository.save(hcPackage);
             return new ControllerResult<String>().setRet_code(0).setRet_values("").setMessage("添加成功！");
-        } catch (UnsupportedEncodingException e) {
-            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(e.getLocalizedMessage());
-        } catch (IOException e) {
+        } catch (Exception e) {
             return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(e.getLocalizedMessage());
         }
     }
