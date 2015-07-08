@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -216,14 +217,15 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     @RequestMapping("listPackageInfo")
     public Object listPackageInfo() {
         // 查询所有健康包
-        List<HcPackage> hcPackages = this.hcPackageRepository.findAllOrderByCreateDate();
+//        List<HcPackage> hcPackages = this.hcPackageRepository.findAllOrderByCreateDate();
+        List<HealthCategory> healthCategories = healthCategoryRepository.findByOrderByCreateDateDesc();
         List<ThirdPackageDto> thirdPackageDtos = new ArrayList<>();
 
-        for (HcPackage hcPackage : hcPackages) {
+        for (HealthCategory healthCategorie : healthCategories) {
             thirdPackageDtos.add(new ThirdPackageDto(
-                    hcPackage.getId(),
-                    hcPackage.getTitle(),
-                    hcPackage.getIcon()
+                    healthCategorie.getId(),
+                    healthCategorie.getTitle(),
+                    healthCategorie.getIcon()
             ));
         }
         return new ControllerResult<List<ThirdPackageDto>>().setRet_code(0).setRet_values(thirdPackageDtos).setMessage("成功");

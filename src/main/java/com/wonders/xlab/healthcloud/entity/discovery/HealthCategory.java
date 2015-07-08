@@ -51,6 +51,9 @@ public class HealthCategory extends AbstractPersistable<Long> {
 	@JoinColumn(name = "HOME_HEALTH_INFO_ID")
 	/** 首页健康信息文章 */
 	private HealthInfo homeInfo;
+
+
+    private String icon;
 	
 	// TODO：其他字段再议论
 
@@ -141,5 +144,12 @@ public class HealthCategory extends AbstractPersistable<Long> {
 	public void setOtherRelatedIds(String otherRelatedIds) {
 		this.otherRelatedIds = otherRelatedIds;
 	}
-	
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
 }
