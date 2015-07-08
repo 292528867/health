@@ -34,6 +34,11 @@ public class HomePageController {
     @Autowired
     private BannnerRepository bannnerRepository;
 
+    /**
+     * 首页
+     * @param userId
+     * @return
+     */
     @RequestMapping("listHomePage/{userId}")
     public Object listHomePage(@PathVariable Long userId) {
         try {
@@ -86,7 +91,7 @@ public class HomePageController {
                         new ProgressDto(
                                 upo.getHcPackage().getTitle(),
                                 upo.getHcPackage().getDescription(),
-                                upo.getHcPackage().getIcon(),
+                                upo.getHcPackage().getSmaillIcon(),
                                 progress
                         )
                 );
