@@ -6,7 +6,7 @@
   .detail-body {
     background: #f6f6f6;
     padding: 0 15px;
-    margin: 0!important;
+    margin: 0 !important;
   }
 
   #detail-title {
@@ -23,26 +23,68 @@
   #detail-img {
     width: 100%;
   }
-</style><body class=detail-body><div id=detail-title></div><div id=details></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
+
+  .data-body {
+    display: none;
+  }
+  .btn-divider{
+    color: #cfcfcf;
+  }
+  .foot-title{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    margin-left: -28px;
+    margin-top: -12px;
+    background: #f6f6f6;
+    color: #999999;
+    text-align: center;
+    padding:0 10px;
+  }
+  .detail-foot{
+    position: relative;
+    margin-top: 40px;
+  }
+  .finish-divider{
+    margin-bottom: 20px;
+  }
+  .share-btns{
+    max-width: 330px;
+    margin: auto;
+  }
+  .share-btns div{
+    float: left;
+    width: 33%;
+    text-align: center;
+  }
+</style><body class=detail-body><img src=i/icon/loading.gif alt=读取 id=articles-loading height=80><div class=data-body><div id=detail-title></div><div id=details></div><div class=detail-foot><div class=finish-divider><hr data-am-widget=divider class="am-divider am-divider-default btn-divider"><div class=foot-title>分享</div><div class="share-btns am-cf"><div><img src=i/share/wechat1.png width=50 onclick="activityList({'share':'session'});"></div><div><img src=i/share/wechat2.png width=50 onclick="activityList({'share':'wechat'});"></div><div><img src=i/share/weibo.png width=50 onclick="activityList({'share':'weibo'});"></div></div></div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
   var article = localStorage.getItem('article');
   var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
   var url = commonUrl + 'discovery/app/listInfo/';
   var articleId = window.location.search.substring(1);
-  if (localStorage.getItem('article') != null && JSON.parse(article).id==articleId) {
+  if (localStorage.getItem('article') != null && JSON.parse(article).id == articleId) {
     article = JSON.parse(article);
     $('#detail-img').attr('src', article.pictureUrl);
     $('#details').html(article.htmlInfo);
     $('#detail-title').html(article.title);
-//    $('title').html(article.title);
+    setTimeout(load(), 500);
+    $('title').html(article.title);
   }
   else {
-    $.get(url+ articleId,function(data) {
+    $.get(url + articleId, function (data) {
       article = data.ret_values;
       $('#detail-img').attr('src', article.pictureUrl);
       $('#details').html(article.htmlInfo);
       $('#detail-title').html(article.title);
-//      $('title').html(article.title);
-//      console.log(window.document.body.offsetHeight);
+      setTimeout(load(), 500);
+      $('title').html(article.title);
     });
   }
+  function load() {
+    $('.data-body').fadeIn();
+    $('#articles-loading').hide();
+  }
+
+  $(document).ready(function () {
+  });
 </script></html>

@@ -27,7 +27,7 @@ public class EmScheduledTask {
     private EmMessagesRepository emMessagesRepository;
 
     //每隔半个小时扫一次
-    @Scheduled(cron = "0 0/30 * * * ? ")
+ /*   @Scheduled(cron = "0 0/30 * * * ? ")
     public void isOvertime() {
         //查询没有被回复的信息
         Map<String, Object> filterMap = new HashMap<>();
@@ -47,6 +47,6 @@ public class EmScheduledTask {
 
          }
     }
-
+*/
 
 }

@@ -94,47 +94,54 @@
             <div class="am-u-sm-12 am-u-md-4 am-u-md-push-8"></div>
 
             <div class="am-u-sm-12 am-u-md-8 am-u-md-pull-4">
-                <!--<form action="http://10.10.10.231:8080/course/saveCourse" class="am-form" id="form1" method="post"-->
-                <form action="http://101.231.124.8:45677/xlab-reindeerjob-rest-srv/course/saveCourse" class="am-form"
-                      id="form1" method="post"
-                      enctype="multipart/form-data" ng-app="" ng-controller="teacherController">
+                <!--<form action="http://101.231.124.8:45677/xlab-reindeerjob-rest-srv/course/saveCourse" class="am-form" id="form1" method="post" enctype="multipart/form-data"-->
+                <form class="am-form" id="form1" method="post"
+                       ng-app="" ng-controller="teacherController">
                     <fieldset>
                         <div class="am-form-group">
                             <label for="serviceName">服务名称：</label>
                             <input type="text" id="serviceName" placeholder=""
-                                   required name="title"/>
+                                   required name="serviceName"/>
                         </div>
                         <div class="am-form-group">
                             <label for="description">服务描述：</label>
                             <input type="text" id="description" placeholder=""
-                                   required name="description"/>
+                                   required name="serviceDescription"/>
                         </div>
                         <div class="am-form-group">
                             <label for="integration">服务积分：</label>
                             <input type="text" id="integration" placeholder=""
-                                   required name="integration"/>
+                                   required name="serviceIntegration"/>
                         </div>
                         <div class="am-form-group">
                             <label for="integration">服务id：</label>
                             <input type="text" id="serverId" placeholder=""
-                                   required name="integration"/>
+                                   required name="serviceId"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="serviceArea" class="about-color">类别:</label>
+                            <label for="serviceArea" class="about-color">范围:</label>
                             <br/>
-                            <select data-am-selected="{btnSize: 'sm'}" id="serviceArea" name="type" >
+                            <select data-am-selected="{btnSize: 'sm'}" id="serviceArea" name="serviceArea" >
                                 <option selected>上海</option>
                                 <option selected>全国</option>
                             </select>
                         </div>
                         <div class="am-form-group">
-                            <label for="steward" class="about-color">管家:</label>
+                            <label for="isForce" class="about-color">范围:</label>
                             <br/>
-                            <select data-am-selected="{maxHeight:200, btnSize: 'sm',  searchBox:1}" id="steward" name="type" >
-                                <option selected>请选择</option>
+                            <select data-am-selected="{btnSize: 'sm'}" id="isForce" name="isForce" >
+                                <option selected value="true">是</option>
+                                <option selected value="false">否</option>
                             </select>
                         </div>
-                        <button class="am-btn am-btn-secondary" type="button" id="formSub" onclick="articleAdd()">提交
+                        <!--<div class="am-form-group">-->
+                            <!--<label for="steward" class="about-color">管家:</label>-->
+                            <!--<br/>-->
+                            <!--<select data-am-selected="{maxHeight:200, btnSize: 'sm',  searchBox:1}" id="steward" name="type" >-->
+                                <!--<option selected>请选择</option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                        <button class="am-btn am-btn-secondary" type="button" id="formSub" onclick="stewardAdd()">提交
                         </button>
                     </fieldset>
                 </form>
@@ -147,11 +154,11 @@
                                     <th class="table-check"><input type="checkbox"/></th>
                                     <th class="table-id">ID</th>
                                     <th class="table-title">服务名称</th>
-                                    <th class="table-title">服务积分</th>
                                     <th class="table-title">服务描述</th>
+                                    <th class="table-title">服务积分</th>
                                     <th class="table-set">服务id</th>
                                     <th class="table-set">服务类别</th>
-                                    <th class="table-set">服务名</th>
+                                    <th class="table-set">操作</th>
                                 </tr>
                                 </thead>
                                 <tbody id="allServiceDatas">

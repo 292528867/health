@@ -5,14 +5,19 @@ import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.hcpackage.HcPackageDetailDto;
 import com.wonders.xlab.healthcloud.dto.hcpackage.HcPackageDto;
 import com.wonders.xlab.healthcloud.dto.hcpackage.ThirdPackageDto;
+import com.wonders.xlab.healthcloud.dto.hcpackage.UserPackageOrderDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
+import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
+import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderRepository;
 import com.wonders.xlab.healthcloud.utils.BeanUtils;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
+import org.apache.commons.beanutils.BeanPropertyValueEqualsPredicate;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,8 +31,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by mars on 15/7/4.
@@ -44,6 +48,9 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
     @Autowired
     private HcPackageDetailRepository hcPackageDetailRepository;
+
+    @Autowired
+    private UserPackageOrderRepository userPackageOrderRepository;
 
     @Override
     protected MyRepository<HcPackage, Long> getRepository() {
@@ -215,4 +222,52 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
         return new ControllerResult<List<ThirdPackageDto>>().setRet_code(0).setRet_values(thirdPackageDtos).setMessage("成功");
     }
 
+    /**
+     * 查询计划包
+     * @param categoryId
+     * @return
+     */
+    @RequestMapping("listPackage/{categoryId}/{userId}")
+    public Object listPackageInfoByCategoryId(@PathVariable long categoryId,@PathVariable long userId) {
+
+        Map<String, Object> filterMap = new HashMap<>();
+        filterMap.put("healthCategory.id_equal", categoryId);
+        List<HcPackage> hcPackages = hcPackageRepository.findAll(filterMap);
+
+        List<UserPackageOrder> list = userPackageOrderRepository.findByUserId(userId);
+
+        List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
+        
+        if (list != null) {
+            for (UserPackageOrder userPackageOrder : list) {
+                for (HcPackage hcPackage : hcPackages) {
+                    UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
+                    BeanUtils.copyProperties(hcPackage, userPackageOrderDto);
+                    userPackageOrderDto.setId(hcPackage.getId());
+                    if (userPackageOrder.getHcPackage().getId() == hcPackage.getId()) {
+                        userPackageOrderDto.setIsJoin(true);
+                    }else {
+                        userPackageOrderDto.setIsJoin(false);
+                    }
+                    userPackageOrderDtos.add(userPackageOrderDto);
+                }
+            }
+        }
+
+        return new ControllerResult<List<UserPackageOrderDto>>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("成功");
+    }
+
+    /**
+     * 根据集合中对象属性值查找元素
+     *
+     * @param collection 给定的集合
+     * @param propertyName 集合中的元素的属性名
+     * @param propertyValue 集合中元素属性名对应的属性值
+     * @param <T> 集合的类型参数
+     * @return 返回匹配的第一个元素
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T find(Collection<T> collection, String propertyName, Object propertyValue) {
+        return (T) org.apache.commons.collections.CollectionUtils.find(collection, new BeanPropertyValueEqualsPredicate(propertyName, propertyValue));
+    }
 }

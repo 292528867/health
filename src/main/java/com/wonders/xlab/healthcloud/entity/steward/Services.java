@@ -42,6 +42,18 @@ public class Services extends AbstractPersistable<Long> {
      */
     private String ServiceDescription;
 
+    /**
+     * 使用次数
+     * @return
+     */
+    private Integer usedNumber;
+
+    /**
+     * 是否强制置顶
+     * @return
+     */
+    private Boolean isForce;
+
     public Integer getServiceId() {
         return serviceId;
     }
@@ -80,5 +92,21 @@ public class Services extends AbstractPersistable<Long> {
 
     public void setServiceDescription(String serviceDescription) {
         ServiceDescription = serviceDescription;
+    }
+
+    public Integer getUsedNumber() {
+        return usedNumber;
+    }
+
+    public void setUsedNumber(Integer usedNumber) {
+        this.usedNumber = usedNumber;
+    }
+
+    public Boolean getIsForce() {
+        return isForce;
+    }
+
+    public void setIsForce(Boolean isForce) {
+        this.isForce = isForce;
     }
 }

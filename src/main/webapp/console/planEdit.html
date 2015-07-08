@@ -18,6 +18,9 @@
         img {
             max-height: 50px;
         }
+        .am-form{
+            min-height: 300px;
+        }
     </style>
 </head>
 <body>
@@ -71,13 +74,11 @@
             </div>
         </div>
         <div class="am-g">
-            <div class="am-u-sm-12 am-u-md-6">
-                <div class="am-btn-toolbar">
-                    <div class="am-btn-group am-btn-group-xs">
-                        <button type="button" class="am-btn am-btn-default" onclick="openAddType()"><span
-                                class="am-icon-plus"></span> 新增
-                        </button>
-                    </div>
+            <div class="am-u-sm-12 am-u-md-3">
+                <div class="am-form-group">
+                    <select data-am-selected="{maxHeight:200, btnSize: 'sm',  searchBox:1}" id="package-select" onchange="searchPlan(this.value)">
+                        <option selected value="">请选择类别</option>
+                    </select>
                 </div>
             </div>
             <div class="am-u-sm-12 am-u-md-3">
@@ -100,8 +101,8 @@
                             <th class="table-check"><input type="checkbox"/></th>
                             <th class="table-id">ID</th>
                             <th class="table-title">名称</th>
-                            <th class="table-title">简称</th>
-                            <th class="table-title">描述</th>
+                            <th class="table-title">时间</th>
+                            <th class="table-title">图片</th>
                             <th class="table-set">操作</th>
                         </tr>
                         </thead>
@@ -293,9 +294,54 @@
     });
 </script>
 <script src="js/typeAdd.js"></script>
-<script src="js/loadAllType.js"></script>
+<script src="js/plan/typeLoad.js"></script>
 <script>
     $('#admin-offcanvas').load('common/adminSidebar.html');
+    var urlType = 'http://10.10.11.10:8080/hcPackage/query/';
+    $.get(urlType, function (groupTypes) {
+        var groups = groupTypes,
+                categorieList= '';
+        $.each(groups, function (n, group) {
+            console.log(group);
+            categorieList+= '<option value=\''+group.id+'\'>'+group.title+'</option>'
+        });
+        console.log(categorieList);
+
+        $('#package-select').append(categorieList);
+    });
+
+    function searchPlan(id) {
+        console.log(id);
+        if(id.length==0) {
+            return false;
+        }
+        $.get('http://10.10.11.10:8080/task/tasksInPackage/'+id,function(data) {
+//            console.log(data);
+            var datas = '';
+            $.each(data, function (n, value) {
+                datas += "<tr style='display: none' ><td><input type='checkbox'/></td><td>" +
+                value.id +
+                "</td>" +
+                "<td><a href='#'>" + value.taskName + "</a></td>" +
+                "<td class='am-hide-sm-only'>" + value.recommendTimeFrom + "</td>" +
+                "<td class='am-hide-sm-only'><img src='" + value.icon + "' style='max-height:80px;' /></td>" +
+                "<td><div class='am-btn-toolbar'><div class='am-btn-group am-btn-group-xs'>" +
+                "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick='changeArticle(" + n + ")'>" +
+                "<span class='am-icon-pencil-square-o'></span> 编辑</button>";
+                datas += "</button>" +
+                    /*
+                     "<button type='button' class='am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only' " +
+                     "onclick='deleteCourse(" + value.id + ")'  >" +
+                     "<span class='am-icon-trash-o'></span> 删除</button>" +
+                     */
+                "</div></div></td></tr>";
+            });
+            $("#allDatas").append(datas);
+            $("#allDatas tr").fadeIn(300);
+
+        });
+    }
+
 </script>
 </body>
 </html>

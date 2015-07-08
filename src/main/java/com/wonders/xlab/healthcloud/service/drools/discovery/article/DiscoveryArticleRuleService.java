@@ -1,6 +1,7 @@
 package com.wonders.xlab.healthcloud.service.drools.discovery.article;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.wonders.xlab.healthcloud.entity.customer.User;
-import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfoClickInfo;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoClickSample;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoSample;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.UserQuerySample;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.output.OutputDaytHealthInfo;
-import com.wonders.xlab.healthcloud.service.drools.discovery.article.output.OutputHealthInfoClickCount;
 
 
 /**
@@ -42,7 +40,7 @@ public class DiscoveryArticleRuleService {
 	 * @param A A值
 	 * @param X X值
 	 * @param sample 样本
-	 * @return
+	 * @return Map(key=文章id，value=文章点击数)
 	 */
 	public Map<Long, Long> calcuClickCount(int A, double X, List<HealthInfoSample> sampleList) {
 		// 1、创建session，内部配置的是stateful
@@ -54,13 +52,11 @@ public class DiscoveryArticleRuleService {
 		session.setGlobal("clickCountOutputMap", output);
 		
 		// 3、构建fact放入规则中
-		for (HealthInfoSample sample : sampleList) {
-			HealthInfoClickSample sample_2 = new HealthInfoClickSample(
-				sample.getHealthInfoId(), 
-				sample.getCreateTime(), 
-				new Long(sample.getClickCount()));
-			session.insert(sample_2);
-		}
+		List<HealthInfoClickSample> healthInfoClickSampleList = new ArrayList<>();
+		for (HealthInfoSample sample : sampleList) 
+			healthInfoClickSampleList.add(new HealthInfoClickSample(sample));
+		for (HealthInfoClickSample sample : healthInfoClickSampleList)
+			session.insert(sample);
 
 		// 4、执行rule
 		session.fireAllRules();
@@ -72,7 +68,10 @@ public class DiscoveryArticleRuleService {
 	
 	/**
 	 * 根据规则计算指定用户可推送健康信息文章id。
-	 * @param user user里的对象必须级连查出了
+	 * @param userId 用户id
+	 * @param healthInfos 健康文章info
+	 * @param articleCount 欲选择的文章数
+	 * @return Map(key=文章id，value=文章点击数)
 	 */
 	public Map<Long, Long> pushArticles(Long userId, List<HealthInfo> healthInfos, int articleCount) {
 		// 1、创建session，内部配置的是stateful
@@ -88,12 +87,13 @@ public class DiscoveryArticleRuleService {
 		
 		List<HealthInfoSample> healthInfoSampleList = new ArrayList<>();
 		for (HealthInfo healthInfo : healthInfos) {
-			int clickCount = 0;
+			long clickCount = 0;
 			for (HealthInfoClickInfo healthInfoClickInfo : healthInfo.getHicis()) 
 				clickCount += healthInfoClickInfo.getClickCount();
 			// 创建sample fact
 			HealthInfoSample healthInfoSample = new HealthInfoSample(
 					userId, 
+					healthInfo.getCreatedDate(),
 					healthInfo.getId(), 
 					healthInfo.getTitle(), 
 					clickCount);
@@ -102,10 +102,10 @@ public class DiscoveryArticleRuleService {
 		}
 		
 		
-		// 重新计算clickCount
+		// 重新计算clickCount，并重置到healthInfoSample中
 		Map<Long, Long> clickCounts = this.calcuClickCount(20, 0.1, healthInfoSampleList);
 		for (HealthInfoSample sample : healthInfoSampleList) 
-			sample.setClickCount(clickCounts.get(sample.getHealthInfoId()).intValue());
+			sample.setClickCount(clickCounts.get(sample.getHealthInfoId()));
 		for (HealthInfoSample sample : healthInfoSampleList) 
 			session.insert(sample);
 		
@@ -136,7 +136,7 @@ public class DiscoveryArticleRuleService {
 		// 2、创建fact对象
 		UserQuerySample querySample = new UserQuerySample(1L);
 		for (long i = 28; i >= 0; i--) 
-			session.insert(new HealthInfoSample(1L, i, "title" + i, new Long(i).intValue()));
+			session.insert(new HealthInfoSample(1L, new Date(), i, "title" + i, new Long(i)));
 		
 		session.insert(querySample);
 		

@@ -1,46 +1,26 @@
 package com.wonders.xlab.healthcloud.service.drools.discovery.article.input;
 
-import java.util.Date;
 
 /**
- * 健康信息文章点击样本。
+ * 健康信息文章点击样本（简单包装一个HealthInfoSample）。
  * @author xu
  *
  */
 public class HealthInfoClickSample {
-	/** 健康信息文章id */
-	private Long id;
-	/** 文章创建时间 */
-	private Date createTime;
-	/** 文章真实总点击量 */
-	private Long clickCount;
-
-	public HealthInfoClickSample(Long id, Date createTime, Long clickCount) {
-		super();
-		this.id = id;
-		this.createTime = createTime;
-		this.clickCount = clickCount;
-	}
 	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public Date getCreateTime() {
-		return createTime;
-	}
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
+	private HealthInfoSample healInfoSample;
+
+	public HealthInfoClickSample(HealthInfoSample healInfoSample) {
+		super();
+		this.healInfoSample = healInfoSample;
 	}
 
-	public Long getClickCount() {
-		return clickCount;
+	public HealthInfoSample getHealInfoSample() {
+		return healInfoSample;
 	}
 
-	public void setClickCount(Long clickCount) {
-		this.clickCount = clickCount;
+	public void setHealInfoSample(HealthInfoSample healInfoSample) {
+		this.healInfoSample = healInfoSample;
 	}
 	
 }

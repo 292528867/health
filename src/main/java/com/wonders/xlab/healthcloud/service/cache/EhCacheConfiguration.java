@@ -40,6 +40,26 @@ public class EhCacheConfiguration {
         ehcacheManager.addCache(cache); // 必须加入缓存，不要忘了
         return cache;
     }
+    
+    @Bean
+    public Cache discoveryCache(CacheManager ehcacheManager) {
+        // discovery缓存
+    	// 每个用户每天一条缓存，一天后失效
+        Cache cache = new Cache(
+                new CacheConfiguration(
+                        "discoveryCache", // 缓存名
+                        5000 // 缓存最大个数
+                )
+                .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.FIFO) // 当缓存满时，使用先进先出清理内存
+                .eternal(false) // 对象是否永久有效
+                .timeToIdleSeconds(0) // 对象失效前允许的闲置时间， 0，闲置时间无穷大
+                .timeToLiveSeconds(24 * 60 * 60) // 对象的失效时间，这里设置失效时间1天
+                .diskExpiryThreadIntervalSeconds(10) // 10秒间隔检测 idle 和 live状态
+                .persistence(new PersistenceConfiguration().strategy(Strategy.LOCALTEMPSWAP)) // 当缓存满了，或者重启时，不持久化数据
+        );
+        ehcacheManager.addCache(cache); // 必须加入缓存，不要忘了
+        return cache;
+    }
 
     @Bean
     public Cache shiroCache(CacheManager ehcacheManager) {
