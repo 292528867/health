@@ -52,6 +52,13 @@ public class RecommendPackage extends AbstractPersistable<Long> {
     @JsonIgnore
     private String serviceIds;
 
+    /**
+     * 推荐包的图片地址
+     * @return
+     */
+    private String picUrl;
+
+
     public Steward.Rank getRank() {
         return rank;
     }
@@ -107,4 +114,13 @@ public class RecommendPackage extends AbstractPersistable<Long> {
 //    public void setServices(Set<Services> services) {
 //        this.services = services;
 //    }
+//
+
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
+    }
 }

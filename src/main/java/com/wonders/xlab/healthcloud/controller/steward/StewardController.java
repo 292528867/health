@@ -13,6 +13,7 @@ import com.wonders.xlab.healthcloud.repository.steward.RecommendPackageRepositor
 import com.wonders.xlab.healthcloud.repository.steward.ServicesRepository;
 import com.wonders.xlab.healthcloud.repository.steward.StewardRepository;
 import com.wonders.xlab.healthcloud.service.pingpp.PingppService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -47,6 +48,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
     @Autowired
     private PingppService pingppService;
+
     @Override
     protected MyRepository<Steward, Long> getRepository() {
         return stewardRepository;
@@ -65,11 +67,12 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
     /**
      * 获取推荐包详情
+     *
      * @param packageId
      * @return
      */
     @RequestMapping("getRecommendPackageDetail/{packageId}")
-    public Object getRecommendPackageDetail(@PathVariable Long packageId){
+    public Object getRecommendPackageDetail(@PathVariable Long packageId) {
 
         RecommendPackage rp = this.recommendPackageRepository.findOne(packageId);
 
@@ -98,21 +101,67 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
     /**
      * 获取自定义包
+     *
      * @return
      */
     @RequestMapping("listCustomPackage")
     public Object listCustomPackage() {
 
-        List<Services> services = this.servicesRepository.findAll();
+        //强制置顶
+        List<Services> orderServices = this.servicesRepository.findByIsForceOrderByUsedNumberAsc(true);
+
+        //去除强制置顶以后在用算法
+        List<Services> services = this.servicesRepository.findByIsForceOrderByUsedNumberAsc(false);
+
+        int servicesSize = services.size();
+        //单数从使用次数高到低排列
+        for (int j = servicesSize - 1, i = 0; j >= servicesSize / 2; j--, i++) {
+
+            orderServices.add(services.get(j));
+
+            orderServices.add(services.get(i));
+        }
+
+        List<Map<String, Object>> arithmeticList = new ArrayList<>();
+
+
+        Map<String, Object> level1Map = new HashMap<>();
+        Map<String, Object> level2Map = new HashMap<>();
+        Map<String, Object> level3Map = new HashMap<>();
+        Map<String, Object> level4Map = new HashMap<>();
+
+        level1Map.put("range", "0,4");
+        level1Map.put("monery", "0");
+
+        level2Map.put("range", "5,10");
+        level2Map.put("monery", "28");
+
+        level3Map.put("range", "11,17");
+        level3Map.put("monery", "78");
+
+        level3Map.put("range", "18,48");
+        level3Map.put("monery", "158");
+
+        level4Map.put("range", "49");
+        level4Map.put("monery", "298");
+
+        arithmeticList.add(level1Map);
+        arithmeticList.add(level2Map);
+        arithmeticList.add(level3Map);
+        arithmeticList.add(level4Map);
+
         List<Steward> stewards = this.stewardRepository.findAll();
         Map<String, Object> map = new HashMap<>();
-        map.put("services", services);
+        map.put("services", orderServices);
         map.put("steward", stewards);
+        map.put("arithmetic", arithmeticList);
+
         return new ControllerResult<>().setRet_code(0).setRet_values(map).setMessage("成功");
     }
 
     /**
      * 查看服务详情
+     *
      * @param serviceId
      * @return
      */
@@ -125,6 +174,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
     /**
      * 查询管家详情
+     *
      * @param stewardId
      * @return
      */
@@ -136,13 +186,14 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
     /**
      * 计算服务费用
+     *
      * @param serviceDto
      * @param result
      * @return
      */
     @RequestMapping("payServices/{userId}")
     public void payServices(@PathVariable Long userId, @RequestBody @Valid ServiceDto serviceDto, BindingResult result,
-                              HttpServletRequest req, HttpServletResponse resp) {
+                            HttpServletRequest req, HttpServletResponse resp) {
 
         PrintWriter out;
         resp.setContentType("application/json; charset=utf-8");
@@ -165,7 +216,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
             String[] strIds = serviceDto.getServiceIds().split(",");
             Long[] serviceIds = new Long[strIds.length];
-            for (int i = 0; i< strIds.length; i++)
+            for (int i = 0; i < strIds.length; i++)
                 serviceIds[i] = Long.parseLong(strIds[i]);
             // 查询服务，管家
             List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
@@ -183,7 +234,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 amount = Integer.parseInt(rp.getPrice());
 //                return new ControllerResult<Map<String, Object>>().setRet_code(0).setRet_values(map).setMessage("成功！");
 
-            }  else {
+            } else {
                 // 判断自定义积分换算金额
                 if (integration >= 0 && integration <= 4) {
                     amount = 0;
@@ -203,7 +254,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             exp.printStackTrace();
             try {
                 out = resp.getWriter();
-                out.print( new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败"));
+                out.print(new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败"));
                 out.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -212,6 +263,12 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         }
 
     }
+    @RequestMapping(value = "saveSteward", method = RequestMethod.POST)
+    public ControllerResult saveService(@RequestBody Steward steward) {
 
+        stewardRepository.save(steward);
+
+        return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("成功！");
+    }
 
 }
