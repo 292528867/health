@@ -9,5 +9,5 @@ public interface HealthCategoryRepository extends MyRepository<HealthCategory, L
 	List<HealthCategory> findTop4ByType(String type);
 
 
-    List<HealthCategory> findByOrderByCreateDateDesc();
+    List<HealthCategory> findByOrderByCreatedDateDesc();
 }
