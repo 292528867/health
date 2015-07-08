@@ -69,13 +69,6 @@ public class HcPackageDto {
     @NotBlank
     private String loops;
 
-
-    /**
-     * 补充内容
-     */
-    @NotBlank(message = "补充内容不能为空")
-    private String supplemented;
-
     public String getTitle() {
         return title;
     }
@@ -123,19 +116,35 @@ public class HcPackageDto {
         this.isNeedSupplemented = isNeedSupplemented;
     }
 
-    public String getSupplemented() {
-        return supplemented;
-    }
-
-    public void setSupplemented(String supplemented) {
-        this.supplemented = supplemented;
-    }
-
     public Boolean getRecommend() {
         return recommend;
     }
 
     public void setRecommend(Boolean recommend) {
         this.recommend = recommend;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
+
+    public String getDetailDescriptionIcon() {
+        return detailDescriptionIcon;
+    }
+
+    public void setDetailDescriptionIcon(String detailDescriptionIcon) {
+        this.detailDescriptionIcon = detailDescriptionIcon;
+    }
+
+    public String getLoops() {
+        return loops;
+    }
+
+    public void setLoops(String loops) {
+        this.loops = loops;
     }
 }
