@@ -45,7 +45,6 @@ function addPackage(){
     } else {
         isNeedSupplemented = false;
     }
-    console.log($('#loops').is(':checked'));
     if($('#loops').is(':checked')){
         loops = "1";
     } else {
@@ -62,14 +61,14 @@ function addPackage(){
         "loops": loops,
         "iconUrl": iconUrl,
         "detailDescriptionIcon": detailDescriptionIcon,
-        "duration": duration,
-        "healthCategoryId": healthCategoryId
+        "duration": duration
     };
     json = JSON.stringify(json);
 
+    var addUrl = packageAddUrl + "/" + healthCategoryId;
     console.log(json);
     $.ajax({
-        url: packageAddUrl,
+        url: addUrl,
         type: "POST",
         data: json,
         dataType: "json",

@@ -19,10 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -70,8 +67,8 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      * @param result
      * @return
      */
-    @RequestMapping(value = "addHcPackage",method = RequestMethod.POST)
-    private Object addHcPackage(@RequestBody HcPackageDto hcPackageDto, BindingResult result) {
+    @RequestMapping(value = "addHcPackage/{healthCategoryId}",method = RequestMethod.POST)
+    private Object addHcPackage(@RequestBody HcPackageDto hcPackageDto,@PathVariable Long healthCategoryId,BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -83,11 +80,11 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 //            String iconUrl = QiniuUploadUtils.upload(icon.getBytes(), URLDecoder.decode(icon.getOriginalFilename(), "UTF-8"));
 //            String detailDescriptionIconUrl = QiniuUploadUtils.upload(detailDescriptionIcon.getBytes(), URLDecoder.decode(detailDescriptionIcon.getOriginalFilename(), "UTF-8"));
 
-            HealthCategory healthCategory = healthCategoryRepository.findOne(hcPackageDto.getHealthCategoryId());
+            HealthCategory healthCategory = healthCategoryRepository.findOne(healthCategoryId);
 
             HcPackage hcPackage = new HcPackage();
             hcPackage.setHealthCategory(healthCategory);
-            BeanUtils.copyProperties(hcPackageDto,hcPackage,"healthCategoryId");
+            BeanUtils.copyProperties(hcPackageDto, hcPackage, "healthCategoryId");
             hcPackage.setIcon(hcPackageDto.getIconUrl());
 //            hcPackage.setDetailDescriptionIcon(detailDescriptionIconUrl);
             hcPackageRepository.save(hcPackage);
