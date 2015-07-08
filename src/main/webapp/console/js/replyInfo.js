@@ -54,8 +54,8 @@ function loadData(currentPage) {
                  }
                  //分页
                  pageStr += '<ul class="am-pagination">';
-                 var prePage = (currentPage = 1) ? 1 : (currentPage - 1);
-                 nextPage = (currentPage = result.totalPages) ? result.totalPages : (currentPage + 1);
+                 var prePage = (currentPage == 1) ? 1 : (currentPage - 1);
+                 nextPage = (currentPage == result.totalPages) ? result.totalPages : (currentPage + 1);
                  pageStr += '<li><a href="javascript:loadData(' + prePage + ')">上一页</a></li>';
                  for (var i = 1; i <= totalPages; i++) {
                      console.log(result.number+1);
