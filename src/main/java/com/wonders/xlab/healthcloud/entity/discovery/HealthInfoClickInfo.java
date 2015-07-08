@@ -32,7 +32,7 @@ public class HealthInfoClickInfo extends AbstractPersistable<Long> {
 	private static final long serialVersionUID = 1L;
 	
 	/** 点击数 */
-	private Integer clickCount;
+	private Long clickCount;
 	/** 关联的具体健康信息 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "HEALTHINFO_ID")
@@ -55,11 +55,11 @@ public class HealthInfoClickInfo extends AbstractPersistable<Long> {
     @Temporal(TIMESTAMP)
     private Date lastModifiedDate;
 
-	public Integer getClickCount() {
+	public Long getClickCount() {
 		return clickCount;
 	}
 
-	public void setClickCount(Integer clickCount) {
+	public void setClickCount(Long clickCount) {
 		this.clickCount = clickCount;
 	}
 
