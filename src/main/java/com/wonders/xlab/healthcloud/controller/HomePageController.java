@@ -73,11 +73,13 @@ public class HomePageController {
             List<ProgressDto> progressDtos = new ArrayList<>();
 
             for (UserPackageOrder upo : userPackageCompletes) {
-                String[] strdetails = upo.getHcPackageDetailIds().split(",");
-                Long[] longDetails = new Long[strdetails.length];
-                for (int i = 0; i < strdetails.length; i++)
-                    longDetails[i] = Long.parseLong(strdetails[i]);
-                packageDetailIds.addAll(Arrays.asList(longDetails));
+                if (upo.getHcPackageDetailIds() != null) {
+                    String[] strdetails = upo.getHcPackageDetailIds().split(",");
+                    Long[] longDetails = new Long[strdetails.length];
+                    for (int i = 0; i < strdetails.length; i++)
+                        longDetails[i] = Long.parseLong(strdetails[i]);
+                    packageDetailIds.addAll(Arrays.asList(longDetails));
+                }
                 // 计划开始时间
                 int startTime = Integer.parseInt(DateFormatUtils.format(upo.getCreatedDate(), "yyyyMMdd"));
                 // 持续时间

@@ -1,7 +1,5 @@
 package com.wonders.xlab.healthcloud.dto.hcpackage;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.Set;
 
 /**
@@ -18,27 +16,34 @@ public class DayPackageDetailDto {
     /** 点击数 */
     private int clickAmount;
 
-    /** 是否需要补充内容 */
-    @JsonIgnore
-    private boolean isNeedSupplemented;
-
     /** 详细 */
     private String detail;
 
     /** 是否需要补充内容的显示 */
     private int type;
 
+    /** 是否完成 0 否 1 是 */
+    private int complete;
+
     private Set<UserStatementDto> statementDtos;
 
     public DayPackageDetailDto() {
     }
 
-    public DayPackageDetailDto(Long detailId, String title, int clickAmount, boolean isNeedSupplemented, String detail) {
+    public DayPackageDetailDto(Long detailId, String title, int clickAmount, String detail) {
         this.detailId = detailId;
         this.title = title;
         this.clickAmount = clickAmount;
-        this.isNeedSupplemented = isNeedSupplemented;
         this.detail = detail;
+    }
+
+    public DayPackageDetailDto(Long detailId, String title, int clickAmount, int type, String detail, int complete) {
+        this.detailId = detailId;
+        this.title = title;
+        this.clickAmount = clickAmount;
+        this.type = type;
+        this.detail = detail;
+        this.complete = complete;
     }
 
     public Long getDetailId() {
@@ -65,14 +70,6 @@ public class DayPackageDetailDto {
         this.clickAmount = clickAmount;
     }
 
-    public boolean isNeedSupplemented() {
-        return isNeedSupplemented;
-    }
-
-    public void setIsNeedSupplemented(boolean isNeedSupplemented) {
-        this.isNeedSupplemented = isNeedSupplemented;
-    }
-
     public String getDetail() {
         return detail;
     }
@@ -82,12 +79,19 @@ public class DayPackageDetailDto {
     }
 
     public int getType() {
-        if (isNeedSupplemented) return 1;
-        else return 0;
+        return type;
     }
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public int getComplete() {
+        return complete;
+    }
+
+    public void setComplete(int complete) {
+        this.complete = complete;
     }
 
     public Set<UserStatementDto> getStatementDtos() {

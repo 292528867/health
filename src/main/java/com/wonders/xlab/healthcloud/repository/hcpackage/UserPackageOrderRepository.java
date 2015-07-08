@@ -19,4 +19,5 @@ public interface UserPackageOrderRepository extends MyRepository<UserPackageOrde
 
     UserPackageOrder findByUserAndHcPackageAndPackageComplete(User user, HcPackage hcPackage, boolean complete);
 
+    UserPackageOrder findByUserIdAndHcPackageIdAndPackageComplete(Long userId, Long hcPackageId, boolean complete);
 }
