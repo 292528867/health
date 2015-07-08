@@ -1,11 +1,6 @@
 package com.wonders.xlab.healthcloud.dto.hcpackage;
 
-import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
-import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
-
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -16,19 +11,19 @@ public class HcPackageDto {
     /**
      * 任务包名称
      */
-    @NotNull(message = "标题不能为空")
+    @NotBlank(message = "标题不能为空")
     private String title;
 
     /**
      * 任务包简介
      */
-    @NotNull(message = "任务包简介不能为空")
+    @NotBlank(message = "任务包简介不能为空")
     private String description;
 
     /**
      * 任务包详细介绍
      */
-    @NotNull(message = "任务包详细介绍不能为空")
+    @NotBlank(message = "任务包详细介绍不能为空")
     private String detailDescription;
 
     /**
@@ -37,17 +32,17 @@ public class HcPackageDto {
     @NotNull(message = "持续时间不能为空")
     private int duration;
 
-//    /**
-//     * 图片地址
-//     */
-//    @NotNull(message = "图片地址不能为空")
-//    private String iconUrl;
-//
-//    /**
-//     * 详细介绍界面图片
-//     */
-//    @NotNull(message = "详细介绍配图地址不能为空")
-//    private String detailDescriptionIcon;
+    /**
+     * 图片地址
+     */
+    @NotBlank(message = "图片地址不能为空")
+    private String iconUrl;
+
+    /**
+     * 详细介绍界面图片
+     */
+    @NotBlank(message = "详细介绍配图地址不能为空")
+    private String detailDescriptionIcon;
 
     /**
      * 是否推荐
@@ -69,9 +64,16 @@ public class HcPackageDto {
 
 
     /**
+     * 是否循环
+     */
+    @NotBlank
+    private String loops;
+
+
+    /**
      * 补充内容
      */
-    @NotNull(message = "补充内容不能为空")
+    @NotBlank(message = "补充内容不能为空")
     private String supplemented;
 
     public String getTitle() {

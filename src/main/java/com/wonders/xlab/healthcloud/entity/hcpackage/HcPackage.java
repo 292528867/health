@@ -83,11 +83,16 @@ public class HcPackage extends AbstractBaseEntity<Long> {
      */
     private String supplemented;
 
+    /**
+     * 是否循环
+     */
+    private String loops;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private HealthCategory healthCategory;
 
     /** 循环次数 */
-    private int cycleIndex = 4;
+    private int cycleLimit;
 
 //    /**
 //     * 用户健康包
@@ -251,11 +256,19 @@ public class HcPackage extends AbstractBaseEntity<Long> {
         this.sex = sex;
     }
 
-    public int getCycleIndex() {
-        return cycleIndex;
+    public int getCycleLimit() {
+        return cycleLimit;
     }
 
-    public void setCycleIndex(int cycleIndex) {
-        this.cycleIndex = cycleIndex;
+    public void setCycleLimit(int cycleLimit) {
+        this.cycleLimit = cycleLimit;
+    }
+
+    public String getLoops() {
+        return loops;
+    }
+
+    public void setLoops(String loops) {
+        this.loops = loops;
     }
 }
