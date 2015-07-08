@@ -12,6 +12,8 @@ import javax.persistence.*;
  */
 public class UserPackageOrderDto  {
 
+    private long id;
+
     /**
      * 任务包名称
      */
@@ -224,5 +226,13 @@ public class UserPackageOrderDto  {
 
     public void setIsJoin(Boolean isJoin) {
         this.isJoin = isJoin;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }
