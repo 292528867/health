@@ -8,6 +8,7 @@ import com.wonders.xlab.healthcloud.dto.hcpackage.ThirdPackageDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
+import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
@@ -30,7 +31,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mars on 15/7/4.
@@ -218,4 +221,19 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
         return new ControllerResult<List<ThirdPackageDto>>().setRet_code(0).setRet_values(thirdPackageDtos).setMessage("成功");
     }
 
+    /**
+     * 查询计划包
+     * @param categoryId
+     * @return
+     */
+    @RequestMapping("listPackage/{categoryId}/{userId}")
+    public Object listPackageInfoByCategoryId(@PathVariable long categoryId,@PathVariable long userId) {
+
+        Map<String, Object> filterMap = new HashMap<>();
+        filterMap.put("healthCategory.id_equal", categoryId);
+        List<HcPackage> hcPackages = hcPackageRepository.findAll(filterMap);
+
+        List<UserPackageOrder> list = 
+
+    }
 }
