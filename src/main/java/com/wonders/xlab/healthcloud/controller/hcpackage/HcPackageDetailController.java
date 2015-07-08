@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -94,6 +95,8 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         HcPackageDetail detail = this.hcPackageDetailRepository.findOne(detailId);
 
         List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdHcPackageDetail(userId, detailId);
+        System.out.println( detail.getHcPackage().getId());
+        UserPackageOrder order = this.userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, detail.getHcPackage().getId(), false);
 
         Set<UserStatementDto> statementDtos = new HashSet<>();
 
@@ -105,14 +108,25 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
             );
             statementDtos.add(statement);
         }
-
         DayPackageDetailDto dto = new DayPackageDetailDto(
                 detail.getId(),
                 detail.getTaskName(),
                 detail.getClickAmount(),
-                detail.isNeedSupplemented(),
                 detail.getDetail()
         );
+        if (detail.isNeedSupplemented())
+            dto.setType(1);
+        if (order != null && order.getHcPackageDetailIds() != null) {
+            String[] detailIds = order.getHcPackageDetailIds().split(",");
+            Long[] longDetailIds = new Long[detailIds.length];
+            for (int i = 0; i < detailIds.length; i++)
+                longDetailIds[i] = Long.parseLong(detailIds[i]);
+            if (Arrays.asList(longDetailIds).contains(detailId)) {
+                dto.setComplete(1);
+            }
+        }
+
+
         dto.setStatementDtos(statementDtos);
 
         return new ControllerResult<DayPackageDetailDto>().setRet_code(0).setRet_values(dto).setMessage("成功");
