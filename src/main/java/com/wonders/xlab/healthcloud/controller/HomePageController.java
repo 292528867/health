@@ -10,6 +10,7 @@ import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.banner.BannnerRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageCompleteRepository;
+import com.wonders.xlab.healthcloud.utils.DateUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,10 +55,7 @@ public class HomePageController {
             resultMap.put("banner", bannerMap);
 
             // 查找没有完成的健康包
-            List<UserPackageOrder> userPackageCompletes = this.userPackageCompleteRepository.findByUserIdAndPackageComplete(userId, false);
-
-            // 当前时间
-            int currentTime = Integer.parseInt(DateFormatUtils.format(new Date(), "yyyyMMdd"));
+            List<UserPackageOrder> userPackageOrders = this.userPackageCompleteRepository.findByUserIdAndPackageComplete(userId, false);
 
             List<HcPackageDetail> allDetailList = new ArrayList<>();
             // 完成计划的Id
@@ -66,7 +64,7 @@ public class HomePageController {
             // 查看完成度
             List<ProgressDto> progressDtos = new ArrayList<>();
 
-            for (UserPackageOrder upo : userPackageCompletes) {
+            for (UserPackageOrder upo : userPackageOrders) {
                 if (upo.getHcPackageDetailIds() != null) {
                     String[] strdetails = upo.getHcPackageDetailIds().split(",");
                     Long[] longDetails = new Long[strdetails.length];
@@ -74,14 +72,12 @@ public class HomePageController {
                         longDetails[i] = Long.parseLong(strdetails[i]);
                     packageDetailIds.addAll(Arrays.asList(longDetails));
                 }
-                // 计划开始时间
-                int startTime = Integer.parseInt(DateFormatUtils.format(upo.getCreatedDate(), "yyyyMMdd"));
                 // 持续时间
                 int duration = upo.getHcPackage().getDuration();
-                // 每个任务的时间
-                int day = currentTime - startTime - duration * upo.getHcPackage().getCycleLimit() + 1;
+                // 每个任务的时间 - 循环过的时间
+                int day = DateUtils.calculatePeiorDaysOfTwoDate(upo.getCreatedDate(), new Date()) - duration * upo.getHcPackage().getCycleLimit() + 1;
 
-                int progress = day * 100 / duration ;
+                int progress = day * 100 / duration;
 
                 progressDtos.add(
                         new ProgressDto(
