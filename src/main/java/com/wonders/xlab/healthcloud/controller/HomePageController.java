@@ -40,24 +40,18 @@ public class HomePageController {
      * @return
      */
     @RequestMapping("listHomePage/{userId}")
-    public Object listHomePage(@PathVariable Long userId) {
+    public Object listHomePage(@PathVariable long userId) {
         try {
-            Map<String, Object> map = new HashMap<>();
+            Map<String, Object> resultMap = new HashMap<>();
             // 查询所有的标语
-            List<Banner> banners = this.bannnerRepository.findByEnabled(true);
-            List<Banner> topBanners = new ArrayList<>();
-            List<Banner> bottomBanners = new ArrayList<>();
-            for (Banner banner : banners) {
-                if (banner.getBannerType() == BannerType.Top.ordinal())
-                    topBanners.add(banner);
-                if (banner.getBannerType() == BannerType.Bottom.ordinal())
-                    bottomBanners.add(banner);
-            }
-            Map<String, Object> bannerMap = new HashMap<>();
+            List<Banner> topBanners = this.bannnerRepository.findByBannerTypeAndEnabled(BannerType.Top, true);
+            List<Banner> bottomBanners = this.bannnerRepository.findByBannerTypeAndEnabled(BannerType.Bottom, true);
+
+            Map<String, List<Banner>> bannerMap = new HashMap<>();
             bannerMap.put("topBanners", topBanners);
             bannerMap.put("bottomBanners", bottomBanners);
 
-            map.put("banner", bannerMap);
+            resultMap.put("banner", bannerMap);
 
             // 查找没有完成的健康包
             List<UserPackageOrder> userPackageCompletes = this.userPackageCompleteRepository.findByUserIdAndPackageComplete(userId, false);
@@ -103,7 +97,7 @@ public class HomePageController {
                 allDetailList.addAll(hcPackageDetails);
             }
             // 添加进度
-            map.put("progress", progressDtos);
+            resultMap.put("progress", progressDtos);
 
             List<DailyPackageDto> hourTask = new ArrayList<>();
             List<DailyPackageDto> dayTask = new ArrayList<>();
@@ -157,9 +151,9 @@ public class HomePageController {
             taskMap.put("hourTask", hourTask);
             taskMap.put("dayTask", dayTask);
 
-            map.put("task", taskMap);
+            resultMap.put("task", taskMap);
 
-            return new ControllerResult<Map<String, Object>>().setRet_code(0).setRet_values(map).setMessage("成功");
+            return new ControllerResult<Map<String, Object>>().setRet_code(0).setRet_values(resultMap).setMessage("成功");
         } catch (Exception exp) {
             exp.printStackTrace();
             return new ControllerResult<String>().setRet_code(-1).setRet_values("失败啦").setMessage("失败");
