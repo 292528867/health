@@ -5,13 +5,10 @@ package com.wonders.xlab.healthcloud.entity.hcpackage;
  * 健康包
  */
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
-import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "hc_package")
@@ -74,6 +71,12 @@ public class HcPackage extends AbstractBaseEntity<Long> {
      */
     private boolean isNeedSupplemented;
 
+    @Enumerated
+    private Sex sex;
+
+    public enum Sex {
+        Male, Female, All
+    }
 
     /**
      * 补充内容
@@ -83,13 +86,13 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     private HealthCategory healthCategory;
 
-    /**
-     * 用户健康包
-     */
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
-    @OrderBy(value = "id asc")
-    @JoinTable(name = "hc_user_package_relation", joinColumns = @JoinColumn(name = "package_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> users;
+//    /**
+//     * 用户健康包
+//     */
+//    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+//    @OrderBy(value = "id asc")
+//    @JoinTable(name = "hc_user_package_relation", joinColumns = @JoinColumn(name = "package_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+//    private Set<User> users;
 
     public HcPackage() {
     }
@@ -229,11 +232,19 @@ public class HcPackage extends AbstractBaseEntity<Long> {
         this.supplemented = supplemented;
     }
 
-    public Set<User> getUsers() {
-        return users;
+//    public Set<User> getUsers() {
+//        return users;
+//    }
+//
+//    public void setUsers(Set<User> users) {
+//        this.users = users;
+//    }
+
+    public Sex getSex() {
+        return sex;
     }
 
-    public void setUsers(Set<User> users) {
-        this.users = users;
+    public void setSex(Sex sex) {
+        this.sex = sex;
     }
 }

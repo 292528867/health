@@ -1,6 +1,13 @@
 package com.wonders.xlab.healthcloud.dto.hcpackage;
 
+import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
+import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
+import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.text.ParseException;
 
 /**
  * Created by mars on 15/7/4.
@@ -30,7 +37,9 @@ public class HcPackageDetailDto {
     /**
      * 是否需要补充内容
      */
-    private Boolean isNeedSupplemented;
+    @NotNull(message = "是否需要补充内容判断不能为空")
+    @Pattern(regexp = "^0|1$", message = "是否需要补充内容必须为0否1是")
+    private String isNeedSupplemented;
 
     /**
      * 补充内容
@@ -42,14 +51,43 @@ public class HcPackageDetailDto {
      * 任务推荐时间
      */
     @NotNull(message = "任务推荐开始时间不能为空")
+    @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$", message = "时间格式必须为HH:mm:ss")
     private String recommendTimeFrom;
 
     @NotNull(message = "任务推荐结束时间不能为空")
+    @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$", message = "时间格式必须为HH:mm:ss")
     private String recommendTimeTo;
     /**
      * 任务积分
      */
-    private Integer integration;
+    @NotNull(message = "积分不能为空")
+    private String integration;
+
+    @NotNull(message = "是否全天不能为空")
+    @Pattern(regexp = "^$", message = "时间格式必须为HH:mm:ss")
+    private String isFullDay;
+
+    private MultipartFile file;
+
+    public HcPackageDetail toNewHcPackageDetail(HcPackage hcPackage) {
+            HcPackageDetail hcPackageDetail = new HcPackageDetail(
+                    hcPackage,
+                    taskName,
+                    detail,
+                    Boolean.valueOf(isNeedSupplemented),
+                    supplemented,
+                    Integer.parseInt(integration),
+                    Boolean.valueOf(isFullDay));
+
+        try {
+            hcPackageDetail.setRecommendTimeFrom(DateUtils.parseDate(recommendTimeFrom, "H:m:s"));
+            hcPackageDetail.setRecommendTimeTo(DateUtils.parseDate(recommendTimeTo, "H:m:s"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return hcPackageDetail;
+
+    }
 
     public String getHcPackageId() {
         return hcPackageId;
@@ -75,11 +113,11 @@ public class HcPackageDetailDto {
         this.detail = detail;
     }
 
-    public Boolean getIsNeedSupplemented() {
+    public String getIsNeedSupplemented() {
         return isNeedSupplemented;
     }
 
-    public void setIsNeedSupplemented(Boolean isNeedSupplemented) {
+    public void setIsNeedSupplemented(String isNeedSupplemented) {
         this.isNeedSupplemented = isNeedSupplemented;
     }
 
@@ -107,11 +145,27 @@ public class HcPackageDetailDto {
         this.recommendTimeTo = recommendTimeTo;
     }
 
-    public Integer getIntegration() {
+    public String getIntegration() {
         return integration;
     }
 
-    public void setIntegration(Integer integration) {
+    public void setIntegration(String integration) {
         this.integration = integration;
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
+    public String getIsFullDay() {
+        return isFullDay;
+    }
+
+    public void setIsFullDay(String isFullDay) {
+        this.isFullDay = isFullDay;
     }
 }
