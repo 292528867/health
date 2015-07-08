@@ -69,6 +69,8 @@ public class HcPackageDetail extends AbstractBaseEntity<Long> {
      */
     private boolean isFullDay;
 
+    private Integer taskDay;
+
     public HcPackageDetail() {
     }
 
@@ -173,5 +175,13 @@ public class HcPackageDetail extends AbstractBaseEntity<Long> {
 
     public void setIsFullDay(boolean isFullDay) {
         this.isFullDay = isFullDay;
+    }
+
+    public Integer getTaskDay() {
+        return taskDay;
+    }
+
+    public void setTaskDay(Integer taskDay) {
+        this.taskDay = taskDay;
     }
 }
