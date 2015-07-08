@@ -87,8 +87,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @param packageId
      * @return
      */
-    @RequestMapping("getRecommendPackageDetail/{packageId}/{rankId}")
-    public Object getRecommendPackageDetail(@PathVariable Long packageId, @PathVariable Integer rankId){
+    @RequestMapping("getRecommendPackageDetail/{packageId}")
+    public Object getRecommendPackageDetail(@PathVariable Long packageId){
 
         RecommendPackage rp = this.recommendPackageRepository.findOne(packageId);
 
@@ -103,7 +103,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             servicesSet.addAll(services);
             rp.setServices(servicesSet);
 
-            List<Steward> stewards = this.stewardRepository.findByRank(Steward.Rank.values()[rankId]);
+            List<Steward> stewards = this.stewardRepository.findByRank(rp.getRank());
             int idx = (int) (System.currentTimeMillis() % stewards.size());
 
             rp.setSteward(stewards.get(idx));
