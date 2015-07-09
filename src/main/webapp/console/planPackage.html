@@ -121,8 +121,8 @@
 
                         <div class="am-form-group am-u-sm-12">
                             <label for="description">任务包简介：（列表页展示）</label>
-                            <input type="text" id="description" placeholder=""
-                                   required name="description" tabindex="2"/>
+                            <textarea type="text" id="description" placeholder=""
+                                   required name="description" tabindex="2" rows="3"></textarea>
                         </div>
                         <div class="am-form-group am-u-sm-12">
                             <label for="detailDescription">任务包详细介绍</label>
@@ -160,9 +160,9 @@
                             </label>
                         </div>
                         <div class="am-form-group am-u-sm-12">
-                            <input type="text" name="durationCnt" id="durationCnt" tabindex="8" placeholder="任务包时长" style="width: 200px;display: inline-block">
+                            <input type="text" class="am-form-field am-input-sm" name="durationCnt" id="durationCnt" tabindex="8" placeholder="任务包时长" style="width: 200px;display: inline-block">
                             <input type="hidden" name="duration" id="duration">
-                            <select style="width: 100px; display: inline-block" id="durationUnit" name="durationUnit" >
+                            <select style="width: 100px; display: inline-block" data-am-selected id="durationUnit" name="durationUnit" >
                                 <option value="day" selected>天</option>
                                 <option value="week">周</option>
                             </select>
