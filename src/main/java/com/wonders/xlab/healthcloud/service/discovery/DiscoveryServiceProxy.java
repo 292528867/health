@@ -78,6 +78,22 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 	private void initBean() {
 		proxyCache = new HCCacheProxy<String, Object>(discoveryCache);
 	}
+	
+	private void setDtoIsClicked(User user, List<HealthInfoDto> dtoes) {
+		Map<Long, Long> userClicked = new HashMap<>();
+		List<Object> allClickCountList = this.healthInfoClickInfoRepository.healthInfoTotalClickCountWithUserId(user.getId());
+		for (Object record : allClickCountList) {
+			Object[] record_values = (Object[]) record;
+			userClicked.put((Long) record_values[0], (Long) record_values[1]);
+		}
+		for (HealthInfoDto dto : dtoes) {
+			if (userClicked.get(dto.getId()) != null) 
+				dto.setClicked(true);
+			else
+				dto.setClicked(false);
+		}
+	}
+	
 	private void setDtoClickCount(List<HealthInfoDto> dtoes) {
 		List<HealthInfoSample> healthInfoSampleList = new ArrayList<>();
 		Map<Long, Long> allClickCount = new HashMap<>();
@@ -199,9 +215,9 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 	@Override
 	public List<HealthInfoDto> getTagInfos(HealthCategory healthCategory,
 			User user) {
-		List<HealthInfoDto> dtos = this.discoveryService.getTagInfos(healthCategory, user);
-		if (dtos.size() == 0) 
-			return dtos;
+		List<HealthInfoDto> dtoes = this.discoveryService.getTagInfos(healthCategory, user);
+		if (dtoes.size() == 0) 
+			return dtoes;
 		
 		// 将今日推荐的文章去除
 		Date date = new Date();
@@ -210,7 +226,7 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 		if (healthInfoDiscovery != null) {
 			String ids_str = healthInfoDiscovery.getDiscoveryHealthInfoIds();
 			List<String> ids_str_array = Arrays.asList(StringUtils.split(ids_str, ","));
-			Iterator<HealthInfoDto> iter = dtos.iterator();
+			Iterator<HealthInfoDto> iter = dtoes.iterator();
 			if (CollectionUtils.isNotEmpty(ids_str_array)) {
 				while (iter.hasNext()) {
 					HealthInfoDto dto = iter.next();
@@ -221,7 +237,7 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 		}
 		
 		// 将dto排序
-		Collections.sort(dtos, new Comparator<HealthInfoDto>() {
+		Collections.sort(dtoes, new Comparator<HealthInfoDto>() {
 			@Override
 			public int compare(HealthInfoDto o1, HealthInfoDto o2) {
 				return new CompareToBuilder()
@@ -231,7 +247,9 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 			}
 		});
 		
-		return dtos;
+		// 计算是否点击此用户是否点击过
+		setDtoIsClicked(user, dtoes);
+		return dtoes;
 	}
 	
 	@Override
@@ -249,6 +267,8 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 			dtoes.addAll(getHealthInfoDtoListFromStrids(healthInfoDiscovery.getDiscoveryHealthInfoIds()));
 			// 重新计算点击量
 			setDtoClickCount(dtoes);
+			// 计算是否点击此用户是否点击过
+			setDtoIsClicked(user, dtoes);
 			return dtoes;
 		} else {
 			healthInfoDiscovery = this.healthInfoDiscoveryRepository.findByUserIdAndDiscoveryDate(
@@ -258,6 +278,9 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 				dtoes.addAll(getHealthInfoDtoListFromStrids(healthInfoDiscovery.getDiscoveryHealthInfoIds()));			
 				// 重新计算点击量
 				setDtoClickCount(dtoes);
+				// 计算是否点击此用户是否点击过
+				setDtoIsClicked(user, dtoes);
+				
 				return dtoes;
 			} else { 
 				dtoes.addAll(this.discoveryService.getRecommandArticles(user));
@@ -267,6 +290,10 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 				healthInfoDiscovery.setUser(user);
 				this.healthInfoDiscoveryRepository.save(healthInfoDiscovery);
 				this.proxyCache.addToCache(key, healthInfoDiscovery);
+				
+				// 计算是否点击此用户是否点击过
+				setDtoIsClicked(user, dtoes);
+				
 				return dtoes;
 			}
 		}
