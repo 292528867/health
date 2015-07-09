@@ -108,6 +108,7 @@ function replyInfo(fromUser, toUser,msgId) {
             'dataType': 'json',
             success: function (result) {
                 $("#reply-modal").modal('toggle');
+                window.location.reload();
             }
         });
     });

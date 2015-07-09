@@ -45,7 +45,7 @@ public class EMUtils {
     @PostConstruct
     private void init() {
         hcCache = new HCCacheProxy<>(emCache);
-        List messages=new ArrayList();
+        List messages = new ArrayList();
         messages.add(new StringHttpMessageConverter(Charset.forName("utf-8")));
         restTemplate.setMessageConverters(messages);
     }
@@ -189,41 +189,46 @@ public class EMUtils {
     }
 
 
-
     /**
      * 返回医生数量
+     *
      * @return
      */
-    public static int  getDoctorNumber() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+    public static int getDoctorNumber() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
         String today = sdf.format(calendar.getTime()); //当前天格式：2015-05-05
-        int currentHour = calendar.get(Calendar.HOUR); //当前小时
+        int currentHour = calendar.get(Calendar.HOUR_OF_DAY); //当前小时
         int dayForWeek = DateUtils.calculateTodayForWeek(); //当天是星期几
         List holidayList = DateUtils.getAlLHoliday();  //所有的节假日
         int doctorNumber1 = (int) (150 + Math.random() * 50);
         int doctorNumber2 = (int) (50 + Math.random() * 50);
         int doctorNumber3 = (int) (10 + Math.random() * 40);
+
+        int value = 0;
         //首先判断是否是节假日
-        if(holidayList.contains(today)) {
-            if (currentHour >=9 && currentHour <18 ) {
-                return doctorNumber2;
-            }else {
-                return doctorNumber3;
-            }
-        }else {
-            if(dayForWeek <= 5){//工作日
-                if(currentHour >=9 && currentHour <18) return doctorNumber1;
-                if(currentHour <9 && currentHour >=18) return doctorNumber3;
-            }else {//周末
-                return doctorNumber3;
+        if (holidayList.contains(today)) {
+            if (currentHour >= 9 && currentHour < 18) {
+                value = doctorNumber2;
+            } else {
+                value = doctorNumber3;
             }
         }
-        return 0;
+        if (dayForWeek <= 5) {//工作日
+            if (currentHour >= 9 && currentHour < 18) {
+                value = doctorNumber1;
+            }else {
+                value = doctorNumber3;
+            }
+        } else {//周末
+            value = doctorNumber3;
+        }
+        return value;
     }
 
     /**
      * 返回超时时间
+     *
      * @return
      */
     public static int getOvertime() {
@@ -234,14 +239,14 @@ public class EMUtils {
         int dayForWeek = DateUtils.calculateTodayForWeek(); //当天是星期几
         List holidayList = DateUtils.getAlLHoliday();  //所有的节假日
 
-        if(holidayList.contains(today)) {
-           return 24*60;
+        if (holidayList.contains(today)) {
+            return 24 * 60;
         }
-        if(dayForWeek <= 5){//工作日
-            if(currentHour >=9 && currentHour <18) return 30;
-            if(currentHour <9 && currentHour >=18) return 12*24;
-        }else {
-            return 12*60;
+        if (dayForWeek <= 5) {//工作日
+            if (currentHour >= 9 && currentHour < 18) return 30;
+            if (currentHour < 9 && currentHour >= 18) return 12 * 24;
+        } else {
+            return 12 * 60;
         }
         return 0;
     }

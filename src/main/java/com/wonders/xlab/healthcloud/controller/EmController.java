@@ -6,7 +6,9 @@ import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.emchat.*;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.EmMessages;
+import com.wonders.xlab.healthcloud.entity.doctor.Doctor;
 import com.wonders.xlab.healthcloud.repository.EmMessagesRepository;
+import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.service.WordAnalyzerService;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
@@ -15,6 +17,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -41,6 +44,9 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     @Autowired
     private EmMessagesRepository emMessagesRepository;
+
+    @Autowired
+    private DoctorRepository doctorRepository;
 
     @Autowired
     private WordAnalyzerService wordAnalyzerService;
@@ -77,13 +83,17 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 false
         );
         EmMessages newMessage = emMessagesRepository.save(emMessages);
+        //回复后发送信息给用户
+        Map<String, Object> filterMap = new HashMap<>();
+        filterMap.put("tel_equal", body.getFrom());
+        Doctor doctor = doctorRepository.find(filterMap);
+        SmsUtils.sendEmReplyInfo(username, doctor.getNickName());
         //修改app发送信息状态为已回复
         EmMessages oldEm = emMessagesRepository.findOne(id);
         oldEm.setIsReplied(true);
         emMessagesRepository.save(oldEm);
 
-        //回复后发送信息给用户
-        SmsUtils.sendEmReplyInfo(username, body.getFrom());
+
 
         //回复信息耗时 TODO 耗时建议用信鸽推app端
         Period period = new Period(new DateTime(newMessage.getCreatedDate()), new DateTime(oldEm.getCreatedDate()), PeriodType.minutes());
@@ -277,4 +287,17 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     }
 
 
+  /*  @RequestMapping(value = "/queryRecords",method = RequestMethod.GET)
+    public ControllerResult queryHistoryRecords(String filters ,Pageable pageable){
+
+        Map filterMap = null;
+        if(StringUtils.isNotEmpty(filters)) {
+            try {
+                filterMap = (Map)this.objectMapper.readValue(filters, HashMap.class);
+            } catch (IOException var5) {
+                throw new RuntimeException(var5);
+            }
+        }
+        List<EmMessages> list = emMessagesRepository.findAll(filterMap, pageable);
+    }*/
 }
