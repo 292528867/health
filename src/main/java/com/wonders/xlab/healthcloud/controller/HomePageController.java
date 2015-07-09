@@ -88,7 +88,6 @@ public class HomePageController {
                         )
                 );
 
-
                 List<HcPackageDetail> hcPackageDetails = this.hcPackageDetailRepository.findByHcPackageIdOrderbyRecommendTimeFrom(upo.getHcPackage().getId(), day);
                 allDetailList.addAll(hcPackageDetails);
             }

@@ -20,10 +20,7 @@ import com.wonders.xlab.healthcloud.utils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Arrays;
@@ -139,8 +136,8 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
      * @param content
      * @return
      */
-    @RequestMapping("confirmDetail/{userId}/{detailId}/{content}")
-    public Object confirmDetail(@PathVariable Long userId, @PathVariable Long detailId, @PathVariable String content) {
+    @RequestMapping("confirmDetail/{userId}/{detailId}")
+    public Object confirmDetail(@PathVariable Long userId, @PathVariable Long detailId, @RequestParam(required = false) String content) {
 
         User user = this.userRepository.findOne(userId);
 
@@ -152,6 +149,8 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
             return new ControllerResult<String>().setRet_code(-1).setRet_values("找不到订单").setMessage("成功");
 
         if (hpDetail.isNeedSupplemented()) {
+            if (content == null)
+                return new ControllerResult<String>().setRet_code(-1).setRet_values("内容不能为空").setMessage("成功");
             UserPackageDetailStatement statement = new UserPackageDetailStatement(
                     user,
                     hpDetail,
