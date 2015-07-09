@@ -28,8 +28,15 @@
       margin-left: 10px !important;
     }
 
-
-  </style></head><body><div class="am-tabs am-tabs-d2 app-body"><div class=today-bar>今日推荐</div><div class=today-white><img src=i/header/white.png></div><div id=header><div class=swiper-wrapper><div class=swiper-slide style="width: 100px;"></div></div></div><div class=am-tabs-bd><div class="am-tab-panel am-active today-body"><div id=banners><div class=banner-today><div class=banner-today-img></div><div class="banner-today-title-bg am-cf"><div class="banner-today-title am-text-truncate"></div><div class=banner-today-click><img src=i/icon/read.png alt=阅读></div></div></div></div><div data-am-widget=list_news class="am-list-news am-list-news-default today-list"><div class=am-list-news-bd><ul class="am-list article" id=article><li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left" style="display: none;"><div class="am-u-sm-4 am-list-thumb article-img-box"><a href=# class=article-href><img class=article-img></a></div><div class="am-u-sm-8 am-list-main article-content-box"><h3 class=am-list-item-hd><a href=# class="article-title article-href"></a></h3><div class="am-list-item-text article-description"></div><div class=article-clickCount></div></div></li></ul></div></div></div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script src=js/main.js></script><script src=js/swiper.js></script><script type=text/javascript>
+    #error-png {
+      position: absolute;
+      left: 50%;
+      width: 60%;
+      margin-left: -30%;
+      top: 200px;
+      display: none;
+    }
+  </style></head><body><img src=i/404.png id=error-png><div class="am-tabs am-tabs-d2 app-body"><div class=today-bar>今日推荐</div><div class=today-white><img src=i/header/white.png></div><div id=header><div class=swiper-wrapper><div class=swiper-slide style="width: 100px;"></div></div></div><div class=am-tabs-bd><div class="am-tab-panel am-active today-body"><div id=banners><div class=banner-today><div class=banner-today-img></div><div class="banner-today-title-bg am-cf"><div class="banner-today-title am-text-truncate"></div><div class=banner-today-click><img src=i/icon/read.png alt=阅读></div></div></div></div><div data-am-widget=list_news class="am-list-news am-list-news-default today-list"><div class=am-list-news-bd><ul class="am-list article" id=article><li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left" style="display: none;"><div class="am-u-sm-4 am-list-thumb article-img-box"><a href=# class=article-href><img class=article-img></a></div><div class="am-u-sm-8 am-list-main article-content-box"><h3 class=am-list-item-hd><a href=# class="article-title article-href"></a></h3><div class="am-list-item-text article-description"></div><div class=article-clickCount></div></div></li></ul></div></div></div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script src=js/main.js></script><script src=js/swiper.js></script><script type=text/javascript>
   window.onload = function () {
   }
 
@@ -37,10 +44,10 @@
   var strcookie = document.cookie;
   var arrcookie = strcookie.split("=")
   var statuscookie = arrcookie[1];
-  if(statuscookie == "" || statuscookie == "0"){
-    document.cookie="statuscookie=1";
-  }else{
-    document.cookie="statuscookie=0";
+  if (statuscookie == "" || statuscookie == "0") {
+    document.cookie = "statuscookie=1";
+  } else {
+    document.cookie = "statuscookie=0";
     window.location.reload(true);
   }
 
@@ -67,12 +74,13 @@
   }
 
   function inLoad() {
+    $('#error-png').hide();
     $('.today-body').removeClass('today-body-banners');
     $.get(articleUrl + healthCategoryId, function (data) {
       var values = data.ret_values, $article = $('.article');
       articleList = values;
       var u = '';
-      var clickCount=0;
+      var clickCount = 0;
       $.each(values, function (n, value) {
         console.log(value);
         if (n === 0) {
@@ -88,12 +96,12 @@
           $article.find('.article-img').attr('src', value.pictureUrl);
           $article.find('li').css('display', 'block');
           $article.find('.article-title').html(value.title);
-          if(value.clicked) {
-            $article.find('.article-title').css('color','#afafaf');
-          }
-          else  {
-            $article.find('.article-title').css('color','#383838');
-          }
+//          if(value.clicked) {
+//            $article.find('.article-title').css('color','#afafaf');
+//          }
+//          else  {
+//            $article.find('.article-title').css('color','#383838');
+//          }
           $article.find('.article-description').html(value.desc);
           $article.find('.article-clickCount').html('<img src="i/icon/read-grey.png" alt="阅读"/>' + value.clickCount + '阅读');
           $article.find('.article-clickCount').attr('id', 'click' + value.id);
@@ -113,17 +121,18 @@
   function getDetails(id) {
     var articleId = articleList[id].id || JSON.parse(localStorage.getItem('articleList')[id].id);
     var clickUrl = commonUrl + 'discovery/app/clickInfo/' + healthCategoryId + '/' + articleId;
-    articleList[id].clickCount=articleList[id].clickCount+1;
+    articleList[id].clickCount = articleList[id].clickCount + 1;
     $.get(clickUrl, function (data) {
       localStorage.setItem('article', JSON.stringify(articleList[id]));
       localStorage.setItem('articleList', JSON.stringify(articleList));
-      document.cookie="statuscookie=1";
+      document.cookie = "statuscookie=1";
       window.location.href = 'detail.html?' + articleId;
     });
   }
 
 
   function loadArticles(id) {
+    $('#error-png').hide();
     $('.today-body').addClass('today-body-banners');
     typeArticleUrl = typeArticleUrl + id + '/' + healthCategoryId;
     $('#banners').html(bannerBack.hide());
@@ -180,7 +189,9 @@
       sessionStorage.setItem('articleUrl', typeArticleUrl);
       sessionStorage.setItem('tag', id);
       console.log(articleBack);
-
+      if (values.length == 0) {
+        $('#error-png').show();
+      }
     });
 
 
@@ -188,6 +199,7 @@
 
 
   function loadTodayArticles() {
+    $('#error-png').hide();
     $('.today-body').removeClass('today-body-banners');
     $('.today-bar').attr('onclick', '');
     $('.article').html(articleBack.hide());

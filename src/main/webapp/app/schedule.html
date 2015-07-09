@@ -163,7 +163,11 @@
   .schedule-type {
     display: none;
   }
-</style><body class=detail-body><div id=detail-title></div><div><img src=i/schedule/eye.jpg width=25 style="margin-right: 0px" class=am-text-middle> <span id=detail-count class=am-text-middle></span></div><div id=details></div><div class=schedule-foot><div class=schedule-type><div class="schedule-content am-cf"><div style="width: 10%;text-align: left;height: 25px;" class=am-vertical-align><img src=i/schedule/check.jpg width=25 style="vertical-align: top" class=am-vertical-align-middle></div><div style="width: 60%">2015年07月08日 上午07:08</div><div style="width: 30%">7.5mmol/L</div></div><hr data-am-widget=divider class="am-divider am-divider-dashed"><div class=foot-title>请填写您的血糖值</div><div class=foot-form><div class=foot-input><input type=tel id=getValue placeholder=如:7.5 maxlength=4></div><div class=foot-input-text><label class=foot-input-span for=getValue></label> <span style="margin-bottom: 15px;">mmol/L</span></div></div></div><button class=finish-btn type=button data-am-loading="{spinner: 'circle-o-notch', loadingText: '跳转中..', resetText: '重新点击'}" onclick=finishTask()>确定已完成</button><div class=finish-divider><hr data-am-widget=divider class="am-divider am-divider-default btn-divider"><div class=finish-move><img src=i/schedule/man.png>动起来！</div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
+  #schedule-video,#schedule-img {
+    display: none;
+  }
+
+</style><body class=detail-body><div id=detail-title></div><div><img src=i/schedule/eye.jpg width=25 style="margin-right: 0px" class=am-text-middle> <span id=detail-count class=am-text-middle></span></div><video controls width=100% id=schedule-video>您的浏览器不支持 video 标签。<source id=v1 src=#></video><img id=schedule-img width=100%><div id=details></div><div class=schedule-foot><div class=schedule-type><div class="schedule-content am-cf"><div style="width: 10%;text-align: left;height: 25px;" class=am-vertical-align><img src=i/schedule/check.jpg width=25 style="vertical-align: top" class=am-vertical-align-middle></div><div style="width: 60%">2015年07月08日 上午07:08</div><div style="width: 30%">7.5mmol/L</div></div><hr data-am-widget=divider class="am-divider am-divider-dashed"><div class=foot-title>请填写您的血糖值</div><div class=foot-form><div class=foot-input><input type=tel id=getValue placeholder=如:7.5 maxlength=4></div><div class=foot-input-text><label class=foot-input-span for=getValue></label> <span style="margin-bottom: 15px;">mmol/L</span></div></div></div><button class=finish-btn type=button data-am-loading="{spinner: 'circle-o-notch', loadingText: '跳转中..', resetText: '重新点击'}" onclick=finishTask()>确定已完成</button><div class=finish-divider><hr data-am-widget=divider class="am-divider am-divider-default btn-divider"><div class=finish-move><img src=i/schedule/man.png>动起来！</div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
   var article = localStorage.getItem('article');
   var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
   var url = commonUrl + 'task/retrievePackageDetail/';
@@ -188,6 +192,16 @@
       var $finish = $('.finish-btn');
       $finish.addClass('finish-btn-ed');
       $finish.html('已完成');
+    }
+    if(article.iconType==2) {
+      $('#schedule-video').attr('src', article.icon);
+      $('#schedule-video').show();
+      $('#schedule-video').load();
+      document.getElementById("schedule-video").load();
+    }
+    if(article.iconType==1){
+      $('#schedule-img').attr('src', article.icon);
+      $('#schedule-img').show();
     }
   });
   function finishTask() {

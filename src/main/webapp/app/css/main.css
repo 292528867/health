@@ -74,7 +74,7 @@
 }
 .banner-today-title-bg .banner-today-title {
   float: left;
-  padding-left: 5px;
+  padding-left: 8px;
   max-width: 260px;
 }
 .banner-today-title-bg .banner-today-click {
@@ -124,6 +124,7 @@
   color: #383838;
   font-size: 1.7rem;
   white-space: nowrap;
+  font-weight: 600;
 }
 .article-img-box {
   max-height: 100% !important;
@@ -137,7 +138,7 @@
 }
 .article-img-box img {
   border-radius: 10px;
-  margin: auto;
+  margin-left: 12px;
   height: 94px;
   width: 94px !important;
 }
