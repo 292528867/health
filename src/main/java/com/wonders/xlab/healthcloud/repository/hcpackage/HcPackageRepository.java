@@ -13,4 +13,8 @@ public interface HcPackageRepository extends MyRepository<HcPackage, Long> {
 
     @Query("from HcPackage p order by p.createdDate desc")
     List<HcPackage> findAllOrderByCreateDate();
+
+    @Query("from HcPackage p left join fetch p.healthCategory where p.id = ?1 ")
+    HcPackage findOnePackage(Long packageId);
+
 }

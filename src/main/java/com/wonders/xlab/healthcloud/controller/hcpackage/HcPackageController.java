@@ -257,16 +257,14 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     }
 
     /**
-     * 根据集合中对象属性值查找元素
-     *
-     * @param collection 给定的集合
-     * @param propertyName 集合中的元素的属性名
-     * @param propertyValue 集合中元素属性名对应的属性值
-     * @param <T> 集合的类型参数
-     * @return 返回匹配的第一个元素
+     * 根据ID查询包信息，以及category信息
+     * @param id
+     * @return
      */
-    @SuppressWarnings("unchecked")
-    public static <T> T find(Collection<T> collection, String propertyName, Object propertyValue) {
-        return (T) org.apache.commons.collections.CollectionUtils.find(collection, new BeanPropertyValueEqualsPredicate(propertyName, propertyValue));
+    @RequestMapping(value = "findOnePackage/{id}",method = RequestMethod.GET)
+    public HcPackage findOnePackage(@PathVariable Long id){
+        HcPackage hcPackage = hcPackageRepository.findOnePackage(id);
+        return hcPackage;
     }
+
 }
