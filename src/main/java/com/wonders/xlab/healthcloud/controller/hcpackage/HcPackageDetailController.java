@@ -108,10 +108,19 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
                 detail.getId(),
                 detail.getTaskName(),
                 detail.getClickAmount(),
-                detail.getDetail()
+                detail.getDetail(),
+                detail.getIcon()
         );
         if (detail.isNeedSupplemented())
             dto.setType(1);
+        if (detail.getIcon() == null)
+            dto.setIconType(0);
+        if (detail.getIcon().endsWith("mp4")) {
+            dto.setIconType(2);
+        } else {
+            dto.setIconType(1);
+        }
+
         if (order != null && order.getHcPackageDetailIds() != null) {
             String[] detailIds = order.getHcPackageDetailIds().split(",");
             Long[] longDetailIds = new Long[detailIds.length];
