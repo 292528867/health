@@ -3,14 +3,17 @@ package com.wonders.xlab.healthcloud.controller;
 import com.wonders.xlab.healthcloud.dto.hcpackage.DailyPackageDto;
 import com.wonders.xlab.healthcloud.dto.hcpackage.ProgressDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
+import com.wonders.xlab.healthcloud.entity.HomePageTips;
 import com.wonders.xlab.healthcloud.entity.banner.Banner;
 import com.wonders.xlab.healthcloud.entity.banner.BannerType;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
+import com.wonders.xlab.healthcloud.repository.TipsRepository;
 import com.wonders.xlab.healthcloud.repository.banner.BannnerRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageCompleteRepository;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +37,9 @@ public class HomePageController {
 
     @Autowired
     private BannnerRepository bannnerRepository;
+
+    @Autowired
+    private TipsRepository tipsRepository;
 
     /**
      * 首页
@@ -96,13 +102,16 @@ public class HomePageController {
             // 添加进度
             resultMap.put("progress", progressDtos);
 
-            List<DailyPackageDto> hourTask = new ArrayList<>();
-            List<DailyPackageDto> dayTask = new ArrayList<>();
+            List<DailyPackageDto> hourTasks = new ArrayList<>();
+            List<DailyPackageDto> dayTasks = new ArrayList<>();
 
+
+            // 默认完成 1 完成 0 未完成
+            int hourComplete = 1;
+            int dayComplete = 1;
             for (HcPackageDetail detail : allDetailList) {
-
                 if (detail.isFullDay()) {
-                    dayTask.add(new DailyPackageDto(
+                    dayTasks.add(new DailyPackageDto(
                                     detail.getId(),
                                     detail.getRecommendTimeFrom(),
                                     detail.getTaskName(),
@@ -110,8 +119,11 @@ public class HomePageController {
                                     detail.getClickAmount()
                             )
                     );
+                    // 如果没有包含id，说明没有完成
+                    if (packageDetailIds.contains(detail.getId()))
+                        dayComplete = 0;
                 } else {
-                    hourTask.add(new DailyPackageDto(
+                    hourTasks.add(new DailyPackageDto(
                                     detail.getId(),
                                     detail.getRecommendTimeFrom(),
                                     detail.getTaskName(),
@@ -119,13 +131,26 @@ public class HomePageController {
                                     detail.getClickAmount()
                             )
                     );
+                    if (packageDetailIds.contains(detail.getId()))
+                        hourComplete = 0;
                 }
             }
-
+            List<HomePageTips> tips = this.tipsRepository.findAll();
             Map<String, Object> taskMap = new HashMap<>();
+           /* for (int i = 0; i < 2; i ++){
+                int index = (int) System.currentTimeMillis() % tips.size();
+                taskMap.put("dayTips", tips.get(index).getTips());
+                if (taskMap.get("dayTips") != null) {
+                    taskMap.put("hourTips", tips.get(index).getTips());
+                }
+            }*/
             taskMap.put("currentDay", DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
-            taskMap.put("hourTask", hourTask);
-            taskMap.put("dayTask", dayTask);
+            taskMap.put("hourTask", hourTasks);
+            taskMap.put("dayTask", dayTasks);
+            taskMap.put("dayComplete", dayComplete);
+            taskMap.put("hourComplete", hourComplete);
+            taskMap.put("dayTips", tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
+            taskMap.put("hourTips", tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
 
             resultMap.put("task", taskMap);
 
