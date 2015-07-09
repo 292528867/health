@@ -17,6 +17,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -245,7 +246,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * 新增群组
      */
     @RequestMapping(value = "newChatgroups", method = RequestMethod.POST)
-    public String newChatgroups(String username) throws JsonProcessingException {
+    public ChatGroupsResponseBody newChatgroups(String username) throws JsonProcessingException {
 
         ChatGroupsRequestBody groupsBody = new ChatGroupsRequestBody(username, "万达健康云_" + username, true, 1, false, username);
 
@@ -257,13 +258,13 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         try {
 
-             emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", String.class);
+           responseEntity= (ResponseEntity<ChatGroupsResponseBody>) emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", ChatGroupsResponseBody.class);
 
         } catch (HttpClientErrorException e) {
-            return "-1";
+            throw new RuntimeException(e);
         }
 
-        return null;
+        return responseEntity.getBody();
     }
 
     @RequestMapping(value = "getTop5Messages", method = RequestMethod.POST)
@@ -287,17 +288,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     }
 
 
-  /*  @RequestMapping(value = "/queryRecords",method = RequestMethod.GET)
-    public ControllerResult queryHistoryRecords(String filters ,Pageable pageable){
-
-        Map filterMap = null;
-        if(StringUtils.isNotEmpty(filters)) {
-            try {
-                filterMap = (Map)this.objectMapper.readValue(filters, HashMap.class);
-            } catch (IOException var5) {
-                throw new RuntimeException(var5);
-            }
-        }
-        List<EmMessages> list = emMessagesRepository.findAll(filterMap, pageable);
-    }*/
+    @RequestMapping(value = "/queryRecords",method = RequestMethod.GET)
+    public Page<EmMessages> queryHistoryRecords(String groupId ,Pageable pageable) {
+        Map<String, Object> filterMap = new HashMap<>();
+        filterMap.put("toUser_equal", groupId);
+        Page<EmMessages> list =  emMessagesRepository.findAll(filterMap, pageable);
+        return list;
+    }
 }
