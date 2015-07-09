@@ -252,7 +252,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             integration += steward.getStewardIntegration();
 
             // 存在推荐包
-            if (serviceDto.getPackageId() != null) {
+            if (serviceDto.getPackageId()!="") {
                 // 获取推荐包，管家
                 RecommendPackage rp = this.recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
 
