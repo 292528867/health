@@ -204,13 +204,17 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 		// 将今日推荐的文章去除
 		Date date = new Date();
 		String key = user.getId() + "_" + DateUtils.covertToYYYYMMDDStr(date) + "_" + "articles";
-		List<String> ids_str_array = Arrays.asList(StringUtils.split(key, ","));
-		Iterator<HealthInfoDto> iter = dtos.iterator();
-		if (CollectionUtils.isNotEmpty(ids_str_array)) {
-			while (iter.hasNext()) {
-				HealthInfoDto dto = iter.next();
-				if (ids_str_array.contains(dto.getId())) 
-					iter.remove();
+		HealthInfoDiscovery healthInfoDiscovery = (HealthInfoDiscovery) proxyCache.getFromCache(key);
+		if (healthInfoDiscovery != null) {
+			String ids_str = healthInfoDiscovery.getDiscoveryHealthInfoIds();
+			List<String> ids_str_array = Arrays.asList(StringUtils.split(ids_str, ","));
+			Iterator<HealthInfoDto> iter = dtos.iterator();
+			if (CollectionUtils.isNotEmpty(ids_str_array)) {
+				while (iter.hasNext()) {
+					HealthInfoDto dto = iter.next();
+					if (ids_str_array.contains(dto.getId())) 
+						iter.remove();
+				}
 			}
 		}
 		
