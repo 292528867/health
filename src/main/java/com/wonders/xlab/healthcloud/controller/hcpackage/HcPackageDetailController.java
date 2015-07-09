@@ -94,7 +94,7 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         // 用户订单
         UserPackageOrder order = this.userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, detail.getHcPackage().getId(), false);
 
-        Set<UserStatementDto> statementDtos = new HashSet<>();
+        List<UserStatementDto> statementDtos = new ArrayList<>();
 
         for (UserPackageDetailStatement packageStatement : userStatements) {
             UserStatementDto statement = new UserStatementDto(
@@ -165,16 +165,18 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
             );
             this.userPackageDetailStatementRepository.save(statement);
         }
+        // 已经有过计划完成
         if (order.getHcPackageDetailIds() != null) {
             String[] detailIds = order.getHcPackageDetailIds().split(",");
-            Long[] longDetailIds = new Long[detailIds.length + 1];
+            List<Long> longDetailIds = new ArrayList<>();
             for (int i = 0; i < detailIds.length; i++)
-                longDetailIds[i] = Long.parseLong(detailIds[i]);
-            longDetailIds[detailIds.length -1] = detailId;
+                longDetailIds.add(Long.parseLong(detailIds[i]));
+            longDetailIds.add(detailId);
             order.setHcPackageDetailIds(StringUtils.join(longDetailIds, ","));
         } else {
             Long[] longDetailIds = new Long[1];
             longDetailIds[0] = detailId;
+            System.out.println(StringUtils.join(longDetailIds, ","));
             order.setHcPackageDetailIds(StringUtils.join(longDetailIds, ","));
         }
         this.userPackageOrderRepository.save(order);
