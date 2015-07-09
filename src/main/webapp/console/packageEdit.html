@@ -1,0 +1,312 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>健康云</title>
+    <meta name="description" content="这是一个 table 页面">
+    <meta name="keywords" content="table">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <!--<link rel="icon" type="image/png" href="assets/i/favicon.png">-->
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+    <link rel="stylesheet" href="assets/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <style>
+        img {
+            max-height: 50px;
+        }
+    </style>
+</head>
+<body>
+<!--[if lte IE 9]>
+<p class="browsehappy">你正在使用<strong>过时</strong>的浏览器，Amaze UI 暂不支持。 请 <a href="http://browsehappy.com/" target="_blank">升级浏览器</a>
+    以获得更好的体验！</p>
+<![endif]-->
+
+<header class="am-topbar admin-header">
+    <div class="am-topbar-brand">
+        <strong>健康云</strong>
+        <small>后台管理</small>
+    </div>
+
+    <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only"
+            data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span
+            class="am-icon-bars"></span></button>
+
+    <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+
+        <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
+            <li><a href="javascript:;"><span class="am-icon-envelope-o"></span> 收件箱 <span
+                    class="am-badge am-badge-warning">5</span></a></li>
+            <li class="am-dropdown" data-am-dropdown>
+                <a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">
+                    <span class="am-icon-users"></span> 管理员 <span class="am-icon-caret-down"></span>
+                </a>
+                <ul class="am-dropdown-content">
+                    <li><a href="#"><span class="am-icon-user"></span> 资料</a></li>
+                    <li><a href="#"><span class="am-icon-cog"></span> 设置</a></li>
+                    <li><a href="#"><span class="am-icon-power-off"></span> 退出</a></li>
+                </ul>
+            </li>
+            <li class="am-hide-sm-only"><a href="javascript:;" id="admin-fullscreen"><span
+                    class="am-icon-arrows-alt"></span> <span class="admin-fullText">开启全屏</span></a></li>
+        </ul>
+    </div>
+</header>
+
+<div class="am-cf admin-main">
+    <!-- sidebar start -->
+    <div class="admin-sidebar am-offcanvas" id="admin-offcanvas"></div>
+    <!-- sidebar end -->
+
+    <!-- content start -->
+    <div class="admin-content">
+
+        <div class="am-cf am-padding">
+            <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">信息</strong> /
+                <small>Info</small>
+            </div>
+        </div>
+        <div class="am-g">
+            <!--<div class="am-u-sm-12 am-u-md-6">
+                <div class="am-btn-toolbar">
+                    <div class="am-btn-group am-btn-group-xs">
+                        <button type="button" class="am-btn am-btn-default" onclick="openAddType()"><span
+                                class="am-icon-plus"></span> 新增
+                        </button>
+                    </div>
+                </div>
+            </div>-->
+            <div class="am-u-sm-12 am-u-md-3">
+                <div class="am-input-group am-input-group-sm">
+                    <input type="text" class="am-form-field am-input-lg">
+          <span class="am-input-group-btn">
+            <button class="am-btn am-btn-default" type="button">搜索</button>
+          </span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="am-g">
+            <div class="am-u-sm-12">
+                <form class="am-form">
+                    <table class="am-table am-table-striped am-table-hover table-main">
+                        <thead>
+                        <tr>
+                            <th class="table-check"><input type="checkbox"/></th>
+                            <th class="table-id">ID</th>
+                            <th class="table-title">所属类别</th>
+                            <th class="table-title">包名称</th>
+                            <th class="table-title">简介</th>
+                            <th class="table-title">包时长(天)</th>
+                            <th class="table-title">是否推荐</th>
+                            <th class="table-title">是否循环</th>
+                            <th class="table-title">是否需要补充内容</th>
+                            <th class="table-title">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="allDatas">
+                        </tbody>
+                    </table>
+                    <!--
+                                        <div class="am-cf">
+                                            共 15 条记录
+                                            <div class="am-fr">
+                                                <ul class="am-pagination">
+                                                    <li class="am-disabled"><a href="#">«</a></li>
+                                                    <li class="am-active"><a href="#">1</a></li>
+                                                    <li><a href="#">2</a></li>
+                                                    <li><a href="#">3</a></li>
+                                                    <li><a href="#">4</a></li>
+                                                    <li><a href="#">5</a></li>
+                                                    <li><a href="#">»</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                    -->
+                    <hr/>
+                    <!--<p>注：.....</p>-->
+                </form>
+            </div>
+
+        </div>
+        <div class="am-g">
+
+            <div class="am-u-sm-12 am-u-md-4 am-u-md-push-8"></div>
+
+        </div>
+
+    </div>
+    <!-- content end -->
+</div>
+
+<a class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+
+<footer>
+    <hr>
+    <p class="am-padding-left">© 2015 By Wondersgroup.</p>
+</footer>
+
+<div class="am-modal " tabindex="-1" id="change-modal" data-am-modal="{width: 100%}">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">修改分类
+            <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+        </div>
+        <div class="am-modal-bd">
+            <fieldset>
+                <input type="hidden" name="iconUrl" id="iconUrl">
+                <input type="hidden" name="detailDescriptionIcon" id="detailDescriptionIcon">
+                <div class="am-form-group am-form-inline">
+                    <div class="am-form-group am-u-sm-4">
+                        <label for="type" class="about-color">所属类别:</label>
+                        <br/>
+                        <select data-am-selected="{maxHeight:200, btnSize: 'sm',  searchBox:1}" class="category-select" id="type" name="type" >
+                            <option>点击选择</option>
+                        </select>
+                    </div>
+                    <div class="am-form-group am-u-sm-8">
+                        <label for="modify-title">任务包名称：</label>
+                        <input type="text" id="modify-title" placeholder=""
+                               required name="title" tabindex="1"/>
+                    </div>
+                </div>
+
+                <div class="am-form-group am-u-sm-12 am-form">
+                    <label for="modify-description">任务包简介：（列表页展示）</label>
+                    <textarea type="text" id="modify-description" placeholder=""
+                           required name="description" rows="3" tabindex="2"></textarea>
+                </div>
+                <div class="am-form-group am-u-sm-12 am-form">
+                    <label for="modify-detailDescription">任务包详细介绍</label>
+                    <textarea class="" rows="8" id="modify-detailDescription" name="detailDescription" tabindex="3"></textarea>
+                </div>
+                <div class="am-form-group am-u-sm-6">
+                    <label class="am-input-group">
+                                <span class="am-input-group-label">
+                                    <input type="checkbox" name="recommend" id="modify-recommend" tabindex="4">
+                                </span>
+                                <span class="am-input-group-label">
+                                是否推荐
+                                </span>
+                        <input type="text" class="am-form-field" placeholder="推荐值" name="recommendValue" id="modify-recommendValue" tabindex="5">
+                    </label>
+                </div>
+                <div class="am-form-group am-u-sm-6">
+                    <label class="am-input-group">
+                                <span class="am-input-group-label">
+                                    <input type="checkbox" name="isNeedSupplemented" id="modify-isNeedSupplemented" tabindex="6">
+                                </span>
+                                <span class="am-input-group-label">
+                                    是否需要用户补充内容
+                                </span>
+                    </label>
+                </div>
+                <div class="am-form am-u-sm-6">
+                    <label class="am-input-group">
+                                <span class="am-input-group-label">
+                                    <input type="checkbox" name="loops" id="modify-loops" tabindex="7">
+                                </span>
+                                <span class="am-input-group-label">
+                                    是否循环
+                                </span>
+                    </label>
+                </div>
+                <div class="am-form-group am-u-sm-6">
+                    <input type="text" class="am-form-field am-input-sm" name="durationCnt" id="modify-durationCnt" tabindex="8" placeholder="任务包时长" style="width: 100px;display: inline-block">
+                    <input type="hidden" name="duration" id="modify-duration">
+                    <select style="display: inline-block" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}" id="modify-durationUnit" name="durationUnit" >
+                        <option value="day">天</option>
+                        <option value="week">周</option>
+                    </select>
+                </div>
+
+                <br/>
+                <br/>
+                <br/>
+                <div class="am-form-group am-u-sm-12">
+                    <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="openImgUpload()"  tabindex="9">
+                        <i class="am-icon-cloud-upload"></i> 选择要上传的展示图片
+                    </button>
+                </div>
+                <br/>
+                <br/>
+                <img src="" alt="" id="detail-img-index"/>
+                <br/>
+                <br/>
+                <div class="am-form-group am-u-sm-12">
+                    <button class="am-btn am-btn-secondary" type="button" id="formSub" onclick="changePackage()" tabindex="10">提交
+                    </button>
+                </div>
+                <br/>
+                <br/>
+                <input type="hidden" id="change-id"/>
+            </fieldset>
+
+        </div>
+    </div>
+</div>
+
+<!--[if lt IE 9]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets/js/polyfill/rem.min.js"></script>
+<script src="assets/js/polyfill/respond.min.js"></script>
+<script src="assets/js/amazeui.legacy.js"></script>
+<![endif]-->
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<script src="assets/js/app.js"></script>
+<script src="js/common.js"></script>
+<script src="js/jsform.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var bar = $('.bar');
+        var percent = $('.percent');
+        var status = $('#status');
+        $('#form1').on('submit', function (e) {
+            e.preventDefault(); // prevent native submit
+            console.log('正在提交');
+            $('#formSub').attr('disabled', 'disabled');
+            $(this).ajaxSubmit({
+                        target: '.am-padding-left',
+                        success: showResponse,
+                        uploadProgress: function (event, position, total, percentComplete) {
+                            var percentVal = percentComplete + '%';
+                            bar.width(percentVal)
+                            if (percentComplete == 100) {
+                                percentVal = "<i class='am-icon-spinner am-icon-spin'></i> 请等待服务器提交";
+                            }
+                            percent.html(percentVal);
+                        }
+                    },
+                    function () {
+                    })
+        });
+        function progressLoad(event, position, total, percentComplete) {
+            console.log(percentComplete);
+        }
+
+        function showResponse(responseText, statusText, xhr, $form) {
+            console.log('status: ' + statusText + '\n\nresponseText: \n' + responseText);
+            alert(statusText);
+            if (statusText == 'success') {
+                location.reload();
+            }
+        }
+    });
+</script>
+<script src="js/typeAdd.js"></script>
+<script src="js/loadAllPackages.js"></script>
+<script>
+    $('#admin-offcanvas').load('common/adminSidebar.html');
+</script>
+</body>
+</html>

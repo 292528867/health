@@ -7,93 +7,125 @@ import java.util.*;
  */
 public class ChatGroupsResponseBody {
 
-    private String action;
 
+    /**
+     * timestamp : 1411527886457
+     * organization : easemob-demo
+     * duration : 125
+     * application : 4d7e4ba0-dc4a-11e3-90d5-e1ffbaacdaf5
+     * applicationName : chatdemoui
+     * data : {"groupid":"1411527886490154"}
+     * action : post
+     * params : {}
+     * entities : []
+     * uri : https://a1.easemob.com/easemob-demo/chatdemoui
+     */
+    private long timestamp;
+    private String organization;
+    private int duration;
     private String application;
-
+    private String applicationName;
+    private DataEntity data;
+    private String action;
+    private ParamsEntity params;
+    private List<?> entities;
     private String uri;
 
-    private List<Object> entities = new ArrayList<Object>();
-
-    private Map <String,String>data;
-
-    private Date timestamp;
-
-    private Integer duration;
-
-    private String organization;
-
-    private String applicationName;
-
-    public String getApplicationName() {
-        return applicationName;
-    }
-
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public String getApplication() {
-        return application;
-    }
-
-    public void setApplication(String application) {
-        this.application = application;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public List<Object> getEntities() {
-        return entities;
-    }
-
-    public void setEntities(List<Object> entities) {
-        this.entities = entities;
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public Integer getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Integer duration) {
-        this.duration = duration;
-    }
-
-    public String getOrganization() {
-        return organization;
     }
 
     public void setOrganization(String organization) {
         this.organization = organization;
     }
 
-    public Map <String,String>getData() {
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setApplication(String application) {
+        this.application = application;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
+
+    public void setData(DataEntity data) {
+        this.data = data;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public void setParams(ParamsEntity params) {
+        this.params = params;
+    }
+
+    public void setEntities(List<?> entities) {
+        this.entities = entities;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public String getApplication() {
+        return application;
+    }
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public DataEntity getData() {
         return data;
     }
 
-    public void setData(Map<String,String> data) {
-        this.data = data;
+    public String getAction() {
+        return action;
+    }
+
+    public ParamsEntity getParams() {
+        return params;
+    }
+
+    public List<?> getEntities() {
+        return entities;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public class DataEntity {
+        /**
+         * groupid : 1411527886490154
+         */
+        private String groupid;
+
+        public void setGroupid(String groupid) {
+            this.groupid = groupid;
+        }
+
+        public String getGroupid() {
+            return groupid;
+        }
+    }
+
+    public class ParamsEntity {
     }
 }

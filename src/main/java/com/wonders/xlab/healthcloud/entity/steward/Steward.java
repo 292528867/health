@@ -5,6 +5,9 @@ import com.wonders.xlab.healthcloud.entity.BaseInfo;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Jeffrey on 15/7/7.
@@ -56,6 +59,18 @@ public class Steward extends BaseInfo<Long> {
      */
     private String levelUrl;
 
+    /**
+     * 微信号
+     * @return
+     */
+    private String weChat;
+
+    /**
+     * 明星服务
+     */
+    @Transient
+    private List<String> starService;
+
 
     public Rank getRank() {
         return rank;
@@ -97,11 +112,11 @@ public class Steward extends BaseInfo<Long> {
         this.location = location;
     }
 
-    public String getColour() {
+    public String getColor() {
         return color;
     }
 
-    public void setColour(String color) {
+    public void setColor(String color) {
         this.color = color;
     }
 
@@ -111,5 +126,21 @@ public class Steward extends BaseInfo<Long> {
 
     public void setLevelUrl(String levelUrl) {
         this.levelUrl = levelUrl;
+    }
+
+    public String getWeChat() {
+        return weChat;
+    }
+
+    public void setWeChat(String weChat) {
+        this.weChat = weChat;
+    }
+
+    public List<String> getStarService() {
+        return starService;
+    }
+
+    public void setStarService(List<String> starService) {
+        this.starService = starService;
     }
 }

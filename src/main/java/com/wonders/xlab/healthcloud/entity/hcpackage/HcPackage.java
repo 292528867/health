@@ -8,6 +8,7 @@ package com.wonders.xlab.healthcloud.entity.hcpackage;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
+import com.wonders.xlab.healthcloud.service.hcpackage.HcpackageService;
 
 import javax.persistence.*;
 
@@ -92,7 +93,7 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     /**
      * 是否循环
      */
-    private String loops;
+    private boolean loops;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private HealthCategory healthCategory;
@@ -133,7 +134,7 @@ public class HcPackage extends AbstractBaseEntity<Long> {
             String title, String subtitle, String description, String detailDescription,
             int duration, String icon, String detailDescriptionIcon, boolean recommend,
             int recommendValue, int clickAmount, int joinAmount, boolean isNeedSupplemented,
-            Sex sex, String supplemented, String loops, HealthCategory healthCategory,
+            Sex sex, String supplemented, boolean loops, HealthCategory healthCategory,
             int cycleLimit, String smaillIcon, int coefficient) {
         this.title = title;
         this.subtitle = subtitle;
@@ -229,7 +230,7 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     }
 
     public int getClickAmount() {
-        return clickAmount;
+        return HcpackageService.calculateClickCount(clickAmount, getCreatedDate());
     }
 
     public void setClickAmount(int clickAmount) {
@@ -276,11 +277,11 @@ public class HcPackage extends AbstractBaseEntity<Long> {
         this.cycleLimit = cycleLimit;
     }
 
-    public String getLoops() {
+    public boolean isLoops() {
         return loops;
     }
 
-    public void setLoops(String loops) {
+    public void setLoops(boolean loops) {
         this.loops = loops;
     }
 

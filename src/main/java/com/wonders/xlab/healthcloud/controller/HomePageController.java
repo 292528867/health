@@ -83,8 +83,8 @@ public class HomePageController {
 
                 progressDtos.add(
                         new ProgressDto(
+                                upo.getHcPackage().getHealthCategory().getTitle(),
                                 upo.getHcPackage().getTitle(),
-                                upo.getHcPackage().getDescription(),
                                 upo.getHcPackage().getSmaillIcon(),
                                 progress
                         )
