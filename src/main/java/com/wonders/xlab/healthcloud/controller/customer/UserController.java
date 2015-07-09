@@ -229,18 +229,19 @@ public class UserController extends AbstractBaseController<User, Long> {
 
         String requestBody = objectMapper.writeValueAsString(groupsBody);
 
-        ResponseEntity<ChatGroupsResponseBody> responseEntity;
+        ResponseEntity<String> responseEntity;
 
         String newRequestBody = StringUtils.replace(requestBody, "_public", "public");
 
         try {
-           emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", String.class);
+            responseEntity = (ResponseEntity<String>) emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", String.class);
 
         } catch (HttpClientErrorException e) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("创建群组失败");
         }
 
-        return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
+       user.setGroupId(objectMapper.readValue(responseEntity.getBody().toString(), ChatGroupsResponseBody.class).getData().getGroupid());
+        return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("注册用户成功，并成功创建群组");
     }
 
     /**
