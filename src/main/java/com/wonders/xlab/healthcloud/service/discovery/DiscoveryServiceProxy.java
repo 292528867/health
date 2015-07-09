@@ -212,7 +212,7 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 			if (CollectionUtils.isNotEmpty(ids_str_array)) {
 				while (iter.hasNext()) {
 					HealthInfoDto dto = iter.next();
-					if (ids_str_array.contains(dto.getId())) 
+					if (ids_str_array.contains(dto.getId().toString())) 
 						iter.remove();
 				}
 			}
