@@ -57,7 +57,7 @@ public class PingppService {
 
         Map<String, Object> chargeParams = new HashMap<String, Object>();
         chargeParams.put("order_no",  new Date().getTime());
-        chargeParams.put("amount", Long.parseLong(pingDto.getMoney()));
+        chargeParams.put("amount", Long.parseLong(pingDto.getMoney()) * 100);
         Map<String, String> app = new HashMap<String, String>();
         app.put("id", "app_KavHuL08GO8O4Wbn");
         chargeParams.put("app", app);
