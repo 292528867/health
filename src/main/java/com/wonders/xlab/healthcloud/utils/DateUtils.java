@@ -1,16 +1,20 @@
 package com.wonders.xlab.healthcloud.utils;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 
@@ -53,8 +57,9 @@ public class DateUtils {
 	
 	/**
 	 * 计算两个日期间隔天数。
-	 * @param toDate 日期
-	 * @return 出生天数（天数）
+     * @param fromDate 起始时间
+     * @param toDate 结束时间
+	 * @return 时间间隔（天数）
 	 */
 	public static int calculatePeiorDaysOfTwoDate(Date fromDate, Date toDate) {
 		Period period = new Period(new DateTime(fromDate), new DateTime(toDate), PeriodType.days());
@@ -97,7 +102,7 @@ public class DateUtils {
 			try {
 				InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
 				BufferedReader bufferedReader = new BufferedReader(isr);
-				String holiday = null;
+				String holiday;
 				while ((holiday = bufferedReader.readLine()) != null) {
 					list.add(holiday);
 				}
@@ -107,5 +112,18 @@ public class DateUtils {
 		}
 		return list;
 	}
+
+    public static void main(String[] args) {
+        try {
+            int days = calculatePeiorDaysOfTwoDate(
+                    org.apache.commons.lang3.time.DateUtils.parseDate("2015-7-8", "yyyy-MM-dd"),
+                    org.apache.commons.lang3.time.DateUtils.parseDate("2015-8-8", "yyyy-MM-dd")
+            );
+            System.out.println("days = " + days);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

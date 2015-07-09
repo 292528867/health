@@ -179,7 +179,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     public Object listPackageInfo() {
         // 查询所有健康包
 //        List<HcPackage> hcPackages = this.hcPackageRepository.findAllOrderByCreateDate();
-        List<HealthCategory> healthCategories = healthCategoryRepository.findByOrderByCreatedDateDesc();
+        List<HealthCategory> healthCategories = healthCategoryRepository.findAll();
         List<ThirdPackageDto> thirdPackageDtos = new ArrayList<>();
 
         for (HealthCategory healthCategorie : healthCategories) {

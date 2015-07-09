@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfoClickInfo;
+import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoClickInfoRepository;
+import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoRepository;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoClickSample;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoSample;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.UserQuerySample;
@@ -34,6 +36,8 @@ public class DiscoveryArticleRuleService {
 	@Autowired
 	@Qualifier("discoveryKBase")
 	private KieBase kieBase;
+	@Autowired
+	private HealthInfoClickInfoRepository healthInfoClickInfoRepository;
 	
 	/**
 	 * 重新计算点击数。
@@ -86,18 +90,20 @@ public class DiscoveryArticleRuleService {
 		session.insert(userQuerySample);
 		
 		List<HealthInfoSample> healthInfoSampleList = new ArrayList<>();
+		Map<Long, Long> allClickCount = new HashMap<>();
+		List<Object> allClickCountList = this.healthInfoClickInfoRepository.healthInfoTotalClickCount();
+		for (Object record : allClickCountList) {
+			Object[] record_values = (Object[]) record;
+			allClickCount.put((Long) record_values[0], (Long) record_values[1]);
+		}
 		for (HealthInfo healthInfo : healthInfos) {
-			long clickCount = 0;
-			for (HealthInfoClickInfo healthInfoClickInfo : healthInfo.getHicis()) 
-				clickCount += healthInfoClickInfo.getClickCount();
 			// 创建sample fact
 			HealthInfoSample healthInfoSample = new HealthInfoSample(
 					userId, 
 					healthInfo.getCreatedDate(),
 					healthInfo.getId(), 
 					healthInfo.getTitle(), 
-					clickCount);
-			healthInfoSample.setCreateTime(healthInfo.getCreatedDate());
+					allClickCount.get(healthInfo.getId()) == null ? 0 : allClickCount.get(healthInfo.getId()));
 			healthInfoSampleList.add(healthInfoSample);
 		}
 		
