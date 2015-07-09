@@ -98,46 +98,25 @@ public class HomePageController {
             List<DailyPackageDto> dayTask = new ArrayList<>();
 
             for (HcPackageDetail detail : allDetailList) {
+
                 if (detail.isFullDay()) {
-                    if (packageDetailIds.contains(detail.getId())) {
-                        dayTask.add(new DailyPackageDto(
-                                        detail.getId(),
-                                        detail.getRecommendTimeFrom(),
-                                        detail.getTaskName(),
-                                        true,
-                                        detail.getClickAmount()
-                                )
-                        );
-                    } else {
-                        dayTask.add(new DailyPackageDto(
-                                        detail.getId(),
-                                        detail.getRecommendTimeFrom(),
-                                        detail.getTaskName(),
-                                        false,
-                                        detail.getClickAmount()
-                                )
-                        );
-                    }
+                    dayTask.add(new DailyPackageDto(
+                                    detail.getId(),
+                                    detail.getRecommendTimeFrom(),
+                                    detail.getTaskName(),
+                                    packageDetailIds.contains(detail.getId()),
+                                    detail.getClickAmount()
+                            )
+                    );
                 } else {
-                    if (packageDetailIds.contains(detail.getId())) {
-                        hourTask.add(new DailyPackageDto(
-                                        detail.getId(),
-                                        detail.getRecommendTimeFrom(),
-                                        detail.getTaskName(),
-                                        true,
-                                        detail.getClickAmount()
-                                )
-                        );
-                    } else {
-                        hourTask.add(new DailyPackageDto(
-                                        detail.getId(),
-                                        detail.getRecommendTimeFrom(),
-                                        detail.getTaskName(),
-                                        false,
-                                        detail.getClickAmount()
-                                )
-                        );
-                    }
+                    hourTask.add(new DailyPackageDto(
+                                    detail.getId(),
+                                    detail.getRecommendTimeFrom(),
+                                    detail.getTaskName(),
+                                    packageDetailIds.contains(detail.getId()),
+                                    detail.getClickAmount()
+                            )
+                    );
                 }
             }
 
