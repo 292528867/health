@@ -23,10 +23,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Jeffrey on 15/7/8.
@@ -93,7 +90,7 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         HcPackageDetail detail = this.hcPackageDetailRepository.findOne(detailId);
 
         /** 用户健康包任务语句 */
-        List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdHcPackageDetail(userId, detailId);
+        List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdHcPackageDetail(userId, detailId, new Date());
         /** 用户订单 */
         UserPackageOrder order = this.userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, detail.getHcPackage().getId(), false);
 
