@@ -20,6 +20,11 @@ public interface UserPackageOrderRepository extends MyRepository<UserPackageOrde
     @Query("from UserPackageOrder uo left join fetch uo.hcPackage where uo.user.id = :userId")
     List<UserPackageOrder> findByUserId(@Param("userId") Long userId);
 
+    @Query("FROM UserPackageOrder uo LEFT JOIN FETCH uo.hcPackage where uo.user.id = :userId and uo.packageComplete = 0")
+    List<UserPackageOrder> findFetchPackageByUserIdAndPackageCompleteFalse(Long userId);
+
+    List<UserPackageOrder> findByUserIdAndPackageCompleteFalse(Long userId);
+
     UserPackageOrder findByUserAndHcPackageAndPackageComplete(User user, HcPackage hcPackage, boolean complete);
 
     UserPackageOrder findByUserIdAndHcPackageIdAndPackageComplete(Long userId, Long hcPackageId, boolean complete);
