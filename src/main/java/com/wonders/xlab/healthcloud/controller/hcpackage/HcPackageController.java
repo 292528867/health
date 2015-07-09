@@ -246,25 +246,22 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
 
         for (HcPackage hcPackage : hcPackages) {
+            UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
+            userPackageOrderDto.setId(hcPackage.getId());
             if (list != null && list.size() != 0) {
                 for (UserPackageOrder userPackageOrder : list) {
-                    UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
                     BeanUtils.copyProperties(hcPackage, userPackageOrderDto);
-                    userPackageOrderDto.setId(hcPackage.getId());
                     if (userPackageOrder.getHcPackage().getId() == hcPackage.getId()) {
                         userPackageOrderDto.setIsJoin(true);
                     } else {
                         userPackageOrderDto.setIsJoin(false);
                     }
-                    userPackageOrderDtos.add(userPackageOrderDto);
                 }
-            }else {
-                UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
+            } else {
                 BeanUtils.copyProperties(hcPackage, userPackageOrderDto);
-                userPackageOrderDto.setId(hcPackage.getId());
                 userPackageOrderDto.setIsJoin(false);
-                userPackageOrderDtos.add(userPackageOrderDto);
             }
+            userPackageOrderDtos.add(userPackageOrderDto);
         }
 
         return new ControllerResult<List<UserPackageOrderDto>>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("成功");
