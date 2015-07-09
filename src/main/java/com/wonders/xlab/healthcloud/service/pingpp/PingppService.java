@@ -52,7 +52,8 @@ public class PingppService {
 
 //        Pingpp.apiKey = "app_KavHuL08GO8O4Wbn";
 
-        Pingpp.apiKey = "sk_test_SOujjTjTar5KeP4a9OvvD4CG";
+//        Pingpp.apiKey = "sk_test_SOujjTjTar5KeP4a9OvvD4CG";
+        Pingpp.apiKey = "sk_live_jX1mb908ern5r1qz9KGGiXfH";
 
         Map<String, Object> chargeParams = new HashMap<String, Object>();
         chargeParams.put("order_no",  new Date().getTime());
@@ -60,7 +61,7 @@ public class PingppService {
         Map<String, String> app = new HashMap<String, String>();
         app.put("id", "app_KavHuL08GO8O4Wbn");
         chargeParams.put("app", app);
-        chargeParams.put("channel",  Channel.ALIPAY);
+        chargeParams.put("channel",  Channel.WECHAT);
         chargeParams.put("currency", "cny");
         chargeParams.put("client_ip",  "127.0.0.1");
         chargeParams.put("subject",  "健康套餐");

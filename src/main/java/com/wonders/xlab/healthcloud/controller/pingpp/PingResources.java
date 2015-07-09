@@ -66,7 +66,7 @@ public class PingResources {
         Map<String, String> app = new HashMap<String, String>();
         app.put("id", "app_KavHuL08GO8O4Wbn");
         chargeParams.put("app", app);
-        chargeParams.put("channel",  Channel.ALIPAY);
+        chargeParams.put("channel",  Channel.WECHAT);
         chargeParams.put("currency", "cny");
         chargeParams.put("client_ip",  "127.0.0.1");
         chargeParams.put("subject",  "健康套餐");
