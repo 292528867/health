@@ -31,6 +31,8 @@ public class HealthInfoDto {
 	/** 文章标题id */
 	private Long Id;
 	
+	private Integer clickCount_A;
+	
 	/**
 	 * 转换成一个新的{@link HealthInfo}实体对象，临时状态。
 	 */
@@ -59,6 +61,7 @@ public class HealthInfoDto {
 		dto.setPictureUrl2(hi.getPictureUrl2());
 		dto.setCreateTime(hi.getCreatedDate());
 		dto.setId(hi.getId());
+		dto.setClickCount_A(hi.getClickCountA());
 		return dto;
 	}
 	
@@ -136,6 +139,14 @@ public class HealthInfoDto {
 
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
+	}
+
+	public Integer getClickCount_A() {
+		return clickCount_A;
+	}
+
+	public void setClickCount_A(Integer clickCount_A) {
+		this.clickCount_A = clickCount_A;
 	}	
 	
 }

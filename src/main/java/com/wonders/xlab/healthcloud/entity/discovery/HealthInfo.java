@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -53,6 +54,10 @@ public class HealthInfo extends AbstractPersistable<Long> {
 	/** 点击信息 */
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "healthInfo")
 	private Set<HealthInfoClickInfo> hicis = new HashSet<>();
+	
+	/** 点击量权重值 */
+	@Column(nullable=false)
+	private Integer clickCountA;
 	
 	// TODO：其他字段再议
 	
@@ -135,6 +140,14 @@ public class HealthInfo extends AbstractPersistable<Long> {
 
 	public void setPictureUrl2(String pictureUrl2) {
 		this.pictureUrl2 = pictureUrl2;
+	}
+
+	public Integer getClickCountA() {
+		return clickCountA;
+	}
+
+	public void setClickCountA(Integer clickCountA) {
+		this.clickCountA = clickCountA;
 	}
 	
 	

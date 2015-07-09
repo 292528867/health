@@ -93,11 +93,13 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 					healthInfoDto.getCreateTime(),
 					healthInfoDto.getId(), 
 					healthInfoDto.getTitle(), 
-					allClickCount.get(healthInfoDto.getId()) == null ? 0 : allClickCount.get(healthInfoDto.getId()));
+					allClickCount.get(healthInfoDto.getId()) == null ? 0 : allClickCount.get(healthInfoDto.getId()), 
+					healthInfoDto.getClickCount_A()
+				);
 			healthInfoSampleList.add(healthInfoSample);
 		}
 		
-		Map<Long, Long> clickCounts = this.discoveryArticleRuleService.calcuClickCount(20, 0.1, healthInfoSampleList);
+		Map<Long, Long> clickCounts = this.discoveryArticleRuleService.calcuClickCount(0.1, healthInfoSampleList);
 		for (HealthInfoDto dto : dtoes) 
 			dto.setClickCount(clickCounts.get(dto.getId()) == null ? 0 : clickCounts.get(dto.getId()));
 	}

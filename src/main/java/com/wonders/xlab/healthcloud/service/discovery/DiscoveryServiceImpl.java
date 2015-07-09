@@ -196,12 +196,13 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 				healthInfo.getCreatedDate(), 
 				healthInfo.getId(), 
 				healthInfo.getTitle(), 
-				actual_clickInfos_map.get(healthInfo.getId()) == null ? 0 : actual_clickInfos_map.get(healthInfo.getId())
+				actual_clickInfos_map.get(healthInfo.getId()) == null ? 0 : actual_clickInfos_map.get(healthInfo.getId()), 
+				healthInfo.getClickCountA()
 			);
 			healthInfoSamples.add(sample);
 		}
 		// 规则计算虚拟点击数目
-		Map<Long, Long> virtual_clickInfos_maps = this.discoveryArticleRuleService.calcuClickCount(20, 0.1, healthInfoSamples);
+		Map<Long, Long> virtual_clickInfos_maps = this.discoveryArticleRuleService.calcuClickCount(0.1, healthInfoSamples);
 		// 整合dto输出
 		List<HealthInfoDto> dtos = new ArrayList<>();
 		for (HealthInfo healthInfo : healthInfos) {
@@ -239,10 +240,12 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 			healthInfo.getCreatedDate(), 
 			healthInfo.getId(), 
 			healthInfo.getTitle(), 
-			clickCount == null ? 0 : clickCount);
+			clickCount == null ? 0 : clickCount, 
+			healthInfo.getClickCountA()
+		);
 		List<HealthInfoSample> sampleList = new ArrayList<>();
 		sampleList.add(sample);
-		Map<Long, Long> click_map = this.discoveryArticleRuleService.calcuClickCount(20, 0.1, sampleList);
+		Map<Long, Long> click_map = this.discoveryArticleRuleService.calcuClickCount(0.1, sampleList);
 		
 		HealthInfoDto dto = new HealthInfoDto().toNewHealthInfoDto(healthInfo);
 		dto.setClickCount(click_map.get(healthInfo.getId()));

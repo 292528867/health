@@ -24,18 +24,18 @@ public class HealthInfoSample implements Comparable<HealthInfoSample> {
 	/** 健康信息文章点击次数 */
 	private Long clickCount;
 //	/** A*(1+X)^n+B */
-//	private Integer clickCount_A;
+	private Integer clickCount_A;
 //	private Double clickCount_X;
 
 	public HealthInfoSample(Long userId, Date createTime, Long healthInfoId,
-			String healthInfoTitle, Long clickCount) {
+			String healthInfoTitle, Long clickCount, int A) {
 		super();
 		this.userId = userId;
 		this.createTime = createTime;
 		this.healthInfoId = healthInfoId;
 		this.healthInfoTitle = healthInfoTitle;
 		this.clickCount = clickCount;
-//		this.clickCount_A = A;
+		this.clickCount_A = A;
 //		this.clickCount_X = X;
 	}
 	public Long getUserId() {
@@ -72,12 +72,12 @@ public class HealthInfoSample implements Comparable<HealthInfoSample> {
 	}
 	
 	
-//	public Integer getClickCount_A() {
-//		return clickCount_A;
-//	}
-//	public void setClickCount_A(Integer clickCount_A) {
-//		this.clickCount_A = clickCount_A;
-//	}
+	public Integer getClickCount_A() {
+		return clickCount_A;
+	}
+	public void setClickCount_A(Integer clickCount_A) {
+		this.clickCount_A = clickCount_A;
+	}
 //	public Double getClickCount_X() {
 //		return clickCount_X;
 //	}
