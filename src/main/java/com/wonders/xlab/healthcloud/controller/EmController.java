@@ -247,13 +247,13 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         try {
 
-            responseEntity = (ResponseEntity<ChatGroupsResponseBody>) emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", ChatGroupsResponseBody.class);
+             emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", String.class);
 
         } catch (HttpClientErrorException e) {
             return "-1";
         }
 
-        return responseEntity.getBody().getData().get("groupid");
+        return null;
     }
 
     @RequestMapping(value = "getTop5Messages", method = RequestMethod.POST)
