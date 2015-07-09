@@ -257,14 +257,13 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         String newRequestBody = StringUtils.replace(requestBody, "_public", "public");
 
         try {
-
-           responseEntity= (ResponseEntity<ChatGroupsResponseBody>) emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", ChatGroupsResponseBody.class);
+               emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", ChatGroupsResponseBody.class).getBody();
 
         } catch (HttpClientErrorException e) {
             throw new RuntimeException(e);
         }
 
-        return responseEntity.getBody();
+        return null;
     }
 
     @RequestMapping(value = "getTop5Messages", method = RequestMethod.POST)
@@ -289,10 +288,10 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
 
     @RequestMapping(value = "/queryRecords",method = RequestMethod.GET)
-    public Page<EmMessages> queryHistoryRecords(String groupId ,Pageable pageable) {
+    public ControllerResult<Page<EmMessages>> queryHistoryRecords(String groupId ,Pageable pageable) {
         Map<String, Object> filterMap = new HashMap<>();
         filterMap.put("toUser_equal", groupId);
         Page<EmMessages> list =  emMessagesRepository.findAll(filterMap, pageable);
-        return list;
+        return new ControllerResult<Page<EmMessages>>().setRet_code(0).setRet_values(list).setMessage("");
     }
 }
