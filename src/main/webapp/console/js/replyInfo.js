@@ -1,4 +1,4 @@
-var url = 'http://127.0.0.1:8080/';
+var url = 'http://101.231.124.8:45677/xlab-healthcloud/';
 
 $(document).ready(function () {
 
@@ -27,10 +27,13 @@ $(document).ready(function () {
 
 //加载需要查看的信息
 function loadData(currentPage) {
-    console.log(url + 'em/query?filters={"doctorFlag_equal":1}&page=' + currentPage);
+    var filters ={
+        "doctorFlag_equal":1
+    }
+    console.log(url + 'em/query?filters='+JSON.stringify(filters)+'&page=' + currentPage);
     $.ajax({
         type: 'get',
-        url: url + 'em?filters={"doctorFlag_equal":1,"isReplied_equal":0}&page=' + currentPage,
+        url: url + 'em?filters='+JSON.stringify(filters)+'&page=' + currentPage,
         success: function (result) {
             var str = '';
             pageStr = '';
