@@ -90,16 +90,13 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败");
         }
         try {
-//            String iconUrl = QiniuUploadUtils.upload(icon.getBytes(), URLDecoder.decode(icon.getOriginalFilename(), "UTF-8"));
-//            String detailDescriptionIconUrl = QiniuUploadUtils.upload(detailDescriptionIcon.getBytes(), URLDecoder.decode(detailDescriptionIcon.getOriginalFilename(), "UTF-8"));
 
             HealthCategory healthCategory = healthCategoryRepository.findOne(healthCategoryId);
 
             HcPackage hcPackage = new HcPackage();
             hcPackage.setHealthCategory(healthCategory);
             BeanUtils.copyProperties(hcPackageDto, hcPackage, "healthCategoryId");
-            hcPackage.setIcon(hcPackageDto.getIconUrl());
-//            hcPackage.setDetailDescriptionIcon(detailDescriptionIconUrl);
+            hcPackage.setIcon(hcPackageDto.getIcon());
             hcPackageRepository.save(hcPackage);
             return new ControllerResult<String>().setRet_code(0).setRet_values("").setMessage("添加成功！");
         } catch (Exception e) {
@@ -182,7 +179,6 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     @RequestMapping("listPackageInfo")
     public Object listPackageInfo() {
         // 查询所有健康包
-//        List<HcPackage> hcPackages = this.hcPackageRepository.findAllOrderByCreateDate();
         List<Classification> classifications = classificationResponsitory.findAll();
         List<ThirdPackageDto> thirdPackageDtos = new ArrayList<>();
 

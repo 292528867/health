@@ -39,7 +39,7 @@ public class HcPackageDto {
      * 图片地址
      */
     @NotBlank(message = "图片地址不能为空")
-    private String iconUrl;
+    private String icon;
 
     /**
      * 详细介绍界面图片
@@ -127,12 +127,12 @@ public class HcPackageDto {
         this.recommend = recommend;
     }
 
-    public String getIconUrl() {
-        return iconUrl;
+    public String getIcon() {
+        return icon;
     }
 
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public String getDetailDescriptionIcon() {

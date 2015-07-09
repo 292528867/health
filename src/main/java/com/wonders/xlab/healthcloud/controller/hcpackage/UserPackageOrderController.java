@@ -58,7 +58,7 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
 
     }
 
-    @RequestMapping(value = "cancel/{userId}/{packageId}",method = RequestMethod.DELETE)
+    @RequestMapping(value = "cancel/{userId}/{packageId}",method = RequestMethod.POST)
     public Object deletePlan(@PathVariable Long userId, @PathVariable Long packageId) {
         UserPackageOrder userPackageOrder = userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, packageId, false);
         if (null == userPackageOrder) {
