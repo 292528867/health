@@ -24,10 +24,9 @@ public class UserPackageOrderService {
     private UserPackageOrderRepository userPackageOrderRepository;
 
     void scheduleCalculateIsPackageFinished() {
-        //获取未完成任务的包
-        List<UserPackageOrder> userP = userPackageOrderRepository.findFetchPackageByPackageCompleteFalse();
-
+        //获取未完成不轮训任务的包
         List<UserPackageOrder> userPackageOrdersUnloops = userPackageOrderRepository.findByPackageCompleteAndPackageLoops(false, false);
+        //获取未完成轮训任务的包
         List<UserPackageOrder> userPackageOrdersloops = userPackageOrderRepository.findByPackageCompleteAndPackageLoops(false, true);
 
         List<UserPackageOrder> userPackageOrdersCompleted = new ArrayList<>();
@@ -40,7 +39,7 @@ public class UserPackageOrderService {
         try {
             userPackageOrderRepository.save(userPackageOrdersCompleted);
         } catch (Exception e) {
-            logger.info("scheduleCalculateIsPackageFinished Tasks update UserPackageOrderCompleted of size={} throw e={}",userP.size(),e.getLocalizedMessage());
+            logger.info("scheduleCalculateIsPackageFinished Tasks update UserPackageOrderCompleted of size={} throw e={}",userPackageOrdersUnloops.size(),e.getLocalizedMessage());
         }
     }
 }
