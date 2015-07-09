@@ -1,6 +1,7 @@
 package com.wonders.xlab.healthcloud.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.emchat.*;
@@ -246,24 +247,26 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * 新增群组
      */
     @RequestMapping(value = "newChatgroups", method = RequestMethod.POST)
-    public ChatGroupsResponseBody newChatgroups(String username) throws JsonProcessingException {
+    public ControllerResult<ChatGroupsResponseBody> newChatgroups(String username) throws Exception {
 
         ChatGroupsRequestBody groupsBody = new ChatGroupsRequestBody(username, "万达健康云_" + username, true, 1, false, username);
 
         String requestBody = objectMapper.writeValueAsString(groupsBody);
 
-        ResponseEntity<ChatGroupsResponseBody> responseEntity;
+        ResponseEntity<String> responseEntity;
 
         String newRequestBody = StringUtils.replace(requestBody, "_public", "public");
 
         try {
-               emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", ChatGroupsResponseBody.class).getBody();
+             responseEntity = (ResponseEntity<String>) emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", String.class);
 
         } catch (HttpClientErrorException e) {
             throw new RuntimeException(e);
         }
 
-        return null;
+        return new ControllerResult<ChatGroupsResponseBody>().setRet_code(0)
+                .setRet_values(objectMapper.readValue(responseEntity.getBody().toString(), ChatGroupsResponseBody.class))
+                .setMessage("");
     }
 
     @RequestMapping(value = "getTop5Messages", method = RequestMethod.POST)

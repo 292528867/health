@@ -49,6 +49,19 @@ public class User extends BaseInfo<Long> {
         Android,Ios
     }
 
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    /**
+     * 用户在环信上的群组id
+     */
+
+    private String groupId;
 
     public Set<HcPackage> getHcPackages() {
         return hcPackages;

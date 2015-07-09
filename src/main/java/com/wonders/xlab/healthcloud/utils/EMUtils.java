@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -108,9 +109,10 @@ public class EMUtils {
 //            token = pushTokenToCache();
 //        }
 
-        if (null == headers) {
+       if (null == headers) {
             List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
                 add(MediaType.APPLICATION_JSON);
+                add(MediaType.ALL);
             }};
             headers = new HttpHeaders();
             headers.setAccept(acceptableMediaTypes);
