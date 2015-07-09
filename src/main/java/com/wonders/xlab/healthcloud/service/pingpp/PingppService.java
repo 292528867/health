@@ -2,8 +2,7 @@ package com.wonders.xlab.healthcloud.service.pingpp;
 
 import com.wonders.xlab.healthcloud.dto.pingpp.PingDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
-import com.wonders.xlab.healthcloud.entity.steward.StewardOrder;
-import com.wonders.xlab.healthcloud.repository.steward.OrderRepository;
+import com.wonders.xlab.healthcloud.repository.steward.StewardOrderRepository;
 import com.wonders.xlab.healthcloud.service.pingplusplus.Pingpp;
 import com.wonders.xlab.healthcloud.service.pingplusplus.model.Channel;
 import com.wonders.xlab.healthcloud.service.pingplusplus.model.Charge;
@@ -27,7 +26,7 @@ import java.util.Map;
 public class PingppService {
 
     @Autowired
-    private OrderRepository orderRepository;
+    private StewardOrderRepository orderRepository;
 
     public String payOrder(Long userId, PingDto pingDto, BindingResult result, HttpServletRequest req, HttpServletResponse resp
     ) {

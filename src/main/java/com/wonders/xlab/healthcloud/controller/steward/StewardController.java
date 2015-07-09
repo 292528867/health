@@ -5,10 +5,11 @@ import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.pingpp.PingDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.dto.steward.ServiceDto;
+import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.steward.*;
+import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.steward.*;
 import com.wonders.xlab.healthcloud.service.pingpp.PingppService;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -39,10 +40,13 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     private ServicesRepository servicesRepository;
 
     @Autowired
-    private OrderRepository orderRepository;
+    private StewardOrderRepository stewardOrderRepository;
 
     @Autowired
     private PingppService pingppService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     protected MyRepository<Steward, Long> getRepository() {
@@ -178,14 +182,25 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     @RequestMapping("stewardDetail/{stewardId}")
     public Object stewardDetail(@PathVariable Long stewardId) {
 
+        Steward steward = stewardRepository.findOne(stewardId);
 
-        return new ControllerResult<Steward>().setRet_code(0).setRet_values(this.stewardRepository.findOne(stewardId)).setMessage("成功！");
+        List<StewardOrder> stewardOrders = stewardOrderRepository.findAllBySteward(stewardId);
+
+        Set<Services> services = new HashSet<>();
+        for (StewardOrder stewardOrder : stewardOrders) {
+            services = stewardOrder.getServices();
+        }
+        List <Services> ListServices = new ArrayList<>(services);
+        //取两条明星服务
+        for (int i = 0;i<2;i++){
+            steward.getStarService().add(ListServices.get(i).getServiceName());
+        }
+        return new ControllerResult<Steward>().setRet_code(0).setRet_values(steward).setMessage("成功！");
 
     }
 
     /**
      * 计算服务费用
-     *
      * @param serviceDto
      * @param result
      * @return
@@ -221,6 +236,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
 
             Steward steward = this.stewardRepository.findOne(Long.parseLong(serviceDto.getStewardId()));
+
+            User user = this.userRepository.findOne(userId);
             // 计算积分
             for (Services service : services)
                 integration += service.getServiceIntegration();
@@ -255,7 +272,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             StewardOrder stewardOrder = new StewardOrder(chargeID, tradeNo, amount);
             stewardOrder.setSteward(steward);
             stewardOrder.setServices(new HashSet<Services>(services));
-            this.orderRepository.save(stewardOrder);
+            stewardOrder.setUser(user);
+            this.stewardOrderRepository.save(stewardOrder);
 
             //服务被使用次数＋＋
             for (Services service : services) {
@@ -280,6 +298,12 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
     }
 
+    /**
+     * 录入管家信息z
+     *
+     * @param steward
+     * @return
+     */
     @RequestMapping(value = "saveSteward", method = RequestMethod.POST)
     public ControllerResult saveService(@RequestBody Steward steward) {
 
@@ -287,5 +311,22 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("成功！");
     }
+
+    /**
+     * 获取订单号详情
+     *
+     * @param userId
+     * @return
+     */
+    @RequestMapping("getOrdersDetail/{userId}")
+    public ControllerResult getOrdersDetail(@PathVariable Long userId) {
+
+        List<StewardOrder> stewardOrders = stewardOrderRepository.findAllByUser(userId);
+
+        StewardOrder stewardOrder = stewardOrders.get(0);
+
+        return new ControllerResult<StewardOrder>().setRet_code(0).setRet_values(stewardOrder).setMessage("成功！");
+    }
+
 
 }

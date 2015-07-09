@@ -1,8 +1,8 @@
 package com.wonders.xlab.healthcloud.entity.steward;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 import com.wonders.xlab.healthcloud.entity.customer.User;
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
@@ -38,21 +38,30 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
     /**
      * 订单状态
      */
-    private enum OrderStatus{
+    private enum OrderStatus {
 
-        未支付,付款中,已支付
+        未支付, 付款中, 已支付
 
     }
-    /** 多个用户服务对应一个用户 */
+
+    /**
+     * 多个用户服务对应一个用户
+     */
     @ManyToOne
+    @JsonIgnore
     private User user;
 
-    /** 对应一个管家 */
+    /**
+     * 对应一个管家
+     */
     @ManyToOne
     private Steward steward;
 
-    /** 服务 一个用户服务对应多个管家服务 */
+    /**
+     * 服务 一个用户服务对应多个管家服务
+     */
     @ManyToMany
+    @OrderBy("usedNumber desc")
     private Set<Services> services;
 
     private OrderStatus orderStatus = OrderStatus.未支付;

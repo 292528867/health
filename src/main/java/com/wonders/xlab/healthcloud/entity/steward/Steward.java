@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -69,7 +70,7 @@ public class Steward extends BaseInfo<Long> {
      * 明星服务
      */
     @Transient
-    private List<String> starService;
+    private List<String> starService = new ArrayList<String>();
 
 
     public Rank getRank() {
