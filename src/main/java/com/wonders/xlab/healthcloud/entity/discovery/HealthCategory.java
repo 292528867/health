@@ -6,14 +6,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
+import javax.persistence.*;
 
+import com.wonders.xlab.healthcloud.entity.hcpackage.Classification;
+import org.hibernate.annotations.Fetch;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.AbstractPersistable;
@@ -52,6 +48,21 @@ public class HealthCategory extends AbstractPersistable<Long> {
 	/** 首页健康信息文章 */
 	private HealthInfo homeInfo;
 
+	/**
+	 * 第二大类分类
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Classification classification;
+
+	/**
+	 * 是否推荐
+	 */
+	private boolean recommend;
+
+	/**
+	 * 推荐值
+	 */
+	private int recommendValue;
 
     private String icon;
 	
@@ -152,4 +163,28 @@ public class HealthCategory extends AbstractPersistable<Long> {
     public void setIcon(String icon) {
         this.icon = icon;
     }
+
+	public Classification getClassification() {
+		return classification;
+	}
+
+	public void setClassification(Classification classification) {
+		this.classification = classification;
+	}
+
+	public boolean isRecommend() {
+		return recommend;
+	}
+
+	public void setRecommend(boolean recommend) {
+		this.recommend = recommend;
+	}
+
+	public int getRecommendValue() {
+		return recommendValue;
+	}
+
+	public void setRecommendValue(int recommendValue) {
+		this.recommendValue = recommendValue;
+	}
 }

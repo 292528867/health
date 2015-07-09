@@ -86,12 +86,12 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
     @RequestMapping("retrievePackageDetail/{userId}/{detailId}")
     public Object retrievePackageDetail(@PathVariable Long userId, @PathVariable Long detailId) {
 
-        /** 获取健康包任务 */
+        // 获取健康包任务
         HcPackageDetail detail = this.hcPackageDetailRepository.findOne(detailId);
 
-        /** 用户健康包任务语句 */
-        List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdHcPackageDetail(userId, detailId, new Date());
-        /** 用户订单 */
+        // 用户健康包任务语句
+        List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdAndHcPackageIdAndDate(userId, detail.getHcPackage().getId(), new Date());
+        // 用户订单
         UserPackageOrder order = this.userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, detail.getHcPackage().getId(), false);
 
         Set<UserStatementDto> statementDtos = new HashSet<>();

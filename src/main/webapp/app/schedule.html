@@ -52,7 +52,8 @@
     outline: none;
 
   }
-  .finish-btn-ed{
+
+  .finish-btn-ed {
     color: #999999;
     border-color: #999999;
   }
@@ -60,14 +61,16 @@
   .btn-divider {
     border-top: 1px solid #dadada;
   }
-  .finish-divider{
+
+  .finish-divider {
     margin-top: 70px;
     margin-bottom: 30px;
     width: 100%;
     position: relative;
     height: 30px;
   }
-  .finish-move{
+
+  .finish-move {
     position: absolute;
     left: 50%;
     top: 0;
@@ -78,16 +81,19 @@
     letter-spacing: 5px;
 
   }
-  .finish-move img{
+
+  .finish-move img {
     height: 70px;
     margin-right: 10px;
   }
-  .foot-title{
+
+  .foot-title {
     color: #666666;
     text-align: center;
-    margin:0 auto 24px ;
+    margin: 0 auto 24px;
     font-size: 1.8rem;
   }
+
   *::-webkit-input-placeholder {
     color: #cccccc;
     text-align: center;
@@ -103,16 +109,19 @@
     color: #cccccc;
     text-align: center;
   }
-  .foot-form{
+
+  .foot-form {
     position: relative;
   }
-  .foot-input{
+
+  .foot-input {
     width: 8.8rem;
     /*margin-left: auto;*/
     /*margin-right: auto;*/
     margin: 30px auto 30px;
   }
-  .foot-input input{
+
+  .foot-input input {
     width: 100%;
     height: 40px;
     line-height: 40px;
@@ -123,7 +132,8 @@
     color: #40ced9;
     text-align: center;
   }
-  .foot-input-text{
+
+  .foot-input-text {
     color: #40ced9;
     position: absolute;
     left: 50%;
@@ -131,55 +141,71 @@
     margin-left: -65px;
     font-size: 1.8rem;
   }
-  .foot-input-span{
+
+  .foot-input-span {
     border: 1px solid #40ced9;
-    border-top:none ;
+    border-top: none;
     width: 130px;
     height: 3px;
     display: inline-block;
     margin: 0;
   }
+
   .schedule-content {
     width: 100%;
     color: #333333;
   }
-  .schedule-content div{
+
+  .schedule-content div {
     float: left;
   }
-</style><body class=detail-body><div id=detail-title></div><div><img src=i/schedule/eye.jpg width=25 style="margin-right: 0px" class=am-text-middle> <span id=detail-count class=am-text-middle></span></div><div id=details></div><div class=schedule-foot><div class="schedule-content am-cf"><div style="width: 10%;text-align: left;height: 25px;" class=am-vertical-align><img src=i/schedule/check.jpg width=25 style="vertical-align: top" class=am-vertical-align-middle></div><div style="width: 60%">2015年07月08日 上午07:08</div><div style="width: 30%">7.5mmol/L</div></div><hr data-am-widget=divider class="am-divider am-divider-dashed"><div class=foot-title>请填写您的血糖值</div><div class=foot-form><div class=foot-input><input type=tel id=getValue placeholder=如:7.5 maxlength=4></div><div class=foot-input-text><label class=foot-input-span for=getValue></label> <span style="margin-bottom: 15px;">mmol/L</span></div></div><button class=finish-btn type=button data-am-loading="{spinner: 'circle-o-notch', loadingText: '跳转中..', resetText: '重新点击'}" onclick=finishTask()>确定已完成</button><div class=finish-divider><hr data-am-widget=divider class="am-divider am-divider-default btn-divider"><div class=finish-move><img src=i/schedule/man.png>动起来！</div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
+
+  .schedule-type {
+    display: none;
+  }
+</style><body class=detail-body><div id=detail-title></div><div><img src=i/schedule/eye.jpg width=25 style="margin-right: 0px" class=am-text-middle> <span id=detail-count class=am-text-middle></span></div><div id=details></div><div class=schedule-foot><div class=schedule-type><div class="schedule-content am-cf"><div style="width: 10%;text-align: left;height: 25px;" class=am-vertical-align><img src=i/schedule/check.jpg width=25 style="vertical-align: top" class=am-vertical-align-middle></div><div style="width: 60%">2015年07月08日 上午07:08</div><div style="width: 30%">7.5mmol/L</div></div><hr data-am-widget=divider class="am-divider am-divider-dashed"><div class=foot-title>请填写您的血糖值</div><div class=foot-form><div class=foot-input><input type=tel id=getValue placeholder=如:7.5 maxlength=4></div><div class=foot-input-text><label class=foot-input-span for=getValue></label> <span style="margin-bottom: 15px;">mmol/L</span></div></div></div><button class=finish-btn type=button data-am-loading="{spinner: 'circle-o-notch', loadingText: '跳转中..', resetText: '重新点击'}" onclick=finishTask()>确定已完成</button><div class=finish-divider><hr data-am-widget=divider class="am-divider am-divider-default btn-divider"><div class=finish-move><img src=i/schedule/man.png>动起来！</div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
   var article = localStorage.getItem('article');
   var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
-  var url = commonUrl + 'discovery/app/listInfo/';
+  var url = commonUrl + 'task/retrievePackageDetail/';
   var articleId = window.location.search.substring(1);
   var ids = articleId.split('&');
   var userId = ids[0];
   articleId = ids[1];
-  if (localStorage.getItem('article') != null && JSON.parse(article).id == articleId) {
-    article = JSON.parse(article);
+  $.get(url + userId + '/' + articleId, function (data) {
+    article = data.ret_values;
     $('#detail-img').attr('src', article.pictureUrl);
-    $('#details').html(article.htmlInfo);
+    $('#details').html(article.detail);
     $('#detail-title').html(article.title);
-    $('title').html(article.title);
-  }
-  else {
-    $.get(url + articleId, function (data) {
-      article = data.ret_values;
-      $('#detail-img').attr('src', article.pictureUrl);
-      $('#details').html(article.htmlInfo);
-      $('#detail-title').html(article.title);
 //      $('#detail-count').html(article.clickCount);
-      $('title').html(article.title);
-      console.log(article);
+    $('title').html(article.title);
+    console.log(article);
 //      console.log(window.document.body.offsetHeight);
-    });
-    $('#detail-count').html('666人阅读');
-  }
+    $('#detail-count').html(article.clickAmount + '人阅读');
+    if (article.type == 1) {
+      $('.schedule-type').show();
+    }
+    if (article.complete == 1) {
+      var $finish = $('.finish-btn');
+      $finish.addClass('finish-btn-ed');
+      $finish.html('已完成');
+    }
+  });
   function finishTask() {
     var $finish = $('.finish-btn');
     $finish.addClass('finish-btn-ed');
     $finish.html('已完成');
     $('.finish-divider').remove();
 //    noticePhone('2222');
-    activityList({'finish':'1'});
+    $.get(commonUrl + 'task/confirmDetail/' + userId + '/' + articleId + '/',
+      {'content': $('#getValue').val()},
+      function (data) {
+        console.log(data);
+        activityList({'finish': '1'});
+      }
+    )
+    ;
+  }
+  function activityList() {
+
   }
 </script></html>

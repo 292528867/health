@@ -40,7 +40,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
      * @return
      */
     @RequestMapping("listBannerForConsole")
-    private Object listBannerForConsole(@PageableDefault(sort = "lastModifiedDate", direction = Sort.Direction.DESC)
+    public Object listBannerForConsole(@PageableDefault(sort = "lastModifiedDate", direction = Sort.Direction.DESC)
                               Pageable pageable) {
         return new ControllerResult<List<Banner>>().setRet_code(0).setRet_values(this.bannnerRepository.findAll(pageable).getContent()).setMessage("成功");
     }
@@ -50,7 +50,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
      * @return
      */
     @RequestMapping("listBanner")
-    private Object listBanner() {
+    public Object listBanner() {
         return new ControllerResult<List<Banner>>().setRet_code(0).setRet_values(this.bannnerRepository.findBannerOrderByLastModifiedDate()).setMessage("成功");
     }
 
@@ -61,7 +61,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
      * @return
      */
     @RequestMapping("addBanner")
-    private Object addBanner(@RequestBody @Valid BannerDto bannerDto, BindingResult result) {
+    public Object addBanner(@RequestBody @Valid BannerDto bannerDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -86,7 +86,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
      * @return
      */
     @RequestMapping("updateBanner/{bannerId}")
-    private Object updateBanner(@PathVariable Long bannerId, @RequestBody @Valid BannerDto bannerDto, BindingResult result) {
+    public Object updateBanner(@PathVariable Long bannerId, @RequestBody @Valid BannerDto bannerDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
