@@ -55,12 +55,14 @@ public class UserPackageOrderRepositoryTest {
     @Test
     public void testFindByUserIdAndHcPackageIdAndPackageComplete() throws Exception {
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2015, 7, 8, 23, 59);
-        Calendar calendar1 = Calendar.getInstance();
-        calendar1.set(2015, 7, 9, 0, 1);
-        System.out.println(DateUtils.calculateDaysOfTwoDateIgnoreHours(calendar.getTime(), calendar1.getTime()));
-        Assert.isTrue(DateUtils.calculateDaysOfTwoDateIgnoreHours(calendar.getTime(), calendar1.getTime()) == 1);
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.set(2015, 7, 8, 23, 59);
+//        Calendar calendar1 = Calendar.getInstance();
+//        calendar1.set(2015, 7, 9, 0, 1);
+//        System.out.println(DateUtils.calculateDaysOfTwoDateIgnoreHours(calendar.getTime(), calendar1.getTime()));
+//        Assert.isTrue(DateUtils.calculateDaysOfTwoDateIgnoreHours(calendar.getTime(), calendar1.getTime()) == 1);
+        UserPackageOrder list = userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(9l, 40l, false);
+        Assert.notNull(list);
     }
 
 

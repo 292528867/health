@@ -257,7 +257,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
             for (UserPackageOrder userPackageOrder : userPackageOrders) {
                 UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
-                userPackageOrderDto.setId(userPackageOrder.getId());
+                userPackageOrderDto.setId(userPackageOrder.getHcPackage().getId());
                 BeanUtils.copyProperties(userPackageOrder.getHcPackage(), userPackageOrderDto);
                 userPackageOrderDto.setIsJoin(true);
                 userPackageOrderDtos.add(userPackageOrderDto);

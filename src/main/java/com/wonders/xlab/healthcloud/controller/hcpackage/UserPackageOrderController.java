@@ -41,6 +41,11 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
         if (userPackageOrders != null && userPackageOrders.size() >= 2) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("最多选择两个健康包！");
         }
+        for (UserPackageOrder userPackageOrder : userPackageOrders) {
+            if (packageId == userPackageOrder.getHcPackage().getId()) {
+                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("健康包已加入！");
+            }
+        }
 
         try {
             User user = userRepository.findOne(userId);
