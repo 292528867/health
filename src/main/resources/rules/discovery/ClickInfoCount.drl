@@ -19,19 +19,23 @@ function Integer aritcle_perior_days(Date fromDate, Date toDate) {
 
 //declare any global variables here
 
-global Integer clickCount_A; // 这个值应该是每个文章都有的，由外面传入
 global Double clickCount_X; // 这个值是全局配置的，由外面传入
 global HashMap clickCountOutputMap; // key=文章id，value=OutputHealthInfoClickCount
 
 // 按照公式计算文章点击次数
 rule "calcu healthinfo clickCount"
 	when
-		HealthInfoClickSample ( $id : healInfoSample.healthInfoId, $createTime : healInfoSample.createTime, $clickCount : healInfoSample.clickCount )
+		HealthInfoClickSample ( 
+			$id : healInfoSample.healthInfoId, 
+			$createTime : healInfoSample.createTime, 
+			$clickCount : healInfoSample.clickCount,
+			$clickCount_A : healInfoSample.clickCount_A 
+		)
 	then
 		// 当前时间间隔文章创建时间天数
 		int n = aritcle_perior_days($createTime, new Date());
 		// 公式 A+(1+X)^n*B
-		Double new_click_count = clickCount_A + Math.pow((1 + clickCount_X), n) * $clickCount;
+		Double new_click_count = $clickCount_A * Math.pow((1 + clickCount_X), n) + $clickCount;
 		clickCountOutputMap.put($id, Math.round(new_click_count));
 end
 

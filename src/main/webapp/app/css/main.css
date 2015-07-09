@@ -191,6 +191,9 @@
   -moz-border-bottom-right-radius: 10px;
   border-bottom-right-radius: 10px;
 }
+.today-body-banners .banner-today {
+  margin-bottom: 6px;
+}
 body,
 html {
   font-family: "Microsoft YaHei", "Segoe UI", "Lucida Grande", Helvetica, Arial, "Microsoft YaHei", FreeSans, Arimo, "Droid Sans", "wenquanyi micro hei", "Hiragino Sans GB", "Hiragino Sans GB W3", FontAwesome, sans-serif !important;

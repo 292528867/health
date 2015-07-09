@@ -53,7 +53,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
      * @return
      */
     @RequestMapping("mlogin")
-    private Object mlogin(@Valid IdenCode iden, BindingResult result) {
+    public Object mlogin(@Valid IdenCode iden, BindingResult result) {
 
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();

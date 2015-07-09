@@ -45,4 +45,5 @@ public abstract class AbstractBaseEntity<ID extends Serializable> extends Abstra
     public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
+
 }

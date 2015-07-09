@@ -5,6 +5,7 @@ package com.wonders.xlab.healthcloud.entity.hcpackage;
  * 健康包
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 
@@ -18,6 +19,11 @@ public class HcPackage extends AbstractBaseEntity<Long> {
      * 任务包名称
      */
     private String title;
+
+    /**
+     *
+     */
+    private String subtitle;
 
     /**
      * 任务包简介
@@ -97,6 +103,9 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     /** 首页小图 */
     private String smaillIcon;
 
+    @JsonIgnore
+    private int coefficient;
+
 //    /**
 //     * 用户健康包
 //     */
@@ -121,22 +130,30 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     }
 
     public HcPackage(
-            String title, String description, String detailDescription,
-            int duration, String iconUrl, String detailDescriptionIcon,
-            boolean recommend, int recommendValue, int clickAmount,
-            int joinAmount, boolean isNeedSupplemented, HealthCategory healthCategory) {
+            String title, String subtitle, String description, String detailDescription,
+            int duration, String icon, String detailDescriptionIcon, boolean recommend,
+            int recommendValue, int clickAmount, int joinAmount, boolean isNeedSupplemented,
+            Sex sex, String supplemented, String loops, HealthCategory healthCategory,
+            int cycleLimit, String smaillIcon, int coefficient) {
         this.title = title;
+        this.subtitle = subtitle;
         this.description = description;
         this.detailDescription = detailDescription;
         this.duration = duration;
-        this.icon = iconUrl;
+        this.icon = icon;
         this.detailDescriptionIcon = detailDescriptionIcon;
         this.recommend = recommend;
         this.recommendValue = recommendValue;
         this.clickAmount = clickAmount;
         this.joinAmount = joinAmount;
         this.isNeedSupplemented = isNeedSupplemented;
+        this.sex = sex;
+        this.supplemented = supplemented;
+        this.loops = loops;
         this.healthCategory = healthCategory;
+        this.cycleLimit = cycleLimit;
+        this.smaillIcon = smaillIcon;
+        this.coefficient = coefficient;
     }
 
     public String getTitle() {
@@ -243,14 +260,6 @@ public class HcPackage extends AbstractBaseEntity<Long> {
         this.supplemented = supplemented;
     }
 
-//    public Set<User> getUsers() {
-//        return users;
-//    }
-//
-//    public void setUsers(Set<User> users) {
-//        this.users = users;
-//    }
-
     public Sex getSex() {
         return sex;
     }
@@ -281,5 +290,25 @@ public class HcPackage extends AbstractBaseEntity<Long> {
 
     public void setSmaillIcon(String smaillIcon) {
         this.smaillIcon = smaillIcon;
+    }
+
+    public int getCoefficient() {
+        return coefficient;
+    }
+
+    public void setCoefficient(int coefficient) {
+        this.coefficient = coefficient;
+    }
+
+    public void setId(Long id) {
+        super.setId(id);
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 }

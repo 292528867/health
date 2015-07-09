@@ -20,15 +20,10 @@ import com.wonders.xlab.healthcloud.utils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Jeffrey on 15/7/8.
@@ -91,9 +86,13 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
     @RequestMapping("retrievePackageDetail/{userId}/{detailId}")
     public Object retrievePackageDetail(@PathVariable Long userId, @PathVariable Long detailId) {
 
+        // 获取健康包任务
         HcPackageDetail detail = this.hcPackageDetailRepository.findOne(detailId);
 
-        List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdHcPackageDetail(userId, detailId);
+        // 用户健康包任务语句
+        List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdAndHcPackageIdAndDate(userId, detail.getHcPackage().getId(), new Date());
+        // 用户订单
+        UserPackageOrder order = this.userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, detail.getHcPackage().getId(), false);
 
         Set<UserStatementDto> statementDtos = new HashSet<>();
 
@@ -105,14 +104,24 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
             );
             statementDtos.add(statement);
         }
-
         DayPackageDetailDto dto = new DayPackageDetailDto(
                 detail.getId(),
                 detail.getTaskName(),
                 detail.getClickAmount(),
-                detail.isNeedSupplemented(),
                 detail.getDetail()
         );
+        if (detail.isNeedSupplemented())
+            dto.setType(1);
+        if (order != null && order.getHcPackageDetailIds() != null) {
+            String[] detailIds = order.getHcPackageDetailIds().split(",");
+            Long[] longDetailIds = new Long[detailIds.length];
+            for (int i = 0; i < detailIds.length; i++)
+                longDetailIds[i] = Long.parseLong(detailIds[i]);
+            if (Arrays.asList(longDetailIds).contains(detailId)) {
+                dto.setComplete(1);
+            }
+        }
+
         dto.setStatementDtos(statementDtos);
 
         return new ControllerResult<DayPackageDetailDto>().setRet_code(0).setRet_values(dto).setMessage("成功");
@@ -125,8 +134,8 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
      * @param content
      * @return
      */
-    @RequestMapping("confirmDetail/{userId}/{detailId}/{content}")
-    public Object confirmDetail(@PathVariable Long userId, @PathVariable Long detailId, @PathVariable String content) {
+    @RequestMapping("confirmDetail/{userId}/{detailId}")
+    public Object confirmDetail(@PathVariable Long userId, @PathVariable Long detailId, @RequestParam(required = false) String content) {
 
         User user = this.userRepository.findOne(userId);
 
@@ -138,6 +147,8 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
             return new ControllerResult<String>().setRet_code(-1).setRet_values("找不到订单").setMessage("成功");
 
         if (hpDetail.isNeedSupplemented()) {
+            if (content == null)
+                return new ControllerResult<String>().setRet_code(-1).setRet_values("内容不能为空").setMessage("成功");
             UserPackageDetailStatement statement = new UserPackageDetailStatement(
                     user,
                     hpDetail,

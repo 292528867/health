@@ -11,15 +11,15 @@ var $ = (typeof window !== "undefined" ? window.jQuery : typeof global !== "unde
 //var detector = require('detector');
 
 $(function () {
-  /*
+/*
    $('#browser-info').append('浏览器信息：<pre>' +
    JSON.stringify(detector.browser) +
    '</pre>'
    );
-   */
+*/
   //addToHome();
   //console.log(JSON.stringify(detector.browser));
-
+  //alert(JSON.stringify(detector.browser));
 
 
 });

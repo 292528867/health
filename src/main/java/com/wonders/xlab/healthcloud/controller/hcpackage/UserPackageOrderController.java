@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * Created by Jeffrey on 15/7/8.
  */
@@ -34,6 +36,12 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
     @RequestMapping(value = "join/{userId}/{packageId}",method = RequestMethod.POST)
     public Object joinPlan(@PathVariable Long userId, @PathVariable Long packageId) {
 
+        List<UserPackageOrder> userPackageOrders = userPackageOrderRepository.findFetchPackageByUserIdAndPackageCompleteFalse(userId);
+
+        if (userPackageOrders != null && userPackageOrders.size() >= 2) {
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("最多选择两个健康包！");
+        }
+
         try {
             User user = userRepository.findOne(userId);
             HcPackage hcPackage = hcPackageRepository.findOne(packageId);
@@ -41,7 +49,7 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
             UserPackageOrder userPackageOrder = new UserPackageOrder();
             userPackageOrder.setUser(user);
             userPackageOrder.setHcPackage(hcPackage);
-            userPackageOrder.setCycleIndex(hcPackage.getDuration()/7);
+            userPackageOrder.setCycleIndex(hcPackage.getDuration() / 7);
             userPackageOrderRepository.save(userPackageOrder);
             return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("加入成功！");
         } catch (Exception e) {

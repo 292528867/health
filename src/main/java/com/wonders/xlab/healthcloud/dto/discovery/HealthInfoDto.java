@@ -31,6 +31,11 @@ public class HealthInfoDto {
 	/** 文章标题id */
 	private Long Id;
 	
+	/** 健康信息点击权重值A */
+	private Integer clickCount_A;
+	/** 某用户是否点击过 */
+	private boolean isClicked;
+	
 	/**
 	 * 转换成一个新的{@link HealthInfo}实体对象，临时状态。
 	 */
@@ -59,6 +64,7 @@ public class HealthInfoDto {
 		dto.setPictureUrl2(hi.getPictureUrl2());
 		dto.setCreateTime(hi.getCreatedDate());
 		dto.setId(hi.getId());
+		dto.setClickCount_A(hi.getClickCountA());
 		return dto;
 	}
 	
@@ -136,6 +142,22 @@ public class HealthInfoDto {
 
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
+	}
+
+	public Integer getClickCount_A() {
+		return clickCount_A;
+	}
+
+	public void setClickCount_A(Integer clickCount_A) {
+		this.clickCount_A = clickCount_A;
+	}
+
+	public boolean isClicked() {
+		return isClicked;
+	}
+
+	public void setClicked(boolean isClicked) {
+		this.isClicked = isClicked;
 	}	
 	
 }

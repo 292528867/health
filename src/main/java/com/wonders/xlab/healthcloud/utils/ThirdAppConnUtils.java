@@ -3,11 +3,14 @@ package com.wonders.xlab.healthcloud.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.healthcloud.dto.ThirdAppAccount;
 import org.springframework.http.*;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.*;
 
 /**
@@ -20,6 +23,13 @@ public final class ThirdAppConnUtils {
     private static RestTemplate restTemplate = new RestTemplate();
 
     public static Map<String, ThirdAppAccount> appDatas = new HashMap<>();
+
+    @PostConstruct
+    private void init() {
+        List messages=new ArrayList();
+        messages.add(new StringHttpMessageConverter(Charset.forName("utf-8")));
+        restTemplate.setMessageConverters(messages);
+    }
 
     public static void initAppDatas(){
         appDatas = new HashMap<>();

@@ -1,23 +1,23 @@
 package com.wonders.xlab.healthcloud.dto.hcpackage;
 
-import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
-import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
-import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
-
-import javax.persistence.*;
 
 /**
  * Created by mars on 15/7/8.
  */
-public class UserPackageOrderDto  {
+public class UserPackageOrderDto {
 
-    private long id;
+    private Long id;
 
     /**
      * 任务包名称
      */
     private String title;
+
+    /**
+     *
+     */
+    private String subtitle;
 
     /**
      * 任务包简介
@@ -87,7 +87,9 @@ public class UserPackageOrderDto  {
 
     private HealthCategory healthCategory;
 
-    /** 循环次数 */
+    /**
+     * 循环次数
+     */
     private int cycleLimit;
 
     private Boolean isJoin;
@@ -228,11 +230,19 @@ public class UserPackageOrderDto  {
         this.isJoin = isJoin;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 }

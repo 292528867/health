@@ -13,6 +13,10 @@ public interface HealthInfoClickInfoRepository extends MyRepository<HealthInfoCl
 	
 	@Query("select sum(clickCount) from HealthInfoClickInfo h where h.healthInfo.id =?1 ")
 	Long healthInfoTotalClickCount(Long infoId);
+	@Query("select h.healthInfo.id, sum(clickCount) from HealthInfoClickInfo h group by h.healthInfo.id ")
+	List<Object> healthInfoTotalClickCount(); 
+	@Query("select h.healthInfo.id, sum(clickCount) from HealthInfoClickInfo h where h.user.id = ?1 group by h.healthInfo.id ")
+	List<Object> healthInfoTotalClickCountWithUserId(Long userId);
 	@Query("select h.healthInfo.id, sum(clickCount) from HealthInfoClickInfo h where h.healthInfo.healthCategory.id =?1 group by h.healthInfo.id")
 	List<Object> healthInfoTotalClickCountWithCategoryId(Long categoryId);
 }

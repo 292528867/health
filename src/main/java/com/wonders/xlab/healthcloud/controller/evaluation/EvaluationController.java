@@ -47,7 +47,7 @@ public class EvaluationController extends AbstractBaseController<Evaluation, Lon
      * @return
      */
     @RequestMapping("addEvaluation")
-    private Object addEvaluation(@RequestBody @Valid EvaluationDto evaluationDto, BindingResult result) {
+    public Object addEvaluation(@RequestBody @Valid EvaluationDto evaluationDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -67,7 +67,7 @@ public class EvaluationController extends AbstractBaseController<Evaluation, Lon
      * @return
      */
     @RequestMapping("updateEvaluation/evaluationId")
-    private Object updateEvaluation(@PathVariable Long evaluationId, @RequestBody @Valid EvaluationDto evaluationDto, BindingResult result) {
+    public Object updateEvaluation(@PathVariable Long evaluationId, @RequestBody @Valid EvaluationDto evaluationDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {

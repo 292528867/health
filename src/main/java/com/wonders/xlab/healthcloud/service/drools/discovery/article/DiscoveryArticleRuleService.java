@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
-import com.wonders.xlab.healthcloud.entity.discovery.HealthInfoClickInfo;
+import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoClickInfoRepository;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoClickSample;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoSample;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.UserQuerySample;
@@ -34,19 +34,19 @@ public class DiscoveryArticleRuleService {
 	@Autowired
 	@Qualifier("discoveryKBase")
 	private KieBase kieBase;
+	@Autowired
+	private HealthInfoClickInfoRepository healthInfoClickInfoRepository;
 	
 	/**
 	 * 重新计算点击数。
-	 * @param A A值
 	 * @param X X值
 	 * @param sample 样本
 	 * @return Map(key=文章id，value=文章点击数)
 	 */
-	public Map<Long, Long> calcuClickCount(int A, double X, List<HealthInfoSample> sampleList) {
+	public Map<Long, Long> calcuClickCount(double X, List<HealthInfoSample> sampleList) {
 		// 1、创建session，内部配置的是stateful
 		KieSession session = kieBase.newKieSession();
 		// 2、构造global对象，分析后返回
-		session.setGlobal("clickCount_A", A);
 		session.setGlobal("clickCount_X", X);
 		HashMap<Long, Long> output = new HashMap<>();
 		session.setGlobal("clickCountOutputMap", output);
@@ -86,24 +86,27 @@ public class DiscoveryArticleRuleService {
 		session.insert(userQuerySample);
 		
 		List<HealthInfoSample> healthInfoSampleList = new ArrayList<>();
+		Map<Long, Long> allClickCount = new HashMap<>();
+		List<Object> allClickCountList = this.healthInfoClickInfoRepository.healthInfoTotalClickCount();
+		for (Object record : allClickCountList) {
+			Object[] record_values = (Object[]) record;
+			allClickCount.put((Long) record_values[0], (Long) record_values[1]);
+		}
 		for (HealthInfo healthInfo : healthInfos) {
-			long clickCount = 0;
-			for (HealthInfoClickInfo healthInfoClickInfo : healthInfo.getHicis()) 
-				clickCount += healthInfoClickInfo.getClickCount();
 			// 创建sample fact
 			HealthInfoSample healthInfoSample = new HealthInfoSample(
 					userId, 
 					healthInfo.getCreatedDate(),
 					healthInfo.getId(), 
 					healthInfo.getTitle(), 
-					clickCount);
-			healthInfoSample.setCreateTime(healthInfo.getCreatedDate());
+					allClickCount.get(healthInfo.getId()) == null ? 0 : allClickCount.get(healthInfo.getId()), 
+					healthInfo.getClickCountA());
 			healthInfoSampleList.add(healthInfoSample);
 		}
 		
 		
 		// 重新计算clickCount，并重置到healthInfoSample中
-		Map<Long, Long> clickCounts = this.calcuClickCount(20, 0.1, healthInfoSampleList);
+		Map<Long, Long> clickCounts = this.calcuClickCount(0.1, healthInfoSampleList);
 		for (HealthInfoSample sample : healthInfoSampleList) 
 			sample.setClickCount(clickCounts.get(sample.getHealthInfoId()));
 		for (HealthInfoSample sample : healthInfoSampleList) 
@@ -136,7 +139,7 @@ public class DiscoveryArticleRuleService {
 		// 2、创建fact对象
 		UserQuerySample querySample = new UserQuerySample(1L);
 		for (long i = 28; i >= 0; i--) 
-			session.insert(new HealthInfoSample(1L, new Date(), i, "title" + i, new Long(i)));
+			session.insert(new HealthInfoSample(1L, new Date(), i, "title" + i, new Long(i), 20));
 		
 		session.insert(querySample);
 		
