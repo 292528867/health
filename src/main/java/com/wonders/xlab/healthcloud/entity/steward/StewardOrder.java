@@ -1,12 +1,11 @@
 package com.wonders.xlab.healthcloud.entity.steward;
 
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
+import com.wonders.xlab.healthcloud.entity.customer.User;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 import static javax.persistence.TemporalType.TIMESTAMP;
 
@@ -14,21 +13,16 @@ import static javax.persistence.TemporalType.TIMESTAMP;
  * Created by lixuanwu on 15/7/7.
  */
 @Entity
-@Table(name = "HC_STEWRAD_ORDER")
+@Table(name = "HC_STEWRADORDER")
 public class StewardOrder extends AbstractBaseEntity<Long> {
-
     /**
      * 订单号
      */
     private String tradeNo;
-
     /**
      * ping++ 返回的id
      */
     private String chargeId;
-
-    @OneToOne
-    private UserStewardServices userStewardServices;
 
     /**
      * 订单金额
@@ -49,6 +43,18 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
         未支付,付款中,已支付
 
     }
+    /** 多个用户服务对应一个用户 */
+    @ManyToOne
+    private User user;
+
+    /** 对应一个管家 */
+    @ManyToOne
+    private Steward steward;
+
+    /** 服务 一个用户服务对应多个管家服务 */
+    @ManyToMany
+    private Set<Services> services;
+
     private OrderStatus orderStatus = OrderStatus.未支付;
 
     public StewardOrder() {
@@ -76,14 +82,6 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
         this.chargeId = chargeId;
     }
 
-    public UserStewardServices getUserStewardServices() {
-        return userStewardServices;
-    }
-
-    public void setUserStewardServices(UserStewardServices userStewardServices) {
-        this.userStewardServices = userStewardServices;
-    }
-
     public Integer getMoney() {
         return money;
     }
@@ -107,4 +105,29 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Steward getSteward() {
+        return steward;
+    }
+
+    public void setSteward(Steward steward) {
+        this.steward = steward;
+    }
+
+    public Set<Services> getServices() {
+        return services;
+    }
+
+    public void setServices(Set<Services> services) {
+        this.services = services;
+    }
+
 }

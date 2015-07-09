@@ -7,6 +7,8 @@ import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.IdenCode;
 import com.wonders.xlab.healthcloud.dto.ThirdLoginToken;
 import com.wonders.xlab.healthcloud.dto.customer.UserDto;
+import com.wonders.xlab.healthcloud.dto.emchat.ChatGroupsRequestBody;
+import com.wonders.xlab.healthcloud.dto.emchat.ChatGroupsResponseBody;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.ThirdBaseInfo;
 import com.wonders.xlab.healthcloud.entity.customer.User;
@@ -28,6 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -210,7 +213,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         }
     }
 
-    private ControllerResult<?> addUserBeforeLogin(IdenCode idenCode) {
+    private ControllerResult<?> addUserBeforeLogin(IdenCode idenCode) throws Exception{
 
         //创建环信账号
         int result = registerEmUsers(idenCode.getTel(), idenCode.getTel());
@@ -222,6 +225,20 @@ public class UserController extends AbstractBaseController<User, Long> {
         user.setAppPlatform(idenCode.getAppPlatform());
         user = userRepository.save(user);
         //创建一个群组
+        ChatGroupsRequestBody groupsBody = new ChatGroupsRequestBody(idenCode.getTel(), "万达健康云_" + idenCode.getTel(), true, 1, false, idenCode.getTel());
+
+        String requestBody = objectMapper.writeValueAsString(groupsBody);
+
+        ResponseEntity<ChatGroupsResponseBody> responseEntity;
+
+        String newRequestBody = StringUtils.replace(requestBody, "_public", "public");
+
+        try {
+           emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", String.class);
+
+        } catch (HttpClientErrorException e) {
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("创建群组失败");
+        }
 
         return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
     }

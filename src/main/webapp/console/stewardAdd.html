@@ -325,7 +325,7 @@
             if (responseText.ret_code == '0') {
                 $('#index-img').attr('src', responseText.ret_values);
                 $('#index-img-index').attr('src', responseText.ret_values);
-                $('#pictureUrl').val(responseText.ret_values);
+                $('#iconUrl').val(responseText.ret_values);
                 $('#index-img-sub').attr('disabled', false);
 //                $('#change-modal').modal('toggle'),
                 percent.html('上传成功');
@@ -338,7 +338,7 @@
             if (responseText.ret_code == '0') {
                 $('#banner-img').attr('src', responseText.ret_values);
                 $('#banner-img-index').attr('src', responseText.ret_values);
-                $('#pictureUrl2').val(responseText.ret_values);
+                $('#levelUrl').val(responseText.ret_values);
                 $('#banner-img-sub').attr('disabled', false);
                 $('#change-modal').modal('toggle'),
                         percent.html('上传成功');

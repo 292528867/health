@@ -229,6 +229,17 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
         return new ControllerResult<List<UserPackageOrderDto>>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("成功");
     }
 
+    /**
+     * 根据ID查询包信息，以及category信息
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "findOnePackage/{id}",method = RequestMethod.GET)
+    public HcPackage findOnePackage(@PathVariable Long id){
+        HcPackage hcPackage = hcPackageRepository.findOnePackage(id);
+        return hcPackage;
+    }
+
     @RequestMapping("packageClick/{packageId}")
     public Object packageClick(@PathVariable Long packageId) {
         try {

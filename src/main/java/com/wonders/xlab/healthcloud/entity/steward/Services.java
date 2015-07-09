@@ -2,14 +2,14 @@ package com.wonders.xlab.healthcloud.entity.steward;
 
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Created by lixuanwu on 15/7/7.
  */
 @Entity
-@Table(name = "HC_STEWARD_SERVICE")
+@Table(name = "HC_STEWARDSERVICE")
 public class Services extends AbstractPersistable<Long> {
 
     /**
@@ -53,6 +53,7 @@ public class Services extends AbstractPersistable<Long> {
      * @return
      */
     private Boolean isForce;
+
 
     public Integer getServiceId() {
         return serviceId;
@@ -109,4 +110,5 @@ public class Services extends AbstractPersistable<Long> {
     public void setIsForce(Boolean isForce) {
         this.isForce = isForce;
     }
+
 }

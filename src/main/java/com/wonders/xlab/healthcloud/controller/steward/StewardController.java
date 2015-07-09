@@ -5,13 +5,8 @@ import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.pingpp.PingDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.dto.steward.ServiceDto;
-import com.wonders.xlab.healthcloud.entity.steward.RecommendPackage;
-import com.wonders.xlab.healthcloud.entity.steward.Services;
-import com.wonders.xlab.healthcloud.entity.steward.Steward;
-import com.wonders.xlab.healthcloud.repository.steward.OrderRepository;
-import com.wonders.xlab.healthcloud.repository.steward.RecommendPackageRepository;
-import com.wonders.xlab.healthcloud.repository.steward.ServicesRepository;
-import com.wonders.xlab.healthcloud.repository.steward.StewardRepository;
+import com.wonders.xlab.healthcloud.entity.steward.*;
+import com.wonders.xlab.healthcloud.repository.steward.*;
 import com.wonders.xlab.healthcloud.service.pingpp.PingppService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -129,26 +124,28 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         Map<String, Object> level2Map = new HashMap<>();
         Map<String, Object> level3Map = new HashMap<>();
         Map<String, Object> level4Map = new HashMap<>();
+        Map<String, Object> level5Map = new HashMap<>();
 
         level1Map.put("range", "0,4");
-        level1Map.put("monery", "0");
+        level1Map.put("money", "0");
 
         level2Map.put("range", "5,10");
-        level2Map.put("monery", "28");
+        level2Map.put("money", "28");
 
         level3Map.put("range", "11,17");
-        level3Map.put("monery", "78");
+        level3Map.put("money", "78");
 
-        level3Map.put("range", "18,48");
-        level3Map.put("monery", "158");
+        level4Map.put("range", "18,48");
+        level4Map.put("money", "158");
 
-        level4Map.put("range", "49");
-        level4Map.put("monery", "298");
+        level5Map.put("range", "49");
+        level5Map.put("money", "298");
 
         arithmeticList.add(level1Map);
         arithmeticList.add(level2Map);
         arithmeticList.add(level3Map);
         arithmeticList.add(level4Map);
+        arithmeticList.add(level5Map);
 
         List<Steward> stewards = this.stewardRepository.findAll();
         Map<String, Object> map = new HashMap<>();
@@ -180,6 +177,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      */
     @RequestMapping("stewardDetail/{stewardId}")
     public Object stewardDetail(@PathVariable Long stewardId) {
+
+
         return new ControllerResult<Steward>().setRet_code(0).setRet_values(this.stewardRepository.findOne(stewardId)).setMessage("成功！");
 
     }
@@ -220,6 +219,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 serviceIds[i] = Long.parseLong(strIds[i]);
             // 查询服务，管家
             List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
+
             Steward steward = this.stewardRepository.findOne(Long.parseLong(serviceDto.getStewardId()));
             // 计算积分
             for (Services service : services)
@@ -232,7 +232,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 RecommendPackage rp = this.recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
 
                 amount = Integer.parseInt(rp.getPrice());
-//                return new ControllerResult<Map<String, Object>>().setRet_code(0).setRet_values(map).setMessage("成功！");
 
             } else {
                 // 判断自定义积分换算金额
@@ -249,7 +248,24 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
             PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", String.valueOf(amount));
 
-            pingppService.payOrder(userId, pingDto, result, req, resp);
+            String chargeID = pingppService.payOrder(userId, pingDto, result, req, resp);
+
+            String tradeNo = "u" + userId + new Date().getTime();
+
+            StewardOrder stewardOrder = new StewardOrder(chargeID, tradeNo, amount);
+            stewardOrder.setSteward(steward);
+            stewardOrder.setServices(new HashSet<Services>(services));
+            this.orderRepository.save(stewardOrder);
+
+            //服务被使用次数＋＋
+            for (Services service : services) {
+                service.setUsedNumber(service.getUsedNumber());
+                servicesRepository.save(service);
+            }
+            //管家服务次数＋＋
+            steward.setServicedPeriod(steward.getServicedPeriod() + 1);
+            stewardRepository.save(steward);
+
         } catch (Exception exp) {
             exp.printStackTrace();
             try {
@@ -263,6 +279,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         }
 
     }
+
     @RequestMapping(value = "saveSteward", method = RequestMethod.POST)
     public ControllerResult saveService(@RequestBody Steward steward) {
 
