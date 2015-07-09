@@ -75,9 +75,11 @@ public class HomePageController {
                 // 持续时间
                 int duration = upo.getHcPackage().getDuration();
                 // 每个任务的时间 - 循环过的时间
-                int day = DateUtils.calculatePeiorDaysOfTwoDate(upo.getCreatedDate(), new Date()) - duration * upo.getHcPackage().getCycleLimit() + 1;
-
-                int progress = day * 100 / duration;
+                int day = DateUtils.calculatePeiorDaysOfTwoDate(upo.getCreatedDate(), new Date()) - duration * upo.getCurrentCycleIndex() + 1;
+                int progress = 1;
+                if (day != 1) {
+                    progress = day * 100 / duration;
+                }
 
                 progressDtos.add(
                         new ProgressDto(
