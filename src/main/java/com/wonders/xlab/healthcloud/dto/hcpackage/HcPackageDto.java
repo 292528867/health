@@ -20,6 +20,9 @@ public class HcPackageDto {
     @NotBlank(message = "任务包简介不能为空")
     private String description;
 
+    @NotBlank(message = "副标题不能为空")
+    private String subtitle;
+
     /**
      * 任务包详细介绍
      */
@@ -146,5 +149,13 @@ public class HcPackageDto {
 
     public void setLoops(String loops) {
         this.loops = loops;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 }
