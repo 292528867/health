@@ -65,6 +65,27 @@ public class DateUtils {
 		Period period = new Period(new DateTime(fromDate), new DateTime(toDate), PeriodType.days());
 		return period.getDays();
 	}
+
+	public static int calculateDaysOfTwoDateIgnoreHours(Date former, Date latter){
+		Calendar formerCalendar = Calendar.getInstance();
+		Calendar latterCalendar = Calendar.getInstance();
+		formerCalendar.setTime(former);
+		latterCalendar.setTime(latter);
+		formerCalendar.set(
+				formerCalendar.get(Calendar.YEAR),
+				formerCalendar.get(Calendar.MONTH),
+				formerCalendar.get(Calendar.DAY_OF_MONTH), 0, 0, 0
+		);
+		latterCalendar.set(
+				latterCalendar.get(Calendar.YEAR),
+				latterCalendar.get(Calendar.MONTH),
+				latterCalendar.get(Calendar.DAY_OF_MONTH), 0, 0, 0
+		);
+
+		return calculatePeiorDaysOfTwoDate(formerCalendar.getTime(), latterCalendar.getTime());
+
+	}
+
 	/**
 	 * 计算两个日期间隔分钟。
 	 * @param fromDate 起始时间

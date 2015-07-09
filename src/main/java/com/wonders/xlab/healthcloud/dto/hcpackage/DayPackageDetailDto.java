@@ -1,6 +1,6 @@
 package com.wonders.xlab.healthcloud.dto.hcpackage;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by mars on 15/7/8.
@@ -25,7 +25,7 @@ public class DayPackageDetailDto {
     /** 是否完成 0 否 1 是 */
     private int complete;
 
-    private Set<UserStatementDto> statementDtos;
+    private List<UserStatementDto> statementDtos;
 
     /** 图片，视频地址 以后缀区分*/
     private String icon;
@@ -101,11 +101,11 @@ public class DayPackageDetailDto {
         this.complete = complete;
     }
 
-    public Set<UserStatementDto> getStatementDtos() {
+    public List<UserStatementDto> getStatementDtos() {
         return statementDtos;
     }
 
-    public void setStatementDtos(Set<UserStatementDto> statementDtos) {
+    public void setStatementDtos(List<UserStatementDto> statementDtos) {
         this.statementDtos = statementDtos;
     }
 

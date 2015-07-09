@@ -2,6 +2,8 @@ package com.wonders.xlab.healthcloud.repository.hcpackage;
 
 import com.wonders.xlab.framework.Application;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
+import com.wonders.xlab.healthcloud.service.hcpackage.UserPackageOrderService;
+import com.wonders.xlab.healthcloud.utils.DateUtils;
 import org.drools.core.command.assertion.AssertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.Assert;
 
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -20,6 +23,9 @@ import java.util.List;
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 public class UserPackageOrderRepositoryTest {
+
+    @Autowired
+    private UserPackageOrderService userPackageOrderService;
 
     @Autowired
     private UserPackageOrderRepository userPackageOrderRepository;
@@ -49,6 +55,12 @@ public class UserPackageOrderRepositoryTest {
     @Test
     public void testFindByUserIdAndHcPackageIdAndPackageComplete() throws Exception {
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2015, 7, 8, 23, 59);
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.set(2015, 7, 9, 0, 1);
+        System.out.println(DateUtils.calculateDaysOfTwoDateIgnoreHours(calendar.getTime(), calendar1.getTime()));
+        Assert.isTrue(DateUtils.calculateDaysOfTwoDateIgnoreHours(calendar.getTime(), calendar1.getTime()) == 1);
     }
 
 
@@ -67,6 +79,13 @@ public class UserPackageOrderRepositoryTest {
     @Test
     public void testfindByPackageCompleteAndPackageLoops() throws Exception {
         List<UserPackageOrder> list = userPackageOrderRepository.findByPackageCompleteAndPackageLoops(false, false);
+//        userPackageOrderService.scheduleCalculateIsPackageFinished();
+        System.out.println("list.size() = " + list.size());
+    }
+
+    @Test
+    public void testfindByPackageCompleteAndPackageLoopsRemainder3() throws Exception {
+        List<UserPackageOrder> list = userPackageOrderRepository.findByPackageCompleteAndPackageLoopsRemainder(false, false, 2);
         System.out.println("list.size() = " + list.size());
     }
 }

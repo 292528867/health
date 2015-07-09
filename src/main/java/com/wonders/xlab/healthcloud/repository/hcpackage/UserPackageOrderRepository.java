@@ -17,8 +17,11 @@ public interface UserPackageOrderRepository extends MyRepository<UserPackageOrde
     @Query("from UserPackageOrder uo left join fetch uo.hcPackage where uo.packageComplete = 0")
     List<UserPackageOrder> findFetchPackageByPackageCompleteFalse();
 
-    @Query("from UserPackageOrder u left join fetch u.hcPackage p where u.packageComplete = :isCompleted and p.loops = :isLoop")
+    @Query("from UserPackageOrder u left join fetch u.hcPackage p left join fetch u.user where u.packageComplete = :isCompleted and p.loops = :isLoop")
     List<UserPackageOrder> findByPackageCompleteAndPackageLoops(@Param("isCompleted")boolean isCompleted, @Param("isLoop")boolean isLoop);
+
+    @Query("from UserPackageOrder u left join fetch u.hcPackage p left join fetch u.user where u.packageComplete = :isCompleted and p.loops = :isLoop and u.id%3 = :number")
+    List<UserPackageOrder> findByPackageCompleteAndPackageLoopsRemainder(@Param("isCompleted")boolean isCompleted, @Param("isLoop")boolean isLoop,@Param("number") long number);
 
     List<UserPackageOrder> findByUserId(Long userId);
 

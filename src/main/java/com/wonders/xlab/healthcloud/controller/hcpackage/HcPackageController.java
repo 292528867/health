@@ -258,14 +258,14 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     Object checkedPackege(@PathVariable Long userId) {
         try {
             List<UserPackageOrder> userPackageOrders = userPackageOrderRepository.findByUserIdAndPackageCompleteFalse(userId);
-            List<HcPackage> hcPackages = new ArrayList<>();
+            List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
             for (UserPackageOrder userPackageOrder : userPackageOrders) {
-                HcPackage hcPackage = new HcPackage();
-                BeanUtils.copyProperties(userPackageOrder.getHcPackage(), hcPackage);
-                hcPackage.setId(userPackageOrder.getHcPackage().getId());
-                hcPackages.add(hcPackage);
+                UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
+                BeanUtils.copyProperties(userPackageOrder.getHcPackage(), userPackageOrderDto);
+                userPackageOrderDto.setIsJoin(true);
+                userPackageOrderDtos.add(userPackageOrderDto);
             }
-            return new ControllerResult<>().setRet_code(0).setRet_values(hcPackages).setMessage("订阅计划列表获取成功！");
+            return new ControllerResult<>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("订阅计划列表获取成功！");
         } catch (Exception exp) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("订阅计划列表获取失败！");
         }
