@@ -13,17 +13,23 @@
     }
 
     #header .swiper-slide {
-      padding: 0 15px;
+      padding: 0 10px;
       width: auto;
       text-align: center;
       font-size: 1.4rem;
 
     }
-    .swiper-wrapper .swiper-slide:nth-last-child(1){
+
+    .swiper-wrapper .swiper-slide:nth-last-child(1) {
       margin-right: 20px;
     }
 
-  </style></head><body><img src=i/icon/loading.gif alt=读取 id=articles-loading height=80><div class="am-tabs am-tabs-d2 app-body"><div class=today-bar>今日推荐</div><div class=today-white><img src=i/header/white.png></div><div id=header><div class=swiper-wrapper><div class=swiper-slide style="width: 100px;"></div></div></div><div class=am-tabs-bd><div class="am-tab-panel am-active today-body"><div id=banners><div class=banner-today><div class=banner-today-img></div><div class="banner-today-title-bg am-cf"><div class=banner-today-title></div><div class=banner-today-click><img src=i/icon/read.png alt=阅读></div></div></div></div><div data-am-widget=list_news class="am-list-news am-list-news-default today-list"><div class=am-list-news-bd><ul class="am-list article" id=article><li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left" style="display: none;"><div class="am-u-sm-4 am-list-thumb article-img-box"><a href=# class=article-href><img class=article-img></a></div><div class="am-u-sm-8 am-list-main article-content-box"><h3 class=am-list-item-hd><a href=# class="article-title article-href"></a></h3><div class="am-list-item-text article-description"></div><div class=article-clickCount></div></div></li></ul></div></div></div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script src=js/main.js></script><script src=js/swiper.js></script><script type=text/javascript>
+    .swiper-wrapper .swiper-slide:nth-child(1) {
+      margin-left: 10px !important;
+    }
+
+
+  </style></head><body><img src=i/icon/loading.gif alt=读取 id=articles-loading height=80><div class="am-tabs am-tabs-d2 app-body"><div class=today-bar>今日推荐</div><div class=today-white><img src=i/header/white.png></div><div id=header><div class=swiper-wrapper><div class=swiper-slide style="width: 100px;"></div></div></div><div class=am-tabs-bd><div class="am-tab-panel am-active today-body"><div id=banners><div class=banner-today><div class=banner-today-img></div><div class="banner-today-title-bg am-cf"><div class="banner-today-title am-text-truncate"></div><div class=banner-today-click><img src=i/icon/read.png alt=阅读></div></div></div></div><div data-am-widget=list_news class="am-list-news am-list-news-default today-list"><div class=am-list-news-bd><ul class="am-list article" id=article><li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left" style="display: none;"><div class="am-u-sm-4 am-list-thumb article-img-box"><a href=# class=article-href><img class=article-img></a></div><div class="am-u-sm-8 am-list-main article-content-box"><h3 class=am-list-item-hd><a href=# class="article-title article-href"></a></h3><div class="am-list-item-text article-description"></div><div class=article-clickCount></div></div></li></ul></div></div></div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script src=js/main.js></script><script src=js/swiper.js></script><script type=text/javascript>
   window.onload = function () {
   }
   var articleList;
@@ -36,17 +42,17 @@
   var typeArticleUrl = commonUrl + 'discovery/app/recommand/tag/articles/';
 
   var articleBack;
-  var bannerBack=$('.banner-today');
+  var bannerBack = $('.banner-today');
   var mySwiper;
 
-  if(sessionStorage.getItem('articleUrl')!=null){
+  if (sessionStorage.getItem('articleUrl') != null) {
     loadArticles(sessionStorage.getItem('tag'));
   }
-  else{
+  else {
     inLoad();
   }
 
-  function inLoad(){
+  function inLoad() {
     $('.today-body').removeClass('today-body-banners');
     $('#articles-loading').show();
     $.get(articleUrl + healthCategoryId, function (data) {
@@ -56,10 +62,15 @@
       var u = '';
       $.each(values, function (n, value) {
         //console.log(articleList[n]);
+        var articleItem =  localStorage.getItem('article');
+        if(articleItem!=null && JSON.parse(articleItem).id==value.id){
+          value.clickCount++;
+        }
         if (n === 0) {
           $('.banner-today-img').css('background', 'url("' + value.pictureUrl2 + '") 50% 50% / cover no-repeat');
           $('.banner-today-title').html(value.title);
-          $('.banner-today-click').append(value.clickCount+'阅读');
+          $('.banner-today-click').append(value.clickCount + '阅读');
+          $('.banner-today-click').attr('id', 'click' + value.id);
           $('.banner-today-img').attr('onclick', 'getDetails(\'' + n + '\');');
           $('.banner-today').show();
           //console.log('getDetails('+healthCategoryId+'/'+value.id+');');
@@ -69,14 +80,14 @@
           $article.find('li').css('display', 'block');
           $article.find('.article-title').html(value.title);
           $article.find('.article-description').html(value.desc);
-          $article.find('.article-clickCount').html('<img src="i/icon/read-grey.png" alt="阅读"/>'+value.clickCount+'阅读');
-          $article.find('.article-href').attr('href', 'javascript:getDetails(\'' + n + '\');');
-          $article.find('li').attr('onclick','getDetails(\'' + n + '\')');
+          $article.find('.article-clickCount').html('<img src="i/icon/read-grey.png" alt="阅读"/>' + value.clickCount + '阅读');
+          $article.find('.article-clickCount').attr('id', 'click' + value.id);
+          $article.find('li').attr('onclick', 'getDetails(\'' + n + '\')');
           u = u + $article.html();
         }
       });
       //$('.article  li:first').siblings().remove();
-      articleBack= $article.find('li:eq(0)').detach();
+      articleBack = $article.find('li:eq(0)').detach();
       $('#article').append(u).show();
       $('#articles-loading').hide();
 
@@ -86,15 +97,13 @@
 
 
   function getDetails(id) {
-    var articleId = articleList[id].id||JSON.parse(localStorage.getItem('articleList')[id].id);
+    var articleId = articleList[id].id || JSON.parse(localStorage.getItem('articleList')[id].id);
     var clickUrl = commonUrl + 'discovery/app/clickInfo/' + healthCategoryId + '/' + articleId;
     $.get(clickUrl, function (data) {
-      console.log(data);
+      localStorage.setItem('article', JSON.stringify(articleList[id]));
+      localStorage.setItem('articleList', JSON.stringify(articleList));
+      window.location.href = 'detail.html?' + articleId;
     });
-    console.log((articleList[id]));
-    localStorage.setItem('article', JSON.stringify(articleList[id]));
-    localStorage.setItem('articleList', JSON.stringify(articleList));
-    window.location.href = 'detail.html?'+articleId;
   }
 
 
@@ -104,14 +113,14 @@
     typeArticleUrl = typeArticleUrl + id + '/' + healthCategoryId;
     $('#banners').html(bannerBack.hide());
     var $article = $('.article');
-    if(typeof(articleBack)=='undefined'||articleBack.length==0){
+    if (typeof(articleBack) == 'undefined' || articleBack.length == 0) {
       articleBack = $article.find('li:eq(0)').detach();
     }
     $('#article').html('');
-    if(typeof(mySwiper)!='undefined'){
+    if (typeof(mySwiper) != 'undefined') {
       mySwiper.removeAllSlides();
     }
-    $.get(typeTagUrl + healthCategoryId+'/'+id, function (data) {
+    $.get(typeTagUrl + healthCategoryId + '/' + id, function (data) {
       data = data.ret_values;
       //console.log(data);
       $('.swiper-wrapper').html('<div class="swiper-slide" style="width: 100px;"></div>');
@@ -125,10 +134,10 @@
       swiper.addClass('swiper-active');
 //      sessionStorage.setItem('onclick',  swiper.attr('onclick'));
       swiper.attr('onclick', '');
-      $('.today-bar').attr('onclick','loadTodayArticles()');
+      $('.today-bar').attr('onclick', 'loadTodayArticles()');
       $('.today-bar').addClass('today-bar-noactive');
       mySwiper = new Swiper('#header', {
-        initialSlide :0,
+        initialSlide: 0,
         freeMode: true,
         slidesPerView: 'auto'
       });
@@ -142,38 +151,42 @@
       articleList = values;
       var u = '';
       $.each(values, function (n, value) {
-//        console.log(n);
+        var articleItem =  localStorage.getItem('article');
+        var clickCount=value.clickCount;
+        if(articleItem!=null && JSON.parse(articleItem).id==value.id){
+          console.log(articleItem);
+          clickCount=value.clickCount+1;
+          console.log(clickCount);
+        }
         $('.banner-today-img').css('background', 'url("' + value.pictureUrl2 + '") 50% 50% / cover no-repeat');
         $('.banner-today-title').html(value.title);
-        $('.banner-today-click').html('<img src="i/icon/read.png" alt="阅读"/>'+value.clickCount + '阅读');
+        $('.banner-today-click').attr('id', 'click' + value.id);
+        $('.banner-today-click').html('<img src="i/icon/read.png" alt="阅读"/>' + clickCount + '阅读');
         $('.banner-today-img').attr('onclick', 'getDetails(\'' + n + '\');');
         $('.banner-today').show();
         u = u + $('#banners').html();
       });
-      bannerBack= $('#banners').find('.banner-today:eq(0)').detach();
+      bannerBack = $('#banners').find('.banner-today:eq(0)').detach();
       $('#banners').append(u).show();
       typeArticleUrl = commonUrl + 'discovery/app/recommand/tag/articles/';
       sessionStorage.setItem('articleUrl', typeArticleUrl);
-      sessionStorage.setItem('tag',  id);
+      sessionStorage.setItem('tag', id);
       console.log(articleBack);
       $('#articles-loading').hide();
 
     });
 
 
-
-
   }
-
 
 
   function loadTodayArticles() {
     $('#articles-loading').show();
     $('.today-body').removeClass('today-body-banners');
-    $('.today-bar').attr('onclick','');
+    $('.today-bar').attr('onclick', '');
     $('.article').html(articleBack.hide());
     $('#banners').html(bannerBack.hide());
-    if(typeof(mySwiper)!='undefined'){
+    if (typeof(mySwiper) != 'undefined') {
       mySwiper.removeAllSlides();
     }
     $.get(typeUrl + healthCategoryId, function (data) {
@@ -190,7 +203,7 @@
       swiper.removeClass('swiper-active');
       $('.today-bar').removeClass('today-bar-noactive');
       mySwiper = new Swiper('#header', {
-        initialSlide :0,
+        initialSlide: 0,
         freeMode: true,
         slidesPerView: 'auto'
       });
@@ -207,6 +220,8 @@
         if (n === 0) {
           $('.banner-today-img').css('background', 'url("' + value.pictureUrl2 + '") 50% 50% / cover no-repeat');
           $('.banner-today-title').html(value.title);
+          $('.banner-today-click').attr('id', 'click' + value.id);
+          $('.banner-today-click').html('<img src="i/icon/read.png" alt="阅读"/>' + value.clickCount + '阅读');
           $('.banner-today').show();
           $('.banner-today-img').attr('onclick', 'getDetails(\'' + n + '\');');
           //console.log('getDetails('+healthCategoryId+'/'+value.id+');');
@@ -216,11 +231,10 @@
           $article.find('li').css('display', 'block');
           $article.find('.article-title').html(value.title);
           $article.find('.article-description').html(value.desc);
-          $article.find('.article-href').attr('href', 'javascript:getDetails(\'' + n + '\');');
-//          $article.attr('onclick','getDetails(\'' + n + '\')');
-//          $article.attr('onclick','getDetails(\'' + n + '\')');
-          $article.find('li').attr('onclick','getDetails(\'' + n + '\')');
-          $article.find('.article-clickCount').html('<img src="i/icon/read-grey.png" alt="阅读"/>'+value.clickCount+'阅读');
+          $article.find('li').attr('onclick', 'getDetails(\'' + n + '\')');
+          $article.find('.article-clickCount').html('<img src="i/icon/read-grey.png" alt="阅读"/>' + value.clickCount + '阅读');
+          $article.find('.article-clickCount').attr('id', 'click' + value.id);
+          ;
           u = u + $article.html();
         }
 
@@ -245,7 +259,7 @@
     });
     $('.swiper-wrapper').append(types);
     mySwiper = new Swiper('#header', {
-      initialSlide :0,
+      initialSlide: 0,
       freeMode: true,
       slidesPerView: 'auto'
     });

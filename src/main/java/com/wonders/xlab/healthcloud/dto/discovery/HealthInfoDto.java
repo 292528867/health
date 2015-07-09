@@ -1,5 +1,7 @@
 package com.wonders.xlab.healthcloud.dto.discovery;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotNull;
 
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
@@ -22,10 +24,14 @@ public class HealthInfoDto {
 	@NotNull(message = "健康信息不能为空")
 	private String htmlInfo;
 	
+	/** 创建时间 */
+	private Date createTime;
 	/** 点击量 */
 	private Long clickCount;
 	/** 文章标题id */
 	private Long Id;
+	
+	private Integer clickCount_A;
 	
 	/**
 	 * 转换成一个新的{@link HealthInfo}实体对象，临时状态。
@@ -53,7 +59,9 @@ public class HealthInfoDto {
 		dto.setTitle(hi.getTitle());
 		dto.setPictureUrl(hi.getPictureUrl());
 		dto.setPictureUrl2(hi.getPictureUrl2());
+		dto.setCreateTime(hi.getCreatedDate());
 		dto.setId(hi.getId());
+		dto.setClickCount_A(hi.getClickCountA());
 		return dto;
 	}
 	
@@ -123,6 +131,22 @@ public class HealthInfoDto {
 
 	public void setPictureUrl2(String pictureUrl2) {
 		this.pictureUrl2 = pictureUrl2;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Integer getClickCount_A() {
+		return clickCount_A;
+	}
+
+	public void setClickCount_A(Integer clickCount_A) {
+		this.clickCount_A = clickCount_A;
 	}	
 	
 }

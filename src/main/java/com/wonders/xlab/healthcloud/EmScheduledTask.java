@@ -32,7 +32,7 @@ public class EmScheduledTask {
         //查询没有被回复的信息
         Map<String, Object> filterMap = new HashMap<>();
         filterMap.put("doctorFlag_equal",1);
-        filterMap.put("isReplied", 0);
+        filterMap.put("isReplied_equal", 0);
         List<EmMessages> list = emMessagesRepository.findAll(filterMap);
 
         int overtime = EMUtils.getOvertime(); //回复超时时间

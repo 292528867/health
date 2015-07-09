@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -208,7 +209,13 @@ public class CmsController {
 		HealthCategory hc = this.healthCategoryRepository.findOne(healthCategoryId);
 		if (hc == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
-		this.healthInfoRepository.save(dto.toNewHealthInfo(hc));
+		
+		// 随机生成clickCountA，10到50之间
+		HealthInfo info = dto.toNewHealthInfo(hc);
+		int clickCountA = RandomUtils.nextInt(10, 50);
+		info.setClickCountA(clickCountA);
+		
+		this.healthInfoRepository.save(info);
 		return new ControllerResult<String>().setRet_code(0).setRet_values("添加成功！").setMessage("成功！");
 	}
 	
@@ -291,5 +298,13 @@ public class CmsController {
 
     }
 	
-
+	public static void main(String[] args) {
+		List<Integer> list = new ArrayList<>();
+		for (int i = 0; i < 80; i++) {
+			int c = RandomUtils.nextInt(10, 50);
+			list.add(c);
+		}
+		System.out.println(list);
+		
+	}
 }

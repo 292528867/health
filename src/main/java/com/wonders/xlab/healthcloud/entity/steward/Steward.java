@@ -21,7 +21,7 @@ public class Steward extends BaseInfo<Long> {
 
     public enum Rank {
 //        S, A, B, C
-        金牌管家,银牌管家,铜牌管家,铁牌管家
+        钻石级管家,金牌级管家,银牌级管家,铜牌级管家
     }
 
     /**

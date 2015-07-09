@@ -8,16 +8,16 @@ import com.wonders.xlab.healthcloud.dto.hcpackage.ThirdPackageDto;
 import com.wonders.xlab.healthcloud.dto.hcpackage.UserPackageOrderDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
+import com.wonders.xlab.healthcloud.entity.hcpackage.Classification;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepository;
+import com.wonders.xlab.healthcloud.repository.hcpackage.ClassificationResponsitory;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderRepository;
 import com.wonders.xlab.healthcloud.utils.BeanUtils;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
-import org.apache.commons.beanutils.BeanPropertyValueEqualsPredicate;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -31,7 +31,8 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mars on 15/7/4.
@@ -52,6 +53,9 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     @Autowired
     private UserPackageOrderRepository userPackageOrderRepository;
 
+    @Autowired
+    private ClassificationResponsitory classificationResponsitory;
+
     @Override
     protected MyRepository<HcPackage, Long> getRepository() {
         return hcPackageRepository;
@@ -59,23 +63,25 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
     /**
      * 查询健康包
+     *
      * @return
      */
     @RequestMapping("listHcPackage")
-    private Object listHcPackage(
+    public Object listHcPackage(
             @PageableDefault(sort = "recommendValue", direction = Sort.Direction.DESC)
             Pageable pageable) {
-        return  new ControllerResult<List<HcPackage>>().setRet_code(0).setRet_values(hcPackageRepository.findAll(pageable).getContent()).setMessage("成功");
+        return new ControllerResult<List<HcPackage>>().setRet_code(0).setRet_values(hcPackageRepository.findAll(pageable).getContent()).setMessage("成功");
     }
 
     /**
      * 添加健康包
+     *
      * @param hcPackageDto
      * @param result
      * @return
      */
-    @RequestMapping(value = "addHcPackage/{healthCategoryId}",method = RequestMethod.POST)
-    private Object addHcPackage(@RequestBody HcPackageDto hcPackageDto,@PathVariable Long healthCategoryId,BindingResult result) {
+    @RequestMapping(value = "addHcPackage/{healthCategoryId}", method = RequestMethod.POST)
+    public Object addHcPackage(@RequestBody HcPackageDto hcPackageDto, @PathVariable Long healthCategoryId, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -103,13 +109,14 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
     /**
      * 更新健康包
+     *
      * @param hcPackageId
      * @param hcPackageDto
      * @param result
      * @return
      */
     @RequestMapping("updateHcPackage/{hcPackageId}")
-    private Object updateHcPackage(@PathVariable Long hcPackageId, @Valid HcPackageDto hcPackageDto, MultipartFile icon,MultipartFile detailDescriptionIcon, BindingResult result) {
+    public Object updateHcPackage(@PathVariable Long hcPackageId, @Valid HcPackageDto hcPackageDto, MultipartFile icon, MultipartFile detailDescriptionIcon, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -125,7 +132,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             String iconUrl = QiniuUploadUtils.upload(icon.getBytes(), URLDecoder.decode(icon.getOriginalFilename(), "UTF-8"));
             String detailDescriptionIconUrl = QiniuUploadUtils.upload(detailDescriptionIcon.getBytes(), URLDecoder.decode(detailDescriptionIcon.getOriginalFilename(), "UTF-8"));
 
-            BeanUtils.copyProperties(hcPackageDto,hcPackage,"healthCategoryId");
+            BeanUtils.copyProperties(hcPackageDto, hcPackage, "healthCategoryId");
             hcPackage.setIcon(iconUrl);
             hcPackage.setDetailDescriptionIcon(detailDescriptionIconUrl);
             hcPackageRepository.save(hcPackage);
@@ -139,13 +146,14 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
     /**
      * 添加健康包详细
+     *
      * @param hcPackageId
      * @param hcPackageDetailDto
      * @param result
      * @return
      */
     @RequestMapping("addHcPackageDetail/{hcPackageId}")
-    private Object addHcPackageDetail(@PathVariable Long hcPackageId, @Valid HcPackageDetailDto hcPackageDetailDto, BindingResult result) {
+    public Object addHcPackageDetail(@PathVariable Long hcPackageId, @Valid HcPackageDetailDto hcPackageDetailDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -163,60 +171,26 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             exp.printStackTrace();
             return new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败");
         }
-//        return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("");
     }
-//
-//    public Object findHcPackageDetail(@PathVariable Long userId) {
-//
-//
-//    }
-
-//
-//    /**
-//     * 更新健康包详细
-//     * @param detailId
-//     * @param hcPackageDetailDto
-//     * @param result
-//     * @return
-//     */
-//    @RequestMapping("updateHcPackageDetail/{detailId}")
-//    private Object updateHcPackageDetail(@PathVariable Long detailId, @RequestBody @Valid HcPackageDetailDto hcPackageDetailDto, BindingResult result) {
-//        if (result.hasErrors()) {
-//            StringBuilder builder = new StringBuilder();
-//            for (ObjectError error : result.getAllErrors()) {
-//                builder.append(error.getDefaultMessage());
-//            }
-//            return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败");
-//        }
-//        try {
-//            HcPackageDetail hpd = this.hcPackageDetailRepository.findOne(detailId);
-//            if (hpd == null)
-//                return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没找到！").setMessage("竟然没找到！");
-//            this.hcPackageDetailRepository.save(hcPackageDetailDto.updateHcPackageDetail(hpd));
-//            return new ControllerResult<String>().setRet_code(0).setRet_values("更新成功").setMessage("成功");
-//        } catch (Exception exp) {
-//            exp.printStackTrace();
-//            return new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败");
-//        }
-//    }
 
 
     /**
      * 查询健康包
+     *
      * @return
      */
     @RequestMapping("listPackageInfo")
     public Object listPackageInfo() {
         // 查询所有健康包
 //        List<HcPackage> hcPackages = this.hcPackageRepository.findAllOrderByCreateDate();
-        List<HealthCategory> healthCategories = healthCategoryRepository.findByOrderByCreatedDateDesc();
+        List<Classification> classifications = classificationResponsitory.findAll();
         List<ThirdPackageDto> thirdPackageDtos = new ArrayList<>();
 
-        for (HealthCategory healthCategorie : healthCategories) {
+        for (Classification classification : classifications) {
             thirdPackageDtos.add(new ThirdPackageDto(
-                    healthCategorie.getId(),
-                    healthCategorie.getTitle(),
-                    healthCategorie.getIcon()
+                    classification.getId(),
+                    classification.getTitle(),
+                    classification.getIcon()
             ));
         }
         return new ControllerResult<List<ThirdPackageDto>>().setRet_code(0).setRet_values(thirdPackageDtos).setMessage("成功");
@@ -224,33 +198,32 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
     /**
      * 查询计划包
-     * @param categoryId
+     *
+     * @param classificationId
      * @return
      */
-    @RequestMapping("listPackage/{categoryId}/{userId}")
-    public Object listPackageInfoByCategoryId(@PathVariable long categoryId,@PathVariable long userId) {
+    @RequestMapping("listPackage/{classificationId}/{userId}")
+    public Object listPackageInfoByCategoryId(@PathVariable long classificationId, @PathVariable long userId) {
 
-        Map<String, Object> filterMap = new HashMap<>();
-        filterMap.put("healthCategory.id_equal", categoryId);
-        List<HcPackage> hcPackages = hcPackageRepository.findAll(filterMap);
-
-        List<UserPackageOrder> list = userPackageOrderRepository.findByUserId(userId);
-
+        List<HcPackage> hcPackages = hcPackageRepository.findByClassificationId(classificationId);
+        List<UserPackageOrder> orders = userPackageOrderRepository.findByUserId(userId);
         List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
-        
-        if (list != null) {
-            for (UserPackageOrder userPackageOrder : list) {
-                for (HcPackage hcPackage : hcPackages) {
-                    UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
-                    BeanUtils.copyProperties(hcPackage,userPackageOrderDto);
+
+        for (HcPackage hcPackage : hcPackages) {
+            UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
+            BeanUtils.copyProperties(hcPackage, userPackageOrderDto);
+            userPackageOrderDto.setId(hcPackage.getId());
+            userPackageOrderDto.setIsJoin(false);
+
+            if (orders != null && orders.size() != 0) {
+                for (UserPackageOrder userPackageOrder : orders) {
                     if (userPackageOrder.getHcPackage().getId() == hcPackage.getId()) {
                         userPackageOrderDto.setIsJoin(true);
-                    }else {
-                        userPackageOrderDto.setIsJoin(false);
+                        break;
                     }
-                    userPackageOrderDtos.add(userPackageOrderDto);
                 }
             }
+            userPackageOrderDtos.add(userPackageOrderDto);
         }
 
         return new ControllerResult<List<UserPackageOrderDto>>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("成功");
@@ -266,5 +239,37 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
         HcPackage hcPackage = hcPackageRepository.findOnePackage(id);
         return hcPackage;
     }
+
+    @RequestMapping("packageClick/{packageId}")
+    public Object packageClick(@PathVariable Long packageId) {
+        try {
+            HcPackage hcPackage = hcPackageRepository.findOne(packageId);
+            int clickCount = hcPackage.getClickAmount() + 1;
+            hcPackage.setClickAmount(clickCount);
+            hcPackageRepository.save(hcPackage);
+            return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("关注成功！");
+        } catch (Exception exp) {
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("关注失败！");
+        }
+
+    }
+
+    @RequestMapping("checked/{userId}")
+    Object checkedPackege(@PathVariable Long userId) {
+        try {
+            List<UserPackageOrder> userPackageOrders = userPackageOrderRepository.findByUserIdAndPackageCompleteFalse(userId);
+            List<HcPackage> hcPackages = new ArrayList<>();
+            for (UserPackageOrder userPackageOrder : userPackageOrders) {
+                HcPackage hcPackage = new HcPackage();
+                BeanUtils.copyProperties(userPackageOrder.getHcPackage(), hcPackage);
+                hcPackage.setId(userPackageOrder.getHcPackage().getId());
+                hcPackages.add(hcPackage);
+            }
+            return new ControllerResult<>().setRet_code(0).setRet_values(hcPackages).setMessage("订阅计划列表获取成功！");
+        } catch (Exception exp) {
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("订阅计划列表获取失败！");
+        }
+    }
+
 
 }

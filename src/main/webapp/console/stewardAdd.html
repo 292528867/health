@@ -50,7 +50,7 @@
 <header class="am-topbar admin-header">
     <div class="am-topbar-brand">
         <strong>健康云</strong>
-        <small>后台管理</small>
+        <small>管家后台管理</small>
     </div>
 
     <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only"
@@ -60,8 +60,7 @@
     <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
 
         <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
-            <li><a href="javascript:;"><span class="am-icon-envelope-o"></span> 收件箱 <span
-                    class="am-badge am-badge-warning">5</span></a></li>
+            <li><a href="serviceAdd.html"> <span >进入管家服务</span> </a></li>
             <li class="am-dropdown" data-am-dropdown>
                 <a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">
                     <span class="am-icon-users"></span> 管理员 <span class="am-icon-caret-down"></span>
@@ -99,65 +98,87 @@
                       ng-app="" ng-controller="teacherController">
                     <fieldset>
                         <div class="am-form-group">
-                            <label for="serviceName">管家名字：</label>
-                            <input type="text" id="serviceName" placeholder=""
-                                   required name="serviceName"/>
+                            <label for="nickName">管家名字：</label>
+                            <input type="text" id="nickName" placeholder=""
+                                   required name="nickName"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="description">联系电话：</label>
-                            <input type="text" id="description" placeholder=""
-                                   required name="serviceDescription"/>
+                            <label for="tel">联系电话：</label>
+                            <input type="text" id="tel" placeholder=""
+                                   required name="tel"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="integration">身高：</label>
-                            <input type="text" id="integration" placeholder=""
-                                   required name="serviceIntegration"/>
+                            <label for="height">身高：</label>
+                            <input type="text" id="height" placeholder=""
+                                   required name="height"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="integration">体重：</label>
+                            <label for="weight">体重：</label>
                             <input type="text" id="weight" placeholder=""
-                                   required name="serviceId"/>
+                                   required name="weight"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="integration">年龄：</label>
-                            <input type="text" id="ege" placeholder=""
-                                   required name="serviceId"/>
+                            <label for="age">年龄：</label>
+                            <input type="text" id="age" placeholder=""
+                                   required name="age"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="serviceArea" class="about-color">性别:</label>
+                            <label for="suggestId">管家位置：</label>
+
+                            <div id="r-result"><input type="text" id="suggestId" size="20" value="万达健康云"
+                                                      name="address"/></div>
+                            <div id="searchResultPanel"
+                                 style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+                            <div id="l-map" style="height: 400px;"></div>
+                            <input type="hidden" name="longitude" id="longitude"/>
+                            <input type="hidden" name="latitude" id="latitude"/>
+                        </div>
+                        <div class="am-form-group">
+                            <label for="sex" class="about-color">性别:</label>
                             <br/>
-                            <select data-am-selected="{btnSize: 'sm'}" id="serviceArea" name="serviceArea" >
-                                <option selected value="0">男</option>
-                                <option selected value="1">女</option>
+                            <select data-am-selected="{btnSize: 'sm'}" id="sex" name="sex">
+                                <option selected value="Male">男</option>
+                                <option selected value="Female">女</option>
                             </select>
                         </div>
                         <div class="am-form-group">
-                            <label for="serviceArea" class="about-color">性别:</label>
+                            <label for="rank" class="about-color">管家级别:</label>
                             <br/>
-                            <select data-am-selected="{btnSize: 'sm'}" id="rank" name="rank" >
-                                <option selected >男</option>
-                                <option selected >女</option>
+                            <select data-am-selected="{btnSize: 'sm'}" id="rank" name="rank">
+                                <option selected>铜牌级管家</option>
+                                <option selected>银牌级管家</option>
+                                <option selected>金牌级管家</option>
+                                <option selected>钻石级管家</option>
+
                             </select>
                         </div>
-                        <div class="am-form-group am-form-file">
-                            <button type="button" class="am-btn am-btn-primary am-btn-sm">
-                                <i class="am-icon-cloud-upload"></i> 选择要上传的管家头像
-                            </button>
-                            <input id="image-form-iconUrl" type="file" multiple accept="image/*" name="file" class="image-form">
-                            <div id="iconUrl" class="image-text"></div>
-
+                        <div class="am-form-group">
+                            <label for="htmlInfo">管家介绍：（必填）</label>
+                            <textarea id="htmlInfo" name="htmlInfo" style="height:400px;"></textarea>
                         </div>
-                        <button type="button" class="am-btn am-btn-warning am-round" id="addIconUrl" onclick="addImages()"> 添加图片</button>
 
-                        <div class="am-form-group am-form-file">
-                            <button type="button" class="am-btn am-btn-primary am-btn-sm">
-                                <i class="am-icon-cloud-upload"></i> 选择要上传的等级图片
-                            </button>
-                            <input id="image-form-levelUrl" type="file" multiple accept="image/*" name="file" class="image-form">
-                            <div id="levelUrl" class="image-text"></div>
+                        <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="openImgUpload()">
+                            <i class="am-icon-cloud-upload"></i> 选择要上传的管家和管家级别图片
+                        </button>
+                        <br/>
+                        <br/>
 
+                        <div class="am-form-group">
+                            <label for="iconUrl">可直接填写图片地址（如已本地上传请勿修改）：</label>
+                            <input type="text" id="iconUrl" placeholder=""
+                                   required name="iconUrl"/>
                         </div>
-                        <button type="button" class="am-btn am-btn-warning am-round" id="addLevelUrl" onclick="addImages()"> 添加图片</button>
+                        <br/>
+                        <br/>
+                        <img src="" alt="" id="index-img-index"/>
+                        <br/>
+                        <br/>
+
+                        <div class="am-form-group">
+                            <label for="levelUrl">可直接填写banner图片地址（如已本地上传请勿修改）：</label>
+                            <input type="text" id="levelUrl" placeholder=""
+                                   required name="levelUrl"/>
+                        </div>
 
                         <button class="am-btn am-btn-secondary" type="button" id="formSub" onclick="stewardAdd()">提交
                         </button>
@@ -227,6 +248,49 @@
     <hr>
     <p class="am-padding-left">© 2015 By Wondersgroup.</p>
 </footer>
+
+<div class="am-modal " tabindex="-1" id="change-modal">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">新增图片
+            <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+        </div>
+        <div class="am-modal-bd">
+            <form action="http://101.231.124.8:45677/xlab-healthcloud/discovery/cms/uploadPicture" class="am-form"
+                  id="index-img-form" method="post"
+                  enctype="multipart/form-data">
+                <fieldset>
+                    <h2>首页图片,长宽相等</h2>
+                    <img src="" alt="" id="index-img" style="height: 100px;"/>
+                    <input type="file" multiple accept="image/*" name="file"/>
+
+                    <button class="am-btn am-btn-secondary" type="submit" id="index-img-sub">提交</button>
+                </fieldset>
+            </form>
+            <form action="http://101.231.124.8:45677/xlab-healthcloud/discovery/cms/uploadPicture" class="am-form"
+                  id="banner-img-form" method="post"
+                  enctype="multipart/form-data">
+                <fieldset>
+                    <h2>横条展示banner图片，banner图要宽一些。</h2>
+                    <img src="" alt="" id="banner-img" style="height: 100px;"/>
+                    <input type="file" multiple accept="image/*" name="file"/>
+
+                    <button class="am-btn am-btn-secondary" type="submit" id="banner-img-sub">提交</button>
+                </fieldset>
+            </form>
+            <div class="progress">
+                <div class="bar"></div>
+                <div class="percent">0%</div>
+            </div>
+
+            <div id="status"></div>
+
+            <br/>
+            <!--<form action="http://10.10.10.231:8080/course/updateCoursePicture" class="am-form" id="detail-img-form" method="post"-->
+
+
+        </div>
+    </div>
+</div>
 
 
 <!--[if lt IE 9]>
@@ -356,6 +420,8 @@
     });
 </script>
 <script src="js/stward/stwardAdd.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=FD157821d97ffbfecba5325394413bfd"></script>
+<script type="text/javascript" src="js/baiduMap.js"></script>
 <script>
     $('#admin-offcanvas').load('common/adminSidebar.html');
 </script>

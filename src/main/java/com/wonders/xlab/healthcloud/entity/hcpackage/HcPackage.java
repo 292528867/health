@@ -5,6 +5,7 @@ package com.wonders.xlab.healthcloud.entity.hcpackage;
  * 健康包
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 
@@ -96,6 +97,9 @@ public class HcPackage extends AbstractBaseEntity<Long> {
 
     /** 首页小图 */
     private String smaillIcon;
+
+    @JsonIgnore
+    private int coefficient;
 
 //    /**
 //     * 用户健康包
@@ -243,14 +247,6 @@ public class HcPackage extends AbstractBaseEntity<Long> {
         this.supplemented = supplemented;
     }
 
-//    public Set<User> getUsers() {
-//        return users;
-//    }
-//
-//    public void setUsers(Set<User> users) {
-//        this.users = users;
-//    }
-
     public Sex getSex() {
         return sex;
     }
@@ -282,4 +278,17 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     public void setSmaillIcon(String smaillIcon) {
         this.smaillIcon = smaillIcon;
     }
+
+    public int getCoefficient() {
+        return coefficient;
+    }
+
+    public void setCoefficient(int coefficient) {
+        this.coefficient = coefficient;
+    }
+
+    public void setId(Long id) {
+        super.setId(id);
+    }
+
 }

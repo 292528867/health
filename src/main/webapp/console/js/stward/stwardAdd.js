@@ -70,7 +70,7 @@ $.get(stewardServiceUrl, function (data) {
             "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick='searchCourse(" + value.id + ")'>" +
             "<span class='am-icon-pencil-square-o'></span> 编辑</button>" +
             "</button><button type='button' class='am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only' " +
-            "onclick='deleteService(" + value.id + ")'  >" +
+            "onclick='deleteSteward(" + value.id + ")'  >" +
             "<span class='am-icon-trash-o'></span> 删除</button></div></div></td></tr>";
 
     });
@@ -84,33 +84,42 @@ $.get(stewardServiceUrl, function (data) {
 
 
 function stewardAdd() {
-    var serviceName = $('#serviceName').val();
-    var description = $('#description').val();
-    var integration = $('#integration').val();
-    var serverId = $('#serverId').val();
-    var serviceArea = $('#serviceArea').val();
-    var isForce = $('#isForce').val();
+    var nickName = $('#nickName').val();
+    var tel = $('#tel').val();
+    var height = $('#height').val();
+    var weight = $('#weight').val();
+    var age = $('#age').val();
+    var sex = $('#sex').val();
+    var rank = $('#rank').val();
+    var iconUrl = $('#iconUrl').val();
+    var levelUrl = $('#levelUrl').val();
+    var longitude = $('#longitude').val();
+    var latitude = $('#latitude').val();
 
-    //var htmlInfo = editor.html();
-    //$('#courseDetail').val(editor.html());
-
-    if (serviceName.length==0||description.length==0||integration.length==0||serverId.length==0||serviceArea.length==0) {
+    if (nickName.length==0||tel.length==0||height.length==0) {
         alert('有字段没有填写');
         return false;
     }
-    //addServiceUrl += type;
+    var location ={
+        "longitude":parseFloat(longitude),
+        "latitude":parseFloat(latitude)
+    }
     var json ={
-        "serviceName": serviceName,
-        "serviceDescription": description,
-        "serviceIntegration": integration,
-        "serviceId": serverId,
-        "serviceArea": serviceArea,
-        "isForce":isForce
+        "nickName": nickName,
+        "tel": tel,
+        "height": height,
+        "weight": weight,
+        "age": age,
+        "sex":sex,
+        "rank": rank,
+        "iconUrl": iconUrl,
+        "levelUrl":levelUrl,
+        "location":location,
     };
     json = JSON.stringify(json);
     console.log(json);
     $.ajax({
-        url: addServiceUrl,
+        url: addStewardUrl,
         type: "POST",
         data: json,
         dataType: "json",
@@ -122,7 +131,6 @@ function stewardAdd() {
             }
             else
                 alert(response.err_msg);
-
         },
         error: function () {
             alert('error');
@@ -148,3 +156,23 @@ function deleteService(servicesId) {
         });
     }
 };
+function deleteSteward(servicesId) {
+    confirm_ = confirm('确定删除？');
+    if (confirm_) {
+        $.ajax({
+            type: "DELETE",
+            url: commonUrl + '/services/' + servicesId,
+            success: function (msg) {
+                location.reload();
+            },
+            error: function () {
+                alert('删除错误');
+            }
+
+        });
+    }
+};
+
+function openImgUpload() {
+    $('#change-modal').modal('toggle');
+}
