@@ -145,7 +145,7 @@ function deleteService(servicesId) {
     if (confirm_) {
         $.ajax({
             type: "DELETE",
-            url: commonUrl + '/services/' + servicesId,
+            url: commonUrl + 'services/' + servicesId,
             success: function (msg) {
                 location.reload();
             },
@@ -156,12 +156,12 @@ function deleteService(servicesId) {
         });
     }
 };
-function deleteSteward(servicesId) {
+function deleteSteward(stewardId) {
     confirm_ = confirm('确定删除？');
     if (confirm_) {
         $.ajax({
             type: "DELETE",
-            url: commonUrl + '/services/' + servicesId,
+            url: commonUrl + 'steward/' + stewardId,
             success: function (msg) {
                 location.reload();
             },

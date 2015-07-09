@@ -29,7 +29,7 @@ public class PingppService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public void payOrder(Long userId, PingDto pingDto, BindingResult result, HttpServletRequest req, HttpServletResponse resp
+    public String payOrder(Long userId, PingDto pingDto, BindingResult result, HttpServletRequest req, HttpServletResponse resp
     ) {
         PrintWriter out;
         resp.setContentType("application/json; charset=utf-8");
@@ -69,18 +69,10 @@ public class PingppService {
         Map<String, String> initialMetadata = new HashMap<String, String>();
 //        initialMetadata.put("color", "red");
         chargeParams.put("metadata", initialMetadata);
-
+        String chargeID = "";
         try {
             Charge charge = Charge.create(chargeParams);
-            String chargeID = charge.getId();
-            String tradeNo = "u" + userId + new Date().getTime();
-
-            StewardOrder stewardOrder = new StewardOrder(
-                    chargeID,
-                    tradeNo,
-                    Integer.parseInt(pingDto.getMoney())
-            );
-            this.orderRepository.save(stewardOrder);
+            chargeID = charge.getId();
             System.out.println(chargeID);
             System.out.println(charge);
             String credential = charge.getCredential();
@@ -92,6 +84,7 @@ public class PingppService {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+        return chargeID;
     }
 
 }
