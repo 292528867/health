@@ -31,7 +31,7 @@ rule "calcu healthinfo clickCount"
 		// 当前时间间隔文章创建时间天数
 		int n = aritcle_perior_days($createTime, new Date());
 		// 公式 A+(1+X)^n*B
-		Double new_click_count = clickCount_A + Math.pow((1 + clickCount_X), n) * $clickCount;
+		Double new_click_count = clickCount_A * Math.pow((1 + clickCount_X), n) + $clickCount;
 		clickCountOutputMap.put($id, Math.round(new_click_count));
 end
 
