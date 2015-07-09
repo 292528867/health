@@ -89,10 +89,12 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
     @RequestMapping("retrievePackageDetail/{userId}/{detailId}")
     public Object retrievePackageDetail(@PathVariable Long userId, @PathVariable Long detailId) {
 
+        /** 获取健康包任务 */
         HcPackageDetail detail = this.hcPackageDetailRepository.findOne(detailId);
 
+        /** 用户健康包任务语句 */
         List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdHcPackageDetail(userId, detailId);
-        System.out.println( detail.getHcPackage().getId());
+        /** 用户订单 */
         UserPackageOrder order = this.userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, detail.getHcPackage().getId(), false);
 
         Set<UserStatementDto> statementDtos = new HashSet<>();
@@ -122,7 +124,6 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
                 dto.setComplete(1);
             }
         }
-
 
         dto.setStatementDtos(statementDtos);
 

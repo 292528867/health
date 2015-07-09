@@ -11,6 +11,6 @@ import java.util.List;
  */
 public interface UserPackageDetailStatementRepository extends MyRepository<UserPackageDetailStatement, Long> {
 
-    @Query("from UserPackageDetailStatement upds where upds.user.id = ?1 and upds.hcPackageDetail.id = ?2")
+    @Query("from UserPackageDetailStatement upds where upds.user.id = ?1 and upds.hcPackageDetail.id = ?2 order by createdDate desc")
     List<UserPackageDetailStatement> findByUserIdHcPackageDetail(Long userId, Long detailId);
 }
