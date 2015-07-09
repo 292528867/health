@@ -14,6 +14,9 @@ import java.util.List;
  */
 public interface UserPackageOrderRepository extends MyRepository<UserPackageOrder, Long> {
 
+    @Query("from UserPackageOrder uo left join fetch uo.hcPackage where uo.packageComplete = 0")
+    List<UserPackageOrder> findFetchPackageByPackageCompleteFalse();
+
     @Query("from UserPackageOrder uo left join fetch uo.hcPackage where uo.user.id = :userId")
     List<UserPackageOrder> findByUserId(@Param("userId") Long userId);
 

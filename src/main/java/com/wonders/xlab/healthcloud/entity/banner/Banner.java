@@ -2,6 +2,7 @@ package com.wonders.xlab.healthcloud.entity.banner;
 
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
@@ -13,15 +14,17 @@ import javax.persistence.Table;
 @Table(name = "hc_banner")
 public class Banner extends AbstractBaseEntity<Long> {
 
-    /** 标语标签 0 日程 1 发现 2 管家 3 问诊 */
+    /** Banner标签 0 日程 1 发现 2 管家 3 问诊 */
     @Enumerated
+    @Column(nullable = false)
     private BannerTag bannerTag;
 
-    /** 标语位置 0 上 1 下 */
+    /** Banner位置 0 上 1 下 */
     @Enumerated
+    @Column(nullable = false)
     private BannerType bannerType;
 
-    /** 文章id */
+    /** 文章ID */
     private Long articleId;
 
     /** 标题 */

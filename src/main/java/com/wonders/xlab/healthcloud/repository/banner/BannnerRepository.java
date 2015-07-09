@@ -18,5 +18,5 @@ public interface BannnerRepository extends MyRepository<Banner, Long> {
     @Query("from Banner b group by b.bannerType, b.bannerTag order by b.lastModifiedDate desc ")
     List<Banner> findBannerOrderByLastModifiedDate();
 
-    List<Banner> findByEnabled(boolean enabled);
+    List<Banner> findByBannerTypeAndEnabled(BannerType type, boolean enabled);
 }
