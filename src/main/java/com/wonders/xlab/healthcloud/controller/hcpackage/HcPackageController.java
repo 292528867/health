@@ -8,9 +8,11 @@ import com.wonders.xlab.healthcloud.dto.hcpackage.ThirdPackageDto;
 import com.wonders.xlab.healthcloud.dto.hcpackage.UserPackageOrderDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
+import com.wonders.xlab.healthcloud.entity.hcpackage.Classification;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepository;
+import com.wonders.xlab.healthcloud.repository.hcpackage.ClassificationResponsitory;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderRepository;
@@ -50,6 +52,9 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
     @Autowired
     private UserPackageOrderRepository userPackageOrderRepository;
+
+    @Autowired
+    private ClassificationResponsitory classificationResponsitory;
 
     @Override
     protected MyRepository<HcPackage, Long> getRepository() {
@@ -178,14 +183,14 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     public Object listPackageInfo() {
         // 查询所有健康包
 //        List<HcPackage> hcPackages = this.hcPackageRepository.findAllOrderByCreateDate();
-        List<HealthCategory> healthCategories = healthCategoryRepository.findAll();
+        List<Classification> classifications = classificationResponsitory.findAll();
         List<ThirdPackageDto> thirdPackageDtos = new ArrayList<>();
 
-        for (HealthCategory healthCategorie : healthCategories) {
+        for (Classification classification : classifications) {
             thirdPackageDtos.add(new ThirdPackageDto(
-                    healthCategorie.getId(),
-                    healthCategorie.getTitle(),
-                    healthCategorie.getIcon()
+                    classification.getId(),
+                    classification.getTitle(),
+                    classification.getIcon()
             ));
         }
         return new ControllerResult<List<ThirdPackageDto>>().setRet_code(0).setRet_values(thirdPackageDtos).setMessage("成功");
@@ -194,13 +199,13 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     /**
      * 查询计划包
      *
-     * @param categoryId
+     * @param classificationId
      * @return
      */
-    @RequestMapping("listPackage/{categoryId}/{userId}")
-    public Object listPackageInfoByCategoryId(@PathVariable long categoryId, @PathVariable long userId) {
+    @RequestMapping("listPackage/{classificationId}/{userId}")
+    public Object listPackageInfoByCategoryId(@PathVariable long classificationId, @PathVariable long userId) {
 
-        List<HcPackage> hcPackages = hcPackageRepository.findByHealthCategoryId(categoryId);
+        List<HcPackage> hcPackages = hcPackageRepository.findByClassificationId(classificationId);
         List<UserPackageOrder> orders = userPackageOrderRepository.findByUserId(userId);
         List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
 
