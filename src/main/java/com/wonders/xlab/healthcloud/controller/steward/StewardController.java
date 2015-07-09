@@ -184,16 +184,23 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         Steward steward = stewardRepository.findOne(stewardId);
 
+
         List<StewardOrder> stewardOrders = stewardOrderRepository.findAllBySteward(stewardId);
 
-        Set<Services> services = new HashSet<>();
-        for (StewardOrder stewardOrder : stewardOrders) {
-            services = stewardOrder.getServices();
-        }
-        List <Services> ListServices = new ArrayList<>(services);
-        //取两条明星服务
-        for (int i = 0;i<2;i++){
-            steward.getStarService().add(ListServices.get(i).getServiceName());
+        if (null != stewardOrders){
+            Set<Services> services = new HashSet<>();
+            for (StewardOrder stewardOrder : stewardOrders) {
+                services = stewardOrder.getServices();
+            }
+            List<Services> ListServices = new ArrayList<>(services);
+            //获取取两条明星服务
+            for (int i = 0; i < 2; i++) {
+                steward.getStarService().add(ListServices.get(i).getServiceName());
+            }
+        }else {
+            //获取取两条明星服务
+            steward.getStarService().add("定期关爱");
+            steward.getStarService().add("健康跟踪");
         }
         return new ControllerResult<Steward>().setRet_code(0).setRet_values(steward).setMessage("成功！");
 
@@ -201,6 +208,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
     /**
      * 计算服务费用
+     *
      * @param serviceDto
      * @param result
      * @return
@@ -328,5 +336,10 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         return new ControllerResult<StewardOrder>().setRet_code(0).setRet_values(stewardOrder).setMessage("成功！");
     }
 
+
+    public void getWeekOfDate(){
+        String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+        Calendar cal = Calendar.getInstance();
+    }
 
 }

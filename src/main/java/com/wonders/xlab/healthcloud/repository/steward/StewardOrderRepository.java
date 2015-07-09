@@ -15,7 +15,7 @@ public interface StewardOrderRepository extends MyRepository<StewardOrder, Long>
     @Query("from StewardOrder so left join fetch so.steward left join fetch so.services where so.steward.id = :id")
     List<StewardOrder> findAllBySteward(@Param("id") long id);
 
-    @Query("from StewardOrder so left join fetch so.user left join fetch so.services where so.user.id = :id order by so.payDate asc")
+    @Query("from StewardOrder so left join fetch so.user left join fetch so.services where so.user.id = :id order by so.payDate desc")
     List<StewardOrder> findAllByUser(@Param("id") long id);
 
 }
