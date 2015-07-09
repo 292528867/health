@@ -32,7 +32,7 @@
       position: absolute;
       left: 50%;
       width: 60%;
-      margin-left: -30%;
+      margin-left: -31%;
       top: 200px;
       display: none;
     }
@@ -46,7 +46,7 @@
   var statuscookie = arrcookie[1];
   if (statuscookie == "" || statuscookie == "0") {
     document.cookie = "statuscookie=1";
-  } else {
+  } else if(statuscookie == "1") {
     document.cookie = "statuscookie=0";
     window.location.reload(true);
   }
