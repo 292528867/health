@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
@@ -20,6 +21,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -43,6 +45,9 @@ public class EMUtils {
     @PostConstruct
     private void init() {
         hcCache = new HCCacheProxy<>(emCache);
+        List messages=new ArrayList();
+        messages.add(new StringHttpMessageConverter(Charset.forName("utf-8")));
+        restTemplate.setMessageConverters(messages);
     }
 
     public static final String url = "http://a1.easemob.com/xlab/ugyufuy/{key}";
@@ -118,6 +123,7 @@ public class EMUtils {
         Map<String, Object> uriVariables = new HashMap<>();
         uriVariables.put("key", path);
 
+
         ResponseEntity<?> result = restTemplate.exchange(
                 url,
                 method,
@@ -137,6 +143,7 @@ public class EMUtils {
     }
 
     public ResponseEntity<?> requestEMChart(HttpMethod method, Object body, String path, Class<?> classz) {
+
         return requestEMChart(null, method, body, path, classz);
     }
 
