@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -27,7 +28,7 @@ public final class ThirdAppConnUtils {
     @PostConstruct
     private void init() {
         List messages=new ArrayList();
-        messages.add(new StringHttpMessageConverter(Charset.forName("utf-8")));
+        messages.add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
         restTemplate.setMessageConverters(messages);
     }
 
