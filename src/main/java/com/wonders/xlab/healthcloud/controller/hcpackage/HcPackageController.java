@@ -206,7 +206,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     public Object listPackageInfoByCategoryId(@PathVariable long classificationId, @PathVariable long userId) {
 
         List<HcPackage> hcPackages = hcPackageRepository.findByClassificationId(classificationId);
-        List<UserPackageOrder> orders = userPackageOrderRepository.findByUserId(userId);
+        List<UserPackageOrder> orders = userPackageOrderRepository.findByUserIdAndPackageCompleteFalse(userId);
         List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
 
         for (HcPackage hcPackage : hcPackages) {

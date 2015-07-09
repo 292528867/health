@@ -58,6 +58,20 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
 
     }
 
+    @RequestMapping(value = "cancel/{userId}/{packageId}",method = RequestMethod.DELETE)
+    public Object deletePlan(@PathVariable Long userId, @PathVariable Long packageId) {
+        UserPackageOrder userPackageOrder = userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, packageId, false);
+        if (null == userPackageOrder) {
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("未找到健康包");
+        }
+        try {
+            userPackageOrderRepository.delete(userPackageOrder.getId());
+            return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("取消成功！");
+        } catch (Exception exp) {
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("取消失败！");
+        }
+    }
+
     @Override
     protected MyRepository<UserPackageOrder, Long> getRepository() {
         return userPackageOrderRepository;

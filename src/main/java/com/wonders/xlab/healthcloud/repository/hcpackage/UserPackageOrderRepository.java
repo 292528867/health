@@ -17,13 +17,17 @@ public interface UserPackageOrderRepository extends MyRepository<UserPackageOrde
     @Query("from UserPackageOrder uo left join fetch uo.hcPackage where uo.packageComplete = 0")
     List<UserPackageOrder> findFetchPackageByPackageCompleteFalse();
 
-    @Query("from UserPackageOrder uo left join fetch uo.hcPackage where uo.user.id = :userId")
-    List<UserPackageOrder> findByUserId(@Param("userId") Long userId);
+    @Query("from UserPackageOrder u left join fetch u.hcPackage p where u.packageComplete = :isCompleted and p.loops = :isLoop")
+    List<UserPackageOrder> findByPackageCompleteAndPackageLoops(@Param("isCompleted")boolean isCompleted, @Param("isLoop")boolean isLoop);
 
-    @Query("FROM UserPackageOrder uo LEFT JOIN FETCH uo.hcPackage where uo.user.id = :userId and uo.packageComplete = 0")
-    List<UserPackageOrder> findFetchPackageByUserIdAndPackageCompleteFalse(Long userId);
+    List<UserPackageOrder> findByUserId(Long userId);
+
+    @Query("from UserPackageOrder uo LEFT JOIN FETCH uo.hcPackage where uo.user.id = :userId and uo.packageComplete = 0")
+    List<UserPackageOrder> findFetchPackageByUserIdAndPackageCompleteFalse(@Param("userId") Long userId);
 
     List<UserPackageOrder> findByUserIdAndPackageCompleteFalse(Long userId);
+
+    List<UserPackageOrder> findByUserIdAndPackageCompleteTrue(Long userId);
 
     UserPackageOrder findByUserAndHcPackageAndPackageComplete(User user, HcPackage hcPackage, boolean complete);
 

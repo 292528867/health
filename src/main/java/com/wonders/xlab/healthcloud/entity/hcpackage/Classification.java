@@ -33,6 +33,8 @@ public class Classification extends AbstractBaseEntity<Long> {
      */
     private int recommendValue;
 
+    private String description;
+
     public String getTitle() {
         return title;
     }
@@ -63,5 +65,13 @@ public class Classification extends AbstractBaseEntity<Long> {
 
     public void setRecommendValue(int recommendValue) {
         this.recommendValue = recommendValue;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
