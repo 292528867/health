@@ -66,8 +66,8 @@
     <div class="admin-content">
 
         <div class="am-cf am-padding">
-            <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">信息</strong> /
-                <small>Info</small>
+            <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">计划包编辑</strong> /
+                <small>Edit</small>
             </div>
         </div>
         <div class="am-g">
@@ -82,7 +82,7 @@
             </div>-->
             <div class="am-u-sm-12 am-u-md-3">
                 <div class="am-input-group am-input-group-sm">
-                    <input type="text" class="am-form-field am-input-lg">
+                    <input type="text" class="am-form-field am-input-lg" placeholder="搜索任务包名称">
           <span class="am-input-group-btn">
             <button class="am-btn am-btn-default" type="button">搜索</button>
           </span>
@@ -151,7 +151,7 @@
     <p class="am-padding-left">© 2015 By Wondersgroup.</p>
 </footer>
 
-<div class="am-modal " tabindex="-1" id="change-modal" data-am-modal="{width: 100%}">
+<div class="am-modal " style="scroll:yes" tabindex="-1" id="change-modal" data-am-modal="{height: 200px;}">
     <div class="am-modal-dialog">
         <div class="am-modal-hd">修改分类
             <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
@@ -164,7 +164,7 @@
                     <div class="am-form-group am-u-sm-4">
                         <label for="type" class="about-color">所属类别:</label>
                         <br/>
-                        <select data-am-selected="{maxHeight:200, btnSize: 'sm',  searchBox:1}" class="category-select" id="type" name="type" >
+                        <select data-am-selected="{maxHeight:400, btnSize: 'sm',  searchBox:1}" class="category-select" id="type" name="type" >
                             <option>点击选择</option>
                         </select>
                     </div>
@@ -182,7 +182,7 @@
                 </div>
                 <div class="am-form-group am-u-sm-12 am-form">
                     <label for="modify-detailDescription">任务包详细介绍</label>
-                    <textarea class="" rows="8" id="modify-detailDescription" name="detailDescription" tabindex="3"></textarea>
+                    <textarea class="" rows="15" id="modify-detailDescription" name="detailDescription" tabindex="3"></textarea>
                 </div>
                 <div class="am-form-group am-u-sm-6">
                     <label class="am-input-group">

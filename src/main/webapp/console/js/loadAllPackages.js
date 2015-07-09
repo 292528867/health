@@ -51,7 +51,6 @@ function changePackage(id) {
     $('#change-modal').modal('toggle');
     $('#change-id').val(id);
     $.get(onePackageUrl+id, function (data) {
-        console.log(data);
         $('#modify-durationUnit').val("day");
         $('#modify-durationCnt').val(data.duration);
         //duration;
@@ -89,14 +88,12 @@ function changePackage(id) {
                 typeList+=categoryList;
                 typeList += '</optgroup>';
             });
-            //console.log($('.type-select'));
             $('.category-select').append(typeList);
             if (!$.AMUI.support.mutationobserver) {
                 $('#type').trigger('changed.selected.amui');
             }
         });
-
-
-
     })
 }
+
+

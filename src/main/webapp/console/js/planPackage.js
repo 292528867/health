@@ -59,7 +59,7 @@ function addPackage(){
         "recommendValue": recommendValue,
         "isNeedSupplemented": isNeedSupplemented,
         "loops": loops,
-        "iconUrl": iconUrl,
+        "icon": iconUrl,
         "detailDescriptionIcon": detailDescriptionIcon,
         "duration": duration
     };
