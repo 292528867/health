@@ -185,23 +185,23 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         Steward steward = stewardRepository.findOne(stewardId);
 
 
-        List<StewardOrder> stewardOrders = stewardOrderRepository.findAllBySteward(stewardId);
-
-        if (null != stewardOrders) {
-            Set<Services> services = new HashSet<>();
-            for (StewardOrder stewardOrder : stewardOrders) {
-                services = stewardOrder.getServices();
-            }
-            List<Services> ListServices = new ArrayList<>(services);
-            //获取取两条明星服务
-            for (int i = 0; i < 2; i++) {
-                steward.getStarService().add(ListServices.get(i).getServiceName());
-            }
-        } else {
-            //获取取两条明星服务
-            steward.getStarService().add("定期关爱");
-            steward.getStarService().add("健康跟踪");
-        }
+//        List<StewardOrder> stewardOrders = stewardOrderRepository.findAllBySteward(stewardId);
+//        if (null != stewardOrders) {
+//            Set<Services> services = new HashSet<>();
+//            for (StewardOrder stewardOrder : stewardOrders) {
+//                services = stewardOrder.getServices();
+//            }
+//            List<Services> ListServices = new ArrayList<>(services);
+//            //获取取两条明星服务
+//            for (int i = 0; i < 2; i++) {
+//                steward.getStarService().add(ListServices.get(i).getServiceName());
+//            }
+//        } else {
+//
+//        }
+        //获取取两条明星服务
+        steward.getStarService().add("定期关爱");
+        steward.getStarService().add("健康跟踪");
         return new ControllerResult<Steward>().setRet_code(0).setRet_values(steward).setMessage("成功！");
 
     }
