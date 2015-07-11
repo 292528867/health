@@ -30,6 +30,12 @@ public class UserDbRealm extends AuthorizingRealm {
 		setName("userDbRealm");
 		// 开启cache ,缓存管理器 使用Ehcache实现
 		setCachingEnabled(true);
+		// 启用session authentication缓存，并设定缓存名
+		setAuthenticationCachingEnabled(true);
+		setAuthenticationCacheName("myAuthenticationCache");
+		// 启用session authorization缓存，并设定缓存名
+		setAuthorizationCachingEnabled(true);
+		setAuthorizationCacheName("myAuthorizationCache");
 		
 		// TODO：添加测试用户
 		UserLoginToken token1 = new UserLoginToken("userName1", "", false, "127.0.0.1");
