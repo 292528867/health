@@ -28,7 +28,6 @@ import net.sf.ehcache.Cache;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
@@ -292,7 +291,6 @@ public class UserController extends AbstractBaseController<User, Long> {
         try {
             BeanUtils.copyNotNullProperties(userDto, user, "hcPackageId");
             final HcPackage hcPackage = hcPackageRepository.findOne(userDto.getHcPackageId());
-
             if (user.getHcPackages() == null) {
                 user.setHcPackages(new HashSet<HcPackage>() {{
                     add(hcPackage);
@@ -300,7 +298,6 @@ public class UserController extends AbstractBaseController<User, Long> {
             } else {
                 user.getHcPackages().add(hcPackage);
             }
-
             user = modify(user);
             user.setHcPackages(null);
             ControllerResult controllerResult = (ControllerResult) userPackageOrderService.joinPlan(userId, userDto.getHcPackageId());
@@ -315,21 +312,10 @@ public class UserController extends AbstractBaseController<User, Long> {
 
     }
 
-
-    @RequestMapping(value = "test")
-    public String test() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer YWMtAOHZhCIbEeWFUA9W7qmDRwAAAU-M35g1ZTkz4qF16sSpi8ZA0tsh1tCjBos");
-//        HttpEntity result =  emUtils.requestEMChat(headers, HttpMethod.GET, null, "chatgroups", String.class);
-        emUtils.pushTokenToCache();
-        return "1";
-    }
-
     @Override
     protected MyRepository<User, Long> getRepository() {
         return userRepository;
     }
-
 
     private boolean registerEmUser(final String username, final String password) {
         try {

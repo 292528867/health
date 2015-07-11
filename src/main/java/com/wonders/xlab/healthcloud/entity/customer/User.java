@@ -107,4 +107,6 @@ public class User extends BaseInfo<Long> {
     public void setNickName(String nickName) {
         this.nickName = nickName;
     }
+
+
 }
