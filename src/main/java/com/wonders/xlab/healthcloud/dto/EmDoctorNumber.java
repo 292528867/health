@@ -5,8 +5,6 @@ package com.wonders.xlab.healthcloud.dto;
  */
 public class EmDoctorNumber {
 
-    //医生数量
-    private int doctorNumber;
    //问候语
     private String greetings;
    //提问例子
@@ -34,13 +32,6 @@ public class EmDoctorNumber {
         this.waitContent = waitContent;
     }
 
-    public int getDoctorNumber() {
-        return doctorNumber;
-    }
-
-    public void setDoctorNumber(int doctorNumber) {
-        this.doctorNumber = doctorNumber;
-    }
 
     public String getGreetings() {
         return greetings;
