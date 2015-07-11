@@ -40,6 +40,11 @@ public class User extends BaseInfo<Long> {
     }
 
     /**
+     * 昵称
+     */
+    private String nickName = "";
+
+    /**
      * 用户使用平台
      */
     @Enumerated
@@ -93,5 +98,13 @@ public class User extends BaseInfo<Long> {
 
     public void setAppPlatform(AppPlatform appPlatform) {
         this.appPlatform = appPlatform;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 }

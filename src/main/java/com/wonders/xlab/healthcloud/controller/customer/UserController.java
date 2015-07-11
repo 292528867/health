@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
@@ -234,7 +233,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         String newRequestBody = StringUtils.replace(requestBody, "_public", "public");
 
         try {
-            responseEntity = (ResponseEntity<String>) emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", String.class);
+            responseEntity = (ResponseEntity<String>) emUtils.requestEMChat(HttpMethod.POST, newRequestBody, "chatgroups", String.class);
 
         } catch (HttpClientErrorException e) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("创建群组失败");
@@ -310,7 +309,7 @@ public class UserController extends AbstractBaseController<User, Long> {
     public String test() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer YWMtAOHZhCIbEeWFUA9W7qmDRwAAAU-M35g1ZTkz4qF16sSpi8ZA0tsh1tCjBos");
-//        HttpEntity result =  emUtils.requestEMChart(headers, HttpMethod.GET, null, "chatgroups", String.class);
+//        HttpEntity result =  emUtils.requestEMChat(headers, HttpMethod.GET, null, "chatgroups", String.class);
         emUtils.pushTokenToCache();
         return "1";
     }
@@ -329,7 +328,7 @@ public class UserController extends AbstractBaseController<User, Long> {
 
 
         try {
-            emUtils.requestEMChart(HttpMethod.POST, new ObjectMapper().writeValueAsString(bodyMap), "users", String.class);
+            emUtils.requestEMChat(HttpMethod.POST, new ObjectMapper().writeValueAsString(bodyMap), "users", String.class);
         } catch (HttpClientErrorException e) {
             return -1;
         } catch (JsonProcessingException e) {
