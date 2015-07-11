@@ -14,7 +14,9 @@ import java.util.Date;
 @Table(name = "hc_doctor")
 public class Doctor extends BaseInfo<Long> {
 
-    /** 资质 */
+    /**
+     * 资质
+     */
     private String recordUrl;
 
     /**
@@ -24,13 +26,23 @@ public class Doctor extends BaseInfo<Long> {
     private AppPlatform appPlatform;
 
     public enum AppPlatform {
-        Android,Ios,Other
+        Android, Ios, Other
     }
 
     /**
      * 真实姓名
      */
     private String iCardName;
+
+    /**
+     * 职称证
+     */
+    private String qualification;
+
+    /**
+     * 执行认证
+     */
+    private String permit;
 
     public String getRecordUrl() {
         return recordUrl;
@@ -63,5 +75,21 @@ public class Doctor extends BaseInfo<Long> {
 
     public void setiCardName(String iCardName) {
         this.iCardName = iCardName;
+    }
+
+    public String getQualification() {
+        return qualification;
+    }
+
+    public void setQualification(String qualification) {
+        this.qualification = qualification;
+    }
+
+    public String getPermit() {
+        return permit;
+    }
+
+    public void setPermit(String permit) {
+        this.permit = permit;
     }
 }

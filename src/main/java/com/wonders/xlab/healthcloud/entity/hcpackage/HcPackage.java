@@ -102,7 +102,7 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     private int cycleLimit;
 
     /** 首页小图 */
-    private String smaillIcon;
+    private String smallIcon;
 
     @JsonIgnore
     private int coefficient;
@@ -135,7 +135,7 @@ public class HcPackage extends AbstractBaseEntity<Long> {
             int duration, String icon, String detailDescriptionIcon, boolean recommend,
             int recommendValue, int clickAmount, int joinAmount, boolean isNeedSupplemented,
             Sex sex, String supplemented, boolean loops, HealthCategory healthCategory,
-            int cycleLimit, String smaillIcon, int coefficient) {
+            int cycleLimit, String smallIcon, int coefficient) {
         this.title = title;
         this.subtitle = subtitle;
         this.description = description;
@@ -153,7 +153,7 @@ public class HcPackage extends AbstractBaseEntity<Long> {
         this.loops = loops;
         this.healthCategory = healthCategory;
         this.cycleLimit = cycleLimit;
-        this.smaillIcon = smaillIcon;
+        this.smallIcon = smallIcon;
         this.coefficient = coefficient;
     }
 
@@ -285,12 +285,12 @@ public class HcPackage extends AbstractBaseEntity<Long> {
         this.loops = loops;
     }
 
-    public String getSmaillIcon() {
-        return smaillIcon;
+    public String getSmallIcon() {
+        return smallIcon;
     }
 
-    public void setSmaillIcon(String smaillIcon) {
-        this.smaillIcon = smaillIcon;
+    public void setSmallIcon(String smallIcon) {
+        this.smallIcon = smallIcon;
     }
 
     public int getCoefficient() {

@@ -9,10 +9,7 @@ import com.wonders.xlab.healthcloud.repository.evaluation.EvaluationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -35,7 +32,7 @@ public class EvaluationController extends AbstractBaseController<Evaluation, Lon
      * 测评列表
      * @return
      */
-    @RequestMapping("listEvaluation")
+    @RequestMapping(value = "listEvaluation", method = RequestMethod.GET)
     private Object listEvaluation() {
         return new ControllerResult<>().setRet_code(0).setRet_values(this.evaluationRepository.findAll()).setMessage("成功");
     }
@@ -46,7 +43,7 @@ public class EvaluationController extends AbstractBaseController<Evaluation, Lon
      * @param result
      * @return
      */
-    @RequestMapping("addEvaluation")
+    @RequestMapping(value = "addEvaluation", method = RequestMethod.POST)
     public Object addEvaluation(@RequestBody @Valid EvaluationDto evaluationDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
@@ -66,7 +63,7 @@ public class EvaluationController extends AbstractBaseController<Evaluation, Lon
      * @param result
      * @return
      */
-    @RequestMapping("updateEvaluation/evaluationId")
+    @RequestMapping(value = "updateEvaluation/evaluationId", method = RequestMethod.POST)
     public Object updateEvaluation(@PathVariable Long evaluationId, @RequestBody @Valid EvaluationDto evaluationDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();

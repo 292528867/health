@@ -3,8 +3,6 @@ package com.wonders.xlab.healthcloud.repository.hcpackage;
 import com.wonders.xlab.framework.Application;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.service.hcpackage.UserPackageOrderService;
-import com.wonders.xlab.healthcloud.utils.DateUtils;
-import org.drools.core.command.assertion.AssertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.Assert;
 
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -89,5 +86,11 @@ public class UserPackageOrderRepositoryTest {
     public void testfindByPackageCompleteAndPackageLoopsRemainder3() throws Exception {
         List<UserPackageOrder> list = userPackageOrderRepository.findByPackageCompleteAndPackageLoopsRemainder(false, false, 2);
         System.out.println("list.size() = " + list.size());
+    }
+
+    @Test
+    public void testJoinPlan() throws Exception {
+        Object joinPlan = userPackageOrderService.joinPlan(47l, 1l);
+        System.out.println("joinPlan = " + joinPlan);
     }
 }

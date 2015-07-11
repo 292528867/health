@@ -3,14 +3,15 @@ package com.wonders.xlab.healthcloud.entity.market;
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 /**
  * Created by mars on 15/7/11.
  */
 @Entity
-@Table(name = "hc_market")
-public class Market extends AbstractBaseEntity<Long> {
+@Table(name = "hc_store")
+public class Store extends AbstractBaseEntity<Long> {
 
     /** 名称 */
     private String name;
@@ -22,16 +23,28 @@ public class Market extends AbstractBaseEntity<Long> {
     private String medicineUrl;
 
     /** 图片 */
-    private String iconUrl;
+    private String picUrl;
 
-    public Market() {
+    /** 标签 */
+    @Enumerated
+    private Tag tag;
+
+    /** 简述 */
+    private String description;
+
+    public enum Tag {
+        New, Hot
     }
 
-    public Market(String name, double price, String medicineUrl, String iconUrl) {
+    public Store() {
+    }
+
+    public Store(String name, double price, String medicineUrl, String picUrl, String description) {
         this.name = name;
         this.price = price;
         this.medicineUrl = medicineUrl;
-        this.iconUrl = iconUrl;
+        this.picUrl = picUrl;
+        this.description = description;
     }
 
     public String getName() {
@@ -58,11 +71,27 @@ public class Market extends AbstractBaseEntity<Long> {
         this.medicineUrl = medicineUrl;
     }
 
-    public String getIconUrl() {
-        return iconUrl;
+    public String getPicUrl() {
+        return picUrl;
     }
 
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
+    }
+
+    public Tag getTag() {
+        return tag;
+    }
+
+    public void setTag(Tag tag) {
+        this.tag = tag;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

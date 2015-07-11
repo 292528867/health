@@ -12,10 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -39,7 +36,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
      * 标语列表
      * @return
      */
-    @RequestMapping("listBannerForConsole")
+    @RequestMapping(value = "listBannerForConsole", method = RequestMethod.GET)
     public Object listBannerForConsole(@PageableDefault(sort = "lastModifiedDate", direction = Sort.Direction.DESC)
                               Pageable pageable) {
         return new ControllerResult<List<Banner>>().setRet_code(0).setRet_values(this.bannnerRepository.findAll(pageable).getContent()).setMessage("成功");
@@ -49,7 +46,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
      * 标语列表
      * @return
      */
-    @RequestMapping("listBanner")
+    @RequestMapping(value = "listBanner", method = RequestMethod.GET)
     public Object listBanner() {
         return new ControllerResult<List<Banner>>().setRet_code(0).setRet_values(this.bannnerRepository.findBannerOrderByLastModifiedDate()).setMessage("成功");
     }
@@ -60,7 +57,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
      * @param result
      * @return
      */
-    @RequestMapping("addBanner")
+    @RequestMapping(value = "addBanner", method = RequestMethod.POST)
     public Object addBanner(@RequestBody @Valid BannerDto bannerDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
@@ -85,7 +82,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
      * @param result
      * @return
      */
-    @RequestMapping("updateBanner/{bannerId}")
+    @RequestMapping(value = "updateBanner/{bannerId}", method = RequestMethod.POST)
     public Object updateBanner(@PathVariable Long bannerId, @RequestBody @Valid BannerDto bannerDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();

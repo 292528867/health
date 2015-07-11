@@ -19,6 +19,7 @@ import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
+import com.wonders.xlab.healthcloud.service.hcpackage.UserPackageOrderService;
 import com.wonders.xlab.healthcloud.utils.BeanUtils;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
@@ -27,7 +28,6 @@ import net.sf.ehcache.Cache;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
@@ -51,6 +51,8 @@ import java.util.HashSet;
 @RequestMapping("user")
 public class UserController extends AbstractBaseController<User, Long> {
 
+    private HCCache<String, String> hcCache;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -64,10 +66,11 @@ public class UserController extends AbstractBaseController<User, Long> {
     @Qualifier(value = "idenCodeCache")
     private Cache idenCodeCache;
 
-    private HCCache<String, String> hcCache;
-
     @Autowired
     private EMUtils emUtils;
+
+    @Autowired
+    private UserPackageOrderService userPackageOrderService;
 
     @PostConstruct
     private void init() {
@@ -219,10 +222,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         if (!result) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败!");
         }
-        User user = new User();
-        user.setTel(idenCode.getTel());
-        user.setAppPlatform(idenCode.getAppPlatform());
-        user = userRepository.save(user);
+
         //创建一个群组
         ChatGroupsRequestBody groupsBody = new ChatGroupsRequestBody(idenCode.getTel(), "万达健康云_" + idenCode.getTel(), true, 1, false, idenCode.getTel());
 
@@ -233,13 +233,17 @@ public class UserController extends AbstractBaseController<User, Long> {
         String newRequestBody = StringUtils.replace(requestBody, "_public", "public");
 
         try {
-            responseEntity = (ResponseEntity<String>) emUtils.requestEMChat("POST", newRequestBody, "chatgroups", String.class);
+            responseEntity = (ResponseEntity<String>) emUtils.requestEMChat(newRequestBody, "POST", "chatgroups", String.class);
 
         } catch (HttpClientErrorException e) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("创建群组失败");
         }
 
+        User user = new User();
         user.setGroupId(objectMapper.readValue(responseEntity.getBody().toString(), ChatGroupsResponseBody.class).getData().getGroupid());
+        user.setTel(idenCode.getTel());
+        user.setAppPlatform(idenCode.getAppPlatform());
+        user = userRepository.save(user);
         return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("注册用户成功，并成功创建群组");
     }
 
@@ -273,6 +277,7 @@ public class UserController extends AbstractBaseController<User, Long> {
     }
 
     @RequestMapping(value = "modify/{userId}", method = RequestMethod.POST)
+    @Transactional
     public Object modify(@PathVariable long userId, @RequestBody @Valid UserDto userDto, BindingResult result) {
 
         if (result.hasErrors()) {
@@ -286,7 +291,6 @@ public class UserController extends AbstractBaseController<User, Long> {
         try {
             BeanUtils.copyNotNullProperties(userDto, user, "hcPackageId");
             final HcPackage hcPackage = hcPackageRepository.findOne(userDto.getHcPackageId());
-
             if (user.getHcPackages() == null) {
                 user.setHcPackages(new HashSet<HcPackage>() {{
                     add(hcPackage);
@@ -294,24 +298,18 @@ public class UserController extends AbstractBaseController<User, Long> {
             } else {
                 user.getHcPackages().add(hcPackage);
             }
-
             user = modify(user);
             user.setHcPackages(null);
-            return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("用户更新成功!");
+            ControllerResult controllerResult = (ControllerResult) userPackageOrderService.joinPlan(userId, userDto.getHcPackageId());
+            if (controllerResult.getRet_code() != 0) {
+                return controllerResult;
+            } else {
+                return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("用户更新成功!");
+            }
         } catch (Exception exp) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("更新失败!");
         }
 
-    }
-
-
-    @RequestMapping(value = "test")
-    public String test() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer YWMtAOHZhCIbEeWFUA9W7qmDRwAAAU-M35g1ZTkz4qF16sSpi8ZA0tsh1tCjBos");
-//        HttpEntity result =  emUtils.requestEMChat(headers, HttpMethod.GET, null, "chatgroups", String.class);
-        emUtils.pushTokenToCache();
-        return "1";
     }
 
     @Override
@@ -319,15 +317,14 @@ public class UserController extends AbstractBaseController<User, Long> {
         return userRepository;
     }
 
-
     private boolean registerEmUser(final String username, final String password) {
         try {
-            emUtils.requestEMChat("POST", new ObjectMapper().writeValueAsString(
+            emUtils.requestEMChat(new ObjectMapper().writeValueAsString(
                     new HashMap<String, String>() {{
                         put("username", username);
                         put("password", password);
                     }}
-            ), "users", String.class);
+            ), "POST", "users", String.class);
             return true;
         } catch (JsonProcessingException e) {
             return false;

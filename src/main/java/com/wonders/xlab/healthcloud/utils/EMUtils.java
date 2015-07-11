@@ -116,7 +116,7 @@ public class EMUtils {
      * @return
      */
     public ResponseEntity<?> requestEMChat(String method, String path, Class<?> clazz) {
-        return requestEMChat(null, method, null, path, clazz);
+        return requestEMChat(null, null, method, path, clazz);
     }
 
     /**
@@ -128,8 +128,8 @@ public class EMUtils {
      * @return 请求返回ResponseEntity
      * @return
      */
-    public ResponseEntity<?> requestEMChat(String method, Object body, String path, Class<?> clazz) {
-        return requestEMChat(null, method, body, path, clazz);
+    public ResponseEntity<?> requestEMChat(Object body, String method, String path, Class<?> clazz) {
+        return requestEMChat(null, body, method, path, clazz);
     }
 
     /**
@@ -142,7 +142,7 @@ public class EMUtils {
      * @return
      */
     public ResponseEntity<?> requestEMChat(HttpHeaders headers, String method, String path, Class<?> clazz) {
-        return requestEMChat(headers, method, null, path, clazz);
+        return requestEMChat(headers, null, method, path, clazz);
     }
 
     /**
@@ -154,7 +154,7 @@ public class EMUtils {
      * @param clazz 返回值body类型
      * @return 请求返回ResponseEntity
      */
-    public ResponseEntity<?> requestEMChat(HttpHeaders headers, String method, final Object body, String path, Class<?> clazz) {
+    public ResponseEntity<?> requestEMChat(HttpHeaders headers, final Object body, final String method, String path, Class<?> clazz) {
 
         //获取请求方式枚举
         HttpMethod httpMethod = EnumUtils.getEnum(HttpMethod.class, method.toUpperCase());

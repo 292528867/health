@@ -39,9 +39,6 @@
             top: 3px;
             left: 48%;
         }
-        img{
-            max-height: 200px;
-        }
     </style>
 </head>
 <body>
@@ -95,15 +92,6 @@
         <div class="am-cf am-padding">
             <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">信息</strong> /
                 <small>Info</small>
-            </div>
-        </div>
-        <div class="am-g">
-            <div class="am-u-sm-12 am-u-md-3">
-                <div class="am-form-group">
-                    <select data-am-selected="{maxHeight:200, btnSize: 'sm',  searchBox:1}" id="type-select" onchange="searchArticle(this.value)">
-                        <option selected value="">请选择类别</option>
-                    </select>
-                </div>
             </div>
         </div>
 
@@ -210,76 +198,49 @@
                 <!--<form action="http://10.10.10.231:8080/course/saveCourse" class="am-form" id="form1" method="post"-->
                 <h2>以下是修改文章表单,上面按‘编辑’按钮才会显示内容</h2>
 
-                <form action="#" class="am-form" id="form1" method="post"
-                      enctype="multipart/form-data">
+                <form action="#" class="am-form"
+                      id="form1" method="post"
+                      enctype="multipart/form-data" >
                     <fieldset>
-                        <input type="hidden" id="id"/>
-
                         <div class="am-form-group">
-                            <label for="title">文章标题：</label>
-                            <input type="text" id="title" placeholder=""
-                                   required name="title"/>
+                            <label for="name">商品名称：</label>
+                            <input type="text" id="name" placeholder=""
+                                   required name="name"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="type" class="about-color">类别:</label>
-                            <br/>
-                            <select data-am-selected="{maxHeight:200, btnSize: 'sm',  searchBox:1}" id="type" name="type">
-                                <option selected>点击选择</option>
-                            </select>
+                            <label for="description">商品简介：（列表页展示）</label>
+                            <input type="text" id="description" placeholder=""
+                                   required name="description"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="desc">文章简介：（列表页展示）</label>
-                            <input type="text" id="desc" placeholder=""
-                                   required name="desc"/>
+                            <label for="price">商品价格：（请填写数字）</label>
+                            <input type="tel" id="price" placeholder=""
+                                   required name="price"/>
                         </div>
                         <div class="am-form-group">
-                            <label for="htmlInfo">课程介绍：（必填）</label>
-                            <script id="htmlInfo" type="text/plain" style="width:1024px;height:500px;"></script>
+                            <label for="medicineUrl">商品地址：</label>
+                            <input type="text" id="medicineUrl" placeholder=""
+                                   required name="medicineUrl"/>
                         </div>
-                        <br/>
-                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="changeCss()">
-                            一键格式化富文本样式
-                        </button>
-                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="insertTexts()">
-                            一键增加文字
-                        </button>
-                        <br/>
-                        <br/>
                         <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="openImgUpload()">
-                            <i class="am-icon-cloud-upload"></i> 选择要上传的首页展示图片(300*300)
+                            <i class="am-icon-cloud-upload"></i> 选择要上传的展示图片
                         </button>
                         <br/>
                         <br/>
 
                         <div class="am-form-group">
-                            <label for="pictureUrl">可直接填写图片地址（如已本地上传请勿修改）：</label>
-                            <input type="text" id="pictureUrl" placeholder=""
-                                   required name="pictureUrl"/>
+                            <label for="picUrl">可直接填写图片地址（如已本地上传请勿修改）：</label>
+                            <input type="text" id="picUrl" placeholder=""
+                                   required name="picUrl"/>
                         </div>
                         <br/>
                         <br/>
-
                         <img src="" alt="" id="index-img-index"/>
                         <br/>
-                        <br/>
-
-                        <div class="am-form-group">
-                            <label for="pictureUrl2">可直接填写banner图片地址（如已本地上传请勿修改）：</label>
-                            <input type="text" id="pictureUrl2" placeholder=""
-                                   required name="pictureUrl2"/>
-                        </div>
-                        <br/>
-                        <br/>
-                        <img src="" alt="" id="banner-img-index"/>
-                        <br/>
-                        <br/>
-
-
-                        <button class="am-btn am-btn-secondary" type="button" id="formSub" onclick="articleAdd()">提交
+                        <button class="am-btn am-btn-secondary" type="button" id="formSub" onclick="goodAdd()">提交
                         </button>
                     </fieldset>
                 </form>
-
             </div>
         </div>
     </div>
@@ -310,17 +271,6 @@
                     <input type="file" multiple accept="image/*" name="file"/>
 
                     <button class="am-btn am-btn-secondary" type="submit" id="index-img-sub">提交</button>
-                </fieldset>
-            </form>
-            <form action="http://101.231.124.8:45677/xlab-healthcloud/discovery/cms/uploadPicture" class="am-form"
-                  id="banner-img-form" method="post"
-                  enctype="multipart/form-data">
-                <fieldset>
-                    <h2>横条展示banner图片，banner图要宽一些。</h2>
-                    <img src="" alt="" id="banner-img" style="height: 100px;"/>
-                    <input type="file" multiple accept="image/*" name="file"/>
-
-                    <button class="am-btn am-btn-secondary" type="submit" id="banner-img-sub">提交</button>
                 </fieldset>
             </form>
             <div class="progress">
@@ -373,24 +323,12 @@
 //                location.reload();
                 $('#index-img').attr('src', responseText.ret_values);
                 $('#index-img-index').attr('src', responseText.ret_values);
-                $('#pictureUrl').val(responseText.ret_values);
+                $('#picUrl').val(responseText.ret_values);
                 $('#index-img-sub').attr('disabled', false);
-                        percent.html('上传成功');
+                percent.html('上传成功');
             }
         }
 
-        function showResponseBanner(responseText, statusText, xhr, $form) {
-            console.log('status: ' + statusText + '\n\nresponseText: \n' + responseText);
-            console.log(responseText);
-            if (responseText.ret_code == '0') {
-                $('#banner-img').attr('src', responseText.ret_values);
-                $('#banner-img-index').attr('src', responseText.ret_values);
-                $('#pictureUrl2').val(responseText.ret_values);
-                $('#banner-img-sub').attr('disabled', false);
-                $('#change-modal').modal('toggle'),
-                        percent.html('上传成功');
-            }
-        }
 
 
         $('#index-img-form').on('submit', function (e) {
@@ -414,25 +352,6 @@
         });
 
 
-        $('#banner-img-form').on('submit', function (e) {
-            e.preventDefault(); // prevent native submit
-            console.log('正在提交');
-            $('#banner-img-sub').attr('disabled', 'disabled');
-            $(this).ajaxSubmit({
-                        target: '.am-padding-left',
-                        success: showResponseBanner,
-                        uploadProgress: function (event, position, total, percentComplete) {
-                            var percentVal = percentComplete + '%';
-                            bar.width(percentVal)
-                            if (percentComplete == 100) {
-                                percentVal = "<i class='am-icon-spinner am-icon-spin'></i> 请等待服务器提交";
-                            }
-                            percent.html(percentVal);
-                        }
-                    },
-                    function () {
-                    })
-        });
 
 
     });

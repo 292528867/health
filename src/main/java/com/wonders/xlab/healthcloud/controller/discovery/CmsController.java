@@ -16,8 +16,6 @@ import javax.validation.Valid;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
@@ -48,8 +46,6 @@ import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 @RestController
 @RequestMapping(value = "discovery/cms")
 public class CmsController {
-	/** 日志记录器 */
-	private static final Logger logger = LoggerFactory.getLogger("com.wonders.xlab.healthcloud.controller.discovery.CmsController");
 	
     @Autowired
     protected ObjectMapper objectMapper;
@@ -119,7 +115,9 @@ public class CmsController {
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
 		
 		if (StringUtils.isEmpty(hc.getFirstRelatedIds())) 
-			return new ControllerResult<List>().setRet_code(0).setRet_values(new ArrayList<>()).setMessage("没有1级关联！");
+			return new ControllerResult<List<RelatedCategoryComboDto>>()
+					.setRet_code(0)
+					.setRet_values(new ArrayList<RelatedCategoryComboDto>()).setMessage("没有1级关联！");
 		String[] str_ids = hc.getFirstRelatedIds().split(",");
 		Long[] long_ids = new Long[str_ids.length];
 		for (int i = 0; i < str_ids.length; i++) 
@@ -153,7 +151,9 @@ public class CmsController {
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
 		
 		if (StringUtils.isEmpty(hc.getOtherRelatedIds())) 
-			return new ControllerResult<List>().setRet_code(0).setRet_values(new ArrayList<>()).setMessage("没有无关系关联！");
+			return new ControllerResult<List<RelatedCategoryComboDto>>()
+					.setRet_code(0)
+					.setRet_values(new ArrayList<RelatedCategoryComboDto>()).setMessage("没有无关系关联！");
 		String[] str_ids = hc.getFirstRelatedIds().split(",");
 		Long[] long_ids = new Long[str_ids.length];
 		for (int i = 0; i < str_ids.length; i++) 
