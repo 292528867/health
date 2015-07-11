@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Created by mars on 15/7/11.
@@ -29,6 +30,15 @@ public class MarketController extends AbstractBaseController<Market, Long> {
     @Override
     protected MyRepository<Market, Long> getRepository() {
         return marketRepository;
+    }
+
+    /**
+     * 市场列表
+     * @return
+     */
+    @RequestMapping("listMarket")
+    public Object listMarket() {
+        return new ControllerResult<List<Market>>().setRet_code(0).setRet_values(this.marketRepository.findOrderByLastModifiedDateDesc()).setMessage("成功");
     }
 
     /**
