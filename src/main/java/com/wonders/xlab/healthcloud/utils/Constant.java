@@ -5,7 +5,6 @@ package com.wonders.xlab.healthcloud.utils;
  */
 public class Constant {
 
-    public final static long IOS_XINGE_ACCESS_ID = 2200129154;
-
+  
 
 }
