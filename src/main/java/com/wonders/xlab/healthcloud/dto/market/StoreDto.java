@@ -25,7 +25,7 @@ public class StoreDto {
 
     /** 图片 */
     @NotNull(message = "图片图能为空")
-    private String iconUrl;
+    private String picUrl;
 
     /** 标签 */
     private String tag;
@@ -39,7 +39,7 @@ public class StoreDto {
                 name,
                 Double.parseDouble(price),
                 medicineUrl,
-                iconUrl,
+                picUrl,
                 description
         );
         if (tag != null)
@@ -51,7 +51,7 @@ public class StoreDto {
         store.setName(name);
         store.setPrice(Double.parseDouble(price));
         store.setMedicineUrl(medicineUrl);
-        store.setIconUrl(iconUrl);
+        store.setPicUrl(picUrl);
         store.setDescription(description);
         if (tag != null)
             store.setTag(Store.Tag.values()[Integer.parseInt(tag)]);
@@ -82,12 +82,12 @@ public class StoreDto {
         this.medicineUrl = medicineUrl;
     }
 
-    public String getIconUrl() {
-        return iconUrl;
+    public String getPicUrl() {
+        return picUrl;
     }
 
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
     }
 
     public String getTag() {

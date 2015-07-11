@@ -47,11 +47,11 @@ public class StoreController extends AbstractBaseController<Store, Long> {
             return new ControllerResult<List<Store>>()
                     .setRet_code(0).setRet_values(this.storeRepository.findAll(filters, sort))
                     .setMessage("成功");
-        } else {
-            return new ControllerResult<List<Store>>()
-                    .setRet_code(0).setRet_values(this.storeRepository.findAll(sort))
-                    .setMessage("成功");
         }
+
+        return new ControllerResult<List<Store>>()
+                .setRet_code(0).setRet_values(this.storeRepository.findAll(sort))
+                .setMessage("成功");
     }
 
     /**
