@@ -1,6 +1,6 @@
 package com.wonders.xlab.healthcloud.dto.market;
 
-import com.wonders.xlab.healthcloud.entity.market.Market;
+import com.wonders.xlab.healthcloud.entity.market.Store;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -8,7 +8,7 @@ import javax.validation.constraints.Pattern;
 /**
  * Created by mars on 15/7/11.
  */
-public class MarketDto {
+public class StoreDto {
 
     /** 名称 */
     @NotNull(message = "名称不能为空")
@@ -27,8 +27,8 @@ public class MarketDto {
     @NotNull(message = "图片图能为空")
     private String iconUrl;
 
-    public Market toNewMarket() {
-        Market market = new Market(
+    public Store toNewStore() {
+        Store market = new Store(
                 name,
                 Double.parseDouble(price),
                 medicineUrl,
@@ -37,12 +37,12 @@ public class MarketDto {
         return market;
     }
 
-    public Market updateMarket(Market market) {
-        market.setName(name);
-        market.setPrice(Double.parseDouble(price));
-        market.setMedicineUrl(medicineUrl);
-        market.setIconUrl(iconUrl);
-        return market;
+    public Store updateStore(Store store) {
+        store.setName(name);
+        store.setPrice(Double.parseDouble(price));
+        store.setMedicineUrl(medicineUrl);
+        store.setIconUrl(iconUrl);
+        return store;
     }
 
     public String getName() {
