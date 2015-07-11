@@ -28,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
@@ -40,7 +39,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
 
 
 /**
@@ -146,8 +146,8 @@ public class UserController extends AbstractBaseController<User, Long> {
         //用户为空创建用户和第三方关联
         if (null == user) {
             //创建环信账号
-            int result = registerEmUsers(token.getTel(), token.getTel());
-            if (-1 == result) {
+            boolean result = registerEmUser(token.getTel(), token.getTel());
+            if (!result) {
                 return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败!");
             }
             user = new User();
@@ -212,11 +212,11 @@ public class UserController extends AbstractBaseController<User, Long> {
         }
     }
 
-    private ControllerResult<?> addUserBeforeLogin(IdenCode idenCode) throws Exception{
+    private ControllerResult<?> addUserBeforeLogin(IdenCode idenCode) throws Exception {
 
         //创建环信账号
-        int result = registerEmUsers(idenCode.getTel(), idenCode.getTel());
-        if (-1 == result) {
+        boolean result = registerEmUser(idenCode.getTel(), idenCode.getTel());
+        if (!result) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败!");
         }
         User user = new User();
@@ -239,7 +239,7 @@ public class UserController extends AbstractBaseController<User, Long> {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("创建群组失败");
         }
 
-       user.setGroupId(objectMapper.readValue(responseEntity.getBody().toString(), ChatGroupsResponseBody.class).getData().getGroupid());
+        user.setGroupId(objectMapper.readValue(responseEntity.getBody().toString(), ChatGroupsResponseBody.class).getData().getGroupid());
         return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("注册用户成功，并成功创建群组");
     }
 
@@ -320,21 +320,17 @@ public class UserController extends AbstractBaseController<User, Long> {
     }
 
 
-    private int registerEmUsers(String username, String password) {
-
-        Map<String, String> bodyMap = new HashMap<>();
-        bodyMap.put("username", username);
-        bodyMap.put("password", password);
-
-
+    private boolean registerEmUser(final String username, final String password) {
         try {
-            emUtils.requestEMChat("POST", new ObjectMapper().writeValueAsString(bodyMap), "users", String.class);
-        } catch (HttpClientErrorException e) {
-            return -1;
+            emUtils.requestEMChat("POST", new ObjectMapper().writeValueAsString(
+                    new HashMap<String, String>() {{
+                        put("username", username);
+                        put("password", password);
+                    }}
+            ), "users", String.class);
+            return true;
         } catch (JsonProcessingException e) {
-            return -1;
+            return false;
         }
-        return 0;
-
     }
 }
