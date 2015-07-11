@@ -14,5 +14,5 @@ public class Constant {
     //android信鸽secret_key
     private final static String XINGE_ANDROID_SECRET_KEY = "2b6434d49089b3fe2db61cf3d0e04708";
 
-
+    private final static String REPLY_PUSH = "";
 }
