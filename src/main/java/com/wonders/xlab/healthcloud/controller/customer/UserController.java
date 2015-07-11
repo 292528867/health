@@ -305,7 +305,7 @@ public class UserController extends AbstractBaseController<User, Long> {
             user.setHcPackages(null);
             ControllerResult controllerResult = (ControllerResult) userPackageOrderService.joinPlan(userId, userDto.getHcPackageId());
             if (controllerResult.getRet_code() != 0) {
-                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("更新失败!");
+                return controllerResult;
             } else {
                 return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("用户更新成功!");
             }
