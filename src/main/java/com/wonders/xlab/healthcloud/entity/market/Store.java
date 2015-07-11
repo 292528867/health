@@ -27,6 +27,9 @@ public class Store extends AbstractBaseEntity<Long> {
     /** 标签 */
     private Tag tag;
 
+    /** 简述 */
+    private String description;
+
     public enum Tag{
         New, Hot
     }
@@ -34,11 +37,12 @@ public class Store extends AbstractBaseEntity<Long> {
     public Store() {
     }
 
-    public Store(String name, double price, String medicineUrl, String iconUrl) {
+    public Store(String name, double price, String medicineUrl, String iconUrl, String description) {
         this.name = name;
         this.price = price;
         this.medicineUrl = medicineUrl;
         this.iconUrl = iconUrl;
+        this.description = description;
     }
 
     public String getName() {
@@ -79,5 +83,13 @@ public class Store extends AbstractBaseEntity<Long> {
 
     public void setTag(Tag tag) {
         this.tag = tag;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -27,14 +27,24 @@ public class StoreDto {
     @NotNull(message = "图片图能为空")
     private String iconUrl;
 
+    /** 标签 */
+    private String tag;
+
+    /** 简述 */
+    @NotNull(message = "简述不能为空")
+    private String description;
+
     public Store toNewStore() {
-        Store market = new Store(
+        Store store = new Store(
                 name,
                 Double.parseDouble(price),
                 medicineUrl,
-                iconUrl
+                iconUrl,
+                description
         );
-        return market;
+        if (tag != null)
+            store.setTag(Store.Tag.values()[Integer.parseInt(tag)]);
+        return store;
     }
 
     public Store updateStore(Store store) {
@@ -42,6 +52,9 @@ public class StoreDto {
         store.setPrice(Double.parseDouble(price));
         store.setMedicineUrl(medicineUrl);
         store.setIconUrl(iconUrl);
+        store.setDescription(description);
+        if (tag != null)
+            store.setTag(Store.Tag.values()[Integer.parseInt(tag)]);
         return store;
     }
 
@@ -77,4 +90,19 @@ public class StoreDto {
         this.iconUrl = iconUrl;
     }
 
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
