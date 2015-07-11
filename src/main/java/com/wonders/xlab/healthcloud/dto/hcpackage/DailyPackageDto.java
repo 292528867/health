@@ -1,7 +1,5 @@
 package com.wonders.xlab.healthcloud.dto.hcpackage;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.Date;
 
 /**
@@ -18,31 +16,29 @@ public class DailyPackageDto {
     /** 任务名称 */
     private String taskName;
 
-    /** 是否完成 */
-    @JsonIgnore
-    private boolean complete;
-
+    /** 是否完成 0 未完成 1 完成 */
     private int isCompleted;
 
     /** 点击次数 */
     private int clickAmount;
 
+    /** 是显示当前的数据 0 否 1 是 */
+    private int current;
+
     public DailyPackageDto() {
     }
 
-    public DailyPackageDto(Long packageDetailId, Date recommendTimeFrom, String taskName, boolean complete) {
+    public DailyPackageDto(Long packageDetailId, Date recommendTimeFrom, String taskName) {
         this.packageDetailId = packageDetailId;
         this.recommendTimeFrom = recommendTimeFrom;
         this.taskName = taskName;
-        this.complete = complete;
     }
 
-    public DailyPackageDto(Long packageDetailId, Date recommendTimeFrom, String taskName, boolean complete, int clickAmount) {
+    public DailyPackageDto(Long packageDetailId, Date recommendTimeFrom, String taskName, int clickAmount) {
         this.clickAmount = clickAmount;
         this.packageDetailId = packageDetailId;
         this.recommendTimeFrom = recommendTimeFrom;
         this.taskName = taskName;
-        this.complete = complete;
     }
 
     public Long getPackageDetailId() {
@@ -61,7 +57,6 @@ public class DailyPackageDto {
         this.recommendTimeFrom = recommendTimeFrom;
     }
 
-
     public String getTaskName() {
         return taskName;
     }
@@ -70,17 +65,8 @@ public class DailyPackageDto {
         this.taskName = taskName;
     }
 
-    public boolean isComplete() {
-        return complete;
-    }
-
-    public void setComplete(boolean complete) {
-        this.complete = complete;
-    }
-
     public int getIsCompleted() {
-        if (complete) return 1;
-        else return 0;
+        return isCompleted;
     }
 
     public void setIsCompleted(int isCompleted) {
@@ -93,5 +79,13 @@ public class DailyPackageDto {
 
     public void setClickAmount(int clickAmount) {
         this.clickAmount = clickAmount;
+    }
+
+    public int getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(int current) {
+        this.current = current;
     }
 }

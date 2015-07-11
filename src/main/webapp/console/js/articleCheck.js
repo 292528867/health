@@ -17,6 +17,9 @@ $.get(typeUrl, function (data) {
     $("#type").append(datas);
     $("#type-select").append(datas);
 });
+if(localStorage.getItem('typeId')!=null) {
+    searchArticle(localStorage.getItem('typeId'));
+}
 
 
 function openImgUpload() {
@@ -32,7 +35,8 @@ function articleAdd() {
     var type = $('#type').val();
     var id = $('#id').val();
 
-    var htmlInfo = editor.html();
+    //var htmlInfo = editor.html();
+    var htmlInfo = UE.getEditor('htmlInfo').getContent();
     //$('#courseDetail').val(editor.html());
 
     if (title.length == 0 || desc.length == 0 || pictureUrl.length == 0 ||pictureUrl2.length == 0 || htmlInfo.length == 0 || type.length == 0) {
@@ -57,8 +61,14 @@ function articleAdd() {
         headers: {"Accept": "application/json", "Content-Type": "application/json; charset=UTF-8"},
         success: function (response) {
             if (response.ret_code == 0) {
-                alert('success');
-                location.reload();
+                alert('success,不跳转了啊，有BUG 说。。');
+                //location.reload();
+                //articles[id].title = title;
+                //articles[id].desc = desc;
+                //articles[id].pictureUrl = pictureUrl;
+                //articles[id].pictureUrl2 = pictureUrl2;
+                //articles[id].type = type;
+                //articles[id].htmlInfo = htmlInfo;
             }
             else
                 alert(response.err_msg);
@@ -74,14 +84,14 @@ function articleAdd() {
 
 var articles;
 function searchArticle(id) {
-    $('#allDatas').html('');
-    if (id.length == 0) {
+    if (id.length == 0||id==null) {
         return false;
     }
+    $('#allDatas').html('');
     $('#type').val(id);
+    localStorage.setItem('typeId',id);
     //$('#type').attr('value', id);
     //$("#type").find("option[text=id]").attr("selected",true);
-    console.log(id);
     $.get(articleSearchUrl + id, function (data) {
         //  location.reload();
         articles = data.ret_values;
@@ -119,10 +129,11 @@ function changeArticle(id) {
     $('#id').val(data.id);
     $('#title').val(data.title);
     $('#desc').val(data.description);
-    $('#type').val($('#type-select').val());
+    $('#type').val($('#type-select').val()||localStorage.getItem('typeId'));
 
-    editor.html(data.htmlInfo);
+    //editor.html(data.htmlInfo);
     $('#index-img-index').attr('src',data.pictureUrl);
+    UE.getEditor('htmlInfo').setContent(data.htmlInfo);
     $('#index-img').attr('src',data.pictureUrl);
     $('#pictureUrl').val(data.pictureUrl);
     $('#banner-img-index').attr('src', data.pictureUrl2);
