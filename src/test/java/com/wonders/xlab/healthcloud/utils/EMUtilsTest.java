@@ -73,7 +73,7 @@ public class EMUtilsTest {
 
     @Test
     public void testRequstEMChatGet() throws Exception {
-        ResponseEntity result = emUtils.requestEMChat("GET", null, "chatgroups", String.class);
+        ResponseEntity result = emUtils.requestEMChat("get", null, "chatgroups", String.class);
         System.out.println("result.getBody() = " + result.getBody());
     }
 }

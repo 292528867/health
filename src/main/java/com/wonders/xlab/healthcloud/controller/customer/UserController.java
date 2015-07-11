@@ -233,7 +233,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         String newRequestBody = StringUtils.replace(requestBody, "_public", "public");
 
         try {
-            responseEntity = (ResponseEntity<String>) emUtils.requestEMChat(HttpMethod.POST, newRequestBody, "chatgroups", String.class);
+            responseEntity = (ResponseEntity<String>) emUtils.requestEMChat("POST", newRequestBody, "chatgroups", String.class);
 
         } catch (HttpClientErrorException e) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("创建群组失败");
@@ -328,7 +328,7 @@ public class UserController extends AbstractBaseController<User, Long> {
 
 
         try {
-            emUtils.requestEMChat(HttpMethod.POST, new ObjectMapper().writeValueAsString(bodyMap), "users", String.class);
+            emUtils.requestEMChat("POST", new ObjectMapper().writeValueAsString(bodyMap), "users", String.class);
         } catch (HttpClientErrorException e) {
             return -1;
         } catch (JsonProcessingException e) {

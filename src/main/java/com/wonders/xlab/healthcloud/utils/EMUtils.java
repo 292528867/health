@@ -157,7 +157,7 @@ public class EMUtils {
     public ResponseEntity<?> requestEMChat(HttpHeaders headers, String method, final Object body, String path, Class<?> clazz) {
 
         //获取请求方式枚举
-        HttpMethod httpMethod = EnumUtils.getEnum(HttpMethod.class, method);
+        HttpMethod httpMethod = EnumUtils.getEnum(HttpMethod.class, method.toUpperCase());
 //----------------发布时，需取消以下注释－－－－－－－－－－－－－－－－
 //        String token = hcCache.getFromCache("access_token");
 //        //缓存Cache失效，重新请求放到缓存
