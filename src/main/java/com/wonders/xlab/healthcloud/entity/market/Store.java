@@ -9,7 +9,7 @@ import javax.persistence.Table;
  * Created by mars on 15/7/11.
  */
 @Entity
-@Table(name = "hc_market")
+@Table(name = "hc_store")
 public class Store extends AbstractBaseEntity<Long> {
 
     /** 名称 */
