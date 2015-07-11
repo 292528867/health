@@ -19,6 +19,7 @@ import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
+import com.wonders.xlab.healthcloud.service.hcpackage.UserPackageOrderService;
 import com.wonders.xlab.healthcloud.utils.BeanUtils;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
@@ -51,6 +52,8 @@ import java.util.HashSet;
 @RequestMapping("user")
 public class UserController extends AbstractBaseController<User, Long> {
 
+    private HCCache<String, String> hcCache;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -64,10 +67,11 @@ public class UserController extends AbstractBaseController<User, Long> {
     @Qualifier(value = "idenCodeCache")
     private Cache idenCodeCache;
 
-    private HCCache<String, String> hcCache;
-
     @Autowired
     private EMUtils emUtils;
+
+    @Autowired
+    private UserPackageOrderService userPackageOrderService;
 
     @PostConstruct
     private void init() {
@@ -273,6 +277,7 @@ public class UserController extends AbstractBaseController<User, Long> {
     }
 
     @RequestMapping(value = "modify/{userId}", method = RequestMethod.POST)
+    @Transactional
     public Object modify(@PathVariable long userId, @RequestBody @Valid UserDto userDto, BindingResult result) {
 
         if (result.hasErrors()) {
@@ -297,7 +302,12 @@ public class UserController extends AbstractBaseController<User, Long> {
 
             user = modify(user);
             user.setHcPackages(null);
-            return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("用户更新成功!");
+            ControllerResult controllerResult = (ControllerResult) userPackageOrderService.joinPlan(userId, userDto.getHcPackageId());
+            if (controllerResult.getRet_code() != 0) {
+                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("更新失败!");
+            } else {
+                return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("用户更新成功!");
+            }
         } catch (Exception exp) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("更新失败!");
         }
