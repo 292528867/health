@@ -65,7 +65,7 @@ public class EMUtilsTest {
         }};
 
         String body = new ObjectMapper().writeValueAsString(request);
-        ResponseEntity result = emUtils.requestEMChat(HttpMethod.POST, body, "users", String.class);
+        ResponseEntity result = emUtils.requestEMChat("POST", body, "users", String.class);
 //        Map body = (Map) result.getBody();
 //        System.out.println("result.getBody() = " + body.size());
         System.out.println("result.getBody() = " + result.getBody());
@@ -73,7 +73,7 @@ public class EMUtilsTest {
 
     @Test
     public void testRequstEMChatGet() throws Exception {
-        ResponseEntity result = emUtils.requestEMChat(HttpMethod.GET, null, "chatgroups", String.class);
+        ResponseEntity result = emUtils.requestEMChat("GET", null, "chatgroups", String.class);
         System.out.println("result.getBody() = " + result.getBody());
     }
 }
