@@ -28,7 +28,7 @@ function articleAdd() {
     var pictureUrl2 = $('#pictureUrl2').val();
     var type = $('#type').val();
 
-    var htmlInfo = editor.html();
+    var htmlInfo = UE.getEditor('htmlInfo').getContent();
     //$('#courseDetail').val(editor.html());
 
     if (title.length==0||desc.length==0||pictureUrl.length==0||pictureUrl2.length==0||htmlInfo.length==0||type.length==0) {

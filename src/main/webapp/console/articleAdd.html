@@ -107,7 +107,8 @@
                         <div class="am-form-group">
                             <label for="type" class="about-color">类别:</label>
                             <br/>
-                            <select data-am-selected="{maxHeight:200, btnSize: 'sm',  searchBox:1}" id="type" name="type" >
+                            <select data-am-selected="{maxHeight:200, btnSize: 'sm',  searchBox:1}" id="type"
+                                    name="type">
                                 <option selected>点击选择</option>
                             </select>
                         </div>
@@ -118,8 +119,16 @@
                         </div>
                         <div class="am-form-group">
                             <label for="htmlInfo">课程介绍：（必填）</label>
-                            <textarea id="htmlInfo" name="htmlInfo" style="height:400px;"></textarea>
+                            <script id="htmlInfo" type="text/plain" style="width:1024px;height:500px;"></script>
+
+                            <!--<textarea id="htmlInfo" name="htmlInfo" style="height:400px;"></textarea>-->
                         </div>
+                        <br/>
+                        <button type="button" class="am-btn am-btn-warning am-btn-sm" onclick="changeCss()">
+                            一键格式化富文本样式
+                        </button>
+                        <br/>
+                        <br/>
                         <button type="button" class="am-btn am-btn-primary am-btn-sm" onclick="openImgUpload()">
                             <i class="am-icon-cloud-upload"></i> 选择要上传的展示图片
                         </button>
@@ -309,38 +318,27 @@
 
 </script>
 
-<link rel="stylesheet" href="kindeditor/themes/default/default.css"/>
-<script charset="utf-8" src="kindeditor/kindeditor.js"></script>
-<script charset="utf-8" src="kindeditor/lang/zh_CN.js"></script>
-<script>
-    var editor;
-    var editor;
-    KindEditor.ready(function (K) {
-        var options = {
-            filterMode: true,
-            themeType: 'default',
-            uploadJson: commonUrl + 'discovery/cms/fileUpLoad',
-            allowFileManager: false,
-            afterCreate: function () {
-                var self = this;
-                K.ctrl(document, 13, function () {
-                    debugger;
-                    self.sync();
-                });
-                K.ctrl(self.edit.doc, 13, function () {
-                    debugger;
-                    self.sync();
-                });
-            },
-            fileManagerJson: '',
-            resizeType: 1
-        };
-        editor = K.create('#htmlInfo', options);
-    });
-</script>
 <script src="js/articleAdd.js"></script>
 <script>
     $('#admin-offcanvas').load('common/adminSidebar.html');
+</script>
+<script src="ueditor/ueditor.config.js"></script>
+<script src="ueditor/ueditor.all.js"></script>
+<script type="text/javascript">
+    var ueScope = {}, mdScope = {};
+
+    $(document).ready(function () {
+        $.extend(ueScope, window);
+
+        ue = UE.getEditor('htmlInfo');
+    });
+ function changeCss() {
+     ue = UE.getEditor('htmlInfo');
+     ue.execCommand('selectall');
+     ue.execCommand('forecolor','#666666');
+     ue.execCommand('fontsize','18px');
+     ue.execCommand('fontfamily','Microsoft YaHei,微软雅黑' );
+ }
 </script>
 </body>
 </html>
