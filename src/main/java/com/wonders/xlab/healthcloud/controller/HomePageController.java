@@ -16,6 +16,10 @@ import com.wonders.xlab.healthcloud.utils.DateUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,7 +51,9 @@ public class HomePageController {
      * @return
      */
     @RequestMapping("listHomePage/{userId}")
-    public Object listHomePage(@PathVariable long userId) {
+    public Object listHomePage(@PathVariable long userId,
+                               @PageableDefault(page = 0, size = 1, sort = "recommendTimeFrom", direction = Sort.Direction.DESC)
+                               Pageable pageable) {
         try {
             Map<String, Object> resultMap = new HashMap<>();
             // 查询所有的标语
@@ -65,10 +71,13 @@ public class HomePageController {
 
             List<HcPackageDetail> allDetailList = new ArrayList<>();
             // 完成计划的Id
-            List<Long> packageDetailIds = new ArrayList<>();
-
+            List<Long> completeDetailIds = new ArrayList<>();
             // 查看完成度
             List<ProgressDto> progressDtos = new ArrayList<>();
+
+            List<Long> currentDetailIds = new ArrayList<>();
+
+            Date now = new Date();
 
             for (UserPackageOrder upo : userPackageOrders) {
                 if (upo.getHcPackageDetailIds() != null) {
@@ -76,7 +85,7 @@ public class HomePageController {
                     Long[] longDetails = new Long[strdetails.length];
                     for (int i = 0; i < strdetails.length; i++)
                         longDetails[i] = Long.parseLong(strdetails[i]);
-                    packageDetailIds.addAll(Arrays.asList(longDetails));
+                    completeDetailIds.addAll(Arrays.asList(longDetails));
                 }
                 // 持续时间
                 int duration = upo.getHcPackage().getDuration();
@@ -86,57 +95,62 @@ public class HomePageController {
                 if (day != 1) {
                     progress = day * 100 / duration;
                 }
-
                 progressDtos.add(
                         new ProgressDto(
-                                upo.getHcPackage().getHealthCategory().getTitle(),
+                                upo.getHcPackage().getHealthCategory().getClassification().getTitle(),
                                 upo.getHcPackage().getTitle(),
                                 upo.getHcPackage().getSmaillIcon(),
                                 progress
                         )
                 );
-
+                // 查询当前包的当天任务
                 List<HcPackageDetail> hcPackageDetails = this.hcPackageDetailRepository.findByHcPackageIdOrderbyRecommendTimeFrom(upo.getHcPackage().getId(), day);
+
+                // 查询当天离现在最近的任务
+                Page<HcPackageDetail> detailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAndPageable(upo.getHcPackage().getId(), false, day, now, pageable);
+
+                if (detailFrom.hasContent()) {
+                    currentDetailIds.add(detailFrom.getContent().get(0).getId());
+                }
+
                 allDetailList.addAll(hcPackageDetails);
             }
+
             // 添加进度
             resultMap.put("progress", progressDtos);
 
             List<DailyPackageDto> hourTasks = new ArrayList<>();
             List<DailyPackageDto> dayTasks = new ArrayList<>();
 
-
-            // 默认完成 1 完成 0 未完成
+            // 小时任务栏，全天任务栏 默认完成 1 完成 0 未完成
             int hourComplete = 1;
             int dayComplete = 1;
+
             for (HcPackageDetail detail : allDetailList) {
+                DailyPackageDto dto = new DailyPackageDto(
+                        detail.getId(),
+                        detail.getRecommendTimeFrom(),
+                        detail.getTaskName(),
+                        detail.getClickAmount()
+                );
+                // 存在完成任务的id，说明已完成
+                if (completeDetailIds.contains(detail.getId()))
+                    dto.setIsCompleted(1);
+                // 如果不包含任务id，说明还有任务没有完成
+                if (!completeDetailIds.contains(detail.getId()))
+                    dayComplete = 0;
+                // 判断当前是否是现在数据
+                if (currentDetailIds.contains(detail.getId()))
+                    dto.setCurrent(1);
                 if (detail.isFullDay()) {
-                    dayTasks.add(new DailyPackageDto(
-                                    detail.getId(),
-                                    detail.getRecommendTimeFrom(),
-                                    detail.getTaskName(),
-                                    packageDetailIds.contains(detail.getId()),
-                                    detail.getClickAmount()
-                            )
-                    );
-                    // 如果没有包含id，说明没有完成
-                    if (packageDetailIds.contains(detail.getId()))
-                        dayComplete = 0;
+                    dayTasks.add(dto);
                 } else {
-                    hourTasks.add(new DailyPackageDto(
-                                    detail.getId(),
-                                    detail.getRecommendTimeFrom(),
-                                    detail.getTaskName(),
-                                    packageDetailIds.contains(detail.getId()),
-                                    detail.getClickAmount()
-                            )
-                    );
-                    if (packageDetailIds.contains(detail.getId()))
-                        hourComplete = 0;
+                    hourTasks.add(dto);
                 }
             }
-            List<HomePageTips> tips = this.tipsRepository.findAll();
             Map<String, Object> taskMap = new HashMap<>();
+            List<HomePageTips> tips = this.tipsRepository.findAll();
+
            /* for (int i = 0; i < 2; i ++){
                 int index = (int) System.currentTimeMillis() % tips.size();
                 taskMap.put("dayTips", tips.get(index).getTips());
@@ -162,4 +176,13 @@ public class HomePageController {
 
     }
 
+
+    class ComparatorDto implements Comparator {
+
+        public int compare(Object o1, Object o2) {
+            DailyPackageDto dto1 = (DailyPackageDto) o1;
+            DailyPackageDto dto2 = (DailyPackageDto) o2;
+            return dto2.getRecommendTimeFrom().compareTo(dto1.getRecommendTimeFrom());
+        }
+    }
 }
