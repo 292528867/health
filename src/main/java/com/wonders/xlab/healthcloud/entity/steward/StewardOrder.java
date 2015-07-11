@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 import javax.persistence.*;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 import static javax.persistence.TemporalType.TIMESTAMP;
 
@@ -64,7 +63,13 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
     @OrderBy("usedNumber desc")
     private Set<Services> services;
 
-    private OrderStatus orderStatus = OrderStatus.未支付;
+    private OrderStatus orderStatus = OrderStatus.支付成功;
+
+    /**
+     * 管家所提供任务的状态
+     */
+    @Transient
+    private Map<String,Object> servicedPeriodStatus = new HashMap<>();
 
     public StewardOrder() {
     }
@@ -139,4 +144,11 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
         this.services = services;
     }
 
+    public Map<String, Object> getServicedPeriodStatus() {
+        return servicedPeriodStatus;
+    }
+
+    public void setServicedPeriodStatus(Map<String, Object> servicedPeriodStatus) {
+        this.servicedPeriodStatus = servicedPeriodStatus;
+    }
 }

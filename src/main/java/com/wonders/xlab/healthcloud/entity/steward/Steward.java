@@ -6,9 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Jeffrey on 15/7/7.
@@ -70,7 +68,7 @@ public class Steward extends BaseInfo<Long> {
      * 明星服务
      */
     @Transient
-    private List<String> starService = new ArrayList<String>();
+    private Map<String,Object> starService = new HashMap<>();
 
 
     public Rank getRank() {
@@ -137,11 +135,11 @@ public class Steward extends BaseInfo<Long> {
         this.weChat = weChat;
     }
 
-    public List<String> getStarService() {
+    public Map<String, Object> getStarService() {
         return starService;
     }
 
-    public void setStarService(List<String> starService) {
+    public void setStarService(Map<String, Object> starService) {
         this.starService = starService;
     }
 }

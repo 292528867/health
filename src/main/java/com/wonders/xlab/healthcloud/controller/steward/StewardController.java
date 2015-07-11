@@ -10,6 +10,7 @@ import com.wonders.xlab.healthcloud.entity.steward.*;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.steward.*;
 import com.wonders.xlab.healthcloud.service.pingpp.PingppService;
+import com.wonders.xlab.healthcloud.utils.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -184,25 +186,49 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         Steward steward = stewardRepository.findOne(stewardId);
 
+        //获取明星服务
+        List<StewardOrder> stewardOrders = stewardOrderRepository.findAllBySteward(stewardId);
 
-//        List<StewardOrder> stewardOrders = stewardOrderRepository.findAllBySteward(stewardId);
-//        if (null != stewardOrders) {
-//            Set<Services> services = new HashSet<>();
-//            for (StewardOrder stewardOrder : stewardOrders) {
-//                services = stewardOrder.getServices();
-//            }
-//            List<Services> ListServices = new ArrayList<>(services);
-//            //获取取两条明星服务
-//            for (int i = 0; i < 2; i++) {
-//                steward.getStarService().add(ListServices.get(i).getServiceName());
-//            }
-//        } else {
-//
-//        }
-        //获取取两条明星服务
-        steward.getStarService().add("定期关爱");
-        steward.getStarService().add("健康跟踪");
+        if (!stewardOrders.isEmpty()) {
+            Set<Services> services = new HashSet<>();
+            //取订单中该管家所提供过的服务
+            for (StewardOrder stewardOrder : stewardOrders) {
+                services = stewardOrder.getServices();
+            }
+            List<Services> ListServices = new ArrayList<>(services);
+            Map<String, Integer> countServiceNumMap = new HashMap<>();
+
+            //取出服务列表中每个服务被提供过的次数，并按value排序
+            for (Services service : ListServices) {
+                if (countServiceNumMap.containsKey(service.getServiceName())) {
+                    int num = countServiceNumMap.get(service.getServiceName()) + 1;
+                    countServiceNumMap.put(service.getServiceName(), num);
+                } else {
+                    countServiceNumMap.put(service.getServiceName(), 1);
+                }
+            }
+            sortMap(countServiceNumMap);
+
+            //获取两条明星服务
+            Set set = countServiceNumMap.keySet();
+            Iterator it = set.iterator();
+            int i = 0;
+            while (it.hasNext() && (i < 2)) {
+                String key = it.next().toString();
+                steward.getStarService().put(key, countServiceNumMap.get(key));
+                i++;
+            }
+        } else {
+            if (null != steward) {
+                //获取两条明星服务
+                steward.getStarService().put("定期关爱", 128);
+                steward.getStarService().put("健康跟踪", 166);
+            } else {
+                return new ControllerResult<Steward>().setRet_code(-1).setRet_values(steward).setMessage("管家不存在！");
+            }
+        }
         return new ControllerResult<Steward>().setRet_code(0).setRet_values(steward).setMessage("成功！");
+
 
     }
 
@@ -252,7 +278,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             integration += steward.getStewardIntegration();
 
             // 存在推荐包
-            if (serviceDto.getPackageId()!="") {
+            if (serviceDto.getPackageId() != "") {
                 // 获取推荐包，管家
                 RecommendPackage rp = this.recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
 
@@ -277,6 +303,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
             String tradeNo = "u" + userId + new Date().getTime();
 
+            //保存订单详情
             StewardOrder stewardOrder = new StewardOrder(chargeID, tradeNo, amount);
             stewardOrder.setSteward(steward);
             stewardOrder.setServices(new HashSet<Services>(services));
@@ -331,9 +358,27 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         List<StewardOrder> stewardOrders = stewardOrderRepository.findAllByUser(userId);
 
-        if (null != stewardOrders) {
+        if (!stewardOrders.isEmpty()) {
 
             StewardOrder stewardOrder = stewardOrders.get(0);
+
+            int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
+
+            String[] detilServicedPeriod = new String[totalServicePeriod];
+
+            for (int num = 0; num < detilServicedPeriod.length; num++) {
+                detilServicedPeriod[num] = DateUtils.calculateTodayForWeek(stewardOrder.getCreatedDate(), num);
+            }
+
+            int currentServicedPeriod = DateUtils.calculateDaysOfTwoDateIgnoreHours(stewardOrder.getCreatedDate(), new Date());
+
+            Map<String, Object> servicedPeriodMap = new HashMap<>();
+
+            servicedPeriodMap.put("currentServicedPeriod", currentServicedPeriod);
+            servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
+            servicedPeriodMap.put("detilServicedPeriod", detilServicedPeriod);
+
+            stewardOrder.setServicedPeriodStatus(servicedPeriodMap);
 
             return new ControllerResult<StewardOrder>().setRet_code(0).setRet_values(stewardOrder).setMessage("获取订单成功！");
 
@@ -342,5 +387,29 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("获取订单失败！");
         }
     }
+
+    /**
+     * 根据map的value排序
+     *
+     * @param oldMap
+     * @return
+     */
+    public static Map sortMap(Map oldMap) {
+        ArrayList<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String, Integer>>(oldMap.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+
+            @Override
+            public int compare(Map.Entry<String, Integer> arg0,
+                               Map.Entry<String, Integer> arg1) {
+                return arg0.getValue() - arg1.getValue();
+            }
+        });
+        Map newMap = new HashMap();
+        for (int i = 0; i < list.size(); i++) {
+            newMap.put(list.get(i).getKey(), list.get(i).getValue());
+        }
+        return newMap;
+    }
+
 
 }
