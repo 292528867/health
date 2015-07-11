@@ -21,7 +21,7 @@ import java.util.Map;
  * Created by mars on 15/7/11.
  */
 @RestController
-@RequestMapping("market")
+@RequestMapping("store")
 public class StoreController extends AbstractBaseController<Store, Long> {
 
     @Autowired
