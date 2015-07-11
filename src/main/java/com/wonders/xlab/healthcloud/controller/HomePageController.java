@@ -100,7 +100,7 @@ public class HomePageController {
                         new ProgressDto(
                                 upo.getHcPackage().getHealthCategory().getClassification().getTitle(),
                                 upo.getHcPackage().getTitle(),
-                                upo.getHcPackage().getSmaillIcon(),
+                                upo.getHcPackage().getSmallIcon(),
                                 progress
                         )
                 );
