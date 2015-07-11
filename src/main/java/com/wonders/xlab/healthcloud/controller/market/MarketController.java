@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -37,7 +34,7 @@ public class MarketController extends AbstractBaseController<Market, Long> {
      * 市场列表
      * @return
      */
-    @RequestMapping("listMarket")
+    @RequestMapping(value = "listMarket", method = RequestMethod.GET)
     public Object listMarket() {
         Sort sort = new Sort(Sort.Direction.DESC, "lastModifiedDate");
         return new ControllerResult<List<Market>>().setRet_code(0).setRet_values(this.marketRepository.findAll(sort)).setMessage("成功");
@@ -49,7 +46,7 @@ public class MarketController extends AbstractBaseController<Market, Long> {
      * @param result
      * @return
      */
-    @RequestMapping("addMarket")
+    @RequestMapping(value = "addMarket", method = RequestMethod.POST)
     public Object addMarket(@RequestBody @Valid MarketDto marketDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
@@ -69,7 +66,7 @@ public class MarketController extends AbstractBaseController<Market, Long> {
      * @param result
      * @return
      */
-    @RequestMapping("updateMarket/{marketId}")
+    @RequestMapping(value = "updateMarket/{marketId}", method = RequestMethod.POST)
     public Object updateMarket(@PathVariable long marketId, @RequestBody @Valid MarketDto marketDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();

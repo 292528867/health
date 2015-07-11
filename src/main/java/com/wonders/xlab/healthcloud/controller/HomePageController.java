@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
@@ -50,7 +51,7 @@ public class HomePageController {
      * @param userId
      * @return
      */
-    @RequestMapping("listHomePage/{userId}")
+    @RequestMapping(value = "listHomePage/{userId}", method = RequestMethod.GET)
     public Object listHomePage(@PathVariable long userId,
                                @PageableDefault(page = 0, size = 1, sort = "recommendTimeFrom", direction = Sort.Direction.DESC)
                                Pageable pageable) {
