@@ -296,6 +296,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 newMessages.setToUser(userRepository.findByTel(tel).getGroupId());
                 emMessagesRepository.save(newMessages);
             }
+            emDoctorNumber.setLastQuestionStatus(true);
             emDoctorNumber.setContent(questionSample);
             emDoctorNumber.setEmMessages(newMessages);
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
@@ -306,6 +307,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 newMessages.setToUser(userRepository.findByTel(tel).getGroupId());
                 emMessagesRepository.save(newMessages);
             }
+            emDoctorNumber.setLastQuestionStatus(true);
             emDoctorNumber.setContent(questionSample);
             emDoctorNumber.setEmMessages(newMessages);
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
@@ -315,9 +317,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Calendar calendar1 = Calendar.getInstance();
         calendar1.setTime(emMessages.getCreatedDate());
         if (calendar.getTimeInMillis() - calendar1.getTimeInMillis() >= EMUtils.getOvertime() * 60 * 1000) {  // 超时
+            emDoctorNumber.setLastQuestionStatus(false);
             emDoctorNumber.setContent(overTimeContent);
             return new ControllerResult<EmDoctorNumber>().setRet_code(-1).setRet_values(emDoctorNumber).setMessage("");
         } else {
+            emDoctorNumber.setLastQuestionStatus(false);
             emDoctorNumber.setContent(waitContent);
             return new ControllerResult<EmDoctorNumber>().setRet_code(-1).setRet_values(emDoctorNumber).setMessage("");
         }
