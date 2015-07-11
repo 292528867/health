@@ -49,7 +49,7 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
 
 
 
-    @RequestMapping(value = "addTask")
+    @RequestMapping(value = "addTask", method = RequestMethod.POST)
     public Object addPackageTask(@Valid HcPackageDetailDto hcPackageDetailDto, BindingResult result) {
 
         HcPackage hcPackage = hcPackageRepository.findOne(Long.valueOf(hcPackageDetailDto.getPackageId()));
@@ -83,7 +83,7 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
      * @param detailId
      * @return
      */
-    @RequestMapping("retrievePackageDetail/{userId}/{detailId}")
+    @RequestMapping(value = "retrievePackageDetail/{userId}/{detailId}", method = RequestMethod.GET)
     public Object retrievePackageDetail(@PathVariable Long userId, @PathVariable Long detailId) {
 
         // 获取健康包任务
@@ -143,7 +143,7 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
      * @param content
      * @return
      */
-    @RequestMapping("confirmDetail/{userId}/{detailId}")
+    @RequestMapping(value = "confirmDetail/{userId}/{detailId}",method = RequestMethod.POST)
     public Object confirmDetail(@PathVariable Long userId, @PathVariable Long detailId, @RequestParam(required = false) String content) {
 
         User user = this.userRepository.findOne(userId);

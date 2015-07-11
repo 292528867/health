@@ -32,6 +32,13 @@ public class Doctor extends BaseInfo<Long> {
      */
     private String iCardName;
 
+    /**
+     * 职称证
+     */
+    private String qualification;
+
+    private String permit;
+
     public String getRecordUrl() {
         return recordUrl;
     }

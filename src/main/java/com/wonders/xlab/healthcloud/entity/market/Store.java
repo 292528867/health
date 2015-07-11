@@ -10,7 +10,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "hc_market")
-public class Market extends AbstractBaseEntity<Long> {
+public class Store extends AbstractBaseEntity<Long> {
 
     /** 名称 */
     private String name;
@@ -24,10 +24,17 @@ public class Market extends AbstractBaseEntity<Long> {
     /** 图片 */
     private String iconUrl;
 
-    public Market() {
+    /** 标签 */
+    private Tag tag;
+
+    public enum Tag{
+        New, Hot
     }
 
-    public Market(String name, double price, String medicineUrl, String iconUrl) {
+    public Store() {
+    }
+
+    public Store(String name, double price, String medicineUrl, String iconUrl) {
         this.name = name;
         this.price = price;
         this.medicineUrl = medicineUrl;
@@ -64,5 +71,13 @@ public class Market extends AbstractBaseEntity<Long> {
 
     public void setIconUrl(String iconUrl) {
         this.iconUrl = iconUrl;
+    }
+
+    public Tag getTag() {
+        return tag;
+    }
+
+    public void setTag(Tag tag) {
+        this.tag = tag;
     }
 }

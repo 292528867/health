@@ -13,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Jeffrey on 15/7/4.
@@ -64,7 +61,7 @@ public class EMUtilsTest {
         }};
 
         String body = new ObjectMapper().writeValueAsString(request);
-        ResponseEntity result = emUtils.requestEMChat("POST", body, "users", String.class);
+        ResponseEntity result = emUtils.requestEMChat(body, "POST", "users", String.class);
 //        Map body = (Map) result.getBody();
 //        System.out.println("result.getBody() = " + body.size());
         System.out.println("result.getBody() = " + result.getBody());
@@ -72,7 +69,7 @@ public class EMUtilsTest {
 
     @Test
     public void testRequstEMChatGet() throws Exception {
-        ResponseEntity result = emUtils.requestEMChat("get", null, "chatgroups", String.class);
+        ResponseEntity result = emUtils.requestEMChat(null, "get", "chatgroups", String.class);
         System.out.println("result.getBody() = " + result.getBody());
     }
 }
