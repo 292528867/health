@@ -90,7 +90,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Map<String, Object> filterMap = new HashMap<>();
         filterMap.put("tel_equal", body.getFrom());
         Doctor doctor = doctorRepository.find(filterMap);
-        SmsUtils.sendEmReplyInfo(username, doctor.getNickName());
+        //TODO 暂时注释
+      //  SmsUtils.sendEmReplyInfo(username, doctor.getNickName());
         //修改app发送信息状态为已回复
         EmMessages oldEm = emMessagesRepository.findOne(id);
         oldEm.setIsReplied(true);

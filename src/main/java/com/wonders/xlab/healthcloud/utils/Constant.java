@@ -5,6 +5,5 @@ package com.wonders.xlab.healthcloud.utils;
  */
 public class Constant {
 
-  
 
 }
