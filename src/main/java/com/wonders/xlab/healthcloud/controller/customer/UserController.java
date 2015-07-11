@@ -223,10 +223,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         if (!result) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败!");
         }
-        User user = new User();
-        user.setTel(idenCode.getTel());
-        user.setAppPlatform(idenCode.getAppPlatform());
-        user = userRepository.save(user);
+
         //创建一个群组
         ChatGroupsRequestBody groupsBody = new ChatGroupsRequestBody(idenCode.getTel(), "万达健康云_" + idenCode.getTel(), true, 1, false, idenCode.getTel());
 
@@ -242,8 +239,12 @@ public class UserController extends AbstractBaseController<User, Long> {
         } catch (HttpClientErrorException e) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("创建群组失败");
         }
-
+        User user = new User();
+        
         user.setGroupId(objectMapper.readValue(responseEntity.getBody().toString(), ChatGroupsResponseBody.class).getData().getGroupid());
+        user.setTel(idenCode.getTel());
+        user.setAppPlatform(idenCode.getAppPlatform());
+        user = userRepository.save(user);
         return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("注册用户成功，并成功创建群组");
     }
 
