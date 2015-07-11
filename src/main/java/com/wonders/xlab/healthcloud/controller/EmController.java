@@ -1,7 +1,6 @@
 package com.wonders.xlab.healthcloud.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.EmDoctorNumber;
@@ -15,7 +14,6 @@ import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.service.WordAnalyzerService;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
-import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -35,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.SimpleFormatter;
 
 /**
  * Created by lixuanwu on 15/7/4.
@@ -75,7 +72,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         // body.setExt(objectMapper.writeValueAsString(extendAttr));
         //发送信息
-        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChart(HttpMethod.POST, messagesJson, "messages", String.class);
+        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChat("POST", messagesJson, "messages", String.class);
         //保存医生回复消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
@@ -116,7 +113,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     public ControllerResult sendTxtMessage(@RequestBody TexMessagesRequestBody body) throws IOException {
         String messagesJson = objectMapper.writeValueAsString(body);
         //发送信息
-        emUtils.requestEMChart(HttpMethod.POST, messagesJson, "messages", String.class);
+        emUtils.requestEMChat("POST", messagesJson, "messages", String.class);
         //保存消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
@@ -146,7 +143,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         String messagesJson = objectMapper.writeValueAsString(body);
         //发送信息
-        emUtils.requestEMChart(HttpMethod.POST, messagesJson, "messages", String.class);
+        emUtils.requestEMChat("POST", messagesJson, "messages", String.class);
         //保存消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
@@ -184,7 +181,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         MultiValueMap multiValueMap = new LinkedMultiValueMap();
         multiValueMap.setAll(map);
 
-        ResponseEntity<ChatFilesResponseBody> responseEntity = (ResponseEntity<ChatFilesResponseBody>) emUtils.requestEMChart(headers, HttpMethod.POST, multiValueMap, "chatfiles", ChatFilesResponseBody.class);
+        ResponseEntity<ChatFilesResponseBody> responseEntity = (ResponseEntity<ChatFilesResponseBody>) emUtils.requestEMChat(headers, "POST", multiValueMap, "chatfiles", ChatFilesResponseBody.class);
 
         return responseEntity.getBody();
 
@@ -208,7 +205,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         String body = objectMapper.writeValueAsString(bodyMap);
 
         try {
-            emUtils.requestEMChart(HttpMethod.POST, body, "users", String.class);
+            emUtils.requestEMChat("POST", body, "users", String.class);
         } catch (HttpClientErrorException e) {
             return -1;
         }
@@ -226,11 +223,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      */
     @RequestMapping(value = "modifNickname", method = RequestMethod.POST)
     public int modifNickname(String username, String nickname) throws JsonProcessingException {
-        String body = objectMapper.writeValueAsString(Collections.singletonMap("nickname",nickname));
+        String body = objectMapper.writeValueAsString(Collections.singletonMap("nickname", nickname));
 
         try {
 
-           emUtils.requestEMChart(HttpMethod.PUT, body, "users/" + username, ChatGroupsResponseBody.class);
+           emUtils.requestEMChat(HttpMethod.PUT, body, "users/" + username, ChatGroupsResponseBody.class);
 
         } catch (HttpClientErrorException e) {
             return -1;
@@ -254,7 +251,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         String newRequestBody = StringUtils.replace(requestBody, "_public", "public");
 
         try {
-            responseEntity = (ResponseEntity<String>) emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", String.class);
+
+             responseEntity = (ResponseEntity<String>) emUtils.requestEMChat("POST", newRequestBody, "chatgroups", String.class);
 
         } catch (HttpClientErrorException e) {
             throw new RuntimeException(e);

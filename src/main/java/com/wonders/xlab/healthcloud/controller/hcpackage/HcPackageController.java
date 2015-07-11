@@ -66,7 +66,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      *
      * @return
      */
-    @RequestMapping("listHcPackage")
+    @RequestMapping(value = "listHcPackage", method = RequestMethod.GET)
     public Object listHcPackage(
             @PageableDefault(sort = "recommendValue", direction = Sort.Direction.DESC)
             Pageable pageable) {
@@ -112,7 +112,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      * @param result
      * @return
      */
-    @RequestMapping("updateHcPackage/{hcPackageId}")
+    @RequestMapping(value = "updateHcPackage/{hcPackageId}", method = RequestMethod.POST)
     public Object updateHcPackage(@PathVariable Long hcPackageId, @Valid HcPackageDto hcPackageDto, MultipartFile icon, MultipartFile detailDescriptionIcon, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
@@ -149,7 +149,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      * @param result
      * @return
      */
-    @RequestMapping("addHcPackageDetail/{hcPackageId}")
+    @RequestMapping(value = "addHcPackageDetail/{hcPackageId}", method = RequestMethod.POST)
     public Object addHcPackageDetail(@PathVariable Long hcPackageId, @Valid HcPackageDetailDto hcPackageDetailDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
@@ -172,13 +172,13 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
 
     /**
-     * 查询健康包
+     * 查询计划分类
      *
      * @return
      */
-    @RequestMapping("listPackageInfo")
+    @RequestMapping(value = "listPackageInfo", method = RequestMethod.GET)
     public Object listPackageInfo() {
-        // 查询所有健康包
+        // 查询所有分类（二大类）
         List<Classification> classifications = classificationResponsitory.findAll();
         List<ThirdPackageDto> thirdPackageDtos = new ArrayList<>();
 
@@ -193,12 +193,12 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     }
 
     /**
-     * 查询计划包
+     * 根据二大类跳过三大类获取所有健康包
      *
      * @param classificationId
      * @return
      */
-    @RequestMapping("listPackage/{classificationId}/{userId}")
+    @RequestMapping(value = "listPackage/{classificationId}/{userId}", method = RequestMethod.GET)
     public Object listPackageInfoByCategoryId(@PathVariable long classificationId, @PathVariable long userId) {
 
         List<HcPackage> hcPackages = hcPackageRepository.findByClassificationId(classificationId);
@@ -213,6 +213,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
             if (orders != null && orders.size() != 0) {
                 for (UserPackageOrder userPackageOrder : orders) {
+                    //判断用户是否已经加入计划并在返回内容打上加入标记
                     if (userPackageOrder.getHcPackage().getId() == hcPackage.getId()) {
                         userPackageOrderDto.setIsJoin(true);
                         break;

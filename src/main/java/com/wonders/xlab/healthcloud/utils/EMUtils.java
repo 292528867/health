@@ -1,11 +1,10 @@
 package com.wonders.xlab.healthcloud.utils;
 
 import com.wonders.xlab.healthcloud.dto.EMToken;
-import com.wonders.xlab.healthcloud.dto.emchat.ChatGroupsResponseBody;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import net.sf.ehcache.Cache;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +17,10 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -30,49 +28,57 @@ import java.util.*;
  * Created by Jeffrey on 15/7/4.
  */
 @Component
-@PropertySource("classpath:emcart.api/emchartApi.properties")
+@PropertySource("classpath:emchat.api/emchatApi.properties")
 public class EMUtils {
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private static RestTemplate restTemplate;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static Logger logger = LoggerFactory.getLogger(EMUtils.class);
+
+    private static final String url = "http://a1.easemob.com/xlab/ugyufuy/{key}";
+
+    private static HCCache<String, String> hcCache;
+
+    @Value("${API_SERVER_HOST}")
+    private String apiServerHost;
+
+    @Value("${APPKEY}")
+    private String appKey;
+
+    @Value("${APP_CLIENT_ID}")
+    private String appClientId;
+
+    @Value("${APP_CLIENT_SECRET}")
+    private String appClientSecret;
 
     @Autowired
     @Qualifier(value = "emCache")
-    private Cache emCache;
+    private static Cache emCache;
 
-    private HCCache<String, String> hcCache;
+    static {
+        restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(new ArrayList<HttpMessageConverter<?>>(){{
+            add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
+        }});
+    }
 
     @PostConstruct
     private void init() {
+        //配置缓存代理
         hcCache = new HCCacheProxy<>(emCache);
-        List messages = new ArrayList();
-        messages.add(new StringHttpMessageConverter(Charset.forName("utf-8")));
-        restTemplate.setMessageConverters(messages);
     }
 
-    public static final String url = "http://a1.easemob.com/xlab/ugyufuy/{key}";
-
-    @Value("${API_SERVER_HOST}")
-    public String apiServerHost;
-
-    @Value("${APPKEY}")
-    public String appKey;
-
-    @Value("${APP_CLIENT_ID}")
-    public String appClientId;
-
-    @Value("${APP_CLIENT_SECRET}")
-    public String appClientSecret;
-
+    /**
+     *  获取环信appToken放入到缓存
+     * @return
+     */
     public String pushTokenToCache() {
 
-        final List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
-            add(MediaType.APPLICATION_JSON);
-        }};
         //添加请求头
         HttpHeaders header = new HttpHeaders() {{
-            setAccept(acceptableMediaTypes);
+            setAccept(new ArrayList<MediaType>() {{
+                add(MediaType.APPLICATION_JSON);
+            }});
         }};
         //配接获取环信token请求体
         String body = "{\"grant_type\":\"client_credentials\",\"client_id\":\"" +
@@ -89,6 +95,7 @@ public class EMUtils {
                     put("key", "token");
                 }}
         );
+        //请求成功
         if (HttpStatus.OK.equals(result.getStatusCode())) {
             String accessToken = result.getBody().getAccess_token();
             hcCache.addToCache("access_token", accessToken);
@@ -100,8 +107,57 @@ public class EMUtils {
         }
     }
 
-    public ResponseEntity<?> requestEMChart(HttpHeaders headers, HttpMethod method, final Object body, String path, Class<?> classz) {
+    /**
+     *
+     * @param method 请求方式
+     * @param path 向默认地址后拼接path路径 ：http://a1.easemob.com/xlab/ugyufuy/{path}
+     * @param clazz 返回值body类型
+     * @return 请求返回ResponseEntity
+     * @return
+     */
+    public ResponseEntity<?> requestEMChat(String method, String path, Class<?> clazz) {
+        return requestEMChat(null, null, method, path, clazz);
+    }
 
+    /**
+     *
+     * @param method 请求方式
+     * @param body 请求体
+     * @param path 向默认地址后拼接path路径 ：http://a1.easemob.com/xlab/ugyufuy/{path}
+     * @param clazz 返回值body类型
+     * @return 请求返回ResponseEntity
+     * @return
+     */
+    public ResponseEntity<?> requestEMChat(Object body, String method, String path, Class<?> clazz) {
+        return requestEMChat(null, body, method, path, clazz);
+    }
+
+    /**
+     *
+     * @param headers 请求头
+     * @param method 请求方式
+     * @param path 向默认地址后拼接path路径 ：http://a1.easemob.com/xlab/ugyufuy/{path}
+     * @param clazz 返回值body类型
+     * @return 请求返回ResponseEntity
+     * @return
+     */
+    public ResponseEntity<?> requestEMChat(HttpHeaders headers, String method, String path, Class<?> clazz) {
+        return requestEMChat(headers, null, method, path, clazz);
+    }
+
+    /**
+     *
+     * @param headers 请求头
+     * @param method 请求方式
+     * @param body 请求体
+     * @param path 向默认地址后拼接path路径 ：http://a1.easemob.com/xlab/ugyufuy/{path}
+     * @param clazz 返回值body类型
+     * @return 请求返回ResponseEntity
+     */
+    public ResponseEntity<?> requestEMChat(HttpHeaders headers, final Object body, final String method, String path, Class<?> clazz) {
+
+        //获取请求方式枚举
+        HttpMethod httpMethod = EnumUtils.getEnum(HttpMethod.class, method.toUpperCase());
 //----------------发布时，需取消以下注释－－－－－－－－－－－－－－－－
 //        String token = hcCache.getFromCache("access_token");
 //        //缓存Cache失效，重新请求放到缓存
@@ -109,12 +165,13 @@ public class EMUtils {
 //            token = pushTokenToCache();
 //        }
 
-       if (null == headers) {
+        //请求头为空调用默认请求头，不为空调用自定义请求头
+        if (null == headers) {
+            headers = new HttpHeaders();
+            //定义请求头类型列表
             List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
                 add(MediaType.APPLICATION_JSON);
-                add(MediaType.ALL);
             }};
-            headers = new HttpHeaders();
             headers.setAccept(acceptableMediaTypes);
 
 //----------------发布时，需取消以下注释，并注释headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
@@ -122,72 +179,28 @@ public class EMUtils {
             headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
         }
 
+        //添加需替换路径key 和 路径
         Map<String, Object> uriVariables = new HashMap<>();
         uriVariables.put("key", path);
 
-
+        //发起请求
         ResponseEntity<?> result = restTemplate.exchange(
                 url,
-                method,
+                httpMethod,
                 //null == body ? 返回没有参数的请求entity : ( 参数是键值MAP型请求 ?  返回LinkedMultiValueMap类型的请求entity : 返回传入参数的请求entity)
                 null == body ? new HttpEntity(headers) :
                         body instanceof Map ?
+                                //传入body为键值对创建键值对请求体
                                 new HttpEntity(new LinkedMultiValueMap<String, Object>() {{
                                     setAll((Map) body);
                                 }}, headers) :
                                 new HttpEntity(body, headers),
-                classz,
+                clazz,
                 uriVariables
         );
 
         Assert.isTrue(HttpStatus.OK.equals(result.getStatusCode()));
         return result;
-    }
-
-    public ResponseEntity<?> requestEMChart(HttpMethod method, Object body, String path, Class<?> classz) {
-
-        return requestEMChart(null, method, body, path, classz);
-    }
-
-    public ResponseEntity<?> requestEMChart(HttpMethod method, String path, Class<?> classz) {
-        return requestEMChart(null, method, null, path, classz);
-    }
-
-    public ResponseEntity<?> requestEMChart(HttpHeaders headers, HttpMethod method, String path, Class<?> classz) {
-        return requestEMChart(headers, method, null, path, classz);
-    }
-
-
-    public String getApiServerHost() {
-        return apiServerHost;
-    }
-
-    public void setApiServerHost(String apiServerHost) {
-        this.apiServerHost = apiServerHost;
-    }
-
-    public String getAppKey() {
-        return appKey;
-    }
-
-    public void setAppKey(String appKey) {
-        this.appKey = appKey;
-    }
-
-    public String getAppClientId() {
-        return appClientId;
-    }
-
-    public void setAppClientId(String appClientId) {
-        this.appClientId = appClientId;
-    }
-
-    public String getAppClientSecret() {
-        return appClientSecret;
-    }
-
-    public void setAppClientSecret(String appClientSecret) {
-        this.appClientSecret = appClientSecret;
     }
 
 

@@ -52,7 +52,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
      * @param result
      * @return
      */
-    @RequestMapping("mlogin")
+    @RequestMapping(value = "mlogin", method = RequestMethod.POST)
     public Object mlogin(@Valid IdenCode iden, BindingResult result) {
 
         if (result.hasErrors()) {
@@ -103,7 +103,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
      * @param result
      * @return
      */
-    @RequestMapping("thirdLogin")
+    @RequestMapping(value = "thirdLogin", method = RequestMethod.POST)
     public Object thirdLogin(@Valid ThirdLoginToken token, BindingResult result) {
 
         if (result.hasErrors()) {

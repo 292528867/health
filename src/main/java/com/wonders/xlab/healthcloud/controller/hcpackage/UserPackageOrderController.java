@@ -33,7 +33,7 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
     @Autowired
     private HcPackageRepository hcPackageRepository;
 
-    @RequestMapping(value = "join/{userId}/{packageId}",method = RequestMethod.POST)
+    @RequestMapping(value = "join/{userId}/{packageId}", method = RequestMethod.POST)
     public Object joinPlan(@PathVariable Long userId, @PathVariable Long packageId) {
 
         List<UserPackageOrder> userPackageOrders = userPackageOrderRepository.findFetchPackageByUserIdAndPackageCompleteFalse(userId);
@@ -63,7 +63,7 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
 
     }
 
-    @RequestMapping(value = "cancel/{userId}/{packageId}",method = RequestMethod.POST)
+    @RequestMapping(value = "cancel/{userId}/{packageId}", method = RequestMethod.POST)
     public Object deletePlan(@PathVariable Long userId, @PathVariable Long packageId) {
         UserPackageOrder userPackageOrder = userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, packageId, false);
         if (null == userPackageOrder) {
