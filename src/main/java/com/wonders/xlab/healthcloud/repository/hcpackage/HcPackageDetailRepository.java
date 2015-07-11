@@ -1,12 +1,13 @@
 package com.wonders.xlab.healthcloud.repository.hcpackage;
 
-        import com.wonders.xlab.framework.repository.MyRepository;
-        import com.wonders.xlab.healthcloud.dto.IdenCode;
-        import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
-        import org.springframework.data.jpa.repository.Query;
-        import org.springframework.data.repository.query.Param;
+import com.wonders.xlab.framework.repository.MyRepository;
+import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 
-        import java.util.List;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by mars on 15/7/4.
@@ -23,4 +24,10 @@ public interface HcPackageDetailRepository extends MyRepository<HcPackageDetail,
 
     @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.taskDay = ?2 order by hpd.recommendTimeFrom asc")
     List<HcPackageDetail> findByHcPackageIdOrderbyRecommendTimeFrom(Long packageId, int taskDay);
+
+    @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.isFullDay =?2 and hpd.taskDay = ?3 order by hpd.recommendTimeFrom asc")
+    List<HcPackageDetail> findByHcPackageIdAndIsFullDayOrderbyRecommendTimeFrom(Long packageId, boolean isFullDay, int Day);
+
+    @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.isFullDay =?2 and hpd.taskDay = ?3 and hpd.recommendTimeFrom < ?4")
+    Page<HcPackageDetail> findByPackageIdAndIsFullDayOrderByTimeFromAndPageable(Long packageId, boolean isFullDay, int Day, Date date, Pageable pageable);
 }

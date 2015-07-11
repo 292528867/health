@@ -11,4 +11,6 @@ import java.util.List;
 public interface EmMessagesRepository extends MyRepository<EmMessages, Long> {
 
     List<EmMessages> findTop5ByFromUserOrToUserOrderByCreatedDateAsc(String fromUser,String toUser);
+
+    EmMessages findTop1ByFromUserOrderByCreatedDateDesc(String fromUser);
 }

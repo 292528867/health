@@ -1,18 +1,19 @@
 package com.wonders.xlab.healthcloud.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
+import com.wonders.xlab.healthcloud.dto.EmDoctorNumber;
 import com.wonders.xlab.healthcloud.dto.emchat.*;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.EmMessages;
+import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.doctor.Doctor;
 import com.wonders.xlab.healthcloud.repository.EmMessagesRepository;
+import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.service.WordAnalyzerService;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
-import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -32,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.SimpleFormatter;
 
 /**
  * Created by lixuanwu on 15/7/4.
@@ -72,7 +72,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         // body.setExt(objectMapper.writeValueAsString(extendAttr));
         //发送信息
-        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChart(HttpMethod.POST, messagesJson, "messages", String.class);
+        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChat("POST", messagesJson, "messages", String.class);
         //保存医生回复消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
@@ -89,12 +89,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Map<String, Object> filterMap = new HashMap<>();
         filterMap.put("tel_equal", body.getFrom());
         Doctor doctor = doctorRepository.find(filterMap);
-        SmsUtils.sendEmReplyInfo(username, doctor.getNickName());
+        //TODO 暂时注释
+        //  SmsUtils.sendEmReplyInfo(username, doctor.getNickName());
         //修改app发送信息状态为已回复
         EmMessages oldEm = emMessagesRepository.findOne(id);
         oldEm.setIsReplied(true);
         emMessagesRepository.save(oldEm);
-
 
 
         //回复信息耗时 TODO 耗时建议用信鸽推app端
@@ -113,7 +113,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     public ControllerResult sendTxtMessage(@RequestBody TexMessagesRequestBody body) throws IOException {
         String messagesJson = objectMapper.writeValueAsString(body);
         //发送信息
-        emUtils.requestEMChart(HttpMethod.POST, messagesJson, "messages", String.class);
+        emUtils.requestEMChat("POST", messagesJson, "messages", String.class);
         //保存消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
@@ -143,7 +143,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         String messagesJson = objectMapper.writeValueAsString(body);
         //发送信息
-        emUtils.requestEMChart(HttpMethod.POST, messagesJson, "messages", String.class);
+        emUtils.requestEMChat("POST", messagesJson, "messages", String.class);
         //保存消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
@@ -181,7 +181,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         MultiValueMap multiValueMap = new LinkedMultiValueMap();
         multiValueMap.setAll(map);
 
-        ResponseEntity<ChatFilesResponseBody> responseEntity = (ResponseEntity<ChatFilesResponseBody>) emUtils.requestEMChart(headers, HttpMethod.POST, multiValueMap, "chatfiles", ChatFilesResponseBody.class);
+        ResponseEntity<ChatFilesResponseBody> responseEntity = (ResponseEntity<ChatFilesResponseBody>) emUtils.requestEMChat(headers, "POST", multiValueMap, "chatfiles", ChatFilesResponseBody.class);
 
         return responseEntity.getBody();
 
@@ -205,7 +205,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         String body = objectMapper.writeValueAsString(bodyMap);
 
         try {
-            emUtils.requestEMChart(HttpMethod.POST, body, "users", String.class);
+            emUtils.requestEMChat("POST", body, "users", String.class);
         } catch (HttpClientErrorException e) {
             return -1;
         }
@@ -223,18 +223,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      */
     @RequestMapping(value = "modifNickname", method = RequestMethod.POST)
     public int modifNickname(String username, String nickname) throws JsonProcessingException {
-
-        Map<String, String> bodyMap = new HashMap<>();
-
-        bodyMap.put("nickname", nickname);
-
-        String body = objectMapper.writeValueAsString(bodyMap);
+        String body = objectMapper.writeValueAsString(Collections.singletonMap("nickname", nickname));
 
         try {
 
-            ResponseEntity<ChatGroupsResponseBody> responseEntity = (ResponseEntity<ChatGroupsResponseBody>) emUtils.requestEMChart(HttpMethod.PUT, body, "users/" + username, ChatGroupsResponseBody.class);
-
-            responseEntity.getBody();
+           emUtils.requestEMChat(HttpMethod.PUT, body, "users/" + username, ChatGroupsResponseBody.class);
 
         } catch (HttpClientErrorException e) {
             return -1;
@@ -258,7 +251,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         String newRequestBody = StringUtils.replace(requestBody, "_public", "public");
 
         try {
-             responseEntity = (ResponseEntity<String>) emUtils.requestEMChart(HttpMethod.POST, newRequestBody, "chatgroups", String.class);
+
+             responseEntity = (ResponseEntity<String>) emUtils.requestEMChat("POST", newRequestBody, "chatgroups", String.class);
 
         } catch (HttpClientErrorException e) {
             throw new RuntimeException(e);
@@ -281,20 +275,60 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      *
      * @return
      */
-    @RequestMapping(value = "emRules", method = RequestMethod.GET)
-    public ControllerResult emRules() {
-        String greetings = "欢迎提问，我们将有专业的医生解决您的问题";
+    @RequestMapping(value = "toInterrogation", method = RequestMethod.GET)
+    public ControllerResult toInterrogation(String tel) {
+       /* String greetings = "欢迎提问，我们将有专业的医生解决您的问题";
         String questionSample = "最近3天感到省体无力，经常性腹泻xxxxx";
-        int doctorNumber = emUtils.getDoctorNumber();
-        return new ControllerResult().setRet_code(doctorNumber).setRet_values(greetings).setMessage(questionSample);
+        int doctorNumber = emUtils.getDoctorNumber();*/
+        EmMessages emMessages = emMessagesRepository.findTop1ByFromUserOrderByCreatedDateDesc(tel);
+        String greetings = "你并没有发烧但感到头疼脑热？你并没有心脏病，但胸闷气短？你有一些小症状但不知是什么情况？不用出门，轻问诊" + EMUtils.getDoctorNumber() + "位专家帮你了解自己的身体现状。";
+        String questionSample = "我40岁，糖尿病7年，血糖一直偏高，空腹血糖一直在9左右，餐后血糖13左右。一直在吃阿卡波糖片，前段时间换了药，不但血糖没有降低，反而出现了心慌、胸闷、气短的症状。现在不知道要怎么办，需要打胰岛素吗？";
+        String waitContent = "此刻我们十分理解您的担忧与焦虑，我们已布下天罗地网缉拿专家为您解答困惑。稍后专家将亲自奉上本月全勤奖金XX健康豆，别客气，拿着！";
+        String overTimeContent = "此刻我们十分理解您的担忧与焦虑，我们已布下天罗地网缉拿专家为您解答困惑。稍后专家将亲自奉上本月全勤奖金XX健康豆，别客气，拿着！";
+        EmDoctorNumber emDoctorNumber = new EmDoctorNumber();
+        if (emMessages == null) {
+            emDoctorNumber.setGreetings(greetings);
+            emDoctorNumber.setQuestionSample(questionSample);
+            emDoctorNumber.setLastQuestionState(true);
+            return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
+        }
+        if (emMessages.getIsReplied()) { //用户已回复
+            emDoctorNumber.setGreetings(greetings);
+            emDoctorNumber.setQuestionSample(questionSample);
+            emDoctorNumber.setLastQuestionState(true);
+            return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
+        }
+        //用户没有回复
+        Calendar calendar = Calendar.getInstance();
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.setTime(emMessages.getCreatedDate());
+        if (calendar.getTimeInMillis() - calendar1.getTimeInMillis() >= EMUtils.getOvertime() * 60 * 1000) {  // 超时
+            emDoctorNumber.setOverTimeContent(overTimeContent);
+            emDoctorNumber.setLastQuestionState(false);
+            return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
+        } else {
+            emDoctorNumber.setOverTimeContent(waitContent);
+            emDoctorNumber.setLastQuestionState(false);
+            return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
+        }
+
+
     }
 
-
-    @RequestMapping(value = "/queryRecords",method = RequestMethod.GET)
-    public ControllerResult<Page<EmMessages>> queryHistoryRecords(String groupId ,Pageable pageable) {
+    /**
+     * 查询历史纪录
+     *
+     * @param groupId
+     * @param pageable
+     * @return
+     */
+    @RequestMapping(value = "/queryRecords", method = RequestMethod.GET)
+    public ControllerResult<Page<EmMessages>> queryHistoryRecords(String groupId, Pageable pageable) {
         Map<String, Object> filterMap = new HashMap<>();
         filterMap.put("toUser_equal", groupId);
-        Page<EmMessages> list =  emMessagesRepository.findAll(filterMap, pageable);
+        Page<EmMessages> list = emMessagesRepository.findAll(filterMap, pageable);
         return new ControllerResult<Page<EmMessages>>().setRet_code(0).setRet_values(list).setMessage("");
     }
+
+
 }

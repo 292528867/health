@@ -353,7 +353,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @param userId
      * @return
      */
-    @RequestMapping("getOrdersDetail/{userId}")
+    @RequestMapping(value = "getOrdersDetail/{userId}", method = RequestMethod.GET)
     public ControllerResult getOrdersDetail(@PathVariable Long userId) {
 
         List<StewardOrder> stewardOrders = stewardOrderRepository.findAllByUser(userId);

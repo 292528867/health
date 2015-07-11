@@ -25,10 +25,7 @@ public abstract class BaseInfo<ID extends Serializable> extends AbstractPersista
     @Column(unique = true, length = 11)
     private String tel = "";
 
-    /**
-     * 昵称
-     */
-    private String nickName = "";
+
 
     /**
      * 头像地址
@@ -75,9 +72,8 @@ public abstract class BaseInfo<ID extends Serializable> extends AbstractPersista
         super();
     }
 
-    public BaseInfo(String tel, String nickName, String iconUrl, Sex sex, double height, double weight, int age, Date birthday, Date createdDate, Date lastModifiedDate) {
+    public BaseInfo(String tel, String iconUrl, Sex sex, double height, double weight, int age, Date birthday, Date createdDate, Date lastModifiedDate) {
         this.tel = tel;
-        this.nickName = nickName;
         this.iconUrl = iconUrl;
         this.sex = sex;
         this.height = height;
@@ -94,14 +90,6 @@ public abstract class BaseInfo<ID extends Serializable> extends AbstractPersista
 
     public void setTel(String tel) {
         this.tel = tel;
-    }
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
     }
 
     public String getIconUrl() {
