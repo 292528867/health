@@ -284,7 +284,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         String questionSample = "最近3天感到省体无力，经常性腹泻xxxxx";
         int doctorNumber = emUtils.getDoctorNumber();*/
         EmMessages emMessages = emMessagesRepository.findTop1ByFromUserOrderByCreatedDateDesc(tel);
-        String greetings = "你并没有发烧但感到头疼脑热？你并没有心脏病，但胸闷气短？你有一些小症状但不知是什么情况？不用出门，轻问诊" + EMUtils.getDoctorNumber() + "位专家帮你了解自己的身体现状。";
+        String greetings = "你并没有发烧但感到头疼脑热？你并没有心脏病，但胸闷气短？你有一些小症状但不知是什么情况？不用出门，轻问诊" + EMUtils.countDoctors()+ "位专家帮你了解自己的身体现状。";
         String questionSample = "我40岁，糖尿病7年，血糖一直偏高，空腹血糖一直在9左右，餐后血糖13左右。一直在吃阿卡波糖片，前段时间换了药，不但血糖没有降低，反而出现了心慌、胸闷、气短的症状。现在不知道要怎么办，需要打胰岛素吗？";
         String waitContent = "此刻我们十分理解您的担忧与焦虑，我们已布下天罗地网缉拿专家为您解答困惑。稍后专家将亲自奉上本月全勤奖金XX健康豆，别客气，拿着！";
         String overTimeContent = "此刻我们十分理解您的担忧与焦虑，我们已布下天罗地网缉拿专家为您解答困惑。稍后专家将亲自奉上本月全勤奖金XX健康豆，别客气，拿着！";

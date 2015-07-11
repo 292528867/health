@@ -5,6 +5,7 @@ import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import net.sf.ehcache.Cache;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -209,11 +210,16 @@ public class EMUtils {
      *
      * @return
      */
-    public static int getDoctorNumber() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    public static int countDoctors() {
+      /*  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
-        String today = sdf.format(calendar.getTime()); //当前天格式：2015-05-05
-        int currentHour = calendar.get(Calendar.HOUR_OF_DAY); //当前小时
+        String today = sdf.format(calendar.getTime()); //当前天格式：2015-05-05*/
+
+        String today =  DateFormatUtils.format(new Date(), "yyyy-MM-dd");//当前天格式：2015-05-05*/
+        long currentHour = org.apache.commons.lang3.time.DateUtils.
+                getFragmentInHours(new Date(), Calendar.DATE);  //当前小时
+
+        //int currentHour = calendar.get(Calendar.HOUR_OF_DAY); //当前小时
         int dayForWeek = DateUtils.calculateTodayForWeek(); //当天是星期几
         List holidayList = DateUtils.getAlLHoliday();  //所有的节假日
         int doctorNumber1 = (int) (150 + Math.random() * 50);
@@ -247,10 +253,9 @@ public class EMUtils {
      * @return
      */
     public static int getOvertime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-        Calendar calendar = Calendar.getInstance();
-        String today = sdf.format(calendar.getTime()); //当前天格式：2015-05-05
-        int currentHour = calendar.get(Calendar.HOUR); //当前小时
+        String today =  DateFormatUtils.format(new Date(), "yyyy-MM-dd");//当前天格式：2015-05-05*/
+        long currentHour = org.apache.commons.lang3.time.DateUtils.
+                getFragmentInHours(new Date(), Calendar.DATE);  //当前小时
         int dayForWeek = DateUtils.calculateTodayForWeek(); //当天是星期几
         List holidayList = DateUtils.getAlLHoliday();  //所有的节假日
 
