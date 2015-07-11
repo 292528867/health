@@ -111,6 +111,19 @@ public class DateUtils {
 		return dayForWeek;
 	}
 
+	public static String calculateTodayForWeek(Date date,int num){
+
+		String[] weeks = {"星期日","星期一","星期二","星期三","星期四","星期五","星期六"};
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DAY_OF_MONTH, num);
+		int week_index = cal.get(Calendar.DAY_OF_WEEK) - 1;
+		if(week_index<0){
+			week_index = 0;
+		}
+		return weeks[week_index];
+	}
+
 	/**
 	 * 获取所有的节假日
 	 * @return
