@@ -239,8 +239,8 @@ public class UserController extends AbstractBaseController<User, Long> {
         } catch (HttpClientErrorException e) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("创建群组失败");
         }
+
         User user = new User();
-        
         user.setGroupId(objectMapper.readValue(responseEntity.getBody().toString(), ChatGroupsResponseBody.class).getData().getGroupid());
         user.setTel(idenCode.getTel());
         user.setAppPlatform(idenCode.getAppPlatform());

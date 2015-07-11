@@ -113,7 +113,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     public ControllerResult sendTxtMessage(@RequestBody TexMessagesRequestBody body) throws IOException {
         String messagesJson = objectMapper.writeValueAsString(body);
         //发送信息
-        emUtils.requestEMChat("POST", messagesJson, "messages", String.class);
+        emUtils.requestEMChat(messagesJson,"POST", "messages", String.class);
         //保存消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
