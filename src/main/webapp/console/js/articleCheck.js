@@ -120,15 +120,12 @@ function searchArticle(id) {
 
 }
 function changeArticle(id) {
-    //$('#change-info-box').css('display','block');
     var article = articles[id];
     data = article;
     $('#id').val(data.id);
     $('#title').val(data.title);
     $('#desc').val(data.description);
     $('#type').val($('#type-select').val()||localStorage.getItem('typeId'));
-
-    //editor.html(data.htmlInfo);
     $('#index-img-index').attr('src',data.pictureUrl);
     UE.getEditor('htmlInfo').setContent(data.htmlInfo);
     $('#index-img').attr('src',data.pictureUrl);
@@ -136,7 +133,4 @@ function changeArticle(id) {
     $('#banner-img-index').attr('src', data.pictureUrl2);
     $('#banner-img').attr('src', data.pictureUrl2);
     $('#pictureUrl2').val(data.pictureUrl2);
-
-
-
 }
