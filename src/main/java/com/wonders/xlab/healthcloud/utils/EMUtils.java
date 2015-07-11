@@ -241,15 +241,16 @@ public class EMUtils {
         int dayForWeek = DateUtils.calculateTodayForWeek(); //当天是星期几
         List holidayList = DateUtils.getAlLHoliday();  //所有的节假日
 
+        int overtime = 0;
         if (holidayList.contains(today)) {
-            return 24 * 60;
+            overtime = 24 * 60;
         }
         if (dayForWeek <= 5) {//工作日
-            if (currentHour >= 9 && currentHour < 18) return 30;
-            if (currentHour < 9 && currentHour >= 18) return 12 * 24;
+            if (currentHour >= 9 && currentHour < 18) overtime = 30;
+            if (currentHour < 9 && currentHour >= 18) overtime = 12 * 60;
         } else {
-            return 12 * 60;
+            overtime = 12 * 60;
         }
-        return 0;
+        return overtime;
     }
 }

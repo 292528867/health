@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
+import com.wonders.xlab.healthcloud.dto.EmDoctorNumber;
 import com.wonders.xlab.healthcloud.dto.emchat.*;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.EmMessages;
@@ -283,13 +284,24 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      */
     @RequestMapping(value = "emRules", method = RequestMethod.GET)
     public ControllerResult emRules() {
-        String greetings = "欢迎提问，我们将有专业的医生解决您的问题";
+       /* String greetings = "欢迎提问，我们将有专业的医生解决您的问题";
         String questionSample = "最近3天感到省体无力，经常性腹泻xxxxx";
-        int doctorNumber = emUtils.getDoctorNumber();
-        return new ControllerResult().setRet_code(doctorNumber).setRet_values(greetings).setMessage(questionSample);
+        int doctorNumber = emUtils.getDoctorNumber();*/
+        EmDoctorNumber emDoctorNumber = new EmDoctorNumber(
+                emUtils.getDoctorNumber(),
+                "欢迎提问，我们将有专业的医生解决您的问题",
+                "最近3天感到省体无力，经常性腹泻xxxxx"
+        );
+
+        return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
     }
 
-
+    /**
+     * 查询历史纪录
+     * @param groupId
+     * @param pageable
+     * @return
+     */
     @RequestMapping(value = "/queryRecords",method = RequestMethod.GET)
     public ControllerResult<Page<EmMessages>> queryHistoryRecords(String groupId ,Pageable pageable) {
         Map<String, Object> filterMap = new HashMap<>();

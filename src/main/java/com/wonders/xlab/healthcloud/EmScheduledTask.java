@@ -1,7 +1,9 @@
 package com.wonders.xlab.healthcloud;
 
 import com.wonders.xlab.healthcloud.entity.EmMessages;
+import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.repository.EmMessagesRepository;
+import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +28,11 @@ public class EmScheduledTask {
     @Autowired
     private EmMessagesRepository emMessagesRepository;
 
-    //每隔半个小时扫一次
-    @Scheduled(cron = "0 0/30 * * * ? ")
+    @Autowired
+    private UserRepository userRepository;
+
+ /*   //每隔半个小时扫一次
+    @Scheduled(cron = "0 0/1 * * * ? ")
     public void isOvertime() {
         //查询没有被回复的信息
         Map<String, Object> filterMap = new HashMap<>();
@@ -42,11 +47,16 @@ public class EmScheduledTask {
              c1.setTime(mm.getCreatedDate());
              if (c.getTimeInMillis() - c1.getTimeInMillis() > overtime) {
                  //TODO 超时处理 发短信和推送 健康豆
-                 SmsUtils.sendEmReplyInfo(mm.getFromUser(), "");
+                 User user = userRepository.findByTel(mm.getFromUser());
+                 if (user.getAppPlatform().equals("Android")) {
+
+                 }else {
+
+                 }
              }
 
          }
     }
-
+*/
 
 }
