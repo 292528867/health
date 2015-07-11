@@ -3,7 +3,6 @@
  */
 var packageAddUrl = commonUrl + "hcPackage/addHcPackage";
 function addPackage(){
-    debugger;
     var healthCategoryId = $('#type').val();
     console.log(healthCategoryId);
     var durationUnit = $('#durationUnit').val(),
