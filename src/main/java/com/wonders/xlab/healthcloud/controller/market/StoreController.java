@@ -37,16 +37,21 @@ public class StoreController extends AbstractBaseController<Store, Long> {
      * @return
      */
     @RequestMapping(value = "listStores", method = RequestMethod.GET)
-    public Object listStores(@RequestParam Integer tag) {
+    public Object listStores(@RequestParam(required = false) Integer tag) {
 
         Sort sort = new Sort(Sort.Direction.DESC, "lastModifiedDate");
-        Map<String, Object> filters = new HashMap<>();
-        filters.put("tag_equal", Store.Tag.values()[tag]);
 
-        if (tag != null)
-            return new ControllerResult<List<Store>>().setRet_code(0).setRet_values(this.storeRepository.findAll(filters, sort)).setMessage("成功");
-        else
-            return new ControllerResult<List<Store>>().setRet_code(0).setRet_values(this.storeRepository.findAll(sort)).setMessage("成功");
+        if (tag != null) {
+            Map<String, Object> filters = new HashMap<>();
+            filters.put("tag_equal", Store.Tag.values()[tag]);
+            return new ControllerResult<List<Store>>()
+                    .setRet_code(0).setRet_values(this.storeRepository.findAll(filters, sort))
+                    .setMessage("成功");
+        } else {
+            return new ControllerResult<List<Store>>()
+                    .setRet_code(0).setRet_values(this.storeRepository.findAll(sort))
+                    .setMessage("成功");
+        }
     }
 
     /**
@@ -62,10 +67,15 @@ public class StoreController extends AbstractBaseController<Store, Long> {
             for (ObjectError error : result.getAllErrors()) {
                 builder.append(error.getDefaultMessage());
             }
-            return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败！");
+            return new ControllerResult<String>()
+                    .setRet_code(-1).setRet_values(builder.toString())
+                    .setMessage("失败！");
         }
         this.storeRepository.save(storeDto.toNewStore());
-        return new ControllerResult<String>().setRet_code(0).setRet_values("添加成功").setMessage("成功");
+        return new ControllerResult<String>()
+                .setRet_code(0)
+                .setRet_values("添加成功")
+                .setMessage("成功");
     }
 
     /**
@@ -82,13 +92,19 @@ public class StoreController extends AbstractBaseController<Store, Long> {
             for (ObjectError error : result.getAllErrors()) {
                 builder.append(error.getDefaultMessage());
             }
-            return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败！");
+            return new ControllerResult<String>()
+                    .setRet_code(-1).setRet_values(builder.toString())
+                    .setMessage("失败！");
         }
         Store market = storeRepository.findOne(storeId);
         if (market == null)
-            return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没找到").setMessage("失败！");
+            return new ControllerResult<String>()
+                    .setRet_code(-1).setRet_values("竟然没找到")
+                    .setMessage("失败！");
         this.storeRepository.save(storeDto.updateStore(market));
-        return new ControllerResult<String>().setRet_code(0).setRet_values("更新成功").setMessage("成功");
+        return new ControllerResult<String>()
+                .setRet_code(0).setRet_values("更新成功")
+                .setMessage("成功");
     }
 
 }
