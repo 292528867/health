@@ -174,14 +174,17 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         headers.add("restrict-access", "true");
         headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
+/*
         HashMap<String, Object> map = new HashMap<>();
         map.put("file", multipartFile.getBytes());
 
         MultiValueMap multiValueMap = new LinkedMultiValueMap();
-        multiValueMap.setAll(map);
+        multiValueMap.setAll(map);*/
 
-        ResponseEntity<ChatFilesResponseBody> responseEntity = (ResponseEntity<ChatFilesResponseBody>) emUtils.requestEMChat(headers, "POST", multiValueMap, "chatfiles", ChatFilesResponseBody.class);
+        ResponseEntity<ChatFilesResponseBody> responseEntity = (ResponseEntity<ChatFilesResponseBody>) emUtils.requestEMChat(
+                headers, Collections.singletonMap("file",multipartFile.getBytes()),
+                "POST", "chatfiles", ChatFilesResponseBody.class
+        );
 
         return responseEntity.getBody();
 
@@ -275,8 +278,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      *
      * @return
      */
-    @RequestMapping(value = "toInterrogation", method = RequestMethod.GET)
-    public ControllerResult toInterrogation(String tel) {
+    @RequestMapping(value = "toInterrogation/{tel}", method = RequestMethod.GET)
+    public ControllerResult toInterrogation(@PathVariable("tel") String tel) {
        /* String greetings = "欢迎提问，我们将有专业的医生解决您的问题";
         String questionSample = "最近3天感到省体无力，经常性腹泻xxxxx";
         int doctorNumber = emUtils.getDoctorNumber();*/
