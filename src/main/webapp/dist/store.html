@@ -1,0 +1,49 @@
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=description content="An Amaze UI template that helps you build fast, modern mobile web apps."><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>商城</title><meta name=renderer content=webkit><meta http-equiv=Cache-Control content=no-siteapp><link rel=icon type=image/png href=i/favicon.png><link rel=manifest href=manifest.json><meta name=mobile-web-app-capable content=yes><meta name=application-name content="Web Starter Kit"><link rel=icon sizes=192x192 href=i/touch/chrome-touch-icon-192x192.png><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black><meta name=apple-mobile-web-app-title content="Amaze UI Sfavicon.pngtarter Kit"><link rel=apple-touch-icon href=i/touch/apple-touch-icon.png><meta name=msapplication-TileImage content=i/touch/ms-touch-icon-144x144-precomposed.png><meta name=msapplication-TileColor content=#0e90d2><link rel=stylesheet href=css/amazeui.min.css><link rel=stylesheet href=css/main.css><style>
+    body {
+      background: #f6f6f6;
+    }
+
+    .good .good-item {
+      background: #ffffff;
+    }
+
+    .good {
+      display: none;
+    }
+
+    .good-name {
+      font-size: 1.8rem !important;
+    }
+    .good-desc{
+      color: #888888;
+      padding-left: 2px;
+      height: 2.5rem;
+    }
+    .good-price{
+      color: #f07b41!important;
+      font-size: 1.4rem!important;
+    }
+  </style></head><body><ul data-am-widget=gallery class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered" data-am-gallery="{ }" id=goods><li class=good><div class="am-gallery-item good-item"><a href=# class=good-url><img src=# alt=商品 class=good-img><h3 class="am-gallery-title good-name"></h3><div class="good-desc am-text-truncate"></div><div class="am-gallery-desc good-price"></div></a></div></li></ul></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
+  var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
+  var goodsUrl = commonUrl + 'store/listStores';
+  $.get(goodsUrl, function (data) {
+    var values = data.ret_values, $good = $('.good');
+    var goods = '';
+    $.each(values, function (n, value) {
+      $good.find('.good-img').attr('src', value.picUrl);
+      $good.css('display', 'block');
+      $good.find('.good-name').html(value.name);
+      $good.find('.good-desc').html(value.description);
+      $good.find('.good-price').html('￥ ' + value.price);
+      $good.find('.good-url').attr('href', value.medicineUrl);
+      goods = goods + $('#goods').html();
+    });
+    //$('.article  li:first').siblings().remove();
+    $('#goods').append(goods).show();
+    $('#goods').find('li:eq(0)').remove();
+
+
+  });
+
+
+</script></html>

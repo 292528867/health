@@ -63,12 +63,9 @@ function articleAdd() {
             if (response.ret_code == 0) {
                 alert('success,不跳转了啊，有BUG 说。。');
                 //location.reload();
-                //articles[id].title = title;
-                //articles[id].desc = desc;
-                //articles[id].pictureUrl = pictureUrl;
-                //articles[id].pictureUrl2 = pictureUrl2;
-                //articles[id].type = type;
-                //articles[id].htmlInfo = htmlInfo;
+                $.get(articleSearchUrl + type, function (data) {
+                    articles = data.ret_values;
+                });
             }
             else
                 alert(response.err_msg);
