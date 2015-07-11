@@ -7,6 +7,7 @@ import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.market.Market;
 import com.wonders.xlab.healthcloud.repository.market.MarketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,7 +39,8 @@ public class MarketController extends AbstractBaseController<Market, Long> {
      */
     @RequestMapping("listMarket")
     public Object listMarket() {
-        return new ControllerResult<List<Market>>().setRet_code(0).setRet_values(this.marketRepository.findOrderByLastModifiedDateDesc()).setMessage("成功");
+        Sort sort = new Sort(Sort.Direction.DESC, "lastModifiedDate");
+        return new ControllerResult<List<Market>>().setRet_code(0).setRet_values(this.marketRepository.findAll(sort)).setMessage("成功");
     }
 
     /**
