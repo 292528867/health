@@ -31,6 +31,20 @@ public class UEditorConfig {
 	private String imageUrlPrefix;
 	/** 上传保存路径,可以自定义保存路径和文件名格式 */
 	private String imagePathFormat;
+	
+	/** 执行上传视频的action名称 */
+	private String videoActionName;
+	/** 提交的视频表单名称 */
+	private String videoFieldName;
+	/** 上传保存路径,可以自定义保存路径和文件名格式 */
+	private String videoPathFormat;
+	/** 视频访问路径前缀（放在七牛上） */
+	private String videoUrlPrefix;
+	/** 上传大小限制，单位B，默认100MB */
+	private int videoMaxSize;
+	/** 上传视频格式显示 */
+	private String[] videoAllowFiles;
+
 	public String getImageActionName() {
 		return imageActionName;
 	}
@@ -84,6 +98,42 @@ public class UEditorConfig {
 	}
 	public void setImagePathFormat(String imagePathFormat) {
 		this.imagePathFormat = imagePathFormat;
+	}
+	public String getVideoActionName() {
+		return videoActionName;
+	}
+	public void setVideoActionName(String videoActionName) {
+		this.videoActionName = videoActionName;
+	}
+	public String getVideoFieldName() {
+		return videoFieldName;
+	}
+	public void setVideoFieldName(String videoFieldName) {
+		this.videoFieldName = videoFieldName;
+	}
+	public String getVideoPathFormat() {
+		return videoPathFormat;
+	}
+	public void setVideoPathFormat(String videoPathFormat) {
+		this.videoPathFormat = videoPathFormat;
+	}
+	public String getVideoUrlPrefix() {
+		return videoUrlPrefix;
+	}
+	public void setVideoUrlPrefix(String videoUrlPrefix) {
+		this.videoUrlPrefix = videoUrlPrefix;
+	}
+	public int getVideoMaxSize() {
+		return videoMaxSize;
+	}
+	public void setVideoMaxSize(int videoMaxSize) {
+		this.videoMaxSize = videoMaxSize;
+	}
+	public String[] getVideoAllowFiles() {
+		return videoAllowFiles;
+	}
+	public void setVideoAllowFiles(String[] videoAllowFiles) {
+		this.videoAllowFiles = videoAllowFiles;
 	}
 	
 	

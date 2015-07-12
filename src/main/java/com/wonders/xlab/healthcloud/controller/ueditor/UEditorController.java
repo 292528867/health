@@ -35,26 +35,47 @@ public class UEditorController {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST, params = "action=uploadimage")
-	public UploadImageResult uploadPic(MultipartFile upfile) {
+	public UploadResult uploadimage(MultipartFile upfile) {
 		if (upfile != null && !upfile.isEmpty()) {
 			try {
-				String fileName = "healthinfo-icon-" + String.valueOf((new Date()).getTime());
+				String fileName = "healtharticle-image-" + String.valueOf((new Date()).getTime());
 				QiniuUploadUtils.upload(upfile.getBytes(), fileName);
 				
-				// {"url" : "http://7xk3mz.com2.z0.glb.qiniucdn.com/healthinfo-icon-1436684006380"}
-				// {"url" : "http://7xk3mz.com2.z0.glb.qiniucdn.com/healthinfo-icon-1436684074278"}
+				// {"url" : "http://7xk3mz.com2.z0.glb.qiniucdn.com/healtharticle-image-1436684006380"}
+				// {"url" : "http://7xk3mz.com2.z0.glb.qiniucdn.com/healtharticle-image-1436684074278"}
 				
-				return new UploadImageResult().setState("SUCCESS").setTitle(fileName).setOriginal(fileName).setUrl(fileName);
+				return new UploadResult().setState("SUCCESS").setTitle(fileName).setOriginal(fileName).setUrl(fileName);
 			} catch (IOException exp) {
 				exp.printStackTrace();
-				return new UploadImageResult().setState("ERROR");
+				return new UploadResult().setState("ERROR");
 			}
 		} else {
-			return new UploadImageResult().setState("ERROR");
+			return new UploadResult().setState("ERROR");
 		}
 	}
 	
-	public static class UploadImageResult {
+	/**
+	 * 视频上传，上传到七牛（默认调用param，action=uploadvideo，post的file名字为upfile）
+	 * @param file
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.POST, params = "action=uploadvideo")
+	public UploadResult uploadvideo(MultipartFile upfile) {
+		if (upfile != null && !upfile.isEmpty()) {
+			try {
+				String fileName = "healtharticle-video-" + String.valueOf((new Date()).getTime());
+				QiniuUploadUtils.upload(upfile.getBytes(), fileName);
+				return new UploadResult().setState("SUCCESS").setTitle(fileName).setOriginal(fileName).setUrl(fileName);
+			} catch (IOException exp) {
+				exp.printStackTrace();
+				return new UploadResult().setState("ERROR");
+			}
+		} else {
+			return new UploadResult().setState("ERROR");
+		}
+	}
+	
+	public static class UploadResult {
 		private String state;
 		private String url;
 		private String title;
@@ -62,28 +83,28 @@ public class UEditorController {
 		public String getState() {
 			return state;
 		}
-		public UploadImageResult setState(String state) {
+		public UploadResult setState(String state) {
 			this.state = state;
 			return this;
 		}
 		public String getUrl() {
 			return url;
 		}
-		public UploadImageResult setUrl(String url) {
+		public UploadResult setUrl(String url) {
 			this.url = url;
 			return this;
 		}
 		public String getTitle() {
 			return title;
 		}
-		public UploadImageResult setTitle(String title) {
+		public UploadResult setTitle(String title) {
 			this.title = title;
 			return this;
 		}
 		public String getOriginal() {
 			return original;
 		}
-		public UploadImageResult setOriginal(String original) {
+		public UploadResult setOriginal(String original) {
 			this.original = original;
 			return this;
 		}
