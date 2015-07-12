@@ -195,23 +195,26 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         List<StewardOrder> stewardOrders = stewardOrderRepository.findAllBySteward(stewardId);
 
         if (!stewardOrders.isEmpty()) {
-            Set<Services> services = new HashSet<>();
+            List<Set<Services>> ListServices = new ArrayList<>();
             //取订单中该管家所提供过的服务
             for (StewardOrder stewardOrder : stewardOrders) {
-                services = stewardOrder.getServices();
+                ListServices.add(stewardOrder.getServices());
             }
-            List<Services> ListServices = new ArrayList<>(services);
+
             Map<String, Integer> countServiceNumMap = new HashMap<>();
 
             //取出服务列表中每个服务被提供过的次数，并按value排序
-            for (Services service : ListServices) {
-                if (countServiceNumMap.containsKey(service.getServiceName())) {
-                    int num = countServiceNumMap.get(service.getServiceName()) + 1;
-                    countServiceNumMap.put(service.getServiceName(), num);
-                } else {
-                    countServiceNumMap.put(service.getServiceName(), 1);
+            for (Set<Services> listService : ListServices) {
+                for (Services services : listService) {
+                    if (countServiceNumMap.containsKey(services.getServiceName())) {
+                        int num = countServiceNumMap.get(services.getServiceName()) + 1;
+                        countServiceNumMap.put(services.getServiceName(), num);
+                    } else {
+                        countServiceNumMap.put(services.getServiceName(), 1);
+                    }
                 }
             }
+
             sortMap(countServiceNumMap);
 
             //获取两条明星服务
@@ -446,7 +449,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             }
         });
         Map newMap = new HashMap();
-        for (int i = list.size()-1; i >=0; i--) {
+        for (int i = list.size() - 1; i >= 0; i--) {
             newMap.put(list.get(i).getKey(), list.get(i).getValue());
         }
         return newMap;
