@@ -2,6 +2,7 @@ package com.wonders.xlab.healthcloud.service.hcpackage;
 
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.customer.User;
+import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -88,6 +90,7 @@ public class UserPackageOrderServiceImpl implements UserPackageOrderService{
     }
 
     @Override
+    @Transactional
     public Object joinPlan(Long userId, Long packageId) {
 
         List<UserPackageOrder> userPackageOrders = userPackageOrderRepository.findFetchPackageByUserIdAndPackageCompleteFalse(userId);
@@ -111,12 +114,16 @@ public class UserPackageOrderServiceImpl implements UserPackageOrderService{
 
         try {
             User user = userRepository.findOne(userId);
-            HcPackage hcPackage = hcPackageRepository.findOne(packageId);
+            final HcPackage hcPackage = hcPackageRepository.findOne(packageId);
             UserPackageOrder userPackageOrder = new UserPackageOrder();
             userPackageOrder.setUser(user);
             userPackageOrder.setHcPackage(hcPackage);
             userPackageOrder.setCycleIndex(hcPackage.getDuration());
+            user.setHcs(new HashSet<HealthCategory>(){{
+                add(hcPackage.getHealthCategory());
+            }});
             userPackageOrderRepository.save(userPackageOrder);
+            userRepository.save(user);
             return new ControllerResult<>()
                     .setRet_code(0)
                     .setRet_values("")

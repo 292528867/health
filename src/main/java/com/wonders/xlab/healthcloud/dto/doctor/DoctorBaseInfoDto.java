@@ -6,12 +6,6 @@ import com.wonders.xlab.healthcloud.entity.doctor.Doctor;
  * Created by Jeffrey on 15/7/11.
  */
 public class DoctorBaseInfoDto {
-
-    /**
-     * 头像地址
-     */
-    private String iconUrl;
-
     /**
      * 性别
      */
@@ -42,30 +36,17 @@ public class DoctorBaseInfoDto {
      */
     private String department;
 
+    /**
+     * 真实姓名
+     */
     private String iCardName;
 
+    /**
+     * 职称
+     */
     private String qualificationName;
 
     public DoctorBaseInfoDto() {
-    }
-
-    public DoctorBaseInfoDto(String iconUrl, Doctor.Sex sex, Double height, Double weight, Integer age, String hospital, String department, String iCardName) {
-        this.iconUrl = iconUrl;
-        this.sex = sex;
-        this.height = height;
-        this.weight = weight;
-        this.age = age;
-        this.hospital = hospital;
-        this.department = department;
-        this.iCardName = iCardName;
-    }
-
-    public String getIconUrl() {
-        return iconUrl;
-    }
-
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
     }
 
     public Doctor.Sex getSex() {

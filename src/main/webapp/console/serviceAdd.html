@@ -314,11 +314,9 @@
             afterCreate: function () {
                 var self = this;
                 K.ctrl(document, 13, function () {
-                    debugger;
                     self.sync();
                 });
                 K.ctrl(self.edit.doc, 13, function () {
-                    debugger;
                     self.sync();
                 });
             },

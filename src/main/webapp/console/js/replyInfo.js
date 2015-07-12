@@ -29,16 +29,17 @@ $(document).ready(function () {
 //加载需要查看的信息
 function loadData(currentPage) {
     var filters ={
-        "doctorFlag_equal":1
+        "doctorFlag_equal":1,
+        "isReplied_equal":0
     }
     console.log(url + 'em/query?filters='+JSON.stringify(filters)+'&page=' + currentPage);
     $.ajax({
         type: 'get',
         url: url + 'em?filters='+JSON.stringify(filters)+'&page=' + currentPage,
         success: function (result) {
-            var str = '';
-            pageStr = '';
-            data = result.content;
+            var str = '',
+            pageStr = '',
+            data = result.content,
             totalPages = result.totalPages;
              if(data == '' || data == null){//无数据
                  str += '<span>没有数据</span>';
@@ -58,7 +59,7 @@ function loadData(currentPage) {
                  }
                  //分页
                  pageStr += '<ul class="am-pagination">';
-                 var prePage = (currentPage == 1) ? 1 : (currentPage - 1);
+                 var prePage = (currentPage == 1) ? 1 : (currentPage - 1),
                  nextPage = (currentPage == result.totalPages) ? result.totalPages : (currentPage + 1);
                  pageStr += '<li><a href="javascript:loadData(' + prePage + ')">上一页</a></li>';
                  for (var i = 1; i <= totalPages; i++) {

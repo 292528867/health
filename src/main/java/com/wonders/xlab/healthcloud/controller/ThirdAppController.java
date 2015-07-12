@@ -33,39 +33,46 @@ public class ThirdAppController {
     @RequestMapping(value = "ask", method = RequestMethod.POST)
     public ControllerResult sendMessages(@RequestBody QuestionRequestBody requestBody) throws Exception {
         Integer success = -1;
-        for(String appName : requestBody.getAppName()){
+        for (String appName : requestBody.getAppName()) {
             //每个平台尝试发送3次，一次成功以后不重复发送
             int i = 0;
-            while(i < 3){
+            while (i < 3) {
                 String result = askQuestions(appName, requestBody);
-                if("1".equals(result)){
+                if ("1".equals(result)) {
                     success = 0;
                     break;
                 }
             }
         }
 
-        if(success == -1){
-            return new ControllerResult().setRet_code(success).setRet_values("").setMessage("发送失败");
+        if (success == -1) {
+            return new ControllerResult()
+                    .setRet_code(success)
+                    .setRet_values("")
+                    .setMessage("发送失败");
         } else {
-            return new ControllerResult().setRet_code(success).setRet_values("").setMessage("发送成功");
+            return new ControllerResult()
+                    .setRet_code(success)
+                    .setRet_values("")
+                    .setMessage("发送成功");
         }
     }
 
     /**
      * 发送问题给第三方app后台服务器
+     *
      * @param appName
      * @param requestBody
      * @return
      * @throws Exception
      */
-    public String askQuestions(String appName, QuestionRequestBody requestBody) throws Exception{
+    public String askQuestions(String appName, QuestionRequestBody requestBody) throws Exception {
         String resultString = "";
         ThirdAppAccount appAccount = ThirdAppConnUtils.appDatas.get(appName);
-        switch (appName){
-            case "basksugar":{
+        switch (appName) {
+            case "basksugar": {
                 //血糖高管
-                if(StringUtils.isEmpty(appAccount.getClientId())){
+                if (StringUtils.isEmpty(appAccount.getClientId())) {
                     ThirdAppConnUtils.loginApp(appName);
                 }
                 HttpHeaders headers = new HttpHeaders();
@@ -91,16 +98,16 @@ public class ThirdAppController {
                 Map<String, String> resultMap = objectMapper.readValue((String) responseEntity.getBody(), HashMap.class);
                 resultString = resultMap.get("code");
                 break;
-                }
+            }
             case "ememed": {
                 //薏米医生
-                if(StringUtils.isEmpty(appAccount.getLoginToken())){
+                if (StringUtils.isEmpty(appAccount.getLoginToken())) {
                     ThirdAppConnUtils.loginApp(appName);
                 }
                 List<String> doctorList = ThirdAppConnUtils.findDoctorList(appAccount);
-                long cursor = System.currentTimeMillis()%doctorList.size();
+                long cursor = System.currentTimeMillis() % doctorList.size();
                 //随即取一个医生发送
-                String doctorId = doctorList.get((int)cursor);
+                String doctorId = doctorList.get((int) cursor);
                 HttpHeaders headers = new HttpHeaders();
                 List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
                     add(MediaType.APPLICATION_FORM_URLENCODED);
@@ -124,16 +131,15 @@ public class ThirdAppController {
                 Map<String, String> resultMap = objectMapper.readValue((String) responseEntity.getBody(), HashMap.class);
                 System.out.println("resultMap = " + resultMap);
                 resultString = resultMap.get("success");
-
                 break;
             }
 
-            default : break;
+            default:
+                break;
         }
 
         return resultString;
     }
-
 
 
 }

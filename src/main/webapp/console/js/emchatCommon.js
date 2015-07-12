@@ -259,7 +259,6 @@ var sendText = function() {
     }
 
     var connKey = user + "#" + appKey;
-    debugger;
 
     var conn = connMap.get(connKey);
     var to = doctor;

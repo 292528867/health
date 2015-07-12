@@ -1,12 +1,14 @@
 package com.wonders.xlab.healthcloud.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tencent.xinge.XingeApp;
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.EmDoctorNumber;
 import com.wonders.xlab.healthcloud.dto.emchat.*;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.EmMessages;
+import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.doctor.Doctor;
 import com.wonders.xlab.healthcloud.repository.EmMessagesRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
@@ -17,6 +19,7 @@ import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +94,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
        /* Map<String, Object> filterMap = new HashMap<>();
         filterMap.put("tel_equal", body.getFrom());
         Doctor doctor = doctorRepository.find(filterMap);*/
-        //TODO 暂时注释
+        Doctor doctor = doctorRepository.find(Collections.singletonMap("tel_equal", body.getFrom()));
+        //TODO 发短信注释
          SmsUtils.sendEmReplyInfo(username);
         //修改app发送信息状态为已回复
         EmMessages oldEm = emMessagesRepository.findOne(id);
@@ -99,9 +103,19 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         emMessagesRepository.save(oldEm);
 
 
-        //回复信息耗时 TODO 耗时建议用信鸽推app端
-        Period period = new Period(new DateTime(newMessage.getCreatedDate()), new DateTime(oldEm.getCreatedDate()), PeriodType.minutes());
-        int time =period.getSeconds()/60;
+        //回复信息耗时 TODO 推送给app 暂时注释
+     /*   Period period = new Period(new DateTime(newMessage.getCreatedDate()), new DateTime(oldEm.getCreatedDate()), PeriodType.minutes());
+        int time =period.getSeconds()/60;*/
+     /*   Minutes minutes = Minutes.minutesBetween(new DateTime(newMessage.getCreatedDate()), new DateTime(oldEm.getCreatedDate()));
+        User user = userRepository.find(Collections.singletonMap("tel_equal", oldEm.getFromUser()));
+        if (user.getAppPlatform().equals("Ios")) {
+            XingeApp.pushAccountIos(Constant.XINGE_IOS_ACCESS_ID, Constant.XINGE_IOS_SECRET_KEY,
+                    "",String.format(Constant.INTERROGATION_REPLY_PUSH,doctor.getNickName(),minutes.getMinutes()),XingeApp.IOSENV_DEV);
+        }
+        if (user.getAppPlatform().equals("Android")) {
+            XingeApp.pushAccountAndroid(Constant.XINGE_ANDROID_ACCESS_ID, Constant.XINGE_ANDROID_SECRET_KEY,
+                    "",String.format(Constant.INTERROGATION_REPLY_PUSH,doctor.getNickName(),minutes.getMinutes()),user.getTel());
+        }*/
 
         return new ControllerResult().setRet_code(0).setRet_values(responseEntity.getBody()).setMessage("消息发送成功");
 
@@ -291,33 +305,33 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         String questionSample = "最近3天感到省体无力，经常性腹泻xxxxx";
         int doctorNumber = emUtils.getDoctorNumber();*/
         EmMessages emMessages = emMessagesRepository.findTop1ByFromUserOrderByCreatedDateDesc(tel);
-        String greetings = "你并没有发烧但感到头疼脑热？你并没有心脏病，但胸闷气短？你有一些小症状但不知是什么情况？不用出门，轻问诊" + EMUtils.countDoctors()+ "位专家帮你了解自己的身体现状。";
+        /*String greetings = "你并没有发烧但感到头疼脑热？你并没有心脏病，但胸闷气短？你有一些小症状但不知是什么情况？不用出门，轻问诊" + EMUtils.countDoctors()+ "位专家帮你了解自己的身体现状。";
         String questionSample = "我40岁，糖尿病7年，血糖一直偏高，空腹血糖一直在9左右，餐后血糖13左右。一直在吃阿卡波糖片，前段时间换了药，不但血糖没有降低，反而出现了心慌、胸闷、气短的症状。现在不知道要怎么办，需要打胰岛素吗？";
         String waitContent = "此刻我们十分理解您的担忧与焦虑，我们已布下天罗地网缉拿专家为您解答困惑。稍后专家将亲自奉上本月全勤奖金XX健康豆，别客气，拿着！";
-        String overTimeContent = "此刻我们十分理解您的担忧与焦虑，我们已布下天罗地网缉拿专家为您解答困惑。稍后专家将亲自奉上本月全勤奖金XX健康豆，别客气，拿着！";
+        String overTimeContent = "此刻我们十分理解您的担忧与焦虑，我们已布下天罗地网缉拿专家为您解答困惑。稍后专家将亲自奉上本月全勤奖金XX健康豆，别客气，拿着！";*/
         EmDoctorNumber emDoctorNumber = new EmDoctorNumber();
         EmMessages newMessages = new EmMessages();
         if (emMessages == null) {
-            newMessages.setMsg(String.format(greetings));
+            newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS,EMUtils.countDoctors()));
             newMessages.setCreatedDate(new Date());
             if(flag == 1) {
                 newMessages.setToUser(userRepository.findByTel(tel).getGroupId());
                 emMessagesRepository.save(newMessages);
             }
             emDoctorNumber.setLastQuestionStatus(0);
-            emDoctorNumber.setContent(questionSample);
+            emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
             emDoctorNumber.setEmMessages(newMessages);
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         }
         if (emMessages.getIsReplied()) { //用户已回复
-            newMessages.setMsg(greetings);
+            newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS,EMUtils.countDoctors()));
             newMessages.setCreatedDate(new Date());
             if(flag == 1) {
                 newMessages.setToUser(userRepository.findByTel(tel).getGroupId());
                   emMessagesRepository.save(newMessages);
             }
             emDoctorNumber.setLastQuestionStatus(0);
-            emDoctorNumber.setContent(questionSample);
+            emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
             emDoctorNumber.setEmMessages(newMessages);
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         }
@@ -327,11 +341,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         calendar1.setTime(emMessages.getCreatedDate());
         if (calendar.getTimeInMillis() - calendar1.getTimeInMillis() >= EMUtils.getOvertime() * 60 * 1000) {  // 超时
             emDoctorNumber.setLastQuestionStatus(1);
-            emDoctorNumber.setContent(overTimeContent);
+            emDoctorNumber.setContent(Constant.INTERROGATION_OVERTIME_CONTENT);
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         } else {
             emDoctorNumber.setLastQuestionStatus(1);
-            emDoctorNumber.setContent(waitContent);
+            emDoctorNumber.setContent(Constant.INTERROGATION_WAIT_CONTENT);
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         }
 

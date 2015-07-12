@@ -187,6 +187,13 @@
 			<version>2.2.1</version>
 		</dependency>
 
+        <!-- xinge 推送 -->
+        <dependency>
+            <groupId>com.tengxun.sdk</groupId>
+            <artifactId>XingApp</artifactId>
+            <version>1.0</version>
+        </dependency>
+
 	</dependencies>
 
 	<dependencyManagement>

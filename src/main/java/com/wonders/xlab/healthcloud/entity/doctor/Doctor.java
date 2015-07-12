@@ -15,9 +15,9 @@ import java.util.Date;
 public class Doctor extends BaseInfo<Long> {
 
     /**
-     * 资质
+     * 身份证
      */
-    private String recordUrl;
+    private String iCardUrl;
 
     /**
      * 用户使用平台
@@ -77,33 +77,8 @@ public class Doctor extends BaseInfo<Long> {
         invalid, valid
     }
 
-    public String getRecordUrl() {
-        return recordUrl;
-    }
-
-    public void setRecordUrl(String recordUrl) {
-        this.recordUrl = recordUrl;
-    }
-
     public Doctor() {
         super();
-    }
-
-    public Doctor(double height, double weight, int age, String tel, String iconUrl, String nickName, Sex sex,
-                  Date birthday, Date createdDate, Date lastModifiedDate, String recordUrl, AppPlatform appPlatform,
-                  String iCardName, String qualificationUrl, String permitUrl, Checked checked, String hospital,
-                  String department, Valid valid, int integral) {
-        super(height, weight, age, tel, iconUrl, nickName, sex, birthday, createdDate, lastModifiedDate);
-        this.recordUrl = recordUrl;
-        this.appPlatform = appPlatform;
-        this.iCardName = iCardName;
-        this.qualificationUrl = qualificationUrl;
-        this.permitUrl = permitUrl;
-        this.checked = checked;
-        this.hospital = hospital;
-        this.department = department;
-        this.valid = valid;
-        this.integral = integral;
     }
 
     public AppPlatform getAppPlatform() {
@@ -184,5 +159,13 @@ public class Doctor extends BaseInfo<Long> {
 
     public void setQualificationName(String qualificationName) {
         this.qualificationName = qualificationName;
+    }
+
+    public String getiCardUrl() {
+        return iCardUrl;
+    }
+
+    public void setiCardUrl(String iCardUrl) {
+        this.iCardUrl = iCardUrl;
     }
 }
