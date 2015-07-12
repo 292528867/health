@@ -97,6 +97,9 @@
                 <form class="am-form" id="form1" method="post"
                        ng-app="" ng-controller="teacherController">
                     <fieldset>
+
+                        <input type="hidden" id="id"/>
+
                         <div class="am-form-group">
                             <label for="serviceName">服务名称：</label>
                             <input type="text" id="serviceName" placeholder=""
@@ -126,21 +129,14 @@
                             </select>
                         </div>
                         <div class="am-form-group">
-                            <label for="isForce" class="about-color">范围:</label>
+                            <label for="isForce" class="about-color">是否置顶:</label>
                             <br/>
                             <select data-am-selected="{btnSize: 'sm'}" id="isForce" name="isForce" >
                                 <option selected value="true">是</option>
                                 <option selected value="false">否</option>
                             </select>
                         </div>
-                        <!--<div class="am-form-group">-->
-                            <!--<label for="steward" class="about-color">管家:</label>-->
-                            <!--<br/>-->
-                            <!--<select data-am-selected="{maxHeight:200, btnSize: 'sm',  searchBox:1}" id="steward" name="type" >-->
-                                <!--<option selected>请选择</option>-->
-                            <!--</select>-->
-                        <!--</div>-->
-                        <button class="am-btn am-btn-secondary" type="button" id="formSub" onclick="stewardAdd()">提交
+                        <button class="am-btn am-btn-secondary" type="button" id="formSub" onclick="addSevices()">提交
                         </button>
                     </fieldset>
                 </form>
@@ -153,7 +149,7 @@
                                     <th class="table-check"><input type="checkbox"/></th>
                                     <th class="table-id">ID</th>
                                     <th class="table-title">服务名称</th>
-                                    <th class="table-title">服务描述</th>
+                                    <th class="table-serviceDescription">服务描述</th>
                                     <th class="table-title">服务积分</th>
                                     <th class="table-set">服务id</th>
                                     <th class="table-set">服务类别</th>

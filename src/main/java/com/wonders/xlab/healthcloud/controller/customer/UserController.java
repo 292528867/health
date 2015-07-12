@@ -18,10 +18,7 @@ import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.service.hcpackage.UserPackageOrderService;
-import com.wonders.xlab.healthcloud.utils.BeanUtils;
-import com.wonders.xlab.healthcloud.utils.EMUtils;
-import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
-import com.wonders.xlab.healthcloud.utils.ValidateUtils;
+import com.wonders.xlab.healthcloud.utils.*;
 import net.sf.ehcache.Cache;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.HashSet;
 
@@ -306,6 +304,20 @@ public class UserController extends AbstractBaseController<User, Long> {
         } catch (Exception exp) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("更新失败!");
         }
+
+    }
+
+    /**
+     * 邀约小伙伴
+     * @return
+     */
+    @RequestMapping(value = "inviteFriend", method = RequestMethod.POST)
+    public ControllerResult inviteFriend(String userName, String mobiles) {
+
+        int i = SmsUtils.inviteFriend(userName, mobiles);
+        if (i == 0)
+            return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("好久邀请成功!");
+        return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("好友邀请失败!");
 
     }
 

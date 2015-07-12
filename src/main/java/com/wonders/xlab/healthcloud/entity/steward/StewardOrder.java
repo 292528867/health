@@ -47,7 +47,6 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
      * 多个用户服务对应一个用户
      */
     @ManyToOne
-    @JsonIgnore
     private User user;
 
     /**

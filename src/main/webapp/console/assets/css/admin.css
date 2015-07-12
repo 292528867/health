@@ -275,7 +275,21 @@ ul {
 .table-id {
   width: 50px;
 }
+.table-serviceDescription{
+  width: 600px;
+}
 
+.table-icon{
+  width: 100px;
+}
+
+.table-level{
+  width: 100px;
+}
+
+.table-service{
+  width: 200px;
+}
 @media only screen and (max-width: 640px) {
   .table-select {
     margin-top: 10px;
