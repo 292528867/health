@@ -101,7 +101,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         //回复信息耗时 TODO 耗时建议用信鸽推app端
         Period period = new Period(new DateTime(newMessage.getCreatedDate()), new DateTime(oldEm.getCreatedDate()), PeriodType.minutes());
-        int time = period.getSeconds();
+        int time =period.getSeconds()/60;
 
         return new ControllerResult().setRet_code(0).setRet_values(responseEntity.getBody()).setMessage("消息发送成功");
 
@@ -268,10 +268,15 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 .setMessage("");
     }
 
-    @RequestMapping(value = "getTop5Messages", method = RequestMethod.POST)
-    public List<EmMessages> getTop5Messages(String fromUser, String toUser) {
+    /**
+     * 查询历史纪录前5条
+     * @param groupId
+     * @return
+     */
+    @RequestMapping(value = "getTop5Messages", method = RequestMethod.GET)
+    public List<EmMessages> getTop5Messages(String groupId) {
 
-        return emMessagesRepository.findTop5ByFromUserOrToUserOrderByCreatedDateAsc(fromUser, toUser);
+        return emMessagesRepository.findTop5ByToUserOrderByCreatedDateAsc(groupId);
 
     }
 
@@ -294,6 +299,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         EmMessages newMessages = new EmMessages();
         if (emMessages == null) {
             newMessages.setMsg(String.format(greetings));
+            newMessages.setCreatedDate(new Date());
             if(flag == 1) {
                 newMessages.setToUser(userRepository.findByTel(tel).getGroupId());
                 emMessagesRepository.save(newMessages);
@@ -305,9 +311,10 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         }
         if (emMessages.getIsReplied()) { //用户已回复
             newMessages.setMsg(greetings);
+            newMessages.setCreatedDate(new Date());
             if(flag == 1) {
                 newMessages.setToUser(userRepository.findByTel(tel).getGroupId());
-                emMessagesRepository.save(newMessages);
+                  emMessagesRepository.save(newMessages);
             }
             emDoctorNumber.setLastQuestionStatus(0);
             emDoctorNumber.setContent(questionSample);
@@ -345,6 +352,5 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Page<EmMessages> list = emMessagesRepository.findAll(filterMap, pageable);
         return new ControllerResult<Page<EmMessages>>().setRet_code(0).setRet_values(list).setMessage("");
     }
-
 
 }

@@ -1,5 +1,7 @@
 package com.wonders.xlab.healthcloud.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.healthcloud.dto.EMToken;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
@@ -270,5 +272,19 @@ public class EMUtils {
             overtime = 12 * 60;
         }
         return overtime;
+    }
+
+    public boolean registerEmUser(final String username, final String password) {
+        try {
+            this.requestEMChat(new ObjectMapper().writeValueAsString(
+                    new HashMap<String, String>() {{
+                        put("username", username);
+                        put("password", password);
+                    }}
+            ), "POST", "users", String.class);
+            return true;
+        } catch (JsonProcessingException e) {
+            return false;
+        }
     }
 }

@@ -40,6 +40,7 @@ function goodAdd(id) {
                 alert('success');
                 $.get(commonUrl+'store/listStores', function (data) {
                     goods = data.ret_values;
+                    location.href=location.href+'#';
                 });
 
             }

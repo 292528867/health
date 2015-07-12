@@ -1,6 +1,7 @@
 package com.wonders.xlab.healthcloud.dto;
 
-import com.wonders.xlab.healthcloud.entity.customer.User;
+import com.wonders.xlab.healthcloud.entity.BaseInfo;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -12,24 +13,25 @@ import java.io.Serializable;
 public class IdenCode implements Serializable {
 
     /** 手机 */
-    @NotNull(message = "关联的手机号不能为空！")
+    @NotBlank(message = "关联的手机号不能为空！")
     @Pattern(regexp = "^1((3|5|8){1}\\d{1}|70|77)\\d{8}$", message = "关联的手机号格式不正确！")
     private String tel;
 
     /** 验证码 */
-    @NotNull(message = "4位随机验证码不能为空！")
+    @NotBlank(message = "4位随机验证码不能为空！")
     private String code;
 
     @NotNull(message = "用户登陆平台不能为空！")
-    private User.AppPlatform appPlatform;
+    private BaseInfo.AppPlatform appPlatform;
 
     public IdenCode() {
         super();
     }
 
-    public IdenCode(String tel, String code) {
+    public IdenCode(String tel, String code, BaseInfo.AppPlatform appPlatform) {
         this.tel = tel;
         this.code = code;
+        this.appPlatform = appPlatform;
     }
 
     public String getTel() {
@@ -48,11 +50,11 @@ public class IdenCode implements Serializable {
         this.code = code;
     }
 
-    public User.AppPlatform getAppPlatform() {
+    public BaseInfo.AppPlatform getAppPlatform() {
         return appPlatform;
     }
 
-    public void setAppPlatform(User.AppPlatform appPlatform) {
+    public void setAppPlatform(BaseInfo.AppPlatform appPlatform) {
         this.appPlatform = appPlatform;
     }
 }

@@ -11,7 +11,6 @@ import java.util.Set;
 @Entity
 @Table(name = "HC_USER")
 public class User extends BaseInfo<Long> {
-
     /**
      * 用户健康包
      */
@@ -40,19 +39,10 @@ public class User extends BaseInfo<Long> {
     }
 
     /**
-     * 昵称
-     */
-    private String nickName = "";
-
-    /**
      * 用户使用平台
      */
     @Enumerated
     private AppPlatform appPlatform;
-
-    public enum AppPlatform {
-        Android,Ios
-    }
 
     public String getGroupId() {
         return groupId;
@@ -99,14 +89,4 @@ public class User extends BaseInfo<Long> {
     public void setAppPlatform(AppPlatform appPlatform) {
         this.appPlatform = appPlatform;
     }
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
-
-
 }
