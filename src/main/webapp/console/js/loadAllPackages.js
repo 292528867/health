@@ -7,7 +7,7 @@ var typeUrl = commonUrl + "discovery/cms/listCategory/";
 var updatePackageUrl = commonUrl + "hcPackage/updateHcPackage/";
 
 $.get(typeUrl, function (data) {
-    console.log(data);
+    //console.log(data);
     //  location.reload();
     var datas = '';
     $.each(data.ret_values, function (n, value) {
@@ -85,6 +85,7 @@ function searchPackage(typeId){
     }
 
     $("#allDatas").html("");
+    clearHtml();
     $.get(packagesUrl, function (data) {
         var datas = '';
         //console.log(data.ret_values);
@@ -207,7 +208,6 @@ function modifyPackage(){
 
     var updateUrl = updatePackageUrl + id;
     console.log(json);
-    debugger;
     $.ajax({
         url: updateUrl,
         type: "POST",
@@ -228,6 +228,36 @@ function modifyPackage(){
 
 
     });
+}
+
+//清空编辑区域都字段内容
+function clearHtml(){
+    $('#change-id').val("");
+    $('#type').val("");
+    $('#modify-durationCnt').val("");
+    $('#modify-duration').val("");
+    $('#modify-title').val("");
+    $('#modify-description').val("");
+    $('#modify-detailDescription').val("");
+    $('#modify-recommend').val("");
+    $('#modify-recommend').removeAttr("checked");
+    $('#modify-recommend').removeAttr("value");
+    $('#modify-recommendValue').val("");
+    $('#modify-isNeedSupplemented').val("");
+    $('#modify-isNeedSupplemented').removeAttr("checked");
+    $('#modify-isNeedSupplemented').removeAttr("value");
+    $('#modify-loops').val("");
+    $('#modify-loops').removeAttr("checked");
+    $('#modify-loops').removeAttr("value");
+    $('#modify-iconUrl').val("");
+    $('#modify-detailDescriptionIcon').val("");
+    $('#modify-smallIcon').val("");
+    $('#detail-img').attr('src', '');
+    $('#index-img').attr('src', '');
+    $('#small-icon-img').attr('src', '');
+    $('#icon-img-index').attr('src', '');
+    $('#detail-img-index').attr('src', '');
+    $('#small-icon-img-index').attr('src', '');
 }
 
 
