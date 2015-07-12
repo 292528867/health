@@ -17,7 +17,6 @@ import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailReposito
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderRepository;
 import com.wonders.xlab.healthcloud.utils.BeanUtils;
-import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -26,12 +25,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,7 +109,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      * @return
      */
     @RequestMapping("updateHcPackage/{hcPackageId}")
-    public Object updateHcPackage(@PathVariable Long hcPackageId, @Valid HcPackageDto hcPackageDto, BindingResult result) {
+    public Object updateHcPackage(@PathVariable Long hcPackageId, @RequestBody HcPackageDto hcPackageDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
