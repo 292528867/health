@@ -41,12 +41,11 @@ public class SmsUtils {
     /**
      * 发送回复提示信息
      * @param mobiles
-     * @param doctorName
      * @return
      */
     public static  int sendEmReplyInfo(String mobiles) {
         try {
-           // String content = String.format(SMS_DOCTOR_REPLY_CONTENT, doctorName);
+
             String resultCode = HttpSender.batchSend(SMS_SRV_URL, SMS_ACT_USER, SMS_ACT_PWD, mobiles, SMS_DOCTOR_REPLY_CONTENT, true, null, null);
             String status = resultCode.substring(resultCode.indexOf(",") + 1, resultCode.indexOf(",") + 2);
             if (StringUtils.equals(status, "0")) {
