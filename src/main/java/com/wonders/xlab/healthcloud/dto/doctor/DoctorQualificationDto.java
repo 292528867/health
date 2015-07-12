@@ -1,53 +1,63 @@
 package com.wonders.xlab.healthcloud.dto.doctor;
 
+import org.springframework.web.multipart.MultipartFile;
+
 /**
  * Created by Jeffrey on 15/7/12.
  */
 public class DoctorQualificationDto {
+
     /**
-     * 资质
+     * 头像地址
      */
-    private String recordUrl;
+    private MultipartFile icon;
+
+    /**
+     * 身份证
+     */
+    private MultipartFile iCard;
     /**
      * 职称证
      */
-    private String qualification;
+    private MultipartFile qualification;
 
     /**
      * 执行认证
      */
-    private String permit;
+    private MultipartFile permit;
 
     public DoctorQualificationDto() {
     }
 
-    public DoctorQualificationDto(String recordUrl, String qualification, String permit) {
-        this.recordUrl = recordUrl;
-        this.qualification = qualification;
-        this.permit = permit;
+    public MultipartFile getiCard() {
+        return iCard;
     }
 
-    public String getRecordUrl() {
-        return recordUrl;
+    public void setiCard(MultipartFile iCard) {
+        this.iCard = iCard;
     }
 
-    public void setRecordUrl(String recordUrl) {
-        this.recordUrl = recordUrl;
-    }
-
-    public String getQualification() {
+    public MultipartFile getQualification() {
         return qualification;
     }
 
-    public void setQualification(String qualification) {
+    public void setQualification(MultipartFile qualification) {
         this.qualification = qualification;
     }
 
-    public String getPermit() {
+    public MultipartFile getPermit() {
         return permit;
     }
 
-    public void setPermit(String permit) {
+    public void setPermit(MultipartFile permit) {
         this.permit = permit;
+    }
+
+    public MultipartFile getIcon() {
+        return icon;
+    }
+
+    public void setIcon(MultipartFile icon) {
+        this.icon = icon;
     }
 }

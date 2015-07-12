@@ -6,6 +6,7 @@ import com.wonders.xlab.healthcloud.dto.IdenCode;
 import com.wonders.xlab.healthcloud.dto.ThirdLoginToken;
 import com.wonders.xlab.healthcloud.dto.doctor.DoctorBaseInfoDto;
 import com.wonders.xlab.healthcloud.dto.doctor.DoctorQualificationDto;
+import com.wonders.xlab.healthcloud.dto.doctor.DoctorQualificationUrlDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.ThirdBaseInfo;
 import com.wonders.xlab.healthcloud.entity.doctor.Doctor;
@@ -31,6 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import javax.management.RuntimeErrorException;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 /**
@@ -111,7 +114,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         }
     }
 
-    private Object addDoctorBeforeLogin(IdenCode iden){
+    private Object addDoctorBeforeLogin(IdenCode iden) {
         Doctor doctor = new Doctor();
         doctor.setTel(iden.getTel());
         doctor.setAppPlatform(iden.getAppPlatform());
@@ -262,11 +265,16 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
     }
 
     @RequestMapping(value = "certification/{doctorId}", method = RequestMethod.POST)
-    public Object supplementaryQualificationInfo(@PathVariable long doctorId,@RequestBody @Valid DoctorQualificationDto doctorQualificationDto, BindingResult result) {
-        if (result.hasErrors()) {
+    public Object supplementaryQualificationInfo(@PathVariable long doctorId, MultipartFile icon ,MultipartFile iCard, MultipartFile qualification, MultipartFile permit) {
+        if (null == iCard || null == qualification || null == permit) {
             StringBuilder builder = new StringBuilder();
-            for (ObjectError error : result.getAllErrors()) {
-                builder.append(error.getDefaultMessage());
+            if (null == iCard)
+                builder.append("身份证不能为空！");
+            if (null == qualification) {
+                builder.append("职称证件不能为空！");
+            }
+            if (null == permit) {
+                builder.append("执行认证证件不能为空！");
             }
             return new ControllerResult<>()
                     .setRet_code(-1)
@@ -274,8 +282,25 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     .setMessage(builder.toString());
         }
 
+
+
+        DoctorQualificationUrlDto doctorQualificationUrlDto;
+        try {
+            doctorQualificationUrlDto = new DoctorQualificationUrlDto(
+                    uploadQualification(icon),
+                    uploadQualification(iCard),
+                    uploadQualification(qualification),
+                    uploadQualification(permit)
+            );
+        } catch (IOException e) {
+            return new ControllerResult<>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("上传认证失败！");
+        }
+
         Doctor doctor = doctorRepository.findOne(doctorId);
-        BeanUtils.copyNotNullProperties(doctorQualificationDto, doctor);
+        BeanUtils.copyNotNullProperties(doctorQualificationUrlDto, doctor);
         doctor.setChecked(Doctor.Checked.apply);
         try {
             doctorRepository.save(doctor);
@@ -290,6 +315,14 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     .setMessage("上传认证失败！");
         }
 
+    }
+
+    private String uploadQualification(MultipartFile file) throws IOException {
+        return null == file ? "" :
+                QiniuUploadUtils.upload(
+                    file.getBytes(),
+                    URLDecoder.decode(file.getOriginalFilename(), "UTF-8")
+                );
     }
 
 }
