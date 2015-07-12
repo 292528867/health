@@ -43,7 +43,6 @@ function articleAdd() {
         alert('有字段没有填写');
         return false;
     }
-    articleChangeUrl =articleChangeUrl+ type+'/'+id;
 
     var json = {
         "title": title,
@@ -54,7 +53,7 @@ function articleAdd() {
     };
     json = JSON.stringify(json);
     $.ajax({
-        url: articleChangeUrl,
+        url: articleChangeUrl+ type+'/'+id,
         type: "POST",
         data: json,
         dataType: "json",
