@@ -11,56 +11,69 @@
         <li class="admin-parent">
             <a class="am-cf" data-am-collapse="{target: '#type-nav'}"><span class="am-icon-file"></span>
                 分类 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
-            <ul class="am-list am-collapse admin-sidebar-sub am-in" id="type-nav">
-                <li><a href="#" class="am-cf"><span class="am-icon-check"></span> 一级包<span
-                        class="am-icon-star am-fr am-margin-right admin-icon-yellow"></span></a></li>
-                <li><a href="typeAdd.html"><span class="am-icon-puzzle-piece"></span> 二级分类</a></li>
+            <ul class="am-list am-collapse admin-sidebar-sub" id="type-nav">
+                <li><a href="#" class="am-cf"><span class="am-icon-check"></span> 一级包
+                </a></li>
+                <li><a href="typeAdd.html" id="typeAdd"><span class="am-icon-puzzle-piece"></span> 二级分类</a></li>
             </ul>
         </li>
         <li class="admin-parent">
             <a class="am-cf" data-am-collapse="{target: '#collapse-nav'}"><span class="am-icon-file"></span>
                 发现 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
-            <ul class="am-list am-collapse admin-sidebar-sub am-in" id="collapse-nav">
-                <li><a href="articleAdd.html" class="am-cf"><span class="am-icon-check"></span> 新增文章<span
-                        class="am-icon-star am-fr am-margin-right admin-icon-yellow"></span></a></li>
-                <li><a href="articleCheck.html"><span class="am-icon-puzzle-piece"></span> 查看文章</a></li>
+            <ul class="am-list am-collapse admin-sidebar-sub" id="collapse-nav">
+                <li><a href="articleAdd.html" id="articleAdd" class="am-cf"><span class="am-icon-check"></span> 新增文章
+                    </a></li>
+                <li><a href="articleCheck.html" id="articleCheck"><span class="am-icon-puzzle-piece"></span> 查看文章</a></li>
             </ul>
         </li>
         <li class="admin-parent">
             <a class="am-cf" data-am-collapse="{target: '#schedule-nav'}"><span class="am-icon-file"></span>
                 日程 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
-            <ul class="am-list am-collapse admin-sidebar-sub am-in" id="schedule-nav">
-                <li><a href="planPackage.html" class="am-cf"><span class="am-icon-check"></span> 计划包新增
+            <ul class="am-list am-collapse admin-sidebar-sub" id="schedule-nav">
+                <li><a href="planPackage.html" class="am-cf" id="planPackage"><span class="am-icon-check"></span> 计划包新增
                     </a></li>
-                <li><a href="packageEdit.html" class="am-cf"><span class="am-icon-check"></span> 计划包编辑
+                <li><a href="packageEdit.html" class="am-cf" id="packageEdit"><span class="am-icon-check"></span> 计划包编辑
                 </a></li>
-                <li><a href="planAdd.html"><span class="am-icon-puzzle-piece"></span> 计划添加</a></li>
-                <li><a href="planEdit.html"><span class="am-icon-puzzle-piece"></span> 计划编辑</a></li>
+                <li><a href="planAdd.html" id="planAdd"><span class="am-icon-puzzle-piece"></span> 计划添加</a></li>
+                <li><a href="planEdit.html" id="planEdit"><span class="am-icon-puzzle-piece"></span> 计划编辑</a></li>
             </ul>
         </li>
         <li class="admin-parent">
             <a class="am-cf" data-am-collapse="{target: '#store-nav'}"><span class="am-icon-file"></span>
                 商城编辑 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
-            <ul class="am-list am-collapse admin-sidebar-sub am-in" id="store-nav">
-                <li><a href="goodsAdd.html"><span class="am-icon-puzzle-piece"></span> 录入商品</a></li>
-                <li><a href="goodsEdit.html"><span class="am-icon-puzzle-piece"></span> 查询商品</a></li>
+            <ul class="am-list am-collapse admin-sidebar-sub" id="store-nav">
+                <li><a href="goodsAdd.html" id="goodsAdd"><span class="am-icon-puzzle-piece"></span> 录入商品</a></li>
+                <li><a href="goodsEdit.html" id="goodsEdit"><span class="am-icon-puzzle-piece"></span> 查询商品</a></li>
             </ul>
         </li>
         <li class="admin-parent">
             <a class="am-cf" data-am-collapse="{target: '#index-nav'}"><span class="am-icon-file"></span>
                 首页图文编辑 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
-            <ul class="am-list am-collapse admin-sidebar-sub am-in" id="index-nav">
-                <li><a href="firstSlider.html"><span class="am-icon-puzzle-piece"></span> 轮播图</a></li>
-                <li><a href="secondSlider.html"><span class="am-icon-puzzle-piece"></span> 二级轮播图</a></li>
-                <li><a href="todayTop.html"><span class="am-icon-puzzle-piece"></span> 今日头条</a></li>
+            <ul class="am-list am-collapse admin-sidebar-sub" id="index-nav">
+                <li><a href="firstSlider.html" id="firstSlider"><span class="am-icon-puzzle-piece"></span> 轮播图</a></li>
+                <li><a href="secondSlider.html" id="secondSlider"><span class="am-icon-puzzle-piece"></span> 二级轮播图</a></li>
+                <li><a href="todayTop.html" id="todayTop"><span class="am-icon-puzzle-piece"></span> 今日头条</a></li>
             </ul>
         </li>
-        <li><a href="replyInfo.html"><span class="am-icon-home"></span>环信回复</a></li>
+        <li><a href="replyInfo.html" id="replyInfo"><span class="am-icon-home"></span>环信回复</a></li>
     </ul>
 
 
 
 </div>
+<script>
+//    console.log($('.admin-parent').find('ul').find('li'));
+$('.admin-parent ul li a').on("click",function(){
+    sessionStorage.setItem('sideBar',$(this)[0].id);
+});
+//    console.log(sessionStorage.getItem('sideBar')||'first')
+if(sessionStorage.getItem('sideBar')!=null) {
+    var $sideBar = $('#' + sessionStorage.getItem('sideBar'));
+    $sideBar.closest('.admin-sidebar-sub').addClass('am-in');
+    $sideBar.append('<span class="am-icon-star am-fr am-margin-right admin-icon-yellow"></span>');
 
+//    console.log($('#' + sideBar).closest('.admin-sidebar-sub'));
+}
+</script>
 </body>
 </html>

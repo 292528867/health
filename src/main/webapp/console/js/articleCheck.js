@@ -65,6 +65,7 @@ function articleAdd() {
                 //location.reload();
                 $.get(articleSearchUrl + type, function (data) {
                     articles = data.ret_values;
+                    location.href=location.href+'#';
                 });
             }
             else
