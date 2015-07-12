@@ -14,6 +14,7 @@ import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.service.WordAnalyzerService;
 import com.wonders.xlab.healthcloud.utils.Constant;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
+import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -73,7 +74,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         // body.setExt(objectMapper.writeValueAsString(extendAttr));
         //发送信息
-        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChat("POST", messagesJson, "messages", String.class);
+        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChat(messagesJson,"POST",  "messages", String.class);
         //保存医生回复消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
@@ -87,11 +88,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         );
         EmMessages newMessage = emMessagesRepository.save(emMessages);
         //回复后发送信息给用户
-        Map<String, Object> filterMap = new HashMap<>();
+       /* Map<String, Object> filterMap = new HashMap<>();
         filterMap.put("tel_equal", body.getFrom());
-        Doctor doctor = doctorRepository.find(filterMap);
+        Doctor doctor = doctorRepository.find(filterMap);*/
         //TODO 暂时注释
-        //  SmsUtils.sendEmReplyInfo(username, doctor.getNickName());
+         SmsUtils.sendEmReplyInfo(username);
         //修改app发送信息状态为已回复
         EmMessages oldEm = emMessagesRepository.findOne(id);
         oldEm.setIsReplied(true);

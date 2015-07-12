@@ -6,7 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Jeffrey on 15/7/7.
@@ -48,8 +49,7 @@ public class Steward extends BaseInfo<Long> {
     private Location location;
 
     /**
-     * color
-     * @return
+     * 图标颜色
      */
     private String color;
     /**
@@ -63,6 +63,11 @@ public class Steward extends BaseInfo<Long> {
      * @return
      */
     private String weChat;
+
+    /**
+     * 客服电话
+     */
+    private String serviceTel;
 
     /**
      * 明星服务
@@ -141,5 +146,13 @@ public class Steward extends BaseInfo<Long> {
 
     public void setStarService(Map<String, Object> starService) {
         this.starService = starService;
+    }
+
+    public String getServiceTel() {
+        return serviceTel;
+    }
+
+    public void setServiceTel(String serviceTel) {
+        this.serviceTel = serviceTel;
     }
 }

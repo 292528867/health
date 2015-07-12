@@ -44,6 +44,20 @@ public class Doctor extends BaseInfo<Long> {
      */
     private String permit;
 
+    /**
+     * 昵称
+     */
+    private String nickName;
+
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
     public String getRecordUrl() {
         return recordUrl;
     }

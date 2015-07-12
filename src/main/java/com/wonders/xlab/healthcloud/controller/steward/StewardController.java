@@ -9,6 +9,11 @@ import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.steward.*;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.steward.*;
+import com.wonders.xlab.healthcloud.service.pingplusplus.exception.APIConnectionException;
+import com.wonders.xlab.healthcloud.service.pingplusplus.exception.APIException;
+import com.wonders.xlab.healthcloud.service.pingplusplus.exception.AuthenticationException;
+import com.wonders.xlab.healthcloud.service.pingplusplus.exception.InvalidRequestException;
+import com.wonders.xlab.healthcloud.service.pingplusplus.model.Charge;
 import com.wonders.xlab.healthcloud.service.pingpp.PingppService;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -240,101 +245,85 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @return
      */
     @RequestMapping("payServices/{userId}")
-    public void payServices(@PathVariable Long userId, @RequestBody @Valid ServiceDto serviceDto, BindingResult result,
-                            HttpServletRequest req, HttpServletResponse resp) {
+    public String payServices(@PathVariable Long userId, @RequestBody @Valid ServiceDto serviceDto, BindingResult result) throws RuntimeException {
 
-        PrintWriter out;
-        resp.setContentType("application/json; charset=utf-8");
         if (result.hasErrors()) {
+
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
                 builder.append(error.getDefaultMessage());
             }
-            try {
-                out = resp.getWriter();
-                out.print(new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败"));
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败");
+        }
+
+        //积分
+        int integration = 0;
+        //金额
+        int amount = 0;
+
+        String[] strIds = serviceDto.getServiceIds().split(",");
+        Long[] serviceIds = new Long[strIds.length];
+        for (int i = 0; i < strIds.length; i++)
+            serviceIds[i] = Long.parseLong(strIds[i]);
+        // 查询服务，管家
+        List<Services> services = servicesRepository.findAll(Arrays.asList(serviceIds));
+
+        Steward steward = stewardRepository.findOne(Long.parseLong(serviceDto.getStewardId()));
+
+        User user = userRepository.findOne(userId);
+        // 计算积分
+        for (Services service : services)
+            integration += service.getServiceIntegration();
+        integration += steward.getStewardIntegration();
+
+        // 存在推荐包
+        if (serviceDto.getPackageId() != "") {
+            // 获取推荐包，管家
+            RecommendPackage rp = recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
+
+            amount = Integer.parseInt(rp.getPrice());
+
+        } else {
+            // 判断自定义积分换算金额
+            if (integration >= 0 && integration <= 4) {
+                amount = 0;
+            } else if (integration >= 5 && integration <= 10) {
+                amount = 28;
+            } else if (integration >= 11 && integration <= 17) {
+                amount = 78;
+            } else if (integration >= 18 && integration <= 48) {
+                amount = 158;
             }
         }
-        try {
-            int integration = 0;
-            int amount = 0;
 
-            String[] strIds = serviceDto.getServiceIds().split(",");
-            Long[] serviceIds = new Long[strIds.length];
-            for (int i = 0; i < strIds.length; i++)
-                serviceIds[i] = Long.parseLong(strIds[i]);
-            // 查询服务，管家
-            List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
+        PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", String.valueOf(amount));
 
-            Steward steward = this.stewardRepository.findOne(Long.parseLong(serviceDto.getStewardId()));
+        Charge charge = pingppService.payOrder(pingDto);
 
-            User user = this.userRepository.findOne(userId);
-            // 计算积分
-            for (Services service : services)
-                integration += service.getServiceIntegration();
-            integration += steward.getStewardIntegration();
+        String tradeNo = "u" + userId + new Date().getTime();
 
-            // 存在推荐包
-            if (serviceDto.getPackageId() != "") {
-                // 获取推荐包，管家
-                RecommendPackage rp = this.recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
+        //保存订单详情
+        StewardOrder stewardOrder = new StewardOrder(charge.getId(), tradeNo, amount);
+        stewardOrder.setSteward(steward);
+        stewardOrder.setServices(new HashSet<>(services));
+        stewardOrder.setUser(user);
+        this.stewardOrderRepository.save(stewardOrder);
 
-                amount = Integer.parseInt(rp.getPrice());
-
-            } else {
-                // 判断自定义积分换算金额
-                if (integration >= 0 && integration <= 4) {
-                    amount = 0;
-                } else if (integration >= 5 && integration <= 10) {
-                    amount = 28;
-                } else if (integration >= 11 && integration <= 17) {
-                    amount = 78;
-                } else if (integration >= 18 && integration <= 48) {
-                    amount = 158;
-                }
-            }
-
-            PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", String.valueOf(amount));
-
-            String chargeID = pingppService.payOrder(userId, pingDto, result, req, resp);
-
-            String tradeNo = "u" + userId + new Date().getTime();
-
-            //保存订单详情
-            StewardOrder stewardOrder = new StewardOrder(chargeID, tradeNo, amount);
-            stewardOrder.setSteward(steward);
-            stewardOrder.setServices(new HashSet<Services>(services));
-            stewardOrder.setUser(user);
-            this.stewardOrderRepository.save(stewardOrder);
-
-            //服务被使用次数＋＋
-            for (Services service : services) {
-                service.setUsedNumber(service.getUsedNumber());
-                servicesRepository.save(service);
-            }
-            //管家服务次数＋＋
-            steward.setServicedPeriod(steward.getServicedPeriod() + 1);
-            stewardRepository.save(steward);
-
-        } catch (Exception exp) {
-            exp.printStackTrace();
-            try {
-                out = resp.getWriter();
-                out.print(new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败"));
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+        //服务被使用次数＋＋
+        for (Services service : services) {
+            service.setUsedNumber(service.getUsedNumber());
+            servicesRepository.save(service);
         }
+        //管家服务次数＋＋
+        steward.setServicedPeriod(steward.getServicedPeriod() + 1);
+        stewardRepository.save(steward);
+
+        return charge.toString();
 
     }
 
     /**
-     * 录入管家信息z
+     * 录入管家信息
      *
      * @param steward
      * @return
@@ -389,13 +378,65 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     }
 
     /**
+     * 获取订单详情
+     *
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "getOrdersDetail/{userId}/{chargeId}", method = RequestMethod.GET)
+    public ControllerResult getOrdersDetail(@PathVariable Long userId, @PathVariable String chargeId) throws APIException, AuthenticationException, InvalidRequestException, APIConnectionException {
+
+        List<StewardOrder> stewardOrders = stewardOrderRepository.findAllByUser(userId);
+
+        if (!stewardOrders.isEmpty()) {
+
+            //更新付款状态
+            Charge charge = pingppService.queryCharge(chargeId);
+
+            StewardOrder stewardOrder = stewardOrders.get(0);
+
+            //判断支付状态
+            if (charge.getPaid()) {
+                stewardOrder.setOrderStatus(StewardOrder.OrderStatus.支付成功);
+            } else {
+                stewardOrder.setOrderStatus(StewardOrder.OrderStatus.未支付);
+            }
+
+            int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
+
+            String[] detilServicedPeriod = new String[totalServicePeriod];
+
+            for (int num = 0; num < detilServicedPeriod.length; num++) {
+                detilServicedPeriod[num] = DateUtils.calculateTodayForWeek(stewardOrder.getCreatedDate(), num);
+            }
+
+            int currentServicedPeriod = DateUtils.calculateDaysOfTwoDateIgnoreHours(stewardOrder.getCreatedDate(), new Date());
+
+            Map<String, Object> servicedPeriodMap = new HashMap<>();
+
+            servicedPeriodMap.put("currentServicedPeriod", currentServicedPeriod);
+            servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
+            servicedPeriodMap.put("detailServicedPeriod", detilServicedPeriod);
+
+            stewardOrder.setServicedPeriodStatus(servicedPeriodMap);
+
+            return new ControllerResult<StewardOrder>().setRet_code(0).setRet_values(stewardOrder).setMessage("获取订单成功！");
+
+        } else {
+
+            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("获取订单失败！");
+        }
+    }
+
+
+    /**
      * 根据map的value排序
      *
      * @param oldMap
      * @return
      */
     public static Map sortMap(Map oldMap) {
-        ArrayList<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String, Integer>>(oldMap.entrySet());
+        ArrayList<Map.Entry<String, Integer>> list = new ArrayList<>(oldMap.entrySet());
         Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
 
             @Override
@@ -405,7 +446,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             }
         });
         Map newMap = new HashMap();
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = list.size()-1; i >=0; i--) {
             newMap.put(list.get(i).getKey(), list.get(i).getValue());
         }
         return newMap;
