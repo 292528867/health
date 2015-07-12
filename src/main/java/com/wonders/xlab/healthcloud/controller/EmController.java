@@ -12,6 +12,7 @@ import com.wonders.xlab.healthcloud.repository.EmMessagesRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.service.WordAnalyzerService;
+import com.wonders.xlab.healthcloud.utils.Constant;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -291,12 +292,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         EmDoctorNumber emDoctorNumber = new EmDoctorNumber();
         EmMessages newMessages = new EmMessages();
         if (emMessages == null) {
-            newMessages.setMsg(greetings);
+            newMessages.setMsg(String.format(greetings));
             if(flag == 1) {
                 newMessages.setToUser(userRepository.findByTel(tel).getGroupId());
                 emMessagesRepository.save(newMessages);
             }
-            emDoctorNumber.setLastQuestionStatus(true);
+            emDoctorNumber.setLastQuestionStatus(0);
             emDoctorNumber.setContent(questionSample);
             emDoctorNumber.setEmMessages(newMessages);
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
@@ -307,7 +308,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 newMessages.setToUser(userRepository.findByTel(tel).getGroupId());
                 emMessagesRepository.save(newMessages);
             }
-            emDoctorNumber.setLastQuestionStatus(true);
+            emDoctorNumber.setLastQuestionStatus(0);
             emDoctorNumber.setContent(questionSample);
             emDoctorNumber.setEmMessages(newMessages);
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
@@ -317,13 +318,13 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Calendar calendar1 = Calendar.getInstance();
         calendar1.setTime(emMessages.getCreatedDate());
         if (calendar.getTimeInMillis() - calendar1.getTimeInMillis() >= EMUtils.getOvertime() * 60 * 1000) {  // 超时
-            emDoctorNumber.setLastQuestionStatus(false);
+            emDoctorNumber.setLastQuestionStatus(1);
             emDoctorNumber.setContent(overTimeContent);
-            return new ControllerResult<EmDoctorNumber>().setRet_code(-1).setRet_values(emDoctorNumber).setMessage("");
+            return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         } else {
-            emDoctorNumber.setLastQuestionStatus(false);
+            emDoctorNumber.setLastQuestionStatus(1);
             emDoctorNumber.setContent(waitContent);
-            return new ControllerResult<EmDoctorNumber>().setRet_code(-1).setRet_values(emDoctorNumber).setMessage("");
+            return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         }
 
 

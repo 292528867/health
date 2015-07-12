@@ -7,17 +7,17 @@ import com.wonders.xlab.healthcloud.entity.EmMessages;
  */
 public class EmDoctorNumber {
 
-    private boolean lastQuestionStatus;
+    private int lastQuestionStatus;
 
     private String content;
 
     private EmMessages emMessages;
 
-    public boolean isLastQuestionStatus() {
+    public int getLastQuestionStatus() {
         return lastQuestionStatus;
     }
 
-    public void setLastQuestionStatus(boolean lastQuestionStatus) {
+    public void setLastQuestionStatus(int lastQuestionStatus) {
         this.lastQuestionStatus = lastQuestionStatus;
     }
 
