@@ -95,7 +95,7 @@ public class HcPackage extends AbstractBaseEntity<Long> {
      */
     private boolean loops;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     private HealthCategory healthCategory;
 
     /** 循环次数 */

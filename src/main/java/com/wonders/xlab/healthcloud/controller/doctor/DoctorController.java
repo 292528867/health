@@ -5,7 +5,6 @@ import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.IdenCode;
 import com.wonders.xlab.healthcloud.dto.ThirdLoginToken;
 import com.wonders.xlab.healthcloud.dto.doctor.DoctorBaseInfoDto;
-import com.wonders.xlab.healthcloud.dto.doctor.DoctorQualificationDto;
 import com.wonders.xlab.healthcloud.dto.doctor.DoctorQualificationUrlDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.ThirdBaseInfo;
@@ -23,7 +22,6 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +31,6 @@ import javax.annotation.PostConstruct;
 import javax.management.RuntimeErrorException;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 /**
@@ -98,11 +95,6 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！");
                 } else {
                     Doctor doctor = doctorRepository.findByTel(iden.getTel());
-//                    if (doctor == null) { // 如果是新用户，插入记录
-//                        return addDoctorBeforeLogin(iden);
-//                    } else {
-//                        return new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor).setMessage("成功");
-//                    }
                     return null == doctor ?
                             addDoctorBeforeLogin(iden) :
                             new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor).setMessage("成功");
@@ -282,10 +274,9 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     .setMessage(builder.toString());
         }
 
-
-
         DoctorQualificationUrlDto doctorQualificationUrlDto;
         try {
+            // 上传图片到七牛并创建地址dto
             doctorQualificationUrlDto = new DoctorQualificationUrlDto(
                     uploadQualification(icon),
                     uploadQualification(iCard),
