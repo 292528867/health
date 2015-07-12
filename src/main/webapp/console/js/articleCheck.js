@@ -66,6 +66,8 @@ function articleAdd() {
                 $.get(articleSearchUrl + type, function (data) {
                     articles = data.ret_values;
                     location.href=location.href+'#';
+                    $('#change-info-box').hide();
+                    $('#info-table').show();
                 });
             }
             else
@@ -116,6 +118,9 @@ function searchArticle(id) {
         $("#allDatas").append(datas);
         $("#allDatas tr").fadeIn(300);
         //customer = null;
+        $('#change-info-box').hide();
+        $('#info-table').show();
+
 
     });
 
@@ -134,4 +139,6 @@ function changeArticle(id) {
     $('#banner-img-index').attr('src', data.pictureUrl2);
     $('#banner-img').attr('src', data.pictureUrl2);
     $('#pictureUrl2').val(data.pictureUrl2);
+    $('#change-info-box').show();
+    $('#info-table').hide();
 }
