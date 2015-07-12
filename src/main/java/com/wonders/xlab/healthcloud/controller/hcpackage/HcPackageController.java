@@ -17,7 +17,7 @@ import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailReposito
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderRepository;
 import com.wonders.xlab.healthcloud.utils.BeanUtils;
-import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,12 +25,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,8 +108,8 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      * @param result
      * @return
      */
-    @RequestMapping(value = "updateHcPackage/{hcPackageId}", method = RequestMethod.POST)
-    public Object updateHcPackage(@PathVariable Long hcPackageId, @Valid HcPackageDto hcPackageDto, MultipartFile icon, MultipartFile detailDescriptionIcon, BindingResult result) {
+    @RequestMapping("updateHcPackage/{hcPackageId}")
+    public Object updateHcPackage(@PathVariable Long hcPackageId, @RequestBody HcPackageDto hcPackageDto, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -126,19 +122,15 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             if (hcPackage == null) {
                 return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("竟然没找到！");
             }
-            String iconUrl = QiniuUploadUtils.upload(icon.getBytes(), URLDecoder.decode(icon.getOriginalFilename(), "UTF-8"));
-            String detailDescriptionIconUrl = QiniuUploadUtils.upload(detailDescriptionIcon.getBytes(), URLDecoder.decode(detailDescriptionIcon.getOriginalFilename(), "UTF-8"));
-
             BeanUtils.copyProperties(hcPackageDto, hcPackage, "healthCategoryId");
-            hcPackage.setIcon(iconUrl);
-            hcPackage.setDetailDescriptionIcon(detailDescriptionIconUrl);
             hcPackageRepository.save(hcPackage);
-            return new ControllerResult<String>().setRet_code(0).setRet_values("").setMessage("添加成功！");
-        } catch (UnsupportedEncodingException e) {
-            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(e.getLocalizedMessage());
-        } catch (IOException e) {
-            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(e.getLocalizedMessage());
+
+        } catch (Exception e){
+            e.printStackTrace();
         }
+        return new ControllerResult<String>().setRet_code(0)
+                .setRet_values("")
+                .setMessage("添加成功！");
     }
 
     /**
@@ -266,6 +258,16 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             return new ControllerResult<>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("订阅计划列表获取成功！");
         } catch (Exception exp) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("订阅计划列表获取失败！");
+        }
+    }
+
+    @RequestMapping(value = "findPackagesByCategoryId/{categoryId}", method = RequestMethod.GET)
+    public ControllerResult findPackagesByCategoryId(@PathVariable Long categoryId){
+        List<HcPackage> packageList = hcPackageRepository.findByCategoryId(categoryId);
+        if(CollectionUtils.isNotEmpty(packageList)){
+            return new ControllerResult<>().setRet_code(0).setRet_values(packageList).setMessage("成功");
+        } else {
+            return new ControllerResult<>().setRet_code(-1).setRet_values(null).setMessage("未获取到数据");
         }
     }
 

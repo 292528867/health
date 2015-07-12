@@ -100,7 +100,7 @@ public class HomePageController {
                         new ProgressDto(
                                 upo.getHcPackage().getHealthCategory().getClassification().getTitle(),
                                 upo.getHcPackage().getTitle(),
-                                upo.getHcPackage().getSmaillIcon(),
+                                upo.getHcPackage().getSmallIcon(),
                                 progress
                         )
                 );
@@ -138,7 +138,7 @@ public class HomePageController {
                 if (completeDetailIds.contains(detail.getId()))
                     dto.setIsCompleted(1);
                 // 如果不包含任务id，说明还有任务没有完成
-                if (!completeDetailIds.contains(detail.getId()))
+                if (completeDetailIds.size() > 0 && !completeDetailIds.contains(detail.getId()))
                     dayComplete = 0;
                 // 判断当前是否是现在数据
                 if (currentDetailIds.contains(detail.getId()))

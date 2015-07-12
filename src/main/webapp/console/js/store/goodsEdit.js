@@ -2,27 +2,21 @@
  * Created by wade on 15/7/3.
  */
 
-var typeUrl = commonUrl + "discovery/cms/listCategory/";
-var articleAddUrl = commonUrl + 'discovery/cms/addInfo/';
-var articleSearchUrl = commonUrl + 'discovery/cms/listInfo/';
-var articleChangeUrl =commonUrl +'discovery/cms/updateInfo/';
-if(localStorage.getItem('typeId')!=null) {
-    searchArticle(localStorage.getItem('typeId'));
-}
-
+var goods;
 
 function openImgUpload() {
     $('#change-modal').modal('toggle');
 }
 
 
-function goodAdd() {
+function goodAdd(id) {
     var name = $('#name').val();
     var description = $('#description').val();
     var medicineUrl = $('#medicineUrl').val();
-    var pictureUrl = $('#pictureUrl').val();
+    var picUrl = $('#picUrl').val();
     var price = $('#price').val();
-    if (name.length==0||description.length==0||medicineUrl.length==0||pictureUrl.length==0||price.length==0) {
+    var id = $('#id').val();
+    if (name.length==0||description.length==0||medicineUrl.length==0||picUrl.length==0||price.length==0) {
         alert('有字段没有填写');
         return false;
     }
@@ -30,12 +24,12 @@ function goodAdd() {
         "name": name,
         "description": description,
         "medicineUrl": medicineUrl,
-        "pictureUrl": pictureUrl,
+        "picUrl": picUrl,
         "price": price
     };
     json = JSON.stringify(json);
     $.ajax({
-        url: commonUrl + 'store/addStore',
+        url: commonUrl + 'store/updateStore/'+id,
         type: "POST",
         data: json,
         dataType: "json",
@@ -44,7 +38,11 @@ function goodAdd() {
             console.log(response);
             if (response.ret_code == 0) {
                 alert('success');
-                location.reload();
+                $.get(commonUrl+'store/listStores', function (data) {
+                    goods = data.ret_values;
+                    location.href=location.href+'#';
+                });
+
             }
             else
                 alert(response.err_msg);
@@ -58,30 +56,18 @@ function goodAdd() {
     });
 }
 
-var articles;
-function searchArticle(id) {
-    if (id.length == 0||id==null) {
-        return false;
-    }
-    $('#allDatas').html('');
-    $('#type').val(id);
-    localStorage.setItem('typeId',id);
-    //$('#type').attr('value', id);
-    //$("#type").find("option[text=id]").attr("selected",true);
-    $.get(articleSearchUrl + id, function (data) {
-        //  location.reload();
-        articles = data.ret_values;
-        console.log(data);
+    $.get(commonUrl+'store/listStores', function (data) {
         var datas = '';
+        goods = data.ret_values;
         $.each(data.ret_values, function (n, value) {
             datas += "<tr style='display: none' ><td><input type='checkbox'/></td><td>" +
             value.id +
             "</td>" +
-            "<td><a href='#'>" + value.title + "</a></td>" +
+            "<td><a href='#'>" + value.name + "</a></td>" +
             "<td class='am-hide-sm-only'>" + value.description + "</td>" +
-            "<td class='am-hide-sm-only'><img src='" + value.pictureUrl + "' style='max-height:80px;' /></td>" +
+            "<td class='am-hide-sm-only'><img src='" + value.picUrl + "' style='max-height:80px;' /></td>" +
             "<td><div class='am-btn-toolbar'><div class='am-btn-group am-btn-group-xs'>" +
-            "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick='changeArticle(" + n + ")'>" +
+            "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick='changeGood(" + n + ")'>" +
             "<span class='am-icon-pencil-square-o'></span> 编辑</button>";
             datas += "</button>" +
 /*
@@ -97,25 +83,16 @@ function searchArticle(id) {
 
     });
 
-}
-function changeArticle(id) {
+function changeGood(id) {
     //$('#change-info-box').css('display','block');
-    var article = articles[id];
-    data = article;
+    var good = goods[id],
+    data = good;
     $('#id').val(data.id);
-    $('#title').val(data.title);
-    $('#desc').val(data.description);
-    $('#type').val($('#type-select').val()||localStorage.getItem('typeId'));
-
-    //editor.html(data.htmlInfo);
-    $('#index-img-index').attr('src',data.pictureUrl);
-    UE.getEditor('htmlInfo').setContent(data.htmlInfo);
-    $('#index-img').attr('src',data.pictureUrl);
-    $('#pictureUrl').val(data.pictureUrl);
-    $('#banner-img-index').attr('src', data.pictureUrl2);
-    $('#banner-img').attr('src', data.pictureUrl2);
-    $('#pictureUrl2').val(data.pictureUrl2);
-
-
-
+    $('#name').val(data.name);
+    $('#description').val(data.description);
+    $('#price').val(data.price);
+    $('#medicineUrl').val(data.medicineUrl);
+    $('#index-img-index').attr('src',data.picUrl);
+    $('#index-img').attr('src',data.picUrl);
+    $('#picUrl').val(data.picUrl);
 }

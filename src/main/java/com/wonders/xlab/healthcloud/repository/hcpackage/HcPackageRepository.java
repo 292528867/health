@@ -20,4 +20,7 @@ public interface HcPackageRepository extends MyRepository<HcPackage, Long> {
 
     @Query("select p from HcPackage p left join p.healthCategory c left join c.classification f where f.id = :id")
     List<HcPackage> findByClassificationId(@Param("id") Long id);
+
+    @Query("from HcPackage p left join fetch p.healthCategory c where c.id = :categoryId")
+    List<HcPackage> findByCategoryId(@Param("categoryId")Long categoryId);
 }

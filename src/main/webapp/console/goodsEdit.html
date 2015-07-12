@@ -111,55 +111,6 @@
                         </tr>
                         </thead>
                         <tbody id="allDatas">
-                        <!--
-                                                <tr>
-                                                    <td><input type="checkbox"/></td>
-                                                    <td>1</td>
-                                                    <td><a href="#">Business management</a></td>
-                                                    &lt;!&ndash;<td>default</td>&ndash;&gt;
-                                                    &lt;!&ndash;<td class="am-hide-sm-only">2014年9月4日 7:28:47</td>&ndash;&gt;
-                                                    <td>
-                                                        <div class="am-btn-toolbar">
-                                                            <div class="am-btn-group am-btn-group-xs">
-                                                                <button class="am-btn am-btn-default am-btn-xs am-text-secondary"><span
-                                                                        class="am-icon-pencil-square-o"></span> 编辑
-                                                                </button>
-                                                                <button class="am-btn am-btn-default am-btn-xs am-hide-sm-only"><span
-                                                                        class="am-icon-copy"></span> 复制
-                                                                </button>
-                                                                <button class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only">
-                                                                    <span class="am-icon-trash-o"></span> 删除
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                        -->
-                        <!--
-                                                <tr>
-                                                    <td><input type="checkbox"/></td>
-                                                    <td>1</td>
-                                                    <td><a href="#">Business management</a></td>
-                                                    <td>default</td>
-                                                    <td class="am-hide-sm-only">测试1号</td>
-                                                    <td class="am-hide-sm-only">2014年9月4日 7:28:47</td>
-                                                    <td>
-                                                        <div class="am-btn-toolbar">
-                                                            <div class="am-btn-group am-btn-group-xs">
-                                                                <button class="am-btn am-btn-default am-btn-xs am-text-secondary"><span
-                                                                        class="am-icon-pencil-square-o"></span> 编辑
-                                                                </button>
-                                                                <button class="am-btn am-btn-default am-btn-xs am-hide-sm-only"><span
-                                                                        class="am-icon-copy"></span> 复制
-                                                                </button>
-                                                                <button class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only">
-                                                                    <span class="am-icon-trash-o"></span> 删除
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                        -->
                         </tbody>
                     </table>
                     <!--
@@ -202,6 +153,7 @@
                       id="form1" method="post"
                       enctype="multipart/form-data" >
                     <fieldset>
+                        <input type="hidden" id="id" name="id"/>
                         <div class="am-form-group">
                             <label for="name">商品名称：</label>
                             <input type="text" id="name" placeholder=""
@@ -236,6 +188,7 @@
                         <br/>
                         <br/>
                         <img src="" alt="" id="index-img-index"/>
+                        <br/>
                         <br/>
                         <button class="am-btn am-btn-secondary" type="button" id="formSub" onclick="goodAdd()">提交
                         </button>
@@ -359,33 +312,6 @@
 
 </script>
 
-<script src="js/articleCheck.js"></script>
-<script>
-    $('#admin-offcanvas').load('common/adminSidebar.html');
-</script>
-<script src="ueditor/ueditor.config.js"></script>
-<script src="ueditor/ueditor.all.js"></script>
-<script type="text/javascript">
-    var ueScope = {}, mdScope = {};
-
-    $(document).ready(function () {
-        $.extend(ueScope, window);
-
-        ue = UE.getEditor('htmlInfo');
-    });
-    function changeCss() {
-        ue = UE.getEditor('htmlInfo');
-        ue.execCommand('selectall');
-        ue.execCommand('forecolor','#666666');
-        ue.execCommand('fontsize','18px');
-        ue.execCommand('fontfamily','Microsoft YaHei,微软雅黑' );
-    }
-    function insertTexts() {
-        ue = UE.getEditor('htmlInfo');
-        ue.setContent(ue.getContent()+'<p> <span style="font-size: 12px; font-family:" 微软雅黑, Microsoft YaHei"; color: rgb(102, 102, 102);">文章整理自网络，版权归原作者所有。</span></p >');
-    }
-
-</script>
-
+<script src="js/store/goodsEdit.js"></script>
 </body>
 </html>

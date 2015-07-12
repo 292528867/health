@@ -3,7 +3,6 @@
  */
 var packageAddUrl = commonUrl + "hcPackage/addHcPackage";
 function addPackage(){
-    debugger;
     var healthCategoryId = $('#type').val();
     console.log(healthCategoryId);
     var durationUnit = $('#durationUnit').val(),
@@ -16,7 +15,8 @@ function addPackage(){
         isNeedSupplemented = $('#isNeedSupplemented').val(),
         loops = $('#loops').val(),
         iconUrl = $('#iconUrl').val(),
-        detailDescriptionIcon = $('#detailDescriptionIcon').val();
+        detailDescriptionIcon = $('#detailDescriptionIcon').val(),
+        smallIcon = $('#smallIcon').val();
     if(durationUnit == 'week'){
         duration = durationCnt * 7;
     } else if (durationUnit == "day") {
@@ -46,9 +46,9 @@ function addPackage(){
         isNeedSupplemented = false;
     }
     if($('#loops').is(':checked')){
-        loops = "1";
+        loops = true;
     } else {
-        loops = "0";
+        loops = false;
     }
 
     //校验字段
@@ -61,7 +61,8 @@ function addPackage(){
         "loops": loops,
         "icon": iconUrl,
         "detailDescriptionIcon": detailDescriptionIcon,
-        "duration": duration
+        "duration": duration,
+        "smallIcon": smallIcon
     };
     json = JSON.stringify(json);
 
@@ -108,5 +109,8 @@ function clearHtml(){
     $('#loops').removeAttr("value");
     $('#iconUrl').val("");
     $('#detailDescriptionIcon').val("");
+    $('#smallIcon').val("");
     $('#detail-img').attr('src', '');
+    $('#index-img').attr('src', '');
+    $('#small-icon-img').attr('src', '');
 }

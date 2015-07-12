@@ -17,8 +17,6 @@ import net.sf.ehcache.Cache;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -48,8 +46,6 @@ import com.wonders.xlab.healthcloud.utils.DateUtils;
  */
 @Service
 public class DiscoveryServiceProxy implements DiscoveryService {
-	/** 日志记录器 */
-	private static final Logger logger = LoggerFactory.getLogger("com.wonders.xlab.healthcloud.service.discovery.DiscoveryServiceProxy");
 	
 	@Autowired
 	@Qualifier("discoveryServiceImpl")

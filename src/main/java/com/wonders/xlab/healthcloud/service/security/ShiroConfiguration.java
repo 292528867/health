@@ -1,17 +1,21 @@
 package com.wonders.xlab.healthcloud.service.security;
 
-import javax.persistence.Basic;
-import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.ehcache.CacheManager;
 
 import org.apache.shiro.cache.ehcache.EhCacheManager;
+import org.apache.shiro.session.SessionListener;
+import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
+import com.wonders.xlab.healthcloud.service.security.mgt.MySessionListener;
+import com.wonders.xlab.healthcloud.service.security.mgt.MyWebSessionManager;
 import com.wonders.xlab.healthcloud.service.security.realm.UserDbRealm;
 
 /**
@@ -56,11 +60,34 @@ public class ShiroConfiguration {
 		return realm;
 	}
 	
+	/**
+	 * 安全管理器，使用自定义WebSessionManager，{@link MyWebSessionManager}。
+	 * @param shiroEhcacheManager 缓存管理器，注入
+	 * @param userDbRealm 用户realm，注入
+	 */
 	@Bean(name = "securityManager")
 	public DefaultWebSecurityManager getDefaultWebSecurityManager(EhCacheManager shiroEhcacheManager, UserDbRealm userDbRealm) {
 		DefaultWebSecurityManager dwsm = new DefaultWebSecurityManager();
+		// 使用自定义的WebSessionManager注入
+		MyWebSessionManager msm = new MyWebSessionManager();
+		dwsm.setSessionManager(msm);
+		// 使用ehcache缓存session dao，以后可能再定义数据库session dao
+		msm.setSessionDAO(new EnterpriseCacheSessionDAO());
+		// 取消session失效检测机制，由后台控制，invalid session
+		msm.setSessionValidationSchedulerEnabled(false);
+		// 定义session监听器
+		List<SessionListener> sessionListeners = new ArrayList<>();
+		sessionListeners.add(new MySessionListener());
+		msm.setSessionListeners(sessionListeners);
+		// 设置realm
 		dwsm.setRealm(userDbRealm);
+		// 设置缓存控制器
 		dwsm.setCacheManager(shiroEhcacheManager);
+		
+		
+		// TODO：配置filter
+		
+		
 		return dwsm;
 	}
 	

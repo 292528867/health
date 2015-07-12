@@ -3,12 +3,12 @@ package com.wonders.xlab.healthcloud.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.healthcloud.dto.ThirdAppAccount;
 import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -17,27 +17,26 @@ import java.util.*;
  * Created by wukai on 15/7/6.
  */
 public final class ThirdAppConnUtils {
-    private ThirdAppConnUtils(){
+    private ThirdAppConnUtils() {
     }
 
     private static RestTemplate restTemplate = new RestTemplate();
 
     public static Map<String, ThirdAppAccount> appDatas = new HashMap<>();
 
-    @PostConstruct
-    private void init() {
-        List messages=new ArrayList();
+    static {
+        List<HttpMessageConverter<?>> messages = new ArrayList();
         messages.add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
         restTemplate.setMessageConverters(messages);
     }
 
-    public static void initAppDatas(){
+    public static void initAppDatas() {
         appDatas = new HashMap<>();
 
         ThirdAppAccount ememedAccount = new ThirdAppAccount("15021470585",
                 "111111", "", "2.6.1", "android", "",
                 "865585020300848", "http://www.ememed.net:8004/normal/user/login",
-                "http://www.ememed.net:8004/right/user/add_single_order","","");
+                "http://www.ememed.net:8004/right/user/add_single_order", "", "");
 
         appDatas.put("ememed", ememedAccount);
 
@@ -54,24 +53,23 @@ public final class ThirdAppConnUtils {
         basksugarAccount.setLoginUrl(loginurl);
         basksugarAccount.setStrUserName(account);
         basksugarAccount.setPassword(pwd);
-        appDatas.put("basksugar" , basksugarAccount);
-
-
+        appDatas.put("basksugar", basksugarAccount);
 
     }
 
     /**
      * 登录第三方app获取个人信息或者token
+     *
      * @param appName
      */
-    public static void loginApp(String appName){
+    public static void loginApp(String appName) {
         try {
             ThirdAppAccount appAccount = ThirdAppConnUtils.appDatas.get(appName);
-            if(appAccount == null){
-                return ;
+            if (appAccount == null) {
+                return;
             }
             //获取token,薏米医生
-            if("ememed".equals(appName)){
+            if ("ememed".equals(appName)) {
                 HttpHeaders headers = new HttpHeaders();
                 List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
                     add(MediaType.APPLICATION_FORM_URLENCODED);
@@ -88,47 +86,39 @@ public final class ThirdAppConnUtils {
                 ResponseEntity result = requestEMChart(headers, HttpMethod.POST, requestMap, String.class, appAccount.getLoginUrl(), null);
                 ObjectMapper objectMapper = new ObjectMapper();
                 Map<String, Object> resultMap = objectMapper.readValue((String) result.getBody(), HashMap.class);
-//                System.out.println("resultMap = " + resultMap);
-                Map<String, Object> dataMap = (LinkedHashMap<String, Object>)resultMap.get("data");
-                String token = (String)dataMap.get("TOKEN");
+                Map<String, Object> dataMap = (LinkedHashMap<String, Object>) resultMap.get("data");
+                String token = (String) dataMap.get("TOKEN");
                 String memberId = (String) dataMap.get("MEMBERID");
                 appAccount.setClientId(memberId);
                 appAccount.setLoginToken(token);
 
-            } else if("basksugar".equals(appName)){
+            } else if ("basksugar".equals(appName)) {
                 //血糖高管登录
                 //登录获取clientId
                 Map<String, Object> uriVariables = new HashMap<>();
                 uriVariables.put("m1", appAccount.getChannel());
-                uriVariables.put("s2", UUID.randomUUID().toString().replaceAll("-",""));
+                uriVariables.put("s2", UUID.randomUUID().toString().replaceAll("-", ""));
                 uriVariables.put("p3", appAccount.getPassword());
                 uriVariables.put("a4", appAccount.getStrUserName());
 
                 ResponseEntity result = getForEntity(appAccount.getLoginUrl(), String.class, uriVariables);
                 ObjectMapper objectMapper = new ObjectMapper();
                 Map<String, String> resultMap = objectMapper.readValue((String) result.getBody(), HashMap.class);
-                String clientId = (String)objectMapper.readValue(resultMap.get("data"), HashMap.class).get("cid");
+                String clientId = (String) objectMapper.readValue(resultMap.get("data"), HashMap.class).get("cid");
 //                System.out.println("resultMap = " + resultMap);
                 appAccount.setClientId(clientId);
             }
 
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
-
-    public static ResponseEntity<?> requestEMChart(HttpHeaders headers, HttpMethod method, final Object body,  Class<?> classz, String url, Map<String, Object> uriVariables) {
+    public static ResponseEntity<?> requestEMChart(HttpHeaders headers, HttpMethod method, final Object body, Class<?> classz, String url, Map<String, Object> uriVariables) {
         if (null == headers) {
-            List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>() {{
-//                add(MediaType.APPLICATION_JSON);
-            }};
             headers = new HttpHeaders();
-            headers.setAccept(acceptableMediaTypes);
-
         }
-
         ResponseEntity<?> result = restTemplate.exchange(
                 url,
                 method,
@@ -147,18 +137,19 @@ public final class ThirdAppConnUtils {
         return result;
     }
 
-    public static ResponseEntity getForEntity(String url, Class<?> classz,  Map<String, Object> uriVariables){
-        ResponseEntity result = restTemplate.getForEntity(url, classz, uriVariables);
+    public static ResponseEntity getForEntity(String url, Class<?> clazz, Map<String, Object> uriVariables) {
+        ResponseEntity result = restTemplate.getForEntity(url, clazz, uriVariables);
         Assert.isTrue(HttpStatus.OK.equals(result.getStatusCode()));
         return result;
     }
 
     /**
      * 薏米医生 寻找免费的医生
+     *
      * @param appAccount
      * @return
      */
-    public static List<String> findDoctorList(ThirdAppAccount appAccount) throws Exception{
+    public static List<String> findDoctorList(ThirdAppAccount appAccount) throws Exception {
         List<String> doctorList = new ArrayList<>();
         //薏米医生 找医生 search_filter_doctor
         HttpHeaders headers = new HttpHeaders();
@@ -183,9 +174,9 @@ public final class ThirdAppConnUtils {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> resultMap = objectMapper.readValue((String) result.getBody(), HashMap.class);
 
-        for(LinkedHashMap paraMap : (ArrayList<LinkedHashMap<String, Object>>)resultMap.get("data")){
-            if("1".equals(paraMap.get("ALLOWFREECONSULT"))){
-                String doctorId = (String)paraMap.get("DOCTORID");
+        for (LinkedHashMap paraMap : (ArrayList<LinkedHashMap<String, Object>>) resultMap.get("data")) {
+            if ("1".equals(paraMap.get("ALLOWFREECONSULT"))) {
+                String doctorId = (String) paraMap.get("DOCTORID");
                 doctorList.add(doctorId);
             }
         }

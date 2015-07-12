@@ -63,12 +63,12 @@ function articleAdd() {
             if (response.ret_code == 0) {
                 alert('success,不跳转了啊，有BUG 说。。');
                 //location.reload();
-                //articles[id].title = title;
-                //articles[id].desc = desc;
-                //articles[id].pictureUrl = pictureUrl;
-                //articles[id].pictureUrl2 = pictureUrl2;
-                //articles[id].type = type;
-                //articles[id].htmlInfo = htmlInfo;
+                $.get(articleSearchUrl + type, function (data) {
+                    articles = data.ret_values;
+                    location.href=location.href+'#';
+                    $('#change-info-box').hide();
+                    $('#info-table').show();
+                });
             }
             else
                 alert(response.err_msg);
@@ -118,20 +118,20 @@ function searchArticle(id) {
         $("#allDatas").append(datas);
         $("#allDatas tr").fadeIn(300);
         //customer = null;
+        $('#change-info-box').hide();
+        $('#info-table').show();
+
 
     });
 
 }
 function changeArticle(id) {
-    //$('#change-info-box').css('display','block');
     var article = articles[id];
     data = article;
     $('#id').val(data.id);
     $('#title').val(data.title);
     $('#desc').val(data.description);
     $('#type').val($('#type-select').val()||localStorage.getItem('typeId'));
-
-    //editor.html(data.htmlInfo);
     $('#index-img-index').attr('src',data.pictureUrl);
     UE.getEditor('htmlInfo').setContent(data.htmlInfo);
     $('#index-img').attr('src',data.pictureUrl);
@@ -139,7 +139,6 @@ function changeArticle(id) {
     $('#banner-img-index').attr('src', data.pictureUrl2);
     $('#banner-img').attr('src', data.pictureUrl2);
     $('#pictureUrl2').val(data.pictureUrl2);
-
-
-
+    $('#change-info-box').show();
+    $('#info-table').hide();
 }

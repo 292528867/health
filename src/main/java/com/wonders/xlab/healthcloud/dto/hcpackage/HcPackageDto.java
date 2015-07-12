@@ -70,7 +70,10 @@ public class HcPackageDto {
      * 是否循环
      */
     @NotBlank
-    private String loops;
+    private boolean loops;
+
+    /** 首页小图 */
+    private String smallIcon;
 
     public String getTitle() {
         return title;
@@ -143,11 +146,11 @@ public class HcPackageDto {
         this.detailDescriptionIcon = detailDescriptionIcon;
     }
 
-    public String getLoops() {
+    public boolean getLoops() {
         return loops;
     }
 
-    public void setLoops(String loops) {
+    public void setLoops(boolean loops) {
         this.loops = loops;
     }
 
@@ -157,5 +160,13 @@ public class HcPackageDto {
 
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
+    }
+
+    public String getSmallIcon() {
+        return smallIcon;
+    }
+
+    public void setSmallIcon(String smallIcon) {
+        this.smallIcon = smallIcon;
     }
 }
