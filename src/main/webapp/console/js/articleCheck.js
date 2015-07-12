@@ -60,14 +60,14 @@ function articleAdd() {
         headers: {"Accept": "application/json", "Content-Type": "application/json; charset=UTF-8"},
         success: function (response) {
             if (response.ret_code == 0) {
-                alert('success,不跳转了啊，有BUG 说。。');
-                //location.reload();
-                $.get(articleSearchUrl + type, function (data) {
-                    articles = data.ret_values;
-                    location.href=location.href+'#';
-                    $('#change-info-box').hide();
-                    $('#info-table').show();
-                });
+                alert('success,发现跳转了也是可以的- -。');
+                location.reload();
+                //$.get(articleSearchUrl + type, function (data) {
+                //    articles = data.ret_values;
+                //    location.href=location.href+'#';
+                //    $('#change-info-box').hide();
+                //    $('#info-table').show();
+                //});
             }
             else
                 alert(response.err_msg);
