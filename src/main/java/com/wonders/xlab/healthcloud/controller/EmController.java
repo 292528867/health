@@ -299,6 +299,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         EmMessages newMessages = new EmMessages();
         if (emMessages == null) {
             newMessages.setMsg(String.format(greetings));
+            newMessages.setCreatedDate(new Date());
             if(flag == 1) {
                 newMessages.setToUser(userRepository.findByTel(tel).getGroupId());
                 emMessagesRepository.save(newMessages);
@@ -310,9 +311,10 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         }
         if (emMessages.getIsReplied()) { //用户已回复
             newMessages.setMsg(greetings);
+            newMessages.setCreatedDate(new Date());
             if(flag == 1) {
                 newMessages.setToUser(userRepository.findByTel(tel).getGroupId());
-                emMessagesRepository.save(newMessages);
+                  emMessagesRepository.save(newMessages);
             }
             emDoctorNumber.setLastQuestionStatus(0);
             emDoctorNumber.setContent(questionSample);
