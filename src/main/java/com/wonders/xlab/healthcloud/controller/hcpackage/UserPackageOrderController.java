@@ -26,7 +26,7 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
     private UserPackageOrderService userPackageOrderService;
 
     @RequestMapping(value = "join/{userId}/{packageId}", method = RequestMethod.POST)
-    public Object joinPlan(@PathVariable Long userId, @PathVariable Long packageId) {
+    public Object joinPlan(@PathVariable long userId, @PathVariable Long packageId) {
         return userPackageOrderService.joinPlan(userId, packageId);
     }
 

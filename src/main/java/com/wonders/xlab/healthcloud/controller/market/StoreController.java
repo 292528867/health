@@ -33,7 +33,7 @@ public class StoreController extends AbstractBaseController<Store, Long> {
     }
 
     /**
-     * 市场列表
+     * 商城列表
      * @return
      */
     @RequestMapping(value = "listStores", method = RequestMethod.GET)
