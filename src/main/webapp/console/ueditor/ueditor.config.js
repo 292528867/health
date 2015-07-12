@@ -31,12 +31,12 @@
         UEDITOR_HOME_URL: URL
 
         // 服务器统一请求接口路径
-        , serverUrl: 'http://101.231.124.8:45677/xlab-healthcloud/discovery/cms/uploadPicture'
+        , serverUrl: 'http://101.231.124.8:45677/xlab-healthcloud/ue'
 
-        //工具栏上的所有的功能按钮和下拉框，可以在new编辑器的实例时选择自己需要的从新定义
-        ,imageUrl:"http://101.231.124.8:45677/xlab-healthcloud/discovery/cms/uploadPicture"             //图片上传提交地址
-        //图片上传配置区
-        ,imagePath:URL + "cms/uploadPicture"
+        ////工具栏上的所有的功能按钮和下拉框，可以在new编辑器的实例时选择自己需要的从新定义
+        //,imageUrl:"http://101.231.124.8:45677/xlab-healthcloud/discovery/cms/uploadPicture"             //图片上传提交地址
+        ////图片上传配置区
+        //,imagePath:URL + "cms/uploadPicture"
 
         , toolbars: [["fullscreen","source","undo","redo","insertunorderedlist","insertorderedlist","unlink","link","cleardoc","selectall","searchreplace","preview","drafts","bold","italic","underline","fontborder","strikethrough","forecolor","backcolor","indent","directionalityrtl","directionalityltr","tolowercase","lineheight","rowspacingtop","rowspacingbottom","paragraph","fontsize","fontfamily","imagenone","imageleft","imageright","imagecenter","justifyleft","justifycenter","justifyright","justifyjustify","touppercase","removeformat","formatmatch","autotypeset","customstyle","simpleupload","insertimage","emotion","insertvideo","attachment","time","date","horizontal"],[]]
         //当鼠标放在工具栏上时显示的tooltip提示,留空支持自动多语言配置，否则以配置值为准
