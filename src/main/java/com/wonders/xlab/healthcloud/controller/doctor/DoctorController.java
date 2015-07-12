@@ -4,23 +4,32 @@ import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.IdenCode;
 import com.wonders.xlab.healthcloud.dto.ThirdLoginToken;
+import com.wonders.xlab.healthcloud.dto.doctor.DoctorBaseInfoDto;
+import com.wonders.xlab.healthcloud.dto.doctor.DoctorQualificationDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.ThirdBaseInfo;
 import com.wonders.xlab.healthcloud.entity.doctor.Doctor;
 import com.wonders.xlab.healthcloud.entity.doctor.DoctorThird;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorThirdRepository;
+import com.wonders.xlab.healthcloud.service.cache.HCCache;
+import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
+import com.wonders.xlab.healthcloud.utils.BeanUtils;
+import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
+import javax.management.RuntimeErrorException;
 import javax.validation.Valid;
 import java.net.URLDecoder;
 
@@ -30,6 +39,8 @@ import java.net.URLDecoder;
 @RestController
 @RequestMapping("doctor")
 public class DoctorController extends AbstractBaseController<Doctor, Long> {
+
+    private HCCache<String, String> hcCache;
 
     @Autowired
     @Qualifier("idenCodeCache")
@@ -41,19 +52,28 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
     @Autowired
     private DoctorThirdRepository doctorThirdRepository;
 
+    @PostConstruct
+    private void init() {
+        hcCache = new HCCacheProxy<>(idenCodeCache);
+    }
+
     @Override
     protected MyRepository<Doctor, Long> getRepository() {
         return doctorRepository;
     }
 
+    @Autowired
+    private EMUtils emUtils;
+
     /**
      * 医师手机登陆
+     *
      * @param iden
      * @param result
      * @return
      */
-    @RequestMapping(value = "mlogin", method = RequestMethod.POST)
-    public Object mlogin(@Valid IdenCode iden, BindingResult result) {
+    @RequestMapping(value = "hclogin", method = RequestMethod.POST)
+    public Object hclogin(@RequestBody @Valid IdenCode iden, BindingResult result) {
 
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
@@ -64,31 +84,25 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         }
         try {
             // 获取指定手机号的验证编码缓存并，比较是否相同
-            // 判断element是否为空
-            Element element = idenCodeCache.get(iden.getTel());
-            if (element == null) {
-                return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！");
-            }
-            // 获取验证码
-            String iden_code = (String)element.getObjectValue();
+            String cascheValue = hcCache.getFromCache(iden.getTel());
 
-            if (iden_code == null) {
+            if (cascheValue == null) {
                 // cache失效罗
                 return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！");
             } else {
-                if (!iden_code.equals(iden.getCode())) {
+                if (!cascheValue.equals(iden.getCode())) {
                     // 前台输错验证码罗
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！");
                 } else {
-                    Doctor doctor = this.doctorRepository.findByTel(iden.getTel());
-                    if (doctor == null) { // 如果是新用户，插入记录
-                        doctor = new Doctor();
-                        doctor.setTel(iden.getTel());
-                        doctor = this.doctorRepository.save(doctor);
-                        return new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor).setMessage("成功");
-                    } else {
-                        return new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor).setMessage("成功");
-                    }
+                    Doctor doctor = doctorRepository.findByTel(iden.getTel());
+//                    if (doctor == null) { // 如果是新用户，插入记录
+//                        return addDoctorBeforeLogin(iden);
+//                    } else {
+//                        return new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor).setMessage("成功");
+//                    }
+                    return null == doctor ?
+                            addDoctorBeforeLogin(iden) :
+                            new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor).setMessage("成功");
                 }
             }
         } catch (Exception e) {
@@ -97,8 +111,19 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         }
     }
 
+    private Object addDoctorBeforeLogin(IdenCode iden){
+        Doctor doctor = new Doctor();
+        doctor.setTel(iden.getTel());
+        doctor.setAppPlatform(iden.getAppPlatform());
+        doctor = this.doctorRepository.save(doctor);
+        return emUtils.registerEmUser("doctor" + iden.getTel(), iden.getTel()) ?
+                new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor).setMessage("成功") :
+                new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败！");
+    }
+
     /**
      * 第三方登陆
+     *
      * @param token
      * @param result
      * @return
@@ -146,7 +171,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！");
                 }
                 // 获取验证码
-                String iden_code = (String)element.getObjectValue();
+                String iden_code = (String) element.getObjectValue();
 
                 if (iden_code == null) {
                     // cache失效罗
@@ -207,6 +232,64 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
             e.printStackTrace();
             return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(e.getLocalizedMessage());
         }
+    }
+
+    @RequestMapping(value = "updateBaseInfo/{doctorId}", method = RequestMethod.POST)
+    public Object modifyBaseInfo(@PathVariable long doctorId, @RequestBody @Valid DoctorBaseInfoDto doctorBaseInfoDto, BindingResult result) {
+        if (result.hasErrors()) {
+            StringBuilder builder = new StringBuilder();
+            for (ObjectError error : result.getAllErrors()) {
+                builder.append(error.getDefaultMessage());
+            }
+            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(builder.toString());
+        }
+
+        Doctor doctor = doctorRepository.findOne(doctorId);
+        BeanUtils.copyNotNullProperties(doctorBaseInfoDto, doctor);
+        doctor.setValid(Doctor.Valid.valid);
+        try {
+            doctor = doctorRepository.save(doctor);
+            return new ControllerResult<>()
+                    .setRet_code(0)
+                    .setRet_values(doctor)
+                    .setMessage("更新信息成功！");
+        } catch (RuntimeErrorException exp) {
+            return new ControllerResult<>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("更新信息失败！");
+        }
+    }
+
+    @RequestMapping(value = "certification/{doctorId}", method = RequestMethod.POST)
+    public Object supplementaryQualificationInfo(@PathVariable long doctorId,@RequestBody @Valid DoctorQualificationDto doctorQualificationDto, BindingResult result) {
+        if (result.hasErrors()) {
+            StringBuilder builder = new StringBuilder();
+            for (ObjectError error : result.getAllErrors()) {
+                builder.append(error.getDefaultMessage());
+            }
+            return new ControllerResult<>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage(builder.toString());
+        }
+
+        Doctor doctor = doctorRepository.findOne(doctorId);
+        BeanUtils.copyNotNullProperties(doctorQualificationDto, doctor);
+        doctor.setChecked(Doctor.Checked.apply);
+        try {
+            doctorRepository.save(doctor);
+            return new ControllerResult<>()
+                    .setRet_code(0)
+                    .setRet_values("")
+                    .setMessage("上传认证成功！");
+        } catch (RuntimeErrorException exp) {
+            return new ControllerResult<>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("上传认证失败！");
+        }
+
     }
 
 }

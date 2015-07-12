@@ -13,6 +13,20 @@ import java.util.Set;
 public class User extends BaseInfo<Long> {
 
     /**
+     * 身高
+     */
+    private double height;
+
+    /**
+     * 体重
+     */
+    private double weight;
+
+    /**
+     * 年龄
+     */
+    private int age;
+    /**
      * 用户健康包
      */
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
@@ -40,19 +54,10 @@ public class User extends BaseInfo<Long> {
     }
 
     /**
-     * 昵称
-     */
-    private String nickName = "";
-
-    /**
      * 用户使用平台
      */
     @Enumerated
     private AppPlatform appPlatform;
-
-    public enum AppPlatform {
-        Android,Ios
-    }
 
     public String getGroupId() {
         return groupId;
@@ -100,13 +105,27 @@ public class User extends BaseInfo<Long> {
         this.appPlatform = appPlatform;
     }
 
-    public String getNickName() {
-        return nickName;
+    public double getHeight() {
+        return height;
     }
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setHeight(double height) {
+        this.height = height;
     }
 
+    public double getWeight() {
+        return weight;
+    }
 
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
 }

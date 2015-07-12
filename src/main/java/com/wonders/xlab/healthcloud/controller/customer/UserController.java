@@ -1,7 +1,5 @@
 package com.wonders.xlab.healthcloud.controller.customer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.IdenCode;
@@ -39,7 +37,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.net.URLDecoder;
-import java.util.HashMap;
 import java.util.HashSet;
 
 
@@ -149,7 +146,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         //用户为空创建用户和第三方关联
         if (null == user) {
             //创建环信账号
-            boolean result = registerEmUser(token.getTel(), token.getTel());
+            boolean result = emUtils.registerEmUser(token.getTel(), token.getTel());
             if (!result) {
                 return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败!");
             }
@@ -218,7 +215,7 @@ public class UserController extends AbstractBaseController<User, Long> {
     private ControllerResult<?> addUserBeforeLogin(IdenCode idenCode) throws Exception {
 
         //创建环信账号
-        boolean result = registerEmUser(idenCode.getTel(), idenCode.getTel());
+        boolean result = emUtils.registerEmUser(idenCode.getTel(), idenCode.getTel());
         if (!result) {
             return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败!");
         }
@@ -317,17 +314,5 @@ public class UserController extends AbstractBaseController<User, Long> {
         return userRepository;
     }
 
-    private boolean registerEmUser(final String username, final String password) {
-        try {
-            emUtils.requestEMChat(new ObjectMapper().writeValueAsString(
-                    new HashMap<String, String>() {{
-                        put("username", username);
-                        put("password", password);
-                    }}
-            ), "POST", "users", String.class);
-            return true;
-        } catch (JsonProcessingException e) {
-            return false;
-        }
-    }
+
 }

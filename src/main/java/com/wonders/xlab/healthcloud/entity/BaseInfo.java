@@ -11,7 +11,8 @@ import javax.persistence.Temporal;
 import java.io.Serializable;
 import java.util.Date;
 
-import static javax.persistence.TemporalType.*;
+import static javax.persistence.TemporalType.DATE;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 /**
  * Created by mars on 15/7/2.
@@ -23,62 +24,52 @@ public abstract class BaseInfo<ID extends Serializable> extends AbstractPersista
      * 手机
      */
     @Column(unique = true, length = 11)
-    private String tel = "";
+    protected String tel = "";
 
-
+    public enum AppPlatform {
+        Android, Ios, Other
+    }
 
     /**
      * 头像地址
      */
-    private String iconUrl = "";
+    protected String iconUrl = "";
+
+    /**
+     * 昵称
+     */
+    private String nickName = "";
 
     /**
      * 性别
      */
     @Enumerated
-    private Sex sex = Sex.Unkown;
+    protected Sex sex = Sex.Unkown;
 
     public enum Sex {
         Male, Female, Unkown
     }
 
-    /**
-     * 身高
-     */
-    private double height;
-
-    /**
-     * 体重
-     */
-    private double weight;
-
-    /**
-     * 年龄
-     */
-    private int age;
-
     @Temporal(DATE)
-    private Date birthday;
+    protected Date birthday;
 
     @CreatedDate
     @Temporal(TIMESTAMP)
-    private Date createdDate;
+    protected Date createdDate;
 
     @LastModifiedDate
     @Temporal(TIMESTAMP)
-    private Date lastModifiedDate;
+    protected Date lastModifiedDate;
 
     public BaseInfo() {
         super();
     }
 
-    public BaseInfo(String tel, String iconUrl, Sex sex, double height, double weight, int age, Date birthday, Date createdDate, Date lastModifiedDate) {
+    public BaseInfo(String tel, String iconUrl, String nickName, Sex sex, Date birthday, Date createdDate, Date lastModifiedDate) {
         this.tel = tel;
         this.iconUrl = iconUrl;
+        this.nickName = nickName;
         this.sex = sex;
-        this.height = height;
-        this.weight = weight;
-        this.age = age;
         this.birthday = birthday;
         this.createdDate = createdDate;
         this.lastModifiedDate = lastModifiedDate;
@@ -108,30 +99,6 @@ public abstract class BaseInfo<ID extends Serializable> extends AbstractPersista
         this.sex = sex;
     }
 
-    public double getHeight() {
-        return height;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
-    public double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
     public Date getBirthday() {
         return birthday;
     }
@@ -154,5 +121,13 @@ public abstract class BaseInfo<ID extends Serializable> extends AbstractPersista
 
     public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 }
