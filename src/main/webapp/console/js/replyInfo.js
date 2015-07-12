@@ -84,6 +84,28 @@ function replyInfo(fromUser, toUser,msgId) {
 
     $("#reply-modal").modal('toggle');
 
+    //显示最新的5条聊天纪录
+    console.log(url + "em/getTop5Messages?groupId=" + toUser);
+    $.ajax({
+        'url':url+"em/getTop5Messages?groupId="+toUser,
+        'type':'get',
+        success: function (data) {
+            console.log(data[1].msg);
+            var str = '';
+            if (data =='' || data == null) {
+                str += '<span>没有数据</span>';
+            }else {
+                for (var i=0; i<data.length; i++) {
+                    str += '<tr> ';
+                    str += '<td>'+data[i].msg+'</td>';
+                    str += '</tr>';
+                }
+            }
+            console.log(str);
+            $('#top5Records').html(str);
+        }
+    });
+
 
     //提交回复信息
     $("#type-reply").click(function () {
