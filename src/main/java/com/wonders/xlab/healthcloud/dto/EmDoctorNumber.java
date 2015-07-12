@@ -7,6 +7,7 @@ import com.wonders.xlab.healthcloud.entity.EmMessages;
  */
 public class EmDoctorNumber {
 
+    //0表示进入问答页面    1代表等待页面
     private int lastQuestionStatus;
 
     private String content;
