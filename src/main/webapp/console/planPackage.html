@@ -102,8 +102,9 @@
                       id="packageForm1" method="post"
                       enctype="multipart/form-data" ng-app="" ng-controller="teacherController">
                     <fieldset>
-                        <input type="hidden" name="iconUrl" id="iconUrl">
+                        <input type="hidden" name="icon" id="iconUrl">
                         <input type="hidden" name="detailDescriptionIcon" id="detailDescriptionIcon">
+                        <input type="hidden" name="smallIcon" id="smallIcon">
                         <div class="am-form-group am-form-inline">
                             <div class="am-form-group am-u-sm-4">
                                 <label for="type" class="about-color">所属类别:</label>
@@ -216,9 +217,8 @@
                   enctype="multipart/form-data">
                 <fieldset>
                     <h2>列表页面图片</h2>
-                    <img src="" alt="" id="index-img" style="height: 100px;"/>
+                    <img src="" alt="" id="index-img" style="height: 50px;"/>
                     <input type="file" multiple accept="image/*" name="file"/>
-
                     <button class="am-btn am-btn-secondary" type="submit" id="index-img-sub">提交</button>
                 </fieldset>
             </form>
@@ -227,10 +227,19 @@
                   enctype="multipart/form-data">
                 <fieldset>
                     <h2>详细介绍页面图片</h2>
-                    <img src="" alt="" id="detail-img" style="height: 100px;"/>
+                    <img src="" alt="" id="detail-img" style="height: 50px;"/>
                     <input type="file" multiple accept="image/*" name="file"/>
-
                     <button class="am-btn am-btn-secondary" type="submit" id="detail-img-sub">提交</button>
+                </fieldset>
+            </form>
+            <form action="http://101.231.124.8:45677/xlab-healthcloud/discovery/cms/uploadPicture" class="am-form"
+                  id="small-icon-form" method="post"
+                  enctype="multipart/form-data">
+                <fieldset>
+                    <h2>首页小图标</h2>
+                    <img src="" alt="" id="small-icon-img" style="height: 50px;"/>
+                    <input type="file" multiple accept="image/*" name="file"/>
+                    <button class="am-btn am-btn-secondary" type="submit" id="small-icon-img-sub">提交</button>
                 </fieldset>
             </form>
             <div class="progress">
@@ -328,6 +337,28 @@
             e.preventDefault(); // prevent native submit
             console.log('正在提交');
             $('#detail-img-sub').attr('disabled', 'disabled');
+            $(this).ajaxSubmit({
+                        url: uploadUrl,
+                        target: '.am-padding-left',
+                        success: showResponseBanner,
+                        uploadProgress: function (event, position, total, percentComplete) {
+                            var percentVal = percentComplete + '%';
+                            bar.width(percentVal)
+                            if (percentComplete == 100) {
+                                percentVal = "<i class='am-icon-spinner am-icon-spin'></i> 请等待服务器提交";
+                            }
+                            percent.html(percentVal);
+                        }
+                    },
+                    function () {
+                    })
+        });
+
+        $('#small-icon-form').on('submit', function (e) {
+            var uploadUrl = commonUrl + "/discovery/cms/uploadPicture";
+            e.preventDefault(); // prevent native submit
+            console.log('正在提交');
+            $('#small-icon-img-sub').attr('disabled', 'disabled');
             $(this).ajaxSubmit({
                         url: uploadUrl,
                         target: '.am-padding-left',
