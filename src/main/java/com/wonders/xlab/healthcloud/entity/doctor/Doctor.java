@@ -31,9 +31,14 @@ public class Doctor extends BaseInfo<Long> {
     private String iCardName;
 
     /**
-     * 职称证
+     * 职称证地址
      */
     private String qualificationUrl;
+
+    /**
+     * 职称名
+     */
+    private String qualificationName;
 
     /**
      * 执行认证
@@ -72,20 +77,6 @@ public class Doctor extends BaseInfo<Long> {
         invalid, valid
     }
 
-    /**
-     * 昵称
-     */
-    private String nickName;
-
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
-
     public String getRecordUrl() {
         return recordUrl;
     }
@@ -98,8 +89,11 @@ public class Doctor extends BaseInfo<Long> {
         super();
     }
 
-    public Doctor(String tel, String iconUrl, String nickName, Sex sex, Date birthday, Date createdDate, Date lastModifiedDate, String recordUrl, AppPlatform appPlatform, String iCardName, String qualificationUrl, String permitUrl, Checked checked, String hospital, String department, Valid valid, int integral) {
-        super(tel, iconUrl, nickName, sex, birthday, createdDate, lastModifiedDate);
+    public Doctor(double height, double weight, int age, String tel, String iconUrl, String nickName, Sex sex,
+                  Date birthday, Date createdDate, Date lastModifiedDate, String recordUrl, AppPlatform appPlatform,
+                  String iCardName, String qualificationUrl, String permitUrl, Checked checked, String hospital,
+                  String department, Valid valid, int integral) {
+        super(height, weight, age, tel, iconUrl, nickName, sex, birthday, createdDate, lastModifiedDate);
         this.recordUrl = recordUrl;
         this.appPlatform = appPlatform;
         this.iCardName = iCardName;
@@ -182,5 +176,13 @@ public class Doctor extends BaseInfo<Long> {
 
     public void setIntegral(int integral) {
         this.integral = integral;
+    }
+
+    public String getQualificationName() {
+        return qualificationName;
+    }
+
+    public void setQualificationName(String qualificationName) {
+        this.qualificationName = qualificationName;
     }
 }

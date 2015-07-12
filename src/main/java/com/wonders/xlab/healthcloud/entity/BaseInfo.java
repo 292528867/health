@@ -21,6 +21,21 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 public abstract class BaseInfo<ID extends Serializable> extends AbstractPersistable<ID> {
 
     /**
+     * 身高
+     */
+    private double height;
+
+    /**
+     * 体重
+     */
+    private double weight;
+
+    /**
+     * 年龄
+     */
+    private int age;
+
+    /**
      * 手机
      */
     @Column(unique = true, length = 11)
@@ -65,7 +80,10 @@ public abstract class BaseInfo<ID extends Serializable> extends AbstractPersista
         super();
     }
 
-    public BaseInfo(String tel, String iconUrl, String nickName, Sex sex, Date birthday, Date createdDate, Date lastModifiedDate) {
+    public BaseInfo(double height, double weight, int age, String tel, String iconUrl, String nickName, Sex sex, Date birthday, Date createdDate, Date lastModifiedDate) {
+        this.height = height;
+        this.weight = weight;
+        this.age = age;
         this.tel = tel;
         this.iconUrl = iconUrl;
         this.nickName = nickName;
@@ -73,6 +91,30 @@ public abstract class BaseInfo<ID extends Serializable> extends AbstractPersista
         this.birthday = birthday;
         this.createdDate = createdDate;
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public String getTel() {

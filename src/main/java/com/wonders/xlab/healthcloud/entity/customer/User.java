@@ -11,21 +11,6 @@ import java.util.Set;
 @Entity
 @Table(name = "HC_USER")
 public class User extends BaseInfo<Long> {
-
-    /**
-     * 身高
-     */
-    private double height;
-
-    /**
-     * 体重
-     */
-    private double weight;
-
-    /**
-     * 年龄
-     */
-    private int age;
     /**
      * 用户健康包
      */
@@ -103,29 +88,5 @@ public class User extends BaseInfo<Long> {
 
     public void setAppPlatform(AppPlatform appPlatform) {
         this.appPlatform = appPlatform;
-    }
-
-    public double getHeight() {
-        return height;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
-    public double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
     }
 }

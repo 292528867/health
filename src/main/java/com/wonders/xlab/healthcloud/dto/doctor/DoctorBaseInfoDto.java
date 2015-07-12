@@ -1,6 +1,5 @@
 package com.wonders.xlab.healthcloud.dto.doctor;
 
-import com.wonders.xlab.healthcloud.entity.BaseInfo;
 import com.wonders.xlab.healthcloud.entity.doctor.Doctor;
 
 /**
@@ -44,6 +43,8 @@ public class DoctorBaseInfoDto {
     private String department;
 
     private String iCardName;
+
+    private String qualificationName;
 
     public DoctorBaseInfoDto() {
     }
@@ -121,5 +122,13 @@ public class DoctorBaseInfoDto {
 
     public void setiCardName(String iCardName) {
         this.iCardName = iCardName;
+    }
+
+    public String getQualificationName() {
+        return qualificationName;
+    }
+
+    public void setQualificationName(String qualificationName) {
+        this.qualificationName = qualificationName;
     }
 }
