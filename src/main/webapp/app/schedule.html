@@ -148,7 +148,7 @@
     width: 130px;
     height: 3px;
     display: inline-block;
-    margin:8px auto;
+    margin: 8px auto;
   }
 
   .schedule-content {
@@ -163,10 +163,12 @@
   .schedule-type {
     display: none;
   }
-  #schedule-video,#schedule-img {
+
+  #schedule-video, #schedule-img {
     display: none;
   }
-  #schedule-img{
+
+  #schedule-img {
     margin: 20px auto;
   }
 
@@ -193,11 +195,11 @@
       $('.schedule-type').show();
       $('#schedule-value').html();
       $.each(article.statementDtos, function (n, value) {
-        string +='<div style="margin-bottom: 10px;width: 100%;"><div style="width: 10%;text-align: left;height: 25px;" class="am-vertical-align">'+
-        '<img src="i/schedule/check.jpg" alt="" width="25" style="vertical-align: top" class="am-vertical-align-middle"/>'+
-        '</div>'+
-        '<div style="width: 60%" id="shedule-time">'+new Date(value.time).Format("yyyy-MM-dd hh:mm")+'</div>'+
-        '<div style="width: 30%"><span id="schedule-value">'+value.statement+'</span>mmol/L</div></div>';
+        string += '<div style="margin-bottom: 10px;width: 100%;"><div style="width: 10%;text-align: left;height: 25px;" class="am-vertical-align">' +
+        '<img src="i/schedule/check.jpg" alt="" width="25" style="vertical-align: top" class="am-vertical-align-middle"/>' +
+        '</div>' +
+        '<div style="width: 60%" id="shedule-time">' + new Date(value.time).Format("yyyy-MM-dd hh:mm") + '</div>' +
+        '<div style="width: 30%"><span id="schedule-value">' + value.statement + '</span>mmol/L</div></div>';
       });
       $('#shedule-box').append(string);
     }
@@ -206,8 +208,8 @@
       $finish.addClass('finish-btn-ed');
       $finish.html('已完成');
     }
-      $('#schedule-img').attr('src', article.icon);
-      $('#schedule-img').show();
+    $('#schedule-img').attr('src', article.icon);
+    $('#schedule-img').show();
   });
 
   function finishTask() {
@@ -216,14 +218,27 @@
     $finish.html('已完成');
     $('.finish-divider').remove();
 //    noticePhone('2222');
-    $.get(commonUrl + 'task/confirmDetail/' + userId + '/' + articleId + '/',
-      {'content': $('#getValue').val()},
-      function (data) {
-        console.log(data);
-        activityList({'finish': '1'});
+    $.ajax({
+      url: commonUrl + 'task/confirmDetail/' + userId + '/' + articleId + '/',
+      type: "POST",
+      data: {'content': $('#getValue').val()},
+      dataType: "json",
+      headers: {"Accept": "application/json", "Content-Type": "application/json; charset=UTF-8"},
+      success: function (response) {
+        if (response.ret_code == 0) {
+          activityList({'finish': '1'});
+        }
+        else
+          alert(response.err_msg);
+
+      },
+      error: function () {
+        alert('error');
       }
-    )
-    ;
+
+
+    });
+
   }
   function activityList() {
 
