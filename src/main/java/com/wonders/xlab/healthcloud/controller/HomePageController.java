@@ -130,7 +130,6 @@ public class HomePageController {
                     topDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromDesc(upo.getHcPackage().getId(), day, now, completeDetailIds, pageable);
                     bottomDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day, now, completeDetailIds, pageable);
 
-
                 } else {
                     topDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromDesc(upo.getHcPackage().getId(), day, now, pageable);
                     bottomDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day, now, pageable);

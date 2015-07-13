@@ -147,6 +147,8 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
     @RequestMapping(value = "confirmDetail/{userId}/{detailId}", method = RequestMethod.POST)
     public Object confirmDetail(@PathVariable Long userId, @PathVariable Long detailId, @RequestParam(required = false) String content) {
 
+
+
         User user = this.userRepository.findOne(userId);
 
         HcPackageDetail hpDetail = this.hcPackageDetailRepository.findOne(detailId);
@@ -186,6 +188,36 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         this.userPackageOrderRepository.save(order);
         return new ControllerResult<String>().setRet_code(0).setRet_values("添加成功").setMessage("成功");
 
+    }
+
+    /**
+     * 分享任务
+     * @param detailId
+     * @return
+     */
+    @RequestMapping(value = "sharePackageDetail/{detailId}", method = RequestMethod.GET)
+    public Object sharePackageDetail(@PathVariable long detailId) {
+
+        HcPackageDetail detail = hcPackageDetailRepository.findOne(detailId);
+
+        DayPackageDetailDto dto = new DayPackageDetailDto(
+                detail.getId(),
+                detail.getTaskName(),
+                detail.getClickAmount(),
+                detail.getDetail(),
+                detail.getIcon()
+        );
+        if (detail.isNeedSupplemented())
+            dto.setType(1);
+        if (detail.getIcon() == null)
+            dto.setIconType(0);
+        if (detail.getIcon().endsWith("mp4")) {
+            dto.setIconType(2);
+        } else {
+            dto.setIconType(1);
+        }
+
+        return new ControllerResult<DayPackageDetailDto>().setRet_code(0).setRet_values(dto).setMessage("成功");
     }
 
 
