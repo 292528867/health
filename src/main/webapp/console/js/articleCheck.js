@@ -84,8 +84,9 @@ function articleAdd() {
 }
 
 var articles;
+var searchCount = 0;
 function searchArticle(id) {
-    if (id.length == 0||id==null) {
+    if (id.length == 0||id==null||searchCount==1) {
         return false;
     }
     $('#info-loading').html('信息(<i class="am-icon-refresh am-icon-spin"></i>正在读取！！！！！)');
@@ -96,6 +97,7 @@ function searchArticle(id) {
     //$("#type").find("option[text=id]").attr("selected",true);
     $.get(articleSearchUrl + id, function (data) {
         //  location.reload();
+        $('#allDatas').html('');
         articles = data.ret_values;
         console.log(data);
         var datas = '';
@@ -122,7 +124,7 @@ function searchArticle(id) {
         $('#change-info-box').hide();
         $('#info-table').show();
         $('#info-loading').html('信息读取成功！');
-
+        searchCount=1;
     });
 
 }
