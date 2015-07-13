@@ -259,7 +259,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             while (it.hasNext() && (i < 2)) {
                 Map<String, Object> nameMap = new HashMap();
                 String key = it.next().toString();
-                nameMap.put(key, countServiceNumMap.get(key));
+                nameMap.put("name",key);
+                nameMap.put("count",countServiceNumMap.get(key));
                 steward.getStarService().add(nameMap);
                 i++;
             }
