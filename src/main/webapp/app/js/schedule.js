@@ -69,6 +69,7 @@ function finishTask() {
   $('#finish-btn').attr('disabled', true);
   if ($('#getValue').val().length == 0 && article.type == 1) {
     $('#finish-btn').button('reset');
+    $('#finish-btn').attr('disabled', false);
     alert('请填写内容吧！');
 
     return false;
