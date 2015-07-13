@@ -43,7 +43,7 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
             int orderSize = userPackageOrderRepository.findSizeByUserIdAndPackageComplete(userId, false);
             if (orderSize == 1)
                 return new ControllerResult<>()
-                        .setRet_code(-1).setRet_values("").setMessage("至少选择一个健康包！");
+                        .setRet_code(-1).setRet_values("").setMessage("为了能正常给您推荐健康计划必须保留一个包！");
             userPackageOrderRepository.delete(userPackageOrder.getId());
             return new ControllerResult<>()
                     .setRet_code(0).setRet_values("").setMessage("取消成功！");

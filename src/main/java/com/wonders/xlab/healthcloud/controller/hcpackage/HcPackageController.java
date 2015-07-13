@@ -12,7 +12,7 @@ import com.wonders.xlab.healthcloud.entity.hcpackage.Classification;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepository;
-import com.wonders.xlab.healthcloud.repository.hcpackage.ClassificationResponsitory;
+import com.wonders.xlab.healthcloud.repository.hcpackage.ClassificationRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderRepository;
@@ -50,7 +50,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     private UserPackageOrderRepository userPackageOrderRepository;
 
     @Autowired
-    private ClassificationResponsitory classificationResponsitory;
+    private ClassificationRepository classificationRepository;
 
     @Override
     protected MyRepository<HcPackage, Long> getRepository() {
@@ -171,7 +171,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     @RequestMapping(value = "listPackageInfo", method = RequestMethod.GET)
     public Object listPackageInfo() {
         // 查询所有分类（二大类）
-        List<Classification> classifications = classificationResponsitory.findAll();
+        List<Classification> classifications = classificationRepository.findOrderByCountPackage();
         List<ThirdPackageDto> thirdPackageDtos = new ArrayList<>();
 
         for (Classification classification : classifications) {
