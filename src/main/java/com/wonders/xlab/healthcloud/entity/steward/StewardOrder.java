@@ -40,7 +40,7 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
      */
     public enum OrderStatus {
 
-        支付成功, 未支付, 付款中,
+        未支付,支付成功,付款中,
 
     }
 
