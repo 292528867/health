@@ -397,8 +397,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     }
 
     /**
-     * 获取订单号详情
-     *
+     * 判断用户是否已经登陆
      * @param userId
      * @return
      */
