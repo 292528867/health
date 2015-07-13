@@ -230,7 +230,7 @@
       success: function (response) {
         if (response.ret_code == 0) {
           activityList({'finish': '1'});
-          $('#getValue').attr('disabled'true);
+          $('#getValue').attr('disabled',true);
         }
         else
           alert(response);
