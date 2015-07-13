@@ -46,7 +46,7 @@ public class BaiduLBSUtilTest extends TestCase {
         String coordinate = "121.01094570986,31.003614615668";
         long distance = 100;
 
-        LBSResult result =  baiduLBSUtil.nearbyJob(coordinate,distance);
+        LBSResult result = baiduLBSUtil.nearbyJob(coordinate, distance);
         System.out.println(result.getContents());
     }
 }

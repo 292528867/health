@@ -3,6 +3,7 @@ package com.wonders.xlab.healthcloud.entity.steward;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 import com.wonders.xlab.healthcloud.entity.customer.User;
+
 import javax.persistence.*;
 import java.util.*;
 
@@ -39,7 +40,7 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
      */
     public enum OrderStatus {
 
-        支付成功,未支付,付款中,
+        支付成功, 未支付, 付款中,
 
     }
 
@@ -73,7 +74,7 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
      * 管家所提供任务的状态
      */
     @Transient
-    private Map<String,Object> servicedPeriodStatus = new HashMap<>();
+    private Map<String, Object> servicedPeriodStatus = new HashMap<>();
 
     public StewardOrder() {
     }
