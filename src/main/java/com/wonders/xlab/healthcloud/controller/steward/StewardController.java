@@ -60,10 +60,38 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      *
      * @return
      */
-    @RequestMapping(value = "getAllRecommendPackage", method = RequestMethod.GET)
-    public Object getAllRecommendPackage() {
+    @RequestMapping(value = "getAllRecommendPackage/{address}", method = RequestMethod.GET)
+    public Object getAllRecommendPackage(@PathVariable String address) {
 
-        return new ControllerResult<List<RecommendPackage>>().setRet_code(0).setRet_values(this.recommendPackageRepository.findAll()).setMessage("成功！");
+        List<RecommendPackage> prList = recommendPackageRepository.findAll();
+
+        boolean flag = true;
+        for (RecommendPackage pr : prList) {
+            if (!StringUtils.isEmpty(pr.getServiceIds())) {
+                String[] strIds = pr.getServiceIds().split(",");
+
+                Long[] serviceIds = new Long[strIds.length];
+                for (int i = 0; i < strIds.length; i++)
+                    serviceIds[i] = Long.parseLong(strIds[i]);
+                // 查询服务，管家
+                List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
+
+                for (Services service : services) {
+                    if (!address.contains("上海")) {
+                        if (service.getServiceArea().equals(Services.ServiceArea.上海)) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                }
+                if (flag == false) {
+                    pr.setMessage("非常抱歉，本服务目前只在上海开通，请选择其他服务");
+                    pr.setChoice(flag);
+                }
+            }
+        }
+
+        return new ControllerResult<List<RecommendPackage>>().setRet_code(0).setRet_values(prList).setMessage("成功！");
     }
 
     /**
@@ -72,8 +100,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @param packageId
      * @return
      */
-    @RequestMapping("getRecommendPackageDetail/{packageId}/{address}")
-    public Object getRecommendPackageDetail(@PathVariable Long packageId, @PathVariable String address) {
+    @RequestMapping("getRecommendPackageDetail/{packageId}")
+    public Object getRecommendPackageDetail(@PathVariable Long packageId) {
 
         RecommendPackage rp = this.recommendPackageRepository.findOne(packageId);
 
@@ -86,20 +114,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 serviceIds[i] = Long.parseLong(strIds[i]);
             // 查询服务，管家
             List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
-
-            boolean flag = true;
-            for (Services service : services) {
-                if (!address.contains("上海")) {
-                    if (service.getServiceArea().equals(Services.ServiceArea.上海)) {
-                        flag = false;
-                        break;
-                    }
-                }
-            }
-            if (flag == false) {
-                rp.setMessage("非常抱歉，本服务目前只在上海开通，请选择其他服务");
-                rp.setChoice(flag);
-            }
 
             Set<Services> servicesSet = new HashSet<>();
             servicesSet.addAll(services);
@@ -243,15 +257,24 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             Iterator it = set.iterator();
             int i = 0;
             while (it.hasNext() && (i < 2)) {
+                Map<String, Object> nameMap = new HashMap();
                 String key = it.next().toString();
-                steward.getStarService().put(key, countServiceNumMap.get(key));
+                nameMap.put(key, countServiceNumMap.get(key));
+                steward.getStarService().add(nameMap);
                 i++;
             }
         } else {
             if (null != steward) {
                 //获取两条明星服务
-                steward.getStarService().put("定期关爱", 128);
-                steward.getStarService().put("健康跟踪", 166);
+                Map<String, Object> firstMap = new HashMap();
+                Map<String, Object> secondMap = new HashMap();
+                firstMap.put("name", "定期关爱");
+                firstMap.put("count", 128);
+
+                secondMap.put("name", "健康跟踪");
+                secondMap.put("count", 166);
+                steward.getStarService().add(firstMap);
+                steward.getStarService().add(secondMap);
             } else {
                 return new ControllerResult<Steward>().setRet_code(-1).setRet_values(steward).setMessage("管家不存在！");
             }
