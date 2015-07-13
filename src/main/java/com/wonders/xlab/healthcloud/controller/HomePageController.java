@@ -18,8 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,10 +50,7 @@ public class HomePageController {
      * @return
      */
     @RequestMapping(value = "listHomePage/{userId}", method = RequestMethod.GET)
-    public Object listHomePage(@PathVariable long userId,
-                               @PageableDefault(page = 0, size = 1//, sort = "recommendTimeFrom", direction = Sort.Direction.DESC
-                               )
-                               Pageable pageable) {
+    public Object listHomePage(@PathVariable long userId) {
         try {
             Map<String, Object> resultMap = new HashMap<>();
 
@@ -170,7 +165,7 @@ public class HomePageController {
                         detail.getId(),
                         detail.getRecommendTimeFrom(),
                         detail.getTaskName(),
-                        detail.getClickAmount()
+                        detail.getHcPackage().getClickAmount()
                 );
                 tasks.add(dto);
             }
@@ -178,16 +173,16 @@ public class HomePageController {
 
             List<String> allTips = new ArrayList<>();
 
-            if (tasks.size() == 1) {
+            if (tasks.isEmpty()) {
+                HomePageTips tipsOne = tips.get(RandomUtils.nextInt(0, tips.size()));
+                tips.remove(tipsOne);
+                allTips.add(tipsOne.getTips());
                 allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
-            } else if (tasks.isEmpty()) {
-                allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
+            } else if (tasks.size() == 1) {
                 allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
             }
             resultMap.put("currentDay", DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
             resultMap.put("tips", allTips);
-
-
             resultMap.put("task", tasks);
 
             return new ControllerResult<>().setRet_code(0).setRet_values(resultMap).setMessage("成功");
