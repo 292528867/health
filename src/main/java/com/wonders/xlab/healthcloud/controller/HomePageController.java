@@ -18,9 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,10 +50,7 @@ public class HomePageController {
      * @return
      */
     @RequestMapping(value = "listHomePage/{userId}", method = RequestMethod.GET)
-    public Object listHomePage(@PathVariable long userId,
-                               @PageableDefault(page = 0, size = 2//, sort = "recommendTimeFrom", direction = Sort.Direction.DESC
-                               )
-                               Pageable pageable) {
+    public Object listHomePage(@PathVariable long userId) {
         try {
             Map<String, Object> resultMap = new HashMap<>();
 
@@ -83,18 +77,12 @@ public class HomePageController {
             List<UserPackageOrder> userPackageOrders = this.userPackageCompleteRepository.findByUserIdAndPackageComplete(userId, false);
 
             List<HcPackageDetail> allDetailList = new ArrayList<>();
-
             List<HcPackageDetail> trueDetailList = new ArrayList<>();
-
             // 完成计划的Id
             List<Long> completeDetailIds = new ArrayList<>();
             // 查看完成度
             List<ProgressDto> progressDtos = new ArrayList<>();
-
-            List<Long> currentDetailIds = new ArrayList<>();
-
             Date now = new Date();
-
             // 查找用户完成的任务
             for (UserPackageOrder upo : userPackageOrders) {
 
@@ -108,9 +96,9 @@ public class HomePageController {
                 // 持续时间
                 int duration = upo.getHcPackage().getDuration();
                 // 每个任务的时间 - 循环过的时间
-                int day = DateUtils.calculatePeiorDaysOfTwoDate(upo.getCreatedDate(), new Date()) - duration * upo.getCurrentCycleIndex() + 1;
+                int day = DateUtils.calculatePeiorDaysOfTwoDate(upo.getCreatedDate(), now) - duration * upo.getCurrentCycleIndex();
                 int progress = 1;
-                if (day != 1) {
+                if (day != 0) {
                     progress = day * 100 / duration;
                 }
                 progressDtos.add(
@@ -122,43 +110,52 @@ public class HomePageController {
                         )
                 );
                 // 查询当天离现在最近的任务
-                Page<HcPackageDetail> topDetailFrom;
-                Page<HcPackageDetail> bottomDetailFrom;
+                List<HcPackageDetail> tempDetailFrom;
 
-                if (completeDetailIds.size() > 0) {
-                    // 存在已完成的任务id
-                    topDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromDesc(upo.getHcPackage().getId(), day, now, completeDetailIds, pageable);
-                    bottomDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day, now, completeDetailIds, pageable);
-
+                day += 1;
+                if (completeDetailIds.isEmpty()) {
+                    tempDetailFrom = hcPackageDetailRepository.findByPackageIdAndDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day);
                 } else {
-                    topDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromDesc(upo.getHcPackage().getId(), day, now, pageable);
-                    bottomDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day, now, pageable);
+                    tempDetailFrom = hcPackageDetailRepository.findByPackageIdAndDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day, completeDetailIds);
                 }
-                // 获取第一个
-                if (bottomDetailFrom.hasContent()) {
-                    for (HcPackageDetail hcPackageDetail : bottomDetailFrom) {
-                        currentDetailIds.add(hcPackageDetail.getId());
-                        allDetailList.add(hcPackageDetail);
-                    }
+                allDetailList.addAll(tempDetailFrom);
+            }
+            Collections.sort(allDetailList, new PackageDetailComparatorAsc());
+
+            List<HcPackageDetail> topDetail = new ArrayList<>();
+            List<HcPackageDetail> bottomDetail = new ArrayList<>();
+            Calendar c = Calendar.getInstance();
+            c.setTime(now);
+
+            for (HcPackageDetail detail : allDetailList) {
+                c.set(Calendar.HOUR_OF_DAY, detail.getRecommendTimeFrom().getHours());
+                c.set(Calendar.MINUTE, detail.getRecommendTimeFrom().getMinutes());
+                System.out.println(c.getTime());
+                if ((c.getTime().getTime() - now.getTime()) > 0) {
+                    bottomDetail.add(detail);
+                } else {
+                    topDetail.add(detail);
                 }
-                if (topDetailFrom.hasContent()) {
-                    for (HcPackageDetail hcPackageDetail : topDetailFrom) {
-                        if (!currentDetailIds.contains(hcPackageDetail.getId())) {
-                            allDetailList.add(hcPackageDetail);
-                        }
-                    }
+            }
+            Collections.sort(topDetail, new PackageDetailComparatorDesc());
+            if (!bottomDetail.isEmpty()) {
+                trueDetailList.add(bottomDetail.get(0));
+                if (!topDetail.isEmpty()) {
+
+                    trueDetailList.add(topDetail.get(0));
+                } else if (bottomDetail.size() > 1){
+                    trueDetailList.add(bottomDetail.get(1));
+                }
+            } else {
+                if (!topDetail.isEmpty()) {
+                    trueDetailList.add(topDetail.get(0));
+                }
+                if (topDetail.size() > 1) {
+                    trueDetailList.add(topDetail.get(1));
                 }
             }
 
-            Collections.sort(allDetailList, new PackageDetailComparator());
-            if (allDetailList.size() > 0) {
-                trueDetailList.add(allDetailList.get(0));
-            }
-
-            if (allDetailList.size() > 1) {
-                trueDetailList.add(allDetailList.get(1));
-            }
-
+            Collections.sort(trueDetailList, new PackageDetailComparatorAsc());
             // 添加进度
             resultMap.put("progress", progressDtos);
 
@@ -168,7 +165,7 @@ public class HomePageController {
                         detail.getId(),
                         detail.getRecommendTimeFrom(),
                         detail.getTaskName(),
-                        detail.getClickAmount()
+                        detail.getHcPackage().getClickAmount()
                 );
                 tasks.add(dto);
             }
@@ -176,16 +173,16 @@ public class HomePageController {
 
             List<String> allTips = new ArrayList<>();
 
-            if (tasks.size() == 1) {
+            if (tasks.isEmpty()) {
+                HomePageTips tipsOne = tips.get(RandomUtils.nextInt(0, tips.size()));
+                tips.remove(tipsOne);
+                allTips.add(tipsOne.getTips());
                 allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
-            } else if (tasks.size() == 0) {
-                allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
+            } else if (tasks.size() == 1) {
                 allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
             }
             resultMap.put("currentDay", DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
             resultMap.put("tips", allTips);
-
-
             resultMap.put("task", tasks);
 
             return new ControllerResult<>().setRet_code(0).setRet_values(resultMap).setMessage("成功");
@@ -196,11 +193,18 @@ public class HomePageController {
 
     }
 
-    class PackageDetailComparator implements Comparator {
+    class PackageDetailComparatorAsc implements Comparator {
         public int compare(Object o1, Object o2) {
             HcPackageDetail hpd1 = (HcPackageDetail) o1;
             HcPackageDetail hpd2 = (HcPackageDetail) o2;
             return hpd1.getRecommendTimeFrom().compareTo(hpd2.getRecommendTimeFrom());
+        }
+    }
+    class PackageDetailComparatorDesc implements Comparator {
+        public int compare(Object o1, Object o2) {
+            HcPackageDetail hpd1 = (HcPackageDetail) o1;
+            HcPackageDetail hpd2 = (HcPackageDetail) o2;
+            return hpd2.getRecommendTimeFrom().compareTo(hpd1.getRecommendTimeFrom());
         }
     }
 

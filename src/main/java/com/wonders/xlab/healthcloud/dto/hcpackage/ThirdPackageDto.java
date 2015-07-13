@@ -11,13 +11,18 @@ public class ThirdPackageDto {
 
     private String iconUrl;
 
+    private Integer countPackage;
+
+    private String description;
+
     public ThirdPackageDto() {
     }
 
-    public ThirdPackageDto(Long id, String title, String iconUrl) {
+    public ThirdPackageDto(Long id, String title, String iconUrl, Integer countPackage) {
         this.id = id;
         this.title = title;
         this.iconUrl = iconUrl;
+        this.countPackage = countPackage;
     }
 
     public Long getId() {
@@ -42,5 +47,21 @@ public class ThirdPackageDto {
 
     public void setIconUrl(String iconUrl) {
         this.iconUrl = iconUrl;
+    }
+
+    public Integer getCountPackage() {
+        return countPackage;
+    }
+
+    public void setCountPackage(Integer countPackage) {
+        this.countPackage = countPackage;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

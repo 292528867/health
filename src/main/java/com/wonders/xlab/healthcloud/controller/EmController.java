@@ -282,6 +282,26 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 .setMessage("");
     }
 
+
+    /**
+     * 添加或删除医生从用户群组
+     * @param groupId
+     * @param doctorName
+     * @param type post(添加) delete(删除)
+     * @return
+     */
+    private  boolean joinOrDeleteDoctorToGroup(String groupId,String doctorName,String type) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        try {
+            emUtils.requestEMChat(headers, type, "chatgroups/" + groupId + "/users/" + doctorName, String.class);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * 查询历史纪录前5条
      * @param groupId
@@ -301,20 +321,18 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      */
     @RequestMapping(value = "toInterrogation/{tel}/{flag}", method = RequestMethod.GET)
     public ControllerResult toInterrogation(@PathVariable("tel") String tel ,@PathVariable("flag") int flag) {
-       /* String greetings = "欢迎提问，我们将有专业的医生解决您的问题";
-        String questionSample = "最近3天感到省体无力，经常性腹泻xxxxx";
-        int doctorNumber = emUtils.getDoctorNumber();*/
+
         EmMessages emMessages = emMessagesRepository.findTop1ByFromUserOrderByCreatedDateDesc(tel);
-        /*String greetings = "你并没有发烧但感到头疼脑热？你并没有心脏病，但胸闷气短？你有一些小症状但不知是什么情况？不用出门，轻问诊" + EMUtils.countDoctors()+ "位专家帮你了解自己的身体现状。";
-        String questionSample = "我40岁，糖尿病7年，血糖一直偏高，空腹血糖一直在9左右，餐后血糖13左右。一直在吃阿卡波糖片，前段时间换了药，不但血糖没有降低，反而出现了心慌、胸闷、气短的症状。现在不知道要怎么办，需要打胰岛素吗？";
-        String waitContent = "此刻我们十分理解您的担忧与焦虑，我们已布下天罗地网缉拿专家为您解答困惑。稍后专家将亲自奉上本月全勤奖金XX健康豆，别客气，拿着！";
-        String overTimeContent = "此刻我们十分理解您的担忧与焦虑，我们已布下天罗地网缉拿专家为您解答困惑。稍后专家将亲自奉上本月全勤奖金XX健康豆，别客气，拿着！";*/
+
         String groupId = userRepository.findByTel(tel).getGroupId();
+
         EmDoctorNumber emDoctorNumber = new EmDoctorNumber();
+        emDoctorNumber.setGroupId(groupId);//ios端老是拿不到goupid
+
         EmMessages newMessages = new EmMessages();
         newMessages.setCreatedDate(new Date());
-        newMessages.setGroupId(groupId);
 
+        //flag =1 用户每天第一次打开app的医生数量的提示语要保存在数据库作为历史纪录
         if (emMessages == null) {
             newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS, EMUtils.countDoctors()));
             if(flag == 1) {
@@ -363,10 +381,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      */
     @RequestMapping(value = "/queryRecords", method = RequestMethod.GET)
     public ControllerResult<Page<EmMessages>> queryHistoryRecords(String groupId, Pageable pageable) {
-        Map<String, Object> filterMap = new HashMap<>();
-        filterMap.put("toUser_equal", groupId);
-        Page<EmMessages> list = emMessagesRepository.findAll(filterMap, pageable);
+ /*       Map<String, Object> filterMap = new HashMap<>();
+        filterMap.put("toUser_equal", groupId);*/
+        Page<EmMessages> list = emMessagesRepository.findAll(Collections.singletonMap("toUser_equal", groupId), pageable);
         return new ControllerResult<Page<EmMessages>>().setRet_code(0).setRet_values(list).setMessage("");
     }
+
 
 }

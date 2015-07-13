@@ -11,6 +11,7 @@ import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.service.hcpackage.HcpackageService;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "hc_package")
@@ -106,6 +107,9 @@ public class HcPackage extends AbstractBaseEntity<Long> {
 
     @JsonIgnore
     private int coefficient;
+
+    @OneToMany(mappedBy = "hcPackage",fetch = FetchType.LAZY)
+    private Set<HcPackageDetail> hcPackageDetails;
 
 //    /**
 //     * 用户健康包
@@ -311,5 +315,13 @@ public class HcPackage extends AbstractBaseEntity<Long> {
 
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
+    }
+
+    public Set<HcPackageDetail> getHcPackageDetails() {
+        return hcPackageDetails;
+    }
+
+    public void setHcPackageDetails(Set<HcPackageDetail> hcPackageDetails) {
+        this.hcPackageDetails = hcPackageDetails;
     }
 }

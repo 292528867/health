@@ -14,12 +14,12 @@ public class PingDto {
     private String body;
 
     @NotNull(message = "金额不能为空")
-    private String money;
+    private Double money;
 
     public PingDto() {
     }
 
-    public PingDto(String subject, String body, String money) {
+    public PingDto(String subject, String body, Double money) {
         this.subject = subject;
         this.body = body;
         this.money = money;
@@ -41,11 +41,11 @@ public class PingDto {
         this.body = body;
     }
 
-    public String getMoney() {
+    public Double getMoney() {
         return money;
     }
 
-    public void setMoney(String money) {
+    public void setMoney(Double money) {
         this.money = money;
     }
 }

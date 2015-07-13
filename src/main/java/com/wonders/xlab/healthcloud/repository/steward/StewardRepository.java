@@ -2,6 +2,7 @@ package com.wonders.xlab.healthcloud.repository.steward;
 
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.entity.steward.Steward;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 

@@ -1,5 +1,6 @@
 package com.wonders.xlab.healthcloud.repository.hcpackage;
 
+import com.wonders.xlab.healthcloud.dto.hcpackage.ThirdPackageDto;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;
@@ -10,6 +11,6 @@ import java.util.List;
 @NoRepositoryBean
 public interface ClassificationRepositoryCustom {
 
-    List findOrderByCountPackage();
+    List<ThirdPackageDto> findOrderByCountPackage();
 
 }
