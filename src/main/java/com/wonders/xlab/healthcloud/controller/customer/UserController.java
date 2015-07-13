@@ -9,19 +9,18 @@ import com.wonders.xlab.healthcloud.dto.emchat.ChatGroupsRequestBody;
 import com.wonders.xlab.healthcloud.dto.emchat.ChatGroupsResponseBody;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.ThirdBaseInfo;
+import com.wonders.xlab.healthcloud.entity.customer.AddressBook;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.customer.UserThird;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
+import com.wonders.xlab.healthcloud.repository.customer.AddressBookRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.service.hcpackage.UserPackageOrderService;
-import com.wonders.xlab.healthcloud.utils.BeanUtils;
-import com.wonders.xlab.healthcloud.utils.EMUtils;
-import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
-import com.wonders.xlab.healthcloud.utils.ValidateUtils;
+import com.wonders.xlab.healthcloud.utils.*;
 import net.sf.ehcache.Cache;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +35,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.HashSet;
+import java.util.List;
 
 
 /**
@@ -52,6 +53,9 @@ public class UserController extends AbstractBaseController<User, Long> {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AddressBookRepository addressBookRepository;
 
     @Autowired
     private UserThirdRepository userThirdRepository;
@@ -308,6 +312,41 @@ public class UserController extends AbstractBaseController<User, Long> {
         }
 
     }
+
+    /**
+     * 邀约小伙伴
+     * @return
+     */
+    @RequestMapping(value = "inviteFriend/{userId}", method = RequestMethod.POST)
+    public ControllerResult inviteFriend(@PathVariable long userId, String userName, String mobiles) {
+
+        int i = SmsUtils.inviteFriend(userName, mobiles);
+
+        AddressBook addressBook = new AddressBook(userName, mobiles);
+
+        addressBook.setUser(userRepository.findOne(userId));
+
+        if (i == 0) {
+
+            addressBookRepository.save(addressBook);
+            return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("好久邀请成功!");
+
+        }
+
+        return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("好友邀请失败!");
+
+    }
+
+    /**
+     * 查询通讯录
+     * @return
+     */
+    public ControllerResult queryAddressBook(@PathVariable long userId){
+
+        List <AddressBook> addressBooksList = addressBookRepository.findAllByUserId(userId);
+        return new ControllerResult<>().setRet_code(0).setRet_values(addressBooksList).setMessage("好久邀请成功!");
+    }
+
 
     @Override
     protected MyRepository<User, Long> getRepository() {

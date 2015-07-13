@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=description content="An Amaze UI template that helps you build fast, modern mobile web apps."><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>详细介绍</title><meta name=renderer content=webkit><meta http-equiv=Cache-Control content=no-siteapp><link rel=icon type=image/png href=i/favicon.png><link rel=manifest href=manifest.json><meta name=mobile-web-app-capable content=yes><meta name=application-name content="Web Starter Kit"><link rel=icon sizes=192x192 href=i/touch/chrome-touch-icon-192x192.png><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black><meta name=apple-mobile-web-app-title content="Amaze UI Sfavicon.pngtarter Kit"><link rel=apple-touch-icon href=i/touch/apple-touch-icon.png><meta name=msapplication-TileImage content=i/touch/ms-touch-icon-144x144-precomposed.png><meta name=msapplication-TileColor content=#0e90d2><link rel=stylesheet href=css/amazeui.min.css><link rel=stylesheet href=css/main.css></head><style>
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=description content="An Amaze UI template that helps you build fast, modern mobile web apps."><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>任务详细</title><meta name=renderer content=webkit><meta http-equiv=Cache-Control content=no-siteapp><link rel=icon type=image/png href=i/favicon.png><link rel=manifest href=manifest.json><meta name=mobile-web-app-capable content=yes><meta name=application-name content="Web Starter Kit"><link rel=icon sizes=192x192 href=i/touch/chrome-touch-icon-192x192.png><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black><meta name=apple-mobile-web-app-title content="Amaze UI Sfavicon.pngtarter Kit"><link rel=apple-touch-icon href=i/touch/apple-touch-icon.png><meta name=msapplication-TileImage content=i/touch/ms-touch-icon-144x144-precomposed.png><meta name=msapplication-TileColor content=#0e90d2><link rel=stylesheet href=css/amazeui.min.css><link rel=stylesheet href=css/main.css></head><style>
   .detail-body img {
     max-width: 100%;
   }
@@ -172,7 +172,7 @@
     margin: 20px auto;
   }
 
-</style><body class=detail-body><div id=detail-title></div><div><img src=i/schedule/eye.jpg width=25 style="margin-right: 0px" class=am-text-middle> <span id=detail-count class=am-text-middle></span></div><img id=schedule-img width=100%><div id=details></div><div class=schedule-foot><div class=schedule-type><div class="schedule-content am-cf" id=shedule-box></div><hr data-am-widget=divider class="am-divider am-divider-dashed"><div class=foot-title>请填写您的血糖值</div><div class=foot-form><div class=foot-input><input type=tel id=getValue placeholder=如:7.5 maxlength=4> <label class=foot-input-span for=getValue></label></div><div class=foot-input-text><span style="margin-left: 135px;margin-top: 12px;display: block">mmol/L</span></div></div></div><button class=finish-btn type=button data-am-loading="{spinner: 'circle-o-notch', loadingText: '跳转中..', resetText: '重新点击'}" onclick=finishTask()>确定已完成</button><div class=finish-divider><hr data-am-widget=divider class="am-divider am-divider-default btn-divider"><div class=finish-move><img src=i/schedule/man.png>动起来！</div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
+</style><body class=detail-body><div id=detail-title></div><div><img src=i/schedule/eye.jpg width=25 style="margin-right: 0px" class=am-text-middle> <span id=detail-count class=am-text-middle></span></div><img id=schedule-img width=100%><div id=details></div><div class=schedule-foot style="display: none"><div class=schedule-type><div class="schedule-content am-cf" id=shedule-box></div><hr data-am-widget=divider class="am-divider am-divider-dashed"><div class=foot-title>请填写您的血糖值</div><div class=foot-form><div class=foot-input><input type=number id=getValue placeholder=如:7.5 maxlength=4> <label class=foot-input-span for=getValue></label></div><label class=foot-input-text for=getValue><span style="margin-left: 135px;margin-top: 12px;display: block">mmol/L</span></label></div></div><button class=finish-btn type=button data-am-loading="{spinner: 'circle-o-notch', loadingText: '跳转中..', resetText: '重新点击'}" onclick=finishTask()>确定已完成</button><div class=finish-divider><hr data-am-widget=divider class="am-divider am-divider-default btn-divider"><div class=finish-move><img src=i/schedule/man.png>动起来！</div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
   var article = localStorage.getItem('article');
   var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
   var url = commonUrl + 'task/retrievePackageDetail/';
@@ -180,6 +180,8 @@
   var ids = articleId.split('&');
   var userId = ids[0];
   articleId = ids[1];
+//  alert(userId);
+//  alert(articleId);
   $.get(url + userId + '/' + articleId, function (data) {
     article = data.ret_values;
     $('#detail-img').attr('src', article.pictureUrl);
@@ -189,7 +191,7 @@
     $('title').html(article.title);
     console.log(article);
 //      console.log(window.document.body.offsetHeight);
-    $('#detail-count').html(article.clickAmount + '人阅读');
+    $('#detail-count').html(article.clickAmount + '人关注');
     var string = '';
     if (article.type == 1) {
       $('.schedule-type').show();
@@ -208,6 +210,7 @@
       $finish.addClass('finish-btn-ed');
       $finish.html('已完成');
     }
+    $('.schedule-foot').show();
     $('#schedule-img').attr('src', article.icon);
     $('#schedule-img').show();
   });
@@ -227,9 +230,10 @@
       success: function (response) {
         if (response.ret_code == 0) {
           activityList({'finish': '1'});
+          $('#getValue').attr('disabled',true);
         }
         else
-          alert(response.err_msg);
+          alert(response);
 
       },
       error: function () {

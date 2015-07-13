@@ -30,7 +30,9 @@ public class ServicesController extends AbstractBaseController<Services, Long> {
     public ControllerResult saveService(@RequestBody Services services) {
 
         //初始为5～20的岁数
-        services.setUsedNumber((int)(5+Math.random()*(20-5+1)));
+        if (services.getId()!=null){
+            services.setUsedNumber((int)(5+Math.random()*(20-5+1)));
+        }
         servicesRepository.save(services);
 
         return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("成功！");

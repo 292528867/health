@@ -301,12 +301,12 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", String.valueOf(amount));
 
-        Charge charge = pingppService.payOrder(pingDto);
+//        Charge charge = pingppService.payOrder(pingDto);
 
         String tradeNo = "u" + userId + new Date().getTime();
 
         //保存订单详情
-        StewardOrder stewardOrder = new StewardOrder(charge.getId(), tradeNo, amount);
+        StewardOrder stewardOrder = new StewardOrder("", tradeNo, amount);
         stewardOrder.setSteward(steward);
         stewardOrder.setServices(new HashSet<>(services));
         stewardOrder.setUser(user);
@@ -314,14 +314,14 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         //服务被使用次数＋＋
         for (Services service : services) {
-            service.setUsedNumber(service.getUsedNumber());
+            service.setUsedNumber(service.getUsedNumber()+1);
             servicesRepository.save(service);
         }
         //管家服务次数＋＋
         steward.setServicedPeriod(steward.getServicedPeriod() + 1);
         stewardRepository.save(steward);
 
-        return charge.toString();
+        return "";
 
     }
 
@@ -368,7 +368,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
             servicedPeriodMap.put("currentServicedPeriod", currentServicedPeriod);
             servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
-            servicedPeriodMap.put("detilServicedPeriod", detilServicedPeriod);
+            servicedPeriodMap.put("detailServicedPeriod", detilServicedPeriod);
 
             stewardOrder.setServicedPeriodStatus(servicedPeriodMap);
 

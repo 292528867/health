@@ -25,9 +25,22 @@ public interface HcPackageDetailRepository extends MyRepository<HcPackageDetail,
     @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.taskDay = ?2 order by hpd.recommendTimeFrom asc")
     List<HcPackageDetail> findByHcPackageIdOrderbyRecommendTimeFrom(Long packageId, int taskDay);
 
+    @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.taskDay = ?2 and hpd.id not in (?3) order by hpd.recommendTimeFrom asc")
+    List<HcPackageDetail> findByHcPackageIdOrderbyRecommendTimeFrom(Long packageId, int taskDay, List<Long> ids);
+
+
     @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.isFullDay =?2 and hpd.taskDay = ?3 order by hpd.recommendTimeFrom asc")
     List<HcPackageDetail> findByHcPackageIdAndIsFullDayOrderbyRecommendTimeFrom(Long packageId, boolean isFullDay, int Day);
 
-    @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.isFullDay =?2 and hpd.taskDay = ?3 and hpd.recommendTimeFrom < ?4")
+    @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.isFullDay =?2 and hpd.taskDay = ?3 and hpd.recommendTimeFrom < ?4 order by hpd.recommendTimeFrom desc")
     Page<HcPackageDetail> findByPackageIdAndIsFullDayOrderByTimeFromAndPageable(Long packageId, boolean isFullDay, int Day, Date date, Pageable pageable);
+
+    @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.isFullDay =?2 and hpd.taskDay = ?3 and hpd.recommendTimeFrom < ?4 and hpd.id not in (?5)) order by hpd.recommendTimeFrom desc")
+    Page<HcPackageDetail> findByPackageIdAndIsFullDayOrderByTimeFromAndPageable(Long packageId, boolean isFullDay, int Day, Date date, List<Long> ids, Pageable pageable);
+
+    @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.isFullDay =?2 and hpd.taskDay = ?3 and hpd.recommendTimeFrom < ?4 order by hpd.recommendTimeFrom asc ")
+    Page<HcPackageDetail> findByPackageIdAndIsFullDayOrderByTimeFromAsc(Long packageId, boolean isFullDay, int Day, Date date,  Pageable pageable);
+
+    @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.isFullDay =?2 and hpd.taskDay = ?3 and hpd.recommendTimeFrom < ?4 and hpd.id not in (?5) order by hpd.recommendTimeFrom asc")
+    Page<HcPackageDetail> findByPackageIdAndIsFullDayOrderByTimeFromAsc(Long packageId, boolean isFullDay, int Day, Date date, List<Long> ids, Pageable pageable);
 }
