@@ -309,13 +309,16 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         String questionSample = "我40岁，糖尿病7年，血糖一直偏高，空腹血糖一直在9左右，餐后血糖13左右。一直在吃阿卡波糖片，前段时间换了药，不但血糖没有降低，反而出现了心慌、胸闷、气短的症状。现在不知道要怎么办，需要打胰岛素吗？";
         String waitContent = "此刻我们十分理解您的担忧与焦虑，我们已布下天罗地网缉拿专家为您解答困惑。稍后专家将亲自奉上本月全勤奖金XX健康豆，别客气，拿着！";
         String overTimeContent = "此刻我们十分理解您的担忧与焦虑，我们已布下天罗地网缉拿专家为您解答困惑。稍后专家将亲自奉上本月全勤奖金XX健康豆，别客气，拿着！";*/
+        String groupId = userRepository.findByTel(tel).getGroupId();
         EmDoctorNumber emDoctorNumber = new EmDoctorNumber();
         EmMessages newMessages = new EmMessages();
+        newMessages.setCreatedDate(new Date());
+        newMessages.setGroupId(groupId);
+
         if (emMessages == null) {
-            newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS,EMUtils.countDoctors()));
-            newMessages.setCreatedDate(new Date());
+            newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS, EMUtils.countDoctors()));
             if(flag == 1) {
-                newMessages.setToUser(userRepository.findByTel(tel).getGroupId());
+                newMessages.setToUser(groupId);
                 emMessagesRepository.save(newMessages);
             }
             emDoctorNumber.setLastQuestionStatus(0);
@@ -325,9 +328,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         }
         if (emMessages.getIsReplied()) { //用户已回复
             newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS,EMUtils.countDoctors()));
-            newMessages.setCreatedDate(new Date());
             if(flag == 1) {
-                newMessages.setToUser(userRepository.findByTel(tel).getGroupId());
+                newMessages.setToUser(groupId);
                   emMessagesRepository.save(newMessages);
             }
             emDoctorNumber.setLastQuestionStatus(0);

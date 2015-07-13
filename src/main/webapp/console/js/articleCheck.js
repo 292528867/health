@@ -60,7 +60,7 @@ function articleAdd() {
         headers: {"Accept": "application/json", "Content-Type": "application/json; charset=UTF-8"},
         success: function (response) {
             if (response.ret_code == 0) {
-                alert('success,发现跳转了也是可以的- -。');
+                alert('success。');
                 location.reload();
                 //$.get(articleSearchUrl + type, function (data) {
                 //    articles = data.ret_values;
@@ -97,7 +97,7 @@ function searchArticle(id) {
         console.log(data);
         var datas = '';
         $.each(data.ret_values, function (n, value) {
-            datas += "<tr style='display: none' ><td><input type='checkbox'/></td><td>" +
+            datas += "<tr ><td><input type='checkbox'/></td><td>" +
             value.id +
             "</td>" +
             "<td><a href='#'>" + value.title + "</a></td>" +
@@ -115,7 +115,6 @@ function searchArticle(id) {
             "</div></div></td></tr>";
         });
         $("#allDatas").append(datas);
-        $("#allDatas tr").fadeIn(300);
         //customer = null;
         $('#change-info-box').hide();
         $('#info-table').show();
