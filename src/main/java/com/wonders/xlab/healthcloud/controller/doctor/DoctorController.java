@@ -308,6 +308,19 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
 
     }
 
+    @RequestMapping(value = "check/{doctorId}", method = RequestMethod.POST)
+    public boolean checkDoctor(@PathVariable long doctorId, Doctor.Checked checked) {
+        Doctor doctor = doctorRepository.findOne(doctorId);
+        doctor.setChecked(checked);
+        try {
+            modify(doctor);
+            return true;
+        } catch (RuntimeErrorException exp) {
+            return false;
+        }
+    }
+
+
     private String uploadQualification(MultipartFile file) throws IOException {
         return null == file ? "" :
                 QiniuUploadUtils.upload(
