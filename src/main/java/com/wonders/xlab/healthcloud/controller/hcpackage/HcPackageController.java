@@ -213,6 +213,20 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
         return new ControllerResult<List<UserPackageOrderDto>>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("成功");
     }
 
+    @RequestMapping("homePackages")
+    public Object homePackages() {
+        List<HcPackage> hcPackages = hcPackageRepository.findByIdLessThan(5l);
+        List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
+        for (HcPackage hcPackage : hcPackages) {
+            UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
+            BeanUtils.copyProperties(hcPackage, userPackageOrderDto);
+            userPackageOrderDto.setId(hcPackage.getId());
+            userPackageOrderDto.setIsJoin(false);
+            userPackageOrderDtos.add(userPackageOrderDto);
+        }
+        return new ControllerResult<List<UserPackageOrderDto>>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("成功");
+    }
+
     /**
      * 根据ID查询包信息，以及category信息
      * @param id
