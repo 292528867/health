@@ -43,4 +43,10 @@ public interface HcPackageDetailRepository extends MyRepository<HcPackageDetail,
 
     @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.taskDay = ?2 and hpd.recommendTimeFrom > ?3 and hpd.id not in (?4) order by hpd.recommendTimeFrom asc")
     List<HcPackageDetail> findByPackageIdAndIsFullDayOrderByTimeFromAsc(Long packageId, int Day, Date date, List<Long> ids, Pageable pageable);
+
+    @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.taskDay = ?2 order by hpd.recommendTimeFrom asc")
+    List<HcPackageDetail> findByPackageIdAndDayOrderByTimeFromAsc(Long packageId, int Day);
+
+    @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.taskDay = ?2 and hpd.id not in (?4) order by hpd.recommendTimeFrom asc")
+    List<HcPackageDetail> findByPackageIdAndDayOrderByTimeFromAsc(Long packageId, int Day, List<Long> ids);
 }
