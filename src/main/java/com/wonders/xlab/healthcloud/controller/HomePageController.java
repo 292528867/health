@@ -61,7 +61,6 @@ public class HomePageController {
             Map<String, Object> resultMap = new HashMap<>();
 
 //            JsonNodeFactory factory = JsonNodeFactory.instance;
-//
 //            ObjectNode resultNode = factory.objectNode();
 
             // 查询所有的标语
@@ -84,6 +83,9 @@ public class HomePageController {
             List<UserPackageOrder> userPackageOrders = this.userPackageCompleteRepository.findByUserIdAndPackageComplete(userId, false);
 
             List<HcPackageDetail> allDetailList = new ArrayList<>();
+
+            List<HcPackageDetail> trueDetailList = new ArrayList<>();
+
             // 完成计划的Id
             List<Long> completeDetailIds = new ArrayList<>();
             // 查看完成度
@@ -133,35 +135,41 @@ public class HomePageController {
 
                 if (completeDetailIds.size() > 0) {
                     // 存在已完成的任务id
-                    topDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAndPageable(upo.getHcPackage().getId(), false, day, now, completeDetailIds , pageable);
-                    bottomDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), false, day, now, completeDetailIds, pageable);
+                    topDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromDesc(upo.getHcPackage().getId(), day, now, completeDetailIds, pageable);
+                    bottomDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day, now, completeDetailIds, pageable);
 
 
                 } else {
-                    topDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAndPageable(upo.getHcPackage().getId(), false, day, now, pageable);
-                    bottomDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), false, day, now, pageable);
+                    topDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromDesc(upo.getHcPackage().getId(), day, now, pageable);
+                    bottomDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day, now, pageable);
                 }
                 // 获取第一个
                 if (bottomDetailFrom.hasContent()) {
-                    if (currentDetailIds.size() < 2) {
-                        currentDetailIds.add(bottomDetailFrom.getContent().get(0).getId());
-                        allDetailList.add(bottomDetailFrom.getContent().get(0));
-                    }
+                    currentDetailIds.add(bottomDetailFrom.getContent().get(0).getId());
+                    allDetailList.add(bottomDetailFrom.getContent().get(0));
 
                 }
                 if (topDetailFrom.hasContent()) {
-                    if (currentDetailIds.size() < 2 && !currentDetailIds.contains(topDetailFrom.getContent().get(0).getId())) {
+                    if (!currentDetailIds.contains(topDetailFrom.getContent().get(0).getId())) {
                         allDetailList.add(topDetailFrom.getContent().get(0));
                     }
                 }
+            }
 
+            Collections.sort(allDetailList, new PackageDetailComparator());
+            if (allDetailList.size() > 0) {
+                trueDetailList.add(allDetailList.get(0));
+            }
+
+            if (allDetailList.size() > 1) {
+                trueDetailList.add(allDetailList.get(1));
             }
 
             // 添加进度
             resultMap.put("progress", progressDtos);
 
             List<DailyPackageDto> tasks = new ArrayList<>();
-            for (HcPackageDetail detail : allDetailList) {
+            for (HcPackageDetail detail : trueDetailList) {
                 DailyPackageDto dto = new DailyPackageDto(
                         detail.getId(),
                         detail.getRecommendTimeFrom(),
@@ -194,5 +202,12 @@ public class HomePageController {
 
     }
 
+    class PackageDetailComparator implements Comparator {
+        public int compare(Object o1, Object o2) {
+            HcPackageDetail hpd1 = (HcPackageDetail) o1;
+            HcPackageDetail hpd2 = (HcPackageDetail) o2;
+            return hpd1.getRecommendTimeFrom().compareTo(hpd2.getRecommendTimeFrom());
+        }
+    }
 
 }
