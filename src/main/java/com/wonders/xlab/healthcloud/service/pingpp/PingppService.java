@@ -32,12 +32,12 @@ public class PingppService {
     private static final String apiKey = "sk_live_jX1mb908ern5r1qz9KGGiXfH";
     private static final String appId = "app_KavHuL08GO8O4Wbn";
 
-    public Charge payOrder(PingDto pingDto) {
+    public Charge payOrder(PingDto pingDto,String payWay) {
 
         Pingpp.apiKey = apiKey;
         Map<String, Object> chargeParams = new HashMap<String, Object>();
         chargeParams.put("order_no", new Date().getTime());
-        chargeParams.put("amount", Long.parseLong(pingDto.getMoney()) * 100);
+        chargeParams.put("amount", pingDto.getMoney() * 100);
         Map<String, String> app = new HashMap<String, String>();
         app.put("id", appId);
         chargeParams.put("app", app);
@@ -45,7 +45,8 @@ public class PingppService {
         chargeParams.put("subject", "健康套餐");
         chargeParams.put("body", "健康云养生套餐");
         chargeParams.put("client_ip", "127.0.0.1");
-        chargeParams.put("channel", Channel.WECHAT);
+//        chargeParams.put("channel", Channel.WECHAT);
+        chargeParams.put("channel", payWay);
         Map<String, String> initialMetadata = new HashMap<String, String>();
         chargeParams.put("metadata", initialMetadata);
         Charge charge;
