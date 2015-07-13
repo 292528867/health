@@ -368,7 +368,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
             servicedPeriodMap.put("currentServicedPeriod", currentServicedPeriod);
             servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
-            servicedPeriodMap.put("detilServicedPeriod", detilServicedPeriod);
+            servicedPeriodMap.put("detailServicedPeriod", detilServicedPeriod);
 
             stewardOrder.setServicedPeriodStatus(servicedPeriodMap);
 

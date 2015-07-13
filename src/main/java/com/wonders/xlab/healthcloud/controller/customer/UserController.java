@@ -9,9 +9,11 @@ import com.wonders.xlab.healthcloud.dto.emchat.ChatGroupsRequestBody;
 import com.wonders.xlab.healthcloud.dto.emchat.ChatGroupsResponseBody;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.ThirdBaseInfo;
+import com.wonders.xlab.healthcloud.entity.customer.AddressBook;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.customer.UserThird;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
+import com.wonders.xlab.healthcloud.repository.customer.AddressBookRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
@@ -36,6 +38,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.HashSet;
+import java.util.List;
 
 
 /**
@@ -50,6 +53,9 @@ public class UserController extends AbstractBaseController<User, Long> {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AddressBookRepository addressBookRepository;
 
     @Autowired
     private UserThirdRepository userThirdRepository;
@@ -311,15 +317,36 @@ public class UserController extends AbstractBaseController<User, Long> {
      * 邀约小伙伴
      * @return
      */
-    @RequestMapping(value = "inviteFriend", method = RequestMethod.POST)
-    public ControllerResult inviteFriend(String userName, String mobiles) {
+    @RequestMapping(value = "inviteFriend/{userId}", method = RequestMethod.POST)
+    public ControllerResult inviteFriend(@PathVariable long userId, String userName, String mobiles) {
 
         int i = SmsUtils.inviteFriend(userName, mobiles);
-        if (i == 0)
+
+        AddressBook addressBook = new AddressBook(userName, mobiles);
+
+        addressBook.setUser(userRepository.findOne(userId));
+
+        if (i == 0) {
+
+            addressBookRepository.save(addressBook);
             return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("好久邀请成功!");
+
+        }
+
         return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("好友邀请失败!");
 
     }
+
+    /**
+     * 查询通讯录
+     * @return
+     */
+    public ControllerResult queryAddressBook(@PathVariable long userId){
+
+        List <AddressBook> addressBooksList = addressBookRepository.findAllByUserId(userId);
+        return new ControllerResult<>().setRet_code(0).setRet_values(addressBooksList).setMessage("好久邀请成功!");
+    }
+
 
     @Override
     protected MyRepository<User, Long> getRepository() {
