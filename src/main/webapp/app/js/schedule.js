@@ -94,6 +94,7 @@ function finishTask() {
       }
       else {
         $('#finish-btn').button('reset');
+        $('#finish-btn').attr('disabled', false);
         alert(response.ret_values);
       }
 
