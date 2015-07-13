@@ -82,6 +82,8 @@ public class HomePageController {
             // 查找没有完成的健康包
             List<UserPackageOrder> userPackageOrders = this.userPackageCompleteRepository.findByUserIdAndPackageComplete(userId, false);
 
+            List<HcPackageDetail> beforeDetailList = new ArrayList<>();
+            List<HcPackageDetail> afterDetailList = new ArrayList<>();
             List<HcPackageDetail> allDetailList = new ArrayList<>();
 
             List<HcPackageDetail> trueDetailList = new ArrayList<>();
@@ -134,21 +136,32 @@ public class HomePageController {
                     topDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromDesc(upo.getHcPackage().getId(), day, now, pageable);
                     bottomDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day, now, pageable);
                 }
-                // 获取第一个
+                // 添加当前时间之后的任务
                 if (bottomDetailFrom.hasContent()) {
                     for (HcPackageDetail hcPackageDetail : bottomDetailFrom) {
                         currentDetailIds.add(hcPackageDetail.getId());
-                        allDetailList.add(hcPackageDetail);
+                        afterDetailList.add(hcPackageDetail);
                     }
                 }
+                // 添加当前时间之前的任务 只添加一条
                 if (topDetailFrom.hasContent()) {
-                    for (HcPackageDetail hcPackageDetail : topDetailFrom) {
-                        if (!currentDetailIds.contains(hcPackageDetail.getId())) {
-                            allDetailList.add(hcPackageDetail);
-                        }
+                    if (beforeDetailList.size() == 0) {
+                        beforeDetailList.add(topDetailFrom.getContent().get(0));
                     }
+//                    if (afterDetailList.size() > 0 && beforeDetailList.size() == 0) {
+//                        beforeDetailList.add(topDetailFrom.getContent().get(0));
+//                    } else {
+//
+//                        for (HcPackageDetail hcPackageDetail : topDetailFrom) {
+//                            if (!currentDetailIds.contains(hcPackageDetail.getId())) {
+//                                beforeDetailList.add(hcPackageDetail);
+//                            }
+//                        }
+//                    }
                 }
             }
+            allDetailList.addAll(beforeDetailList);
+            allDetailList.addAll(afterDetailList);
 
             Collections.sort(allDetailList, new PackageDetailComparator());
             if (allDetailList.size() > 0) {
