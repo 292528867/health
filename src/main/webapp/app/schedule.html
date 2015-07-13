@@ -189,7 +189,7 @@
     $('#detail-title').html(article.title);
 //      $('#detail-count').html(article.clickCount);
     $('title').html(article.title);
-    console.log(article);
+//    console.log(article);
 //      console.log(window.document.body.offsetHeight);
     $('#detail-count').html(article.clickAmount + '人关注');
     var string = '';
@@ -223,7 +223,8 @@
 //    noticePhone('2222');
     console.log($('#getValue').val());
     $('#finish-btn').button('loading');
-    if($('#getValue').val().length==0)
+    $('#finish-btn').attr('disabled',true);
+    if($('#getValue').val().length==0&&article.type == 1)
     {
       alert('请填写内容');
       return false;
@@ -240,12 +241,16 @@
           $('#getValue').attr('disabled',true);
           var $finish = $('.finish-btn');
           $finish.addClass('finish-btn-ed');
+          $finish.button('reset');
           $finish.html('已完成');
           $('.foot-box').hide();
           $('.finish-divider').hide();
         }
         else
+        {
+          $('#finish-btn').button('reset');
           alert(response.ret_values);
+        }
 
 
       },
