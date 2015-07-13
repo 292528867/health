@@ -1,13 +1,9 @@
 package com.wonders.xlab.healthcloud.repository.customer;
 
-import java.util.List;
-
-import com.wonders.xlab.healthcloud.repository.customer.custom.UserRepositoryCustom;
-import org.jboss.logging.annotations.Param;
-import org.springframework.data.jpa.repository.Query;
-
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.entity.customer.User;
+import com.wonders.xlab.healthcloud.repository.customer.custom.UserRepositoryCustom;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * Created by Jeffrey on 15/7/2.
