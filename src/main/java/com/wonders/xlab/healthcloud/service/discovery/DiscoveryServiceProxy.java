@@ -1,24 +1,16 @@
 package com.wonders.xlab.healthcloud.service.discovery;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
-import net.sf.ehcache.Cache;
-
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.wonders.xlab.healthcloud.dto.discovery.HealthInfoDto;
@@ -33,10 +25,8 @@ import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepositor
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoClickInfoRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoDiscoveryRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoRepository;
-import com.wonders.xlab.healthcloud.service.cache.HCCache;
-import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
+import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoUserClickInfoRepository;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.DiscoveryArticleRuleService;
-import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoSample;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
 
 /**
@@ -63,21 +53,24 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 	private HealthInfoRepository healthInfoRepository;
 	@Autowired
 	private HealthInfoClickInfoRepository healthInfoClickInfoRepository;
-	
 	@Autowired
-	@Qualifier("discoveryCache")
-	private Cache discoveryCache;
-	/** 缓存代理（key="{用户id}_{yyyy-MM-dd}"，value={HealthInfoDayDiscovery对象}） */
-	private HCCache<String, Object> proxyCache;
+	private HealthInfoUserClickInfoRepository healthInfoUserClickInfoRepository;
 	
-	@PostConstruct
-	private void initBean() {
-		proxyCache = new HCCacheProxy<String, Object>(discoveryCache);
-	}
+//	@Autowired
+//	@Qualifier("discoveryCache")
+//	private Cache discoveryCache;
+//	/** 缓存代理（key="{用户id}_{yyyy-MM-dd}_articles）"，value={HealthInfoDayDiscovery对象}） */
+//	private HCCache<String, Object> proxyCache;
+//	
+//	@PostConstruct
+//	private void initBean() {
+//		proxyCache = new HCCacheProxy<String, Object>(discoveryCache);
+//	}
+	
 	
 	private void setDtoIsClicked(User user, List<HealthInfoDto> dtoes) {
 		Map<Long, Long> userClicked = new HashMap<>();
-		List<Object> allClickCountList = this.healthInfoClickInfoRepository.healthInfoTotalClickCountWithUserId(user.getId());
+		List<Object> allClickCountList = this.healthInfoUserClickInfoRepository.healthInfoTotalClickCountWithUserId(user.getId());
 		for (Object record : allClickCountList) {
 			Object[] record_values = (Object[]) record;
 			userClicked.put((Long) record_values[0], (Long) record_values[1]);
@@ -89,33 +82,6 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 				dto.setClicked(false);
 		}
 	}
-	
-	private void setDtoClickCount(List<HealthInfoDto> dtoes) {
-		List<HealthInfoSample> healthInfoSampleList = new ArrayList<>();
-		Map<Long, Long> allClickCount = new HashMap<>();
-		List<Object> allClickCountList = this.healthInfoClickInfoRepository.healthInfoTotalClickCount();
-		for (Object record : allClickCountList) {
-			Object[] record_values = (Object[]) record;
-			allClickCount.put((Long) record_values[0], (Long) record_values[1]);
-		}
-		for (HealthInfoDto healthInfoDto : dtoes) {
-			// 创建sample fact
-			HealthInfoSample healthInfoSample = new HealthInfoSample(
-					0L, 
-					healthInfoDto.getCreateTime(),
-					healthInfoDto.getId(), 
-					healthInfoDto.getTitle(), 
-					allClickCount.get(healthInfoDto.getId()) == null ? 0 : allClickCount.get(healthInfoDto.getId()), 
-					healthInfoDto.getClickCount_A()
-				);
-			healthInfoSampleList.add(healthInfoSample);
-		}
-		
-		Map<Long, Long> clickCounts = this.discoveryArticleRuleService.calcuClickCount(0.1, healthInfoSampleList);
-		for (HealthInfoDto dto : dtoes) 
-			dto.setClickCount(clickCounts.get(dto.getId()) == null ? 0 : clickCounts.get(dto.getId()));
-	}
-	
 	
 	private String toHealthCategoryIdStrs(List<HealthCategory> healthCategoryList) {
 		List<String> ids_str_array = new ArrayList<>();
@@ -160,10 +126,14 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 		for (String id : ids_str_array) 
 			ids_long_list.add(Long.parseLong(id));
 		
-		List<HealthInfo> healthInfos = this.healthInfoRepository.findAll(ids_long_list);
+		List<HealthInfo> healthInfos = this.healthInfoRepository.findByHealthInfoIdsWithClickInfo(ids_long_list.toArray(new Long[0]));
 		List<HealthInfoDto> dtoes = new ArrayList<>();
-		for (HealthInfo healthInfo : healthInfos) 
-			dtoes.add(new HealthInfoDto().toNewHealthInfoDto(healthInfo));
+		for (HealthInfo healthInfo : healthInfos) {
+			HealthInfoDto healthInfoDto = new HealthInfoDto().toNewHealthInfoDto(healthInfo);
+			healthInfoDto.setClickCount(healthInfo.getHealthInfoClickInfo().getVirtualClickCount());
+			dtoes.add(healthInfoDto);
+			
+		}
 		return dtoes;
 	}
 	
@@ -175,30 +145,27 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 		// 1、从缓存中获取
 		// 2、缓存从数据苦里获取，并放入缓存
 		// 3、数据库里没有，调用被代理的类，返回的结果放入数据库，并放入缓存，并返回
+		
+		// 暂时只用数据库保存，不加缓存保存，便于修改，如果以后加入了ehcache JMX管理后再改回来
 		Date date = new Date();
-		String key = user.getId() + "_" + DateUtils.covertToYYYYMMDDStr(date) + "_" + "tags";
-		HealthCategoryDiscovery healthCategoryDiscovery = (HealthCategoryDiscovery) proxyCache.getFromCache(key);
-		if (healthCategoryDiscovery != null) {
-			healthCategoryList.addAll(getHealthCategoryListFromStrids(healthCategoryDiscovery.getDiscoveryHealthCategoryIds()));
-			return healthCategoryList;
-		} else {
-			healthCategoryDiscovery = this.healthCategoryDiscoveryRepository.findByUserIdAndDiscoveryDate(
+//		String key = user.getId() + "_" + DateUtils.covertToYYYYMMDDStr(date) + "_" + "tags";
+		HealthCategoryDiscovery healthCategoryDiscovery = this.healthCategoryDiscoveryRepository.findByUserIdAndDiscoveryDate(
 				user.getId(), DateUtils.covertToYYYYMMDD(date));
-			if (healthCategoryDiscovery != null) {
-				this.proxyCache.addToCache(key, healthCategoryDiscovery);
-				healthCategoryList.addAll(getHealthCategoryListFromStrids(healthCategoryDiscovery.getDiscoveryHealthCategoryIds()));
-				return healthCategoryList;
-			} else { 
-				healthCategoryList.addAll(this.discoveryService.getRecommandTag(user));
+		if (healthCategoryDiscovery == null) {
+			healthCategoryList.addAll(this.discoveryService.getRecommandTag(user));
+			if (healthCategoryList.size() > 0) { // 有推荐才保存数据库
 				healthCategoryDiscovery = new HealthCategoryDiscovery();
 				healthCategoryDiscovery.setDiscoveryDate(DateUtils.covertToYYYYMMDD(date));
 				healthCategoryDiscovery.setDiscoveryHealthCategoryIds(toHealthCategoryIdStrs(healthCategoryList));
 				healthCategoryDiscovery.setUser(user);
 				this.healthCategoryDiscoveryRepository.save(healthCategoryDiscovery);
-				this.proxyCache.addToCache(key, healthCategoryDiscovery);
-				return healthCategoryList;
 			}
+			
+		} else {
+			healthCategoryList.addAll(getHealthCategoryListFromStrids(healthCategoryDiscovery.getDiscoveryHealthCategoryIds()));
 		}
+		
+		return healthCategoryList;
 	}
 	
 	@Override
@@ -209,43 +176,11 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 	}
 	
 	@Override
-	public List<HealthInfoDto> getTagInfos(HealthCategory healthCategory,
-			User user) {
-		List<HealthInfoDto> dtoes = this.discoveryService.getTagInfos(healthCategory, user);
-		if (dtoes.size() == 0) 
-			return dtoes;
-		
-		// 将今日推荐的文章去除
-		Date date = new Date();
-		String key = user.getId() + "_" + DateUtils.covertToYYYYMMDDStr(date) + "_" + "articles";
-		HealthInfoDiscovery healthInfoDiscovery = (HealthInfoDiscovery) proxyCache.getFromCache(key);
-		if (healthInfoDiscovery != null) {
-			String ids_str = healthInfoDiscovery.getDiscoveryHealthInfoIds();
-			List<String> ids_str_array = Arrays.asList(StringUtils.split(ids_str, ","));
-			Iterator<HealthInfoDto> iter = dtoes.iterator();
-			if (CollectionUtils.isNotEmpty(ids_str_array)) {
-				while (iter.hasNext()) {
-					HealthInfoDto dto = iter.next();
-					if (ids_str_array.contains(dto.getId().toString())) 
-						iter.remove();
-				}
-			}
-		}
-		
-		// 将dto排序
-		Collections.sort(dtoes, new Comparator<HealthInfoDto>() {
-			@Override
-			public int compare(HealthInfoDto o1, HealthInfoDto o2) {
-				return new CompareToBuilder()
-					.append(o1.getClickCount(), o2.getClickCount())
-					.append(o1.getCreateTime(), o2.getCreateTime())
-					.toComparison();
-			}
-		});
-		
+	public Page<HealthInfoDto> getTagInfos(HealthCategory healthCategory, User user, Pageable pageable) {
 		// 计算是否点击此用户是否点击过
-		setDtoIsClicked(user, dtoes);
-		return dtoes;
+		Page<HealthInfoDto> page = this.discoveryService.getTagInfos(healthCategory, user, pageable);
+		setDtoIsClicked(user, page.getContent());
+		return page;
 	}
 	
 	@Override
@@ -256,43 +191,31 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 		// 1、从缓存中获取
 		// 2、缓存从数据苦里获取，并放入缓存
 		// 3、数据库里没有，调用被代理的类，返回的结果放入数据库，并放入缓存，并返回
+		
+		// 暂时只用数据库保存，不加缓存保存，便于修改，如果以后加入了ehcache JMX管理后再改回来
 		Date date = new Date();
-		String key = user.getId() + "_" + DateUtils.covertToYYYYMMDDStr(date) + "_" + "articles";
-		HealthInfoDiscovery healthInfoDiscovery = (HealthInfoDiscovery) proxyCache.getFromCache(key);
-		if (healthInfoDiscovery != null) {
-			dtoes.addAll(getHealthInfoDtoListFromStrids(healthInfoDiscovery.getDiscoveryHealthInfoIds()));
-			// 重新计算点击量
-			setDtoClickCount(dtoes);
-			// 计算是否点击此用户是否点击过
-			setDtoIsClicked(user, dtoes);
-			return dtoes;
-		} else {
-			healthInfoDiscovery = this.healthInfoDiscoveryRepository.findByUserIdAndDiscoveryDate(
+//		String key = user.getId() + "_" + DateUtils.covertToYYYYMMDDStr(date) + "_" + "articles";
+		HealthInfoDiscovery healthInfoDiscovery = this.healthInfoDiscoveryRepository.findByUserIdAndDiscoveryDate(
 				user.getId(), DateUtils.covertToYYYYMMDD(date));
-			if (healthInfoDiscovery != null) {
-				this.proxyCache.addToCache(key, healthInfoDiscovery);
-				dtoes.addAll(getHealthInfoDtoListFromStrids(healthInfoDiscovery.getDiscoveryHealthInfoIds()));			
-				// 重新计算点击量
-				setDtoClickCount(dtoes);
-				// 计算是否点击此用户是否点击过
-				setDtoIsClicked(user, dtoes);
-				
-				return dtoes;
-			} else { 
-				dtoes.addAll(this.discoveryService.getRecommandArticles(user));
+		if (healthInfoDiscovery == null) {
+			dtoes.addAll(this.discoveryService.getRecommandArticles(user));
+			if (dtoes.size() > 0) { // 有推荐才保存数据库
 				healthInfoDiscovery = new HealthInfoDiscovery();
 				healthInfoDiscovery.setDiscoveryDate(DateUtils.covertToYYYYMMDD(date));
 				healthInfoDiscovery.setDiscoveryHealthInfoIds(toHealthInfoDtoIdStrs(dtoes));
 				healthInfoDiscovery.setUser(user);
 				this.healthInfoDiscoveryRepository.save(healthInfoDiscovery);
-				this.proxyCache.addToCache(key, healthInfoDiscovery);
-				
-				// 计算是否点击此用户是否点击过
-				setDtoIsClicked(user, dtoes);
-				
-				return dtoes;
 			}
+			
+		} else {
+			dtoes.addAll(getHealthInfoDtoListFromStrids(healthInfoDiscovery.getDiscoveryHealthInfoIds()));
 		}
+		
+		// 计算是否点击此用户是否点击过
+		setDtoIsClicked(user, dtoes);
+		
+		return dtoes;
+		
 	}
 	
 	@Override

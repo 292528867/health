@@ -6,6 +6,8 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
+
 
 /**
  * 健康info，文章样本。
@@ -23,20 +25,19 @@ public class HealthInfoSample implements Comparable<HealthInfoSample> {
 	private String healthInfoTitle;
 	/** 健康信息文章点击次数 */
 	private Long clickCount;
-//	/** A*(1+X)^n+B */
-	private Integer clickCount_A;
-//	private Double clickCount_X;
+	
+	/** 业务对象 */
+	private HealthInfo bo;
 
 	public HealthInfoSample(Long userId, Date createTime, Long healthInfoId,
-			String healthInfoTitle, Long clickCount, int A) {
+			String healthInfoTitle, Long clickCount, HealthInfo bo) {
 		super();
 		this.userId = userId;
 		this.createTime = createTime;
 		this.healthInfoId = healthInfoId;
 		this.healthInfoTitle = healthInfoTitle;
 		this.clickCount = clickCount;
-		this.clickCount_A = A;
-//		this.clickCount_X = X;
+		this.bo = bo;
 	}
 	public Long getUserId() {
 		return userId;
@@ -72,18 +73,13 @@ public class HealthInfoSample implements Comparable<HealthInfoSample> {
 	}
 	
 	
-	public Integer getClickCount_A() {
-		return clickCount_A;
+	
+	public HealthInfo getBo() {
+		return bo;
 	}
-	public void setClickCount_A(Integer clickCount_A) {
-		this.clickCount_A = clickCount_A;
+	public void setBo(HealthInfo bo) {
+		this.bo = bo;
 	}
-//	public Double getClickCount_X() {
-//		return clickCount_X;
-//	}
-//	public void setClickCount_X(Double clickCount_X) {
-//		this.clickCount_X = clickCount_X;
-//	}
 	@Override
 	public String toString() {
 		return new ToStringBuilder(ToStringStyle.MULTI_LINE_STYLE)
@@ -103,4 +99,5 @@ public class HealthInfoSample implements Comparable<HealthInfoSample> {
 			.append(this.createTime, sample.createTime)
 			.toComparison();
 	}
+	
 }

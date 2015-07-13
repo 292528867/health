@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -35,7 +36,9 @@ import com.wonders.xlab.healthcloud.dto.discovery.RelatedCategoryComboDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
+import com.wonders.xlab.healthcloud.entity.discovery.HealthInfoClickInfo;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepository;
+import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoClickInfoRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoRepository;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 
@@ -54,6 +57,8 @@ public class CmsController {
 	private HealthCategoryRepository healthCategoryRepository;
 	@Autowired
 	private HealthInfoRepository healthInfoRepository;
+	@Autowired
+	private HealthInfoClickInfoRepository healthInfoClickInfoRepository;
 	
 	// 添加分类
 	@RequestMapping(value = "addCategory", method = RequestMethod.POST)
@@ -196,7 +201,7 @@ public class CmsController {
 		return new ControllerResult<String>().setRet_code(0).setRet_values("更新成功！").setMessage("成功！");
 	}
 	
-	// 添加分类健康信息
+	// 添加分类健康信息（文章信息）
 	@RequestMapping(value = "addInfo/{healthCategoryId}", method = RequestMethod.POST)
 	public ControllerResult<?> addHealthInfo(@PathVariable Long healthCategoryId, @RequestBody @Valid HealthInfoDto dto, BindingResult result) {
 		if (result.hasErrors()) {
@@ -210,20 +215,23 @@ public class CmsController {
 		if (hc == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没有找到！").setMessage("竟然没有找到！");
 		
-		// 随机生成clickCountA，10到50之间
+		// 保存HealthInfo，级连保存HealthInfoClickInfo
 		HealthInfo info = dto.toNewHealthInfo(hc);
-		int clickCountA = RandomUtils.nextInt(10, 50);
-		info.setClickCountA(clickCountA);
-		
+		HealthInfoClickInfo healthInfoClickInfo = new HealthInfoClickInfo();
+		int clickCountA = RandomUtils.nextInt(10, 50); // 随机生成clickCountA，10到50之间
+		healthInfoClickInfo.setClickCountA(clickCountA);
+		healthInfoClickInfo.setHealthInfo(info);
+		info.setHealthInfoClickInfo(healthInfoClickInfo);		
 		this.healthInfoRepository.save(info);
+
 		return new ControllerResult<String>().setRet_code(0).setRet_values("添加成功！").setMessage("成功！");
 	}
 	
 	// 查询分类健康信息
 	@RequestMapping(value = "listInfo/{healthCategoryId}", method = RequestMethod.GET)
-	public ControllerResult<?> listHealthInfo(@PathVariable Long healthCategoryId) {
+	public ControllerResult<?> listHealthInfo(@PathVariable Long healthCategoryId, Pageable pageable) {
 		return new ControllerResult<List<HealthInfo>>().setRet_code(0).setRet_values(
-				this.healthInfoRepository.findByHealthCategoryId(healthCategoryId)).setMessage("成功");
+				this.healthInfoRepository.findByHealthCategoryId(healthCategoryId, pageable)).setMessage("成功");
 	}
 	
 	// 查询分类健康信息
