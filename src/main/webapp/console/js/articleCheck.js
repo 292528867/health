@@ -86,6 +86,7 @@ function searchArticle(id) {
     if (id.length == 0||id==null) {
         return false;
     }
+    $('#info-loading').html('信息(<i class="am-icon-refresh am-icon-spin"></i>正在读取！！！！！)');
     $('#allDatas').html('');
     $('#type').val(id);
     localStorage.setItem('typeId',id);
@@ -118,7 +119,7 @@ function searchArticle(id) {
         //customer = null;
         $('#change-info-box').hide();
         $('#info-table').show();
-
+        $('#info-loading').html('信息读取成功！');
 
     });
 
