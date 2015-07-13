@@ -54,7 +54,7 @@ public class HomePageController {
      */
     @RequestMapping(value = "listHomePage/{userId}", method = RequestMethod.GET)
     public Object listHomePage(@PathVariable long userId,
-                               @PageableDefault(page = 0, size = 1//, sort = "recommendTimeFrom", direction = Sort.Direction.DESC
+                               @PageableDefault(page = 0, size = 2//, sort = "recommendTimeFrom", direction = Sort.Direction.DESC
                                )
                                Pageable pageable) {
         try {
@@ -137,13 +137,16 @@ public class HomePageController {
                 }
                 // 获取第一个
                 if (bottomDetailFrom.hasContent()) {
-                    currentDetailIds.add(bottomDetailFrom.getContent().get(0).getId());
-                    allDetailList.add(bottomDetailFrom.getContent().get(0));
-
+                    for (HcPackageDetail hcPackageDetail : bottomDetailFrom) {
+                        currentDetailIds.add(hcPackageDetail.getId());
+                        allDetailList.add(hcPackageDetail);
+                    }
                 }
                 if (topDetailFrom.hasContent()) {
-                    if (!currentDetailIds.contains(topDetailFrom.getContent().get(0).getId())) {
-                        allDetailList.add(topDetailFrom.getContent().get(0));
+                    for (HcPackageDetail hcPackageDetail : topDetailFrom) {
+                        if (!currentDetailIds.contains(hcPackageDetail.getId())) {
+                            allDetailList.add(hcPackageDetail);
+                        }
                     }
                 }
             }
