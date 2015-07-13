@@ -106,6 +106,9 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     private String smallIcon;
 
     @JsonIgnore
+    /**
+     * 点击数系数
+     */
     private int coefficient;
 
     @OneToMany(mappedBy = "hcPackage",fetch = FetchType.LAZY)
@@ -234,7 +237,7 @@ public class HcPackage extends AbstractBaseEntity<Long> {
     }
 
     public int getClickAmount() {
-        return HcpackageService.calculateClickCount(clickAmount, getCreatedDate());
+        return clickAmount;
     }
 
     public void setClickAmount(int clickAmount) {
