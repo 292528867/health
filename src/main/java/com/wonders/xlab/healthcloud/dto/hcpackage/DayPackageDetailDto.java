@@ -28,20 +28,20 @@ public class DayPackageDetailDto {
     private List<UserStatementDto> statementDtos;
 
     /** 图片，视频地址 以后缀区分*/
-    private String icon;
+    private String pictureUrl;
 
     /** 图片类型 0 没有图片 1 图片 2 视频 */
-    private int iconType;
+    private int pictureType;
 
     public DayPackageDetailDto() {
     }
 
-    public DayPackageDetailDto(Long detailId, String title, int clickAmount, String detail, String icon) {
+    public DayPackageDetailDto(Long detailId, String title, int clickAmount, String detail, String pictureUrl) {
         this.detailId = detailId;
         this.title = title;
         this.clickAmount = clickAmount;
         this.detail = detail;
-        this.icon = icon;
+        this.pictureUrl = pictureUrl;
     }
 
     public DayPackageDetailDto(Long detailId, String title, int clickAmount, int type, String detail, int complete) {
@@ -109,19 +109,19 @@ public class DayPackageDetailDto {
         this.statementDtos = statementDtos;
     }
 
-    public String getIcon() {
-        return icon;
+    public String getPictureUrl() {
+        return pictureUrl;
     }
 
-    public void setIcon(String icon) {
-        this.icon = icon;
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
     }
 
-    public int getIconType() {
-        return iconType;
+    public int getPictureType() {
+        return pictureType;
     }
 
-    public void setIconType(int iconType) {
-        this.iconType = iconType;
+    public void setPictureType(int pictureType) {
+        this.pictureType = pictureType;
     }
 }

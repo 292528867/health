@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,7 +53,7 @@ public class HomePageController {
      */
     @RequestMapping(value = "listHomePage/{userId}", method = RequestMethod.GET)
     public Object listHomePage(@PathVariable long userId,
-                               @PageableDefault(page = 0, size = 2//, sort = "recommendTimeFrom", direction = Sort.Direction.DESC
+                               @PageableDefault(page = 0, size = 1//, sort = "recommendTimeFrom", direction = Sort.Direction.DESC
                                )
                                Pageable pageable) {
         try {
@@ -110,9 +109,9 @@ public class HomePageController {
                 // 持续时间
                 int duration = upo.getHcPackage().getDuration();
                 // 每个任务的时间 - 循环过的时间
-                int day = DateUtils.calculatePeiorDaysOfTwoDate(upo.getCreatedDate(), new Date()) - duration * upo.getCurrentCycleIndex() + 1;
+                int day = DateUtils.calculatePeiorDaysOfTwoDate(upo.getCreatedDate(), now) - duration * upo.getCurrentCycleIndex();
                 int progress = 1;
-                if (day != 1) {
+                if (day != 0) {
                     progress = day * 100 / duration;
                 }
                 progressDtos.add(
@@ -124,53 +123,54 @@ public class HomePageController {
                         )
                 );
                 // 查询当天离现在最近的任务
-                Page<HcPackageDetail> topDetailFrom;
-                Page<HcPackageDetail> bottomDetailFrom;
+                List<HcPackageDetail> beforeDetailFrom;
+                List<HcPackageDetail> afterDetailFrom;
 
+                day += 1;
                 if (completeDetailIds.size() > 0) {
                     // 存在已完成的任务id
-                    topDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromDesc(upo.getHcPackage().getId(), day, now, completeDetailIds, pageable);
-                    bottomDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day, now, completeDetailIds, pageable);
+                    beforeDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromDesc(upo.getHcPackage().getId(), day, now, completeDetailIds, pageable);
+                    afterDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day, now, completeDetailIds, pageable);
 
                 } else {
-                    topDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromDesc(upo.getHcPackage().getId(), day, now, pageable);
-                    bottomDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day, now, pageable);
+                    beforeDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromDesc(upo.getHcPackage().getId(), day, now, pageable);
+                    afterDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day, now, pageable);
                 }
                 // 添加当前时间之后的任务
-                if (bottomDetailFrom.hasContent()) {
-                    for (HcPackageDetail hcPackageDetail : bottomDetailFrom) {
+                if (afterDetailFrom.size() > 0) {
+                    for (HcPackageDetail hcPackageDetail : afterDetailFrom) {
                         currentDetailIds.add(hcPackageDetail.getId());
                         afterDetailList.add(hcPackageDetail);
                     }
                 }
                 // 添加当前时间之前的任务 只添加一条
-                if (topDetailFrom.hasContent()) {
-                    if (beforeDetailList.size() == 0) {
-                        beforeDetailList.add(topDetailFrom.getContent().get(0));
+                if (beforeDetailFrom.size() > 0) {
+                    for (HcPackageDetail detail : beforeDetailFrom) {
+                        beforeDetailList.add(detail);
                     }
-//                    if (afterDetailList.size() > 0 && beforeDetailList.size() == 0) {
-//                        beforeDetailList.add(topDetailFrom.getContent().get(0));
-//                    } else {
-//
-//                        for (HcPackageDetail hcPackageDetail : topDetailFrom) {
-//                            if (!currentDetailIds.contains(hcPackageDetail.getId())) {
-//                                beforeDetailList.add(hcPackageDetail);
-//                            }
-//                        }
-//                    }
                 }
             }
-            allDetailList.addAll(beforeDetailList);
-            allDetailList.addAll(afterDetailList);
+            Collections.sort(beforeDetailList, new PackageDetailComparatorDesc());
 
-            Collections.sort(allDetailList, new PackageDetailComparator());
-            if (allDetailList.size() > 0) {
-                trueDetailList.add(allDetailList.get(0));
+            Collections.sort(afterDetailList, new PackageDetailComparatorAsc());
+
+            if (beforeDetailList.size() > 0) {
+                trueDetailList.add(beforeDetailList.get(0));
+                if (afterDetailList.size() > 0) {
+                    trueDetailList.add(afterDetailList.get(0));
+                } else if (beforeDetailList.size() > 1) {
+                    trueDetailList.add(beforeDetailList.get(1));
+                }
+            } else {
+                if (afterDetailList.size() > 0) {
+                    trueDetailList.add(afterDetailList.get(0));
+                }
+                if (afterDetailList.size() > 1) {
+                    trueDetailList.add(afterDetailList.get(1));
+                }
             }
 
-            if (allDetailList.size() > 1) {
-                trueDetailList.add(allDetailList.get(1));
-            }
+            Collections.sort(trueDetailList, new PackageDetailComparatorAsc());
 
             // 添加进度
             resultMap.put("progress", progressDtos);
@@ -209,7 +209,14 @@ public class HomePageController {
 
     }
 
-    class PackageDetailComparator implements Comparator {
+    class PackageDetailComparatorAsc implements Comparator {
+        public int compare(Object o1, Object o2) {
+            HcPackageDetail hpd1 = (HcPackageDetail) o1;
+            HcPackageDetail hpd2 = (HcPackageDetail) o2;
+            return hpd1.getRecommendTimeFrom().compareTo(hpd2.getRecommendTimeFrom());
+        }
+    }
+    class PackageDetailComparatorDesc implements Comparator {
         public int compare(Object o1, Object o2) {
             HcPackageDetail hpd1 = (HcPackageDetail) o1;
             HcPackageDetail hpd2 = (HcPackageDetail) o2;

@@ -115,11 +115,11 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         if (detail.isNeedSupplemented())
             dto.setType(1);
         if (detail.getIcon() == null)
-            dto.setIconType(0);
+            dto.setPictureType(0);
         if (detail.getIcon().endsWith("mp4")) {
-            dto.setIconType(2);
+            dto.setPictureType(2);
         } else {
-            dto.setIconType(1);
+            dto.setPictureType(1);
         }
 
         if (order != null && order.getHcPackageDetailIds() != null) {
@@ -210,11 +210,11 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         if (detail.isNeedSupplemented())
             dto.setType(1);
         if (detail.getIcon() == null)
-            dto.setIconType(0);
+            dto.setPictureType(0);
         if (detail.getIcon().endsWith("mp4")) {
-            dto.setIconType(2);
+            dto.setPictureType(2);
         } else {
-            dto.setIconType(1);
+            dto.setPictureType(1);
         }
 
         return new ControllerResult<DayPackageDetailDto>().setRet_code(0).setRet_values(dto).setMessage("成功");
