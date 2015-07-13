@@ -94,6 +94,8 @@ public class UserPackageOrderDto {
 
     private Boolean isJoin;
 
+    private Integer countTask;
+
     public String getTitle() {
         return title;
     }
@@ -244,5 +246,13 @@ public class UserPackageOrderDto {
 
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
+    }
+
+    public Integer getCountTask() {
+        return countTask;
+    }
+
+    public void setCountTask(Integer countTask) {
+        this.countTask = countTask;
     }
 }

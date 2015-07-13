@@ -171,16 +171,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     @RequestMapping(value = "listPackageInfo", method = RequestMethod.GET)
     public Object listPackageInfo() {
         // 查询所有分类（二大类）
-        List<Classification> classifications = classificationRepository.findOrderByCountPackage();
-        List<ThirdPackageDto> thirdPackageDtos = new ArrayList<>();
-
-        for (Classification classification : classifications) {
-            thirdPackageDtos.add(new ThirdPackageDto(
-                    classification.getId(),
-                    classification.getTitle(),
-                    classification.getIcon()
-            ));
-        }
+        List<ThirdPackageDto> thirdPackageDtos = classificationRepository.findOrderByCountPackage();
         return new ControllerResult<List<ThirdPackageDto>>().setRet_code(0).setRet_values(thirdPackageDtos).setMessage("成功");
     }
 
@@ -199,8 +190,10 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
         for (HcPackage hcPackage : hcPackages) {
             UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
+            Integer countTask = null == hcPackage.getHcPackageDetails() ? 0 : hcPackage.getHcPackageDetails().size();
             BeanUtils.copyProperties(hcPackage, userPackageOrderDto);
             userPackageOrderDto.setId(hcPackage.getId());
+            userPackageOrderDto.setCountTask(countTask > 0 ? countTask : 0);
             userPackageOrderDto.setIsJoin(false);
 
             if (orders != null && orders.size() != 0) {
