@@ -13,6 +13,10 @@ $.get(typeUrl, function (data) {
 
     });
     $("#type").append(datas);
+    var inTypeId = window.location.search.substring(1);
+    if(inTypeId.length!=0) {
+        $('select').find('option').eq(inTypeId).attr('selected', true);
+    }
 });
 
 
