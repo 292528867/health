@@ -436,7 +436,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     @RequestMapping(value = "getOrdersDetail/{userId}/{chargeId}", method = RequestMethod.GET)
     public ControllerResult getOrdersDetail(@PathVariable Long userId, @PathVariable String chargeId) throws APIException, AuthenticationException, InvalidRequestException, APIConnectionException {
 
-        StewardOrder stewardOrder = stewardOrderRepository.findByChargeId(chargeId);
+        StewardOrder stewardOrder = stewardOrderRepository.findAllByChargeId(chargeId);
 
         if (null != stewardOrder){
 
