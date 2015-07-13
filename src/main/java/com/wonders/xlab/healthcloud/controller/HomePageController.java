@@ -61,6 +61,7 @@ public class HomePageController {
             Map<String, Object> resultMap = new HashMap<>();
 
 //            JsonNodeFactory factory = JsonNodeFactory.instance;
+//
 //            ObjectNode resultNode = factory.objectNode();
 
             // 查询所有的标语
@@ -72,9 +73,12 @@ public class HomePageController {
             bannerMap.put("bottomBanners", bottomBanners);
 
 //            resultNode.putPOJO("topBanners", topBanners);
-
+//            resultNode.putPOJO("bottomBanners", bottomBanners);
 
             resultMap.put("banner", bannerMap);
+//            resultNode.putPOJO("banner", bannerMap);
+
+
 
             // 查找没有完成的健康包
             List<UserPackageOrder> userPackageOrders = this.userPackageCompleteRepository.findByUserIdAndPackageComplete(userId, false);
@@ -139,12 +143,16 @@ public class HomePageController {
                 }
                 // 获取第一个
                 if (bottomDetailFrom.hasContent()) {
-                    currentDetailIds.add(bottomDetailFrom.getContent().get(0).getId());
-                    allDetailList.add(bottomDetailFrom.getContent().get(0));
+                    if (currentDetailIds.size() < 2) {
+                        currentDetailIds.add(bottomDetailFrom.getContent().get(0).getId());
+                        allDetailList.add(bottomDetailFrom.getContent().get(0));
+                    }
+
                 }
                 if (topDetailFrom.hasContent()) {
-                    if (!currentDetailIds.contains(topDetailFrom.getContent().get(0).getId()))
+                    if (currentDetailIds.size() < 2 && !currentDetailIds.contains(topDetailFrom.getContent().get(0).getId())) {
                         allDetailList.add(topDetailFrom.getContent().get(0));
+                    }
                 }
 
             }
@@ -178,7 +186,7 @@ public class HomePageController {
 
             resultMap.put("task", tasks);
 
-            return new ControllerResult<Map<String, Object>>().setRet_code(0).setRet_values(resultMap).setMessage("成功");
+            return new ControllerResult<>().setRet_code(0).setRet_values(resultMap).setMessage("成功");
         } catch (Exception exp) {
             exp.printStackTrace();
             return new ControllerResult<String>().setRet_code(-1).setRet_values("失败啦").setMessage("失败");
