@@ -365,7 +365,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         steward.setServicedPeriod(steward.getServicedPeriod() + 1);
         stewardRepository.save(steward);
 
-        return "";
+        return charge.toString();
 
     }
 
