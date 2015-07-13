@@ -39,6 +39,9 @@
             top: 3px;
             left: 48%;
         }
+        #change-modal h2{
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -192,7 +195,7 @@
                   id="index-img-form" method="post"
                   enctype="multipart/form-data">
                 <fieldset>
-                    <h2>首页图片,长宽相等</h2>
+                    <h2>今日推荐的图片,长宽相等</h2>
                     <img src="" alt="" id="index-img" style="height: 100px;"/>
                     <input type="file" multiple accept="image/*" name="file"/>
 
@@ -203,11 +206,12 @@
                   id="banner-img-form" method="post"
                   enctype="multipart/form-data">
                 <fieldset>
-                    <h2>横条展示banner图片，banner图要宽一些。</h2>
+                    <h2>标签页展示banner图片，banner图要宽一些。</h2>
+                    <h2>不要传错了！！！！这个是banner图的提交！！！</h2>
                     <img src="" alt="" id="banner-img" style="height: 100px;"/>
-                    <input type="file" multiple accept="image/*" name="file"/>
+                    <input type="file" multiple accept="image/*" name="file" id="banner-file"/>
 
-                    <button class="am-btn am-btn-secondary" type="submit" id="banner-img-sub">提交</button>
+                    <button class="am-btn am-btn-secondary" type="submit" id="banner-img-sub" >提交</button>
                 </fieldset>
             </form>
             <div class="progress">
@@ -259,7 +263,7 @@
                 $('#index-img').attr('src', responseText.ret_values);
                 $('#index-img-index').attr('src', responseText.ret_values);
                 $('#pictureUrl').val(responseText.ret_values);
-                $('#index-img-sub').attr('disabled', false);
+                $('#banner-img-sub').attr('disabled', false);
 //                $('#change-modal').modal('toggle'),
                 percent.html('上传成功');
             }
@@ -300,6 +304,10 @@
 
         $('#banner-img-form').on('submit', function (e) {
             e.preventDefault(); // prevent native submit
+            if($('#banner-file').val().length==0){
+                alert('请提交banner文件');
+                return false;
+            }
             console.log('正在提交');
             $('#banner-img-sub').attr('disabled', 'disabled');
             $(this).ajaxSubmit({
