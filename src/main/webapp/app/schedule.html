@@ -180,52 +180,63 @@
   var ids = articleId.split('&');
   var userId = ids[0];
   articleId = ids[1];
-//  alert(userId);
-//  alert(articleId);
-  $.get(url + userId + '/' + articleId, function (data) {
-    article = data.ret_values;
-    $('#detail-img').attr('src', article.pictureUrl);
-    $('#details').html(article.detail);
-    $('#detail-title').html(article.title);
-//      $('#detail-count').html(article.clickCount);
-    $('title').html(article.title);
-//    console.log(article);
-//      console.log(window.document.body.offsetHeight);
-    $('#detail-count').html(article.clickAmount + '人关注');
-    var string = '';
-    if (article.type == 1) {
-      $('.schedule-type').show();
-      $('#schedule-value').html();
-      $.each(article.statementDtos, function (n, value) {
-        string += '<div style="margin-bottom: 10px;width: 100%;"><div style="width: 10%;text-align: left;height: 25px;" class="am-vertical-align">' +
-        '<img src="i/schedule/check.jpg" alt="" width="25" style="vertical-align: top" class="am-vertical-align-middle"/>' +
-        '</div>' +
-        '<div style="width: 60%" id="shedule-time">' + new Date(value.time).Format("yyyy-MM-dd hh:mm") + '</div>' +
-        '<div style="width: 30%"><span id="schedule-value">' + value.statement + '</span>mmol/L</div></div>';
-      });
-      $('#shedule-box').append(string);
-    }
-    if (article.complete == 1) {
-      var $finish = $('.finish-btn');
-      $finish.addClass('finish-btn-ed');
-      $finish.html('已完成');
-      $('.finish-divider').hide();
-      $('.foot-box').hide();
-    }
-    else{
-    }
-    $('.schedule-foot').show();
-    $('#schedule-img').attr('src', article.icon);
-    $('#schedule-img').show();
-  });
+  //  alert(userId);
+  //  alert(articleId);
+
+  if (userId == 'share') {
+    $.get(url + articleId, function (data) {
+      article = data.ret_values;
+      $('#detail-img').attr('src', article.pictureUrl);
+      $('#details').html(article.detail);
+      $('#detail-title').html(article.title);
+      $('title').html(article.title);
+      $('#detail-count').html(article.clickAmount + '人关注');
+    });
+  }
+
+  else {
+    $.get(url + userId + '/' + articleId, function (data) {
+      article = data.ret_values;
+      $('#detail-img').attr('src', article.pictureUrl);
+      $('#details').html(article.detail);
+      $('#detail-title').html(article.title);
+      $('title').html(article.title);
+      $('#detail-count').html(article.clickAmount + '人关注');
+      var string = '';
+      if (article.type == 1) {
+        $('.schedule-type').show();
+        $('#schedule-value').html();
+        $.each(article.statementDtos, function (n, value) {
+          string += '<div style="margin-bottom: 10px;width: 100%;"><div style="width: 10%;text-align: left;height: 25px;" class="am-vertical-align">' +
+          '<img src="i/schedule/check.jpg" alt="" width="25" style="vertical-align: top" class="am-vertical-align-middle"/>' +
+          '</div>' +
+          '<div style="width: 60%" id="shedule-time">' + new Date(value.time).Format("yyyy-MM-dd hh:mm") + '</div>' +
+          '<div style="width: 30%"><span id="schedule-value">' + value.statement + '</span>mmol/L</div></div>';
+        });
+        $('#shedule-box').append(string);
+      }
+      if (article.complete == 1) {
+        var $finish = $('.finish-btn');
+        $finish.addClass('finish-btn-ed');
+        $finish.html('已完成');
+        $('.finish-divider').hide();
+        $('.foot-box').hide();
+      }
+      else {
+      }
+      $('.schedule-foot').show();
+      $('#schedule-img').attr('src', article.icon);
+      $('#schedule-img').show();
+    });
+
+  }
 
   function finishTask() {
 //    noticePhone('2222');
-    console.log($('#getValue').val());
+//    console.log($('#getValue').val());
     $('#finish-btn').button('loading');
-    $('#finish-btn').attr('disabled',true);
-    if($('#getValue').val().length==0&&article.type == 1)
-    {
+    $('#finish-btn').attr('disabled', true);
+    if ($('#getValue').val().length == 0 && article.type == 1) {
       alert('请填写内容');
       return false;
     }
@@ -238,16 +249,16 @@
       success: function (response) {
         if (response.ret_code == 0) {
           activityList({'finish': '1'});
-          $('#getValue').attr('disabled',true);
+          $('#getValue').attr('disabled', true);
           var $finish = $('.finish-btn');
           $finish.addClass('finish-btn-ed');
           $finish.button('reset');
+          $finish.attr('disabled', true);
           $finish.html('已完成');
           $('.foot-box').hide();
           $('.finish-divider').hide();
         }
-        else
-        {
+        else {
           $('#finish-btn').button('reset');
           alert(response.ret_values);
         }
