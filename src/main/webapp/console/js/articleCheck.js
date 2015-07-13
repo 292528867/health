@@ -19,6 +19,7 @@ $.get(typeUrl, function (data) {
     if(localStorage.getItem('typeId')!=null) {
         var item = localStorage.getItem('typeId');
         $('select').find('option[value="'+item+'"]').attr('selected', true);
+        console.log(1);
         searchArticle(item);
     }
 });
@@ -86,7 +87,7 @@ function articleAdd() {
 var articles;
 var searchCount = 0;
 function searchArticle(id) {
-    if (id.length == 0||id==null||searchCount==1) {
+    if (id.length == 0||id==null) {
         return false;
     }
     $('#info-loading').html('信息(<i class="am-icon-refresh am-icon-spin"></i>正在读取！！！！！)');
