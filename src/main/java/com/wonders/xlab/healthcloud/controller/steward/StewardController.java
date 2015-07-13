@@ -22,12 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -77,8 +72,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @param packageId
      * @return
      */
-    @RequestMapping("getRecommendPackageDetail/{packageId}")
-    public Object getRecommendPackageDetail(@PathVariable Long packageId) {
+    @RequestMapping("getRecommendPackageDetail/{packageId}/{address}")
+    public Object getRecommendPackageDetail(@PathVariable Long packageId, @PathVariable String address) {
 
         RecommendPackage rp = this.recommendPackageRepository.findOne(packageId);
 
@@ -91,6 +86,21 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 serviceIds[i] = Long.parseLong(strIds[i]);
             // 查询服务，管家
             List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
+
+            boolean flag = true;
+            for (Services service : services) {
+                if (!address.contains("上海")) {
+                    if (service.getServiceArea().equals(Services.ServiceArea.上海)) {
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+            if (flag == false) {
+                rp.setMessage("非常抱歉，本服务目前只在上海开通，请选择其他服务");
+                rp.setChoice(flag);
+            }
+
             Set<Services> servicesSet = new HashSet<>();
             servicesSet.addAll(services);
             rp.setServices(servicesSet);
@@ -110,22 +120,33 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      *
      * @return
      */
-    @RequestMapping("listCustomPackage")
-    public Object listCustomPackage() {
+    @RequestMapping("listCustomPackage/{address}")
+    public Object listCustomPackage(@PathVariable String address) {
 
         //强制置顶
         List<Services> orderServices = this.servicesRepository.findByIsForceOrderByUsedNumberAsc(true);
 
         //去除强制置顶以后在用算法
         List<Services> services = this.servicesRepository.findByIsForceOrderByUsedNumberAsc(false);
+        List<Services> resultServices = new ArrayList<>();
+        for (Services service : services) {
+            resultServices.add(service);
+        }
+        for (Services service : services) {
+            if (!address.contains("上海")) {
+                if (service.getServiceArea().equals(Services.ServiceArea.上海)) {
+                    resultServices.remove(service);
+                }
+            }
+        }
 
-        int servicesSize = services.size();
+        int servicesSize = resultServices.size();
         //单数从使用次数高到低排列
         for (int j = servicesSize - 1, i = 0; j >= servicesSize / 2; j--, i++) {
 
-            orderServices.add(services.get(j));
+            orderServices.add(resultServices.get(j));
 
-            orderServices.add(services.get(i));
+            orderServices.add(resultServices.get(i));
         }
 
         List<Map<String, Object>> arithmeticList = new ArrayList<>();
@@ -314,7 +335,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         //服务被使用次数＋＋
         for (Services service : services) {
-            service.setUsedNumber(service.getUsedNumber()+1);
+            service.setUsedNumber(service.getUsedNumber() + 1);
             servicesRepository.save(service);
         }
         //管家服务次数＋＋

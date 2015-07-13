@@ -25,7 +25,7 @@ public class Services extends AbstractPersistable<Long> {
     /**
      * 服务的区域(上海，全国)
      */
-    private enum ServiceArea{
+    public enum ServiceArea{
         全国,上海
     }
 
