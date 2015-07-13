@@ -15,8 +15,8 @@ public class HcpackageService {
      * @param createdDate 健康包创建时间
      * @return
      */
-    public static int calculateClickCount(long clickCount, Date createdDate) {
+    public static int calculateClickCount(int coefficient, long clickCount, Date createdDate) {
         int dateCount = DateUtils.calculatePeiorDaysOfTwoDate(new Date(), null == createdDate ? new Date() : createdDate);
-        return (int)(clickCount + 40 * Math.pow((1 + 0.02), dateCount));
+        return (int)(clickCount + coefficient * Math.pow((1 + 0.02), dateCount));
     }
 }

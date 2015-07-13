@@ -90,7 +90,9 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             HealthCategory healthCategory = healthCategoryRepository.findOne(healthCategoryId);
 
             HcPackage hcPackage = new HcPackage();
+            int value = (int) (10 + Math.random() * 40);
             hcPackage.setHealthCategory(healthCategory);
+            hcPackage.setCoefficient(value);
             BeanUtils.copyProperties(hcPackageDto, hcPackage, "healthCategoryId");
             hcPackage.setIcon(hcPackageDto.getIcon());
             hcPackageRepository.save(hcPackage);
