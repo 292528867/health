@@ -172,7 +172,7 @@
     margin: 20px auto;
   }
 
-</style><body class=detail-body><div id=detail-title></div><div><img src=i/schedule/eye.jpg width=25 style="margin-right: 0px" class=am-text-middle> <span id=detail-count class=am-text-middle></span></div><img id=schedule-img width=100%><div id=details></div><div class=schedule-foot style="display: none"><div class=schedule-type><div class="schedule-content am-cf" id=shedule-box></div><hr data-am-widget=divider class="am-divider am-divider-dashed"><div class=foot-title>请填写您的血糖值</div><div class=foot-form><div class=foot-input><input type=number id=getValue placeholder=如:7.5 maxlength=4> <label class=foot-input-span for=getValue></label></div><label class=foot-input-text for=getValue><span style="margin-left: 135px;margin-top: 12px;display: block">mmol/L</span></label></div></div><button class=finish-btn type=button id=finish-btn data-am-loading="{spinner: 'circle-o-notch', loadingText: '完成中..', resetText: '确定已完成'}" onclick=finishTask()>确定已完成</button><div class=finish-divider><hr data-am-widget=divider class="am-divider am-divider-default btn-divider"><div class=finish-move><img src=i/schedule/man.png>动起来！</div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
+</style><body class=detail-body><div id=detail-title></div><div><img src=i/schedule/eye.jpg width=25 style="margin-right: 0px" class=am-text-middle> <span id=detail-count class=am-text-middle></span></div><img id=schedule-img width=100%><div id=details></div><div class=schedule-foot style="display: none"><div class=schedule-type><div class="schedule-content am-cf" id=shedule-box></div><hr data-am-widget=divider class="am-divider am-divider-dashed"><div class="foot-title foot-box">请填写您的血糖值</div><div class="foot-form foot-box"><div class=foot-input><input type=number id=getValue placeholder=如:7.5 maxlength=4 onkeyup="if(this.value.length>4){this.value=this.value.substr(0,4)};this.value=this.value.replace(/[^\-?\d.]/g,'');"> <label class=foot-input-span for=getValue></label></div><label class=foot-input-text for=getValue><span style="margin-left: 135px;margin-top: 12px;display: block">mmol/L</span></label></div></div><button class=finish-btn type=button id=finish-btn data-am-loading="{spinner: 'circle-o-notch', loadingText: '完成中..', resetText: '确定已完成'}" onclick=finishTask()>确定已完成</button><div class=finish-divider><hr data-am-widget=divider class="am-divider am-divider-default btn-divider"><div class=finish-move><img src=i/schedule/man.png>动起来！</div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
   var article = localStorage.getItem('article');
   var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
   var url = commonUrl + 'task/retrievePackageDetail/';
@@ -209,6 +209,10 @@
       var $finish = $('.finish-btn');
       $finish.addClass('finish-btn-ed');
       $finish.html('已完成');
+      $('.finish-divider').hide();
+      $('.foot-box').hide();
+    }
+    else{
     }
     $('.schedule-foot').show();
     $('#schedule-img').attr('src', article.icon);
@@ -219,12 +223,17 @@
 //    noticePhone('2222');
     console.log($('#getValue').val());
     $('#finish-btn').button('loading');
+    if($('#getValue').val().length==0)
+    {
+      alert('请填写内容');
+      return false;
+    }
     $.ajax({
       url: commonUrl + 'task/confirmDetail/' + userId + '/' + articleId + '/',
       type: "POST",
       data: {'content': $('#getValue').val()},
       dataType: "json",
-      headers: {"Accept": "application/json", "Content-Type": "application/json; charset=UTF-8"},
+//      headers: {"Accept": "application/json", "Content-Type": "application/json; charset=UTF-8"},
       success: function (response) {
         if (response.ret_code == 0) {
           activityList({'finish': '1'});
@@ -232,7 +241,8 @@
           var $finish = $('.finish-btn');
           $finish.addClass('finish-btn-ed');
           $finish.html('已完成');
-          $('.finish-divider').remove();
+          $('.foot-box').hide();
+          $('.finish-divider').hide();
         }
         else
           alert(response.ret_values);
