@@ -97,7 +97,7 @@
                 <!--<form action="http://10.10.10.231:8080/course/saveCourse" class="am-form" id="form1" method="post"-->
                 <form action="http://101.231.124.8:45677/xlab-reindeerjob-rest-srv/course/saveCourse" class="am-form"
                       id="form1" method="post"
-                      enctype="multipart/form-data" ng-app="" ng-controller="teacherController">
+                      enctype="multipart/form-data" >
                     <fieldset>
                         <div class="am-form-group">
                             <label for="title">文章标题：</label>
@@ -141,6 +141,7 @@
                         <div class="am-form-group">
                             <label for="pictureUrl">可直接填写图片地址（如已本地上传请勿修改）：</label>
                             <input type="text" id="pictureUrl" placeholder=""
+                                   value="http://7xk3mz.com2.z0.glb.qiniucdn.com/healthinfo-icon-1436267438518"
                                    required name="pictureUrl"/>
                         </div>
                         <br/>
@@ -152,6 +153,7 @@
                         <div class="am-form-group">
                             <label for="pictureUrl2">可直接填写banner图片地址（如已本地上传请勿修改）：</label>
                             <input type="text" id="pictureUrl2" placeholder=""
+                                   value="http://7xk3mz.com2.z0.glb.qiniucdn.com/healthinfo-icon-1436424284354"
                                    required name="pictureUrl2"/>
                         </div>
                         <br/>
@@ -343,6 +345,7 @@
      ue = UE.getEditor('htmlInfo');
      ue.setContent(ue.getContent()+'<p> <span style="font-size: 12px; font-family:" 微软雅黑, Microsoft YaHei"; color: rgb(102, 102, 102);">文章整理自网络，版权归原作者所有。</span></p >');
  }
+
 </script>
 </body>
 </html>
