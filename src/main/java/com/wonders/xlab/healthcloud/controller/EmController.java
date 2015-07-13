@@ -159,6 +159,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         emMessages = emMessagesRepository.save(emMessages);
 
+        //从缓存中查询该用户是否有正在提问的问题
         if(StringUtils.isNotEmpty(orderCache.getFromCache(user.getId().toString()))){
             //缓存中存在开放问题，此次发送消息不是新问题，直接发送
             String respondentKey = user.getId() + "_RESPONDENT_TYPE";
@@ -355,6 +356,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      */
     private  boolean joinOrDeleteDoctorToGroup(String groupId,String doctorName,String type) {
         HttpHeaders headers = new HttpHeaders();
+        //TODO 从缓存中获取环信token
         headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
         headers.setContentType(MediaType.TEXT_PLAIN);
         try {
