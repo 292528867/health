@@ -11,15 +11,18 @@ $.get(typeUrl, function (data) {
     //  location.reload();
     var datas = '';
     $.each(data.ret_values, function (n, value) {
-        datas += "<option value='" + value.id + "'>" + value.title + "</option>";
+        datas += "<option value='" + value.id + "'>" + value.title +codefans_net_CC2PY(value.title)+allCaps(codefans_net_CC2PY(value.title)) + "</option>";
 
     });
     $("#type").append(datas);
     $("#type-select").append(datas);
+    if(localStorage.getItem('typeId')!=null) {
+        var item = localStorage.getItem('typeId');
+        $('select').find('option[value="'+item+'"]').attr('selected', true);
+        console.log(1);
+        //searchArticle(item);
+    }
 });
-if(localStorage.getItem('typeId')!=null) {
-    searchArticle(localStorage.getItem('typeId'));
-}
 
 
 function openImgUpload() {
@@ -82,10 +85,12 @@ function articleAdd() {
 }
 
 var articles;
+var searchCount = 0;
 function searchArticle(id) {
     if (id.length == 0||id==null) {
         return false;
     }
+    $('#info-loading').html('信息(<i class="am-icon-refresh am-icon-spin"></i>正在读取！！！！！)');
     $('#allDatas').html('');
     $('#type').val(id);
     localStorage.setItem('typeId',id);
@@ -93,6 +98,7 @@ function searchArticle(id) {
     //$("#type").find("option[text=id]").attr("selected",true);
     $.get(articleSearchUrl + id, function (data) {
         //  location.reload();
+        $('#allDatas').html('');
         articles = data.ret_values;
         console.log(data);
         var datas = '';
@@ -118,18 +124,21 @@ function searchArticle(id) {
         //customer = null;
         $('#change-info-box').hide();
         $('#info-table').show();
-
-
+        $('#info-loading').html('信息读取成功！一共'+articles.length+'条数据');
+        searchCount=1;
     });
 
 }
 function changeArticle(id) {
     var article = articles[id];
     data = article;
+    $('#type').find('option').attr('selected',false);
+    $('#type').val(localStorage.getItem('typeId'));
+    $('#type').find('option[value="'+localStorage.getItem('typeId')+'"]').attr('selected', true);
+    console.log(localStorage.getItem('typeId'));
     $('#id').val(data.id);
     $('#title').val(data.title);
     $('#desc').val(data.description);
-    $('#type').val($('#type-select').val()||localStorage.getItem('typeId'));
     $('#index-img-index').attr('src',data.pictureUrl);
     UE.getEditor('htmlInfo').setContent(data.htmlInfo);
     $('#index-img').attr('src',data.pictureUrl);

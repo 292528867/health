@@ -58,6 +58,20 @@ public class RecommendPackage extends AbstractPersistable<Long> {
      */
     private String picUrl;
 
+    /**
+     * 是否可选
+     * @return
+     */
+    @Transient
+    private boolean isChoice = true;
+
+    /**
+     * 提示信息
+     * @return
+     */
+    @Transient
+    private String message;
+
 
     public Steward.Rank getRank() {
         return rank;
@@ -122,5 +136,21 @@ public class RecommendPackage extends AbstractPersistable<Long> {
 
     public void setPicUrl(String picUrl) {
         this.picUrl = picUrl;
+    }
+
+    public boolean ischoice() {
+        return isChoice;
+    }
+
+    public void setChoice(boolean choice) {
+        this.isChoice = choice;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

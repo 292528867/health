@@ -22,12 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -65,10 +60,38 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      *
      * @return
      */
-    @RequestMapping(value = "getAllRecommendPackage", method = RequestMethod.GET)
-    public Object getAllRecommendPackage() {
+    @RequestMapping(value = "getAllRecommendPackage/{address}", method = RequestMethod.GET)
+    public Object getAllRecommendPackage(@PathVariable String address) {
 
-        return new ControllerResult<List<RecommendPackage>>().setRet_code(0).setRet_values(this.recommendPackageRepository.findAll()).setMessage("成功！");
+        List<RecommendPackage> prList = recommendPackageRepository.findAll();
+
+        boolean flag = true;
+        for (RecommendPackage pr : prList) {
+            if (!StringUtils.isEmpty(pr.getServiceIds())) {
+                String[] strIds = pr.getServiceIds().split(",");
+
+                Long[] serviceIds = new Long[strIds.length];
+                for (int i = 0; i < strIds.length; i++)
+                    serviceIds[i] = Long.parseLong(strIds[i]);
+                // 查询服务，管家
+                List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
+
+                for (Services service : services) {
+                    if (!address.contains("上海")) {
+                        if (service.getServiceArea().equals(Services.ServiceArea.上海)) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                }
+                if (flag == false) {
+                    pr.setMessage("非常抱歉，本服务目前只在上海开通，请选择其他服务");
+                    pr.setChoice(flag);
+                }
+            }
+        }
+
+        return new ControllerResult<List<RecommendPackage>>().setRet_code(0).setRet_values(prList).setMessage("成功！");
     }
 
     /**
@@ -91,11 +114,13 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 serviceIds[i] = Long.parseLong(strIds[i]);
             // 查询服务，管家
             List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
+
             Set<Services> servicesSet = new HashSet<>();
             servicesSet.addAll(services);
             rp.setServices(servicesSet);
 
             List<Steward> stewards = this.stewardRepository.findByRank(rp.getRank());
+            System.out.println();
             int idx = (int) (System.currentTimeMillis() % stewards.size());
 
             rp.setSteward(stewards.get(idx));
@@ -110,22 +135,33 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      *
      * @return
      */
-    @RequestMapping("listCustomPackage")
-    public Object listCustomPackage() {
+    @RequestMapping("listCustomPackage/{address}/{location}")
+    public Object listCustomPackage(@PathVariable String address, @PathVariable String location) {
 
         //强制置顶
         List<Services> orderServices = this.servicesRepository.findByIsForceOrderByUsedNumberAsc(true);
 
         //去除强制置顶以后在用算法
         List<Services> services = this.servicesRepository.findByIsForceOrderByUsedNumberAsc(false);
+        List<Services> resultServices = new ArrayList<>();
+        for (Services service : services) {
+            resultServices.add(service);
+        }
+        for (Services service : services) {
+            if (!address.contains("上海")) {
+                if (service.getServiceArea().equals(Services.ServiceArea.上海)) {
+                    resultServices.remove(service);
+                }
+            }
+        }
 
-        int servicesSize = services.size();
-        //单数从使用次数高到低排列
+        int servicesSize = resultServices.size();
+        //服务单数从使用次数高到低排列
         for (int j = servicesSize - 1, i = 0; j >= servicesSize / 2; j--, i++) {
 
-            orderServices.add(services.get(j));
+            orderServices.add(resultServices.get(j));
 
-            orderServices.add(services.get(i));
+            orderServices.add(resultServices.get(i));
         }
 
         List<Map<String, Object>> arithmeticList = new ArrayList<>();
@@ -138,7 +174,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         Map<String, Object> level5Map = new HashMap<>();
 
         level1Map.put("range", "0,4");
-        level1Map.put("money", "0");
+        level1Map.put("money", "0.01");
 
         level2Map.put("range", "5,10");
         level2Map.put("money", "28");
@@ -158,7 +194,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         arithmeticList.add(level4Map);
         arithmeticList.add(level5Map);
 
-        List<Steward> stewards = this.stewardRepository.findAll();
+        List<Steward> stewards = this.stewardRepository.findByOrderByRankAsc();
+
         Map<String, Object> map = new HashMap<>();
         map.put("services", orderServices);
         map.put("steward", stewards);
@@ -222,15 +259,25 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             Iterator it = set.iterator();
             int i = 0;
             while (it.hasNext() && (i < 2)) {
+                Map<String, Object> nameMap = new HashMap();
                 String key = it.next().toString();
-                steward.getStarService().put(key, countServiceNumMap.get(key));
+                nameMap.put("name", key);
+                nameMap.put("count", countServiceNumMap.get(key));
+                steward.getStarService().add(nameMap);
                 i++;
             }
         } else {
             if (null != steward) {
                 //获取两条明星服务
-                steward.getStarService().put("定期关爱", 128);
-                steward.getStarService().put("健康跟踪", 166);
+                Map<String, Object> firstMap = new HashMap();
+                Map<String, Object> secondMap = new HashMap();
+                firstMap.put("name", "定期关爱");
+                firstMap.put("count", 128);
+
+                secondMap.put("name", "健康跟踪");
+                secondMap.put("count", 166);
+                steward.getStarService().add(firstMap);
+                steward.getStarService().add(secondMap);
             } else {
                 return new ControllerResult<Steward>().setRet_code(-1).setRet_values(steward).setMessage("管家不存在！");
             }
@@ -247,8 +294,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @param result
      * @return
      */
-    @RequestMapping("payServices/{userId}")
-    public String payServices(@PathVariable Long userId, @RequestBody @Valid ServiceDto serviceDto, BindingResult result) throws RuntimeException {
+    @RequestMapping("payServices/{userId}/{payWay}")
+    public String payServices(@PathVariable Long userId, @PathVariable String payWay, @RequestBody @Valid ServiceDto serviceDto, BindingResult result) throws RuntimeException {
 
         if (result.hasErrors()) {
 
@@ -262,7 +309,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         //积分
         int integration = 0;
         //金额
-        int amount = 0;
+        double amount = 0.00;
 
         String[] strIds = serviceDto.getServiceIds().split(",");
         Long[] serviceIds = new Long[strIds.length];
@@ -284,12 +331,12 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             // 获取推荐包，管家
             RecommendPackage rp = recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
 
-            amount = Integer.parseInt(rp.getPrice());
+            amount = Double.parseDouble(rp.getPrice());
 
         } else {
             // 判断自定义积分换算金额
             if (integration >= 0 && integration <= 4) {
-                amount = 0;
+                amount = 0.01;
             } else if (integration >= 5 && integration <= 10) {
                 amount = 28;
             } else if (integration >= 11 && integration <= 17) {
@@ -299,14 +346,14 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             }
         }
 
-        PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", String.valueOf(amount));
+        PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", amount);
 
-//        Charge charge = pingppService.payOrder(pingDto);
+        Charge charge = pingppService.payOrder(pingDto, payWay);
 
         String tradeNo = "u" + userId + new Date().getTime();
 
         //保存订单详情
-        StewardOrder stewardOrder = new StewardOrder("", tradeNo, amount);
+        StewardOrder stewardOrder = new StewardOrder(charge.getId(), tradeNo, amount);
         stewardOrder.setSteward(steward);
         stewardOrder.setServices(new HashSet<>(services));
         stewardOrder.setUser(user);
@@ -314,14 +361,14 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         //服务被使用次数＋＋
         for (Services service : services) {
-            service.setUsedNumber(service.getUsedNumber()+1);
+            service.setUsedNumber(service.getUsedNumber() + 1);
             servicesRepository.save(service);
         }
         //管家服务次数＋＋
         steward.setServicedPeriod(steward.getServicedPeriod() + 1);
         stewardRepository.save(steward);
 
-        return "";
+        return charge.toString();
 
     }
 
@@ -389,17 +436,16 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     @RequestMapping(value = "getOrdersDetail/{userId}/{chargeId}", method = RequestMethod.GET)
     public ControllerResult getOrdersDetail(@PathVariable Long userId, @PathVariable String chargeId) throws APIException, AuthenticationException, InvalidRequestException, APIConnectionException {
 
-        List<StewardOrder> stewardOrders = stewardOrderRepository.findAllByUser(userId);
+        StewardOrder stewardOrder = stewardOrderRepository.findAllByChargeId(chargeId);
 
-        if (!stewardOrders.isEmpty()) {
+        if (null != stewardOrder){
 
             //更新付款状态
             Charge charge = pingppService.queryCharge(chargeId);
 
-            StewardOrder stewardOrder = stewardOrders.get(0);
-
             //判断支付状态
             if (charge.getPaid()) {
+
                 stewardOrder.setOrderStatus(StewardOrder.OrderStatus.支付成功);
             } else {
                 stewardOrder.setOrderStatus(StewardOrder.OrderStatus.未支付);
@@ -425,7 +471,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
             return new ControllerResult<StewardOrder>().setRet_code(0).setRet_values(stewardOrder).setMessage("获取订单成功！");
 
-        } else {
+        }else{
 
             return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("获取订单失败！");
         }

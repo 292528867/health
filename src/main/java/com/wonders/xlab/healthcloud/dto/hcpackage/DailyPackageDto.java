@@ -16,14 +16,14 @@ public class DailyPackageDto {
     /** 任务名称 */
     private String taskName;
 
-    /** 是否完成 0 未完成 1 完成 */
-    private int isCompleted;
+//    /** 是否完成 0 未完成 1 完成 */
+//    private int isCompleted;
 
     /** 点击次数 */
     private int clickAmount;
 
-    /** 是显示当前的数据 0 否 1 是 */
-    private int current;
+//    /** 是显示当前的数据 0 否 1 是 */
+//    private int current;
 
     public DailyPackageDto() {
     }
@@ -65,13 +65,6 @@ public class DailyPackageDto {
         this.taskName = taskName;
     }
 
-    public int getIsCompleted() {
-        return isCompleted;
-    }
-
-    public void setIsCompleted(int isCompleted) {
-        this.isCompleted = isCompleted;
-    }
 
     public int getClickAmount() {
         return clickAmount;
@@ -81,11 +74,4 @@ public class DailyPackageDto {
         this.clickAmount = clickAmount;
     }
 
-    public int getCurrent() {
-        return current;
-    }
-
-    public void setCurrent(int current) {
-        this.current = current;
-    }
 }

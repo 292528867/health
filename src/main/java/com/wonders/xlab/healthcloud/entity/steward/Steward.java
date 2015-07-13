@@ -6,8 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Jeffrey on 15/7/7.
@@ -23,12 +22,12 @@ public class Steward extends BaseInfo<Long> {
     private Rank rank;
 
     public enum Rank {
-//        S, A, B, C
-        钻石级管家,金牌级管家,银牌级管家,铜牌级管家
+        //        S, A, B, C
+        钻石级管家, 金牌级管家, 银牌级管家, 铜牌级管家
     }
 
     /**
-     *  管家分数
+     * 管家分数
      */
     private int stewardIntegration;
 
@@ -54,12 +53,14 @@ public class Steward extends BaseInfo<Long> {
     private String color;
     /**
      * levelUrl
+     *
      * @return
      */
     private String levelUrl;
 
     /**
      * 微信号
+     *
      * @return
      */
     private String weChat;
@@ -73,7 +74,7 @@ public class Steward extends BaseInfo<Long> {
      * 明星服务
      */
     @Transient
-    private Map<String,Object> starService = new HashMap<>();
+    private List<Map<String, Object>> starService = new ArrayList();
 
 
     public Rank getRank() {
@@ -140,11 +141,11 @@ public class Steward extends BaseInfo<Long> {
         this.weChat = weChat;
     }
 
-    public Map<String, Object> getStarService() {
+    public List<Map<String, Object>> getStarService() {
         return starService;
     }
 
-    public void setStarService(Map<String, Object> starService) {
+    public void setStarService(List<Map<String, Object>> starService) {
         this.starService = starService;
     }
 

@@ -1,6 +1,10 @@
 package com.wonders.xlab.healthcloud.dto.hcpackage;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
+import com.wonders.xlab.healthcloud.service.hcpackage.HcpackageService;
+
+import java.util.Date;
 
 /**
  * Created by mars on 15/7/8.
@@ -85,6 +89,12 @@ public class UserPackageOrderDto {
      */
     private String loops;
 
+    @JsonIgnore
+    private Date createdDate;
+
+    @JsonIgnore
+    private int coefficient;
+
     private HealthCategory healthCategory;
 
     /**
@@ -93,6 +103,8 @@ public class UserPackageOrderDto {
     private int cycleLimit;
 
     private Boolean isJoin;
+
+    private Integer countTask;
 
     public String getTitle() {
         return title;
@@ -159,7 +171,7 @@ public class UserPackageOrderDto {
     }
 
     public int getClickAmount() {
-        return clickAmount;
+        return HcpackageService.calculateClickCount(coefficient, clickAmount, createdDate);
     }
 
     public void setClickAmount(int clickAmount) {
@@ -244,5 +256,21 @@ public class UserPackageOrderDto {
 
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
+    }
+
+    public Integer getCountTask() {
+        return countTask;
+    }
+
+    public void setCountTask(Integer countTask) {
+        this.countTask = countTask;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setCoefficient(int coefficient) {
+        this.coefficient = coefficient;
     }
 }

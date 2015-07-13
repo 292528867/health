@@ -12,7 +12,7 @@ import com.wonders.xlab.healthcloud.entity.hcpackage.Classification;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepository;
-import com.wonders.xlab.healthcloud.repository.hcpackage.ClassificationResponsitory;
+import com.wonders.xlab.healthcloud.repository.hcpackage.ClassificationRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderRepository;
@@ -50,7 +50,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     private UserPackageOrderRepository userPackageOrderRepository;
 
     @Autowired
-    private ClassificationResponsitory classificationResponsitory;
+    private ClassificationRepository classificationRepository;
 
     @Override
     protected MyRepository<HcPackage, Long> getRepository() {
@@ -90,7 +90,9 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             HealthCategory healthCategory = healthCategoryRepository.findOne(healthCategoryId);
 
             HcPackage hcPackage = new HcPackage();
+            int value = (int) (10 + Math.random() * 40);
             hcPackage.setHealthCategory(healthCategory);
+            hcPackage.setCoefficient(value);
             BeanUtils.copyProperties(hcPackageDto, hcPackage, "healthCategoryId");
             hcPackage.setIcon(hcPackageDto.getIcon());
             hcPackageRepository.save(hcPackage);
@@ -171,16 +173,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     @RequestMapping(value = "listPackageInfo", method = RequestMethod.GET)
     public Object listPackageInfo() {
         // 查询所有分类（二大类）
-        List<Classification> classifications = classificationResponsitory.findAll();
-        List<ThirdPackageDto> thirdPackageDtos = new ArrayList<>();
-
-        for (Classification classification : classifications) {
-            thirdPackageDtos.add(new ThirdPackageDto(
-                    classification.getId(),
-                    classification.getTitle(),
-                    classification.getIcon()
-            ));
-        }
+        List<ThirdPackageDto> thirdPackageDtos = classificationRepository.findOrderByCountPackage();
         return new ControllerResult<List<ThirdPackageDto>>().setRet_code(0).setRet_values(thirdPackageDtos).setMessage("成功");
     }
 
@@ -199,8 +192,10 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
 
         for (HcPackage hcPackage : hcPackages) {
             UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
+            Integer countTask = null == hcPackage.getHcPackageDetails() ? 0 : hcPackage.getHcPackageDetails().size();
             BeanUtils.copyProperties(hcPackage, userPackageOrderDto);
             userPackageOrderDto.setId(hcPackage.getId());
+            userPackageOrderDto.setCountTask(countTask > 0 ? countTask : 0);
             userPackageOrderDto.setIsJoin(false);
 
             if (orders != null && orders.size() != 0) {
@@ -215,6 +210,20 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             userPackageOrderDtos.add(userPackageOrderDto);
         }
 
+        return new ControllerResult<List<UserPackageOrderDto>>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("成功");
+    }
+
+    @RequestMapping("homePackages")
+    public Object homePackages() {
+        List<HcPackage> hcPackages = hcPackageRepository.findByIdLessThan(5l);
+        List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
+        for (HcPackage hcPackage : hcPackages) {
+            UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
+            BeanUtils.copyProperties(hcPackage, userPackageOrderDto);
+            userPackageOrderDto.setId(hcPackage.getId());
+            userPackageOrderDto.setIsJoin(false);
+            userPackageOrderDtos.add(userPackageOrderDto);
+        }
         return new ControllerResult<List<UserPackageOrderDto>>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("成功");
     }
 

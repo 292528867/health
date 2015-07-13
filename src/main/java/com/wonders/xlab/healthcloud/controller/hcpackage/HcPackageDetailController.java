@@ -18,6 +18,7 @@ import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageDetailStatem
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderRepository;
 import com.wonders.xlab.healthcloud.utils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -114,11 +115,11 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         if (detail.isNeedSupplemented())
             dto.setType(1);
         if (detail.getIcon() == null)
-            dto.setIconType(0);
+            dto.setPictureType(0);
         if (detail.getIcon().endsWith("mp4")) {
-            dto.setIconType(2);
+            dto.setPictureType(2);
         } else {
-            dto.setIconType(1);
+            dto.setPictureType(1);
         }
 
         if (order != null && order.getHcPackageDetailIds() != null) {
@@ -143,7 +144,7 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
      * @param content
      * @return
      */
-    @RequestMapping(value = "confirmDetail/{userId}/{detailId}",method = RequestMethod.POST)
+    @RequestMapping(value = "confirmDetail/{userId}/{detailId}", method = RequestMethod.POST)
     public Object confirmDetail(@PathVariable Long userId, @PathVariable Long detailId, @RequestParam(required = false) String content) {
 
         User user = this.userRepository.findOne(userId);
@@ -167,21 +168,54 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         }
         // 已经有过计划完成
         if (order.getHcPackageDetailIds() != null) {
-            String[] detailIds = order.getHcPackageDetailIds().split(",");
+
+            String[] detailIds = StringUtils.split(order.getHcPackageDetailIds(), ",");
             List<Long> longDetailIds = new ArrayList<>();
-            for (int i = 0; i < detailIds.length; i++)
-                longDetailIds.add(Long.parseLong(detailIds[i]));
-            longDetailIds.add(detailId);
+            if (detailIds != null) {
+                for (int i = 0; i < detailIds.length; i++) {
+                    longDetailIds.add(NumberUtils.toLong(detailIds[i]));
+                }
+                longDetailIds.add(hpDetail.getId());
+            }
             order.setHcPackageDetailIds(StringUtils.join(longDetailIds, ","));
         } else {
             Long[] longDetailIds = new Long[1];
             longDetailIds[0] = detailId;
-            System.out.println(StringUtils.join(longDetailIds, ","));
             order.setHcPackageDetailIds(StringUtils.join(longDetailIds, ","));
         }
         this.userPackageOrderRepository.save(order);
         return new ControllerResult<String>().setRet_code(0).setRet_values("添加成功").setMessage("成功");
 
+    }
+
+    /**
+     * 分享任务
+     * @param detailId
+     * @return
+     */
+    @RequestMapping(value = "sharePackageDetail/{detailId}", method = RequestMethod.GET)
+    public Object sharePackageDetail(@PathVariable long detailId) {
+
+        HcPackageDetail detail = hcPackageDetailRepository.findOne(detailId);
+
+        DayPackageDetailDto dto = new DayPackageDetailDto(
+                detail.getId(),
+                detail.getTaskName(),
+                detail.getClickAmount(),
+                detail.getDetail(),
+                detail.getIcon()
+        );
+        if (detail.isNeedSupplemented())
+            dto.setType(1);
+        if (detail.getIcon() == null)
+            dto.setPictureType(0);
+        if (detail.getIcon().endsWith("mp4")) {
+            dto.setPictureType(2);
+        } else {
+            dto.setPictureType(1);
+        }
+
+        return new ControllerResult<DayPackageDetailDto>().setRet_code(0).setRet_values(dto).setMessage("成功");
     }
 
 

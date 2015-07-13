@@ -26,7 +26,7 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
     /**
      * 订单金额
      */
-    private Integer money;
+    private Double money;
 
     /**
      * 付款生成时间
@@ -46,7 +46,7 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
     /**
      * 多个用户服务对应一个用户
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     /**
@@ -54,6 +54,11 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
      */
     @ManyToOne
     private Steward steward;
+
+    /**
+     * 支付方式
+     */
+    private String payWay;
 
     /**
      * 服务 一个用户服务对应多个管家服务
@@ -73,7 +78,7 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
     public StewardOrder() {
     }
 
-    public StewardOrder(String chargeId, String tradeNo, Integer money) {
+    public StewardOrder(String chargeId, String tradeNo, Double money) {
         this.chargeId = chargeId;
         this.tradeNo = tradeNo;
         this.money = money;
@@ -95,11 +100,11 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
         this.chargeId = chargeId;
     }
 
-    public Integer getMoney() {
+    public Double getMoney() {
         return money;
     }
 
-    public void setMoney(Integer money) {
+    public void setMoney(Double money) {
         this.money = money;
     }
 
@@ -149,5 +154,13 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
 
     public void setServicedPeriodStatus(Map<String, Object> servicedPeriodStatus) {
         this.servicedPeriodStatus = servicedPeriodStatus;
+    }
+
+    public String getPayWay() {
+        return payWay;
+    }
+
+    public void setPayWay(String payWay) {
+        this.payWay = payWay;
     }
 }
