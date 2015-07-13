@@ -1,7 +1,6 @@
 /**
  * Created by wade on 15/7/13.
  */
-
 var article = localStorage.getItem('article');
 var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
 var url = commonUrl + 'task/retrievePackageDetail/';
@@ -10,8 +9,6 @@ var articleId = window.location.search.substring(1);
 var ids = articleId.split('&');
 var userId = ids[0];
 articleId = ids[1];
-//  alert(userId);
-//  alert(articleId);
 
 if (userId == 'share') {
   $.get(shareUrl + articleId, function (data) {
@@ -70,7 +67,8 @@ function finishTask() {
   if ($('#getValue').val().length == 0 && article.type == 1) {
     $('#finish-btn').button('reset');
     $('#finish-btn').attr('disabled', false);
-    alert('请填写内容吧！');
+    //alert('请填写内容吧！');
+    $('#error-alert').modal('toggle');
 
     return false;
   }

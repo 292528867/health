@@ -90,16 +90,16 @@
 }
 @media only screen and (max-width: 321px) {
   .banner-today-title-bg {
-    font-size: 1.6rem!important;
+    font-size: 1.6rem !important;
   }
   .article-description {
-    font-size: 1.2rem!important;
+    font-size: 1.2rem !important;
   }
   .article-title {
-    font-size: 1.5rem!important;
+    font-size: 1.5rem !important;
   }
   .banner-today-title {
-    max-width: 212px!important;
+    max-width: 212px !important;
   }
 }
 .today-body {
@@ -199,4 +199,32 @@ body,
 html {
   font-family: "Microsoft YaHei", "Segoe UI", "Lucida Grande", Helvetica, Arial, "Microsoft YaHei", FreeSans, Arimo, "Droid Sans", "wenquanyi micro hei", "Hiragino Sans GB", "Hiragino Sans GB W3", FontAwesome, sans-serif !important;
   position: relative;
+}
+#error-alert {
+  background: #f5f6f7;
+  border-radius: 10px;
+  font-size: 1.8rem;
+}
+#error-alert .am-modal-dialog {
+  background: #f5f6f7 !important;
+  border-radius: 10px;
+  text-align: center;
+}
+#error-alert .am-modal-bd {
+  color: #222222;
+  border: none;
+}
+#error-alert .am-modal-btn {
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border: 1px #999999 solid;
+  margin-left: auto!important;
+  margin-right: auto!important;
+  border-radius: 20px;
+  width: 80px;
+  max-width: 100%;
+  display: block!important;
+  color: #999999;
+  margin-bottom: 20px;
 }
