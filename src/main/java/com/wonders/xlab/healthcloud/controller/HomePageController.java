@@ -14,6 +14,8 @@ import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailReposito
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageCompleteRepository;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -57,6 +59,10 @@ public class HomePageController {
                                Pageable pageable) {
         try {
             Map<String, Object> resultMap = new HashMap<>();
+
+//            JsonNodeFactory factory = JsonNodeFactory.instance;
+//            ObjectNode resultNode = factory.objectNode();
+
             // 查询所有的标语
             List<Banner> topBanners = this.bannnerRepository.findByBannerTypeAndEnabled(BannerType.Top, true);
             List<Banner> bottomBanners = this.bannnerRepository.findByBannerTypeAndEnabled(BannerType.Bottom, true);
@@ -64,6 +70,9 @@ public class HomePageController {
             Map<String, List<Banner>> bannerMap = new HashMap<>();
             bannerMap.put("topBanners", topBanners);
             bannerMap.put("bottomBanners", bottomBanners);
+
+//            resultNode.putPOJO("topBanners", topBanners);
+
 
             resultMap.put("banner", bannerMap);
 
@@ -82,13 +91,14 @@ public class HomePageController {
 
             // 查找用户完成的任务
             for (UserPackageOrder upo : userPackageOrders) {
-                if (upo.getHcPackageDetailIds() != null) {
-                    String[] strdetails = upo.getHcPackageDetailIds().split(",");
-                    Long[] longDetails = new Long[strdetails.length];
-                    for (int i = 0; i < strdetails.length; i++)
-                        longDetails[i] = Long.parseLong(strdetails[i]);
-                    completeDetailIds.addAll(Arrays.asList(longDetails));
+
+                String[] strdetails = StringUtils.split(upo.getHcPackageDetailIds(), ',');
+                if (strdetails != null) {
+                    for (int i = 0; i < strdetails.length; i++) {
+                        completeDetailIds.add(NumberUtils.toLong(strdetails[i]));
+                    }
                 }
+
                 // 持续时间
                 int duration = upo.getHcPackage().getDuration();
                 // 每个任务的时间 - 循环过的时间
@@ -128,16 +138,15 @@ public class HomePageController {
                     bottomDetailFrom = this.hcPackageDetailRepository.findByPackageIdAndIsFullDayOrderByTimeFromAsc(upo.getHcPackage().getId(), false, day, now, pageable);
                 }
                 // 获取第一个
-                if (topDetailFrom.hasContent()) {
-                    currentDetailIds.add(topDetailFrom.getContent().get(0).getId());
-                    allDetailList.add(topDetailFrom.getContent().get(0));
-                }
                 if (bottomDetailFrom.hasContent()) {
+                    currentDetailIds.add(bottomDetailFrom.getContent().get(0).getId());
+                    allDetailList.add(bottomDetailFrom.getContent().get(0));
+                }
+                if (topDetailFrom.hasContent()) {
                     if (!currentDetailIds.contains(topDetailFrom.getContent().get(0).getId()))
-                        allDetailList.add(bottomDetailFrom.getContent().get(0));
+                        allDetailList.add(topDetailFrom.getContent().get(0));
                 }
 
-//                allDetailList.addAll(hcPackageDetails);
             }
 
             // 添加进度
@@ -153,44 +162,8 @@ public class HomePageController {
                 );
                 tasks.add(dto);
             }
-//            List<DailyPackageDto> dayTasks = new ArrayList<>();
-
-            // 小时任务栏，全天任务栏 默认完成 1 完成 0 未完成
-//            int hourComplete = 1;
-//            int dayComplete = 1;
-
-//            for (HcPackageDetail detail : allDetailList) {
-//                DailyPackageDto dto = new DailyPackageDto(
-//                        detail.getId(),
-//                        detail.getRecommendTimeFrom(),
-//                        detail.getTaskName(),
-//                        detail.getClickAmount()
-//                );
-//                // 存在完成任务的id，说明已完成
-//                if (completeDetailIds.contains(detail.getId()))
-//                    dto.setIsCompleted(1);
-//                // 如果不包含任务id，说明还有任务没有完成
-//                if (completeDetailIds.size() > 0 && !completeDetailIds.contains(detail.getId()))
-//                    dayComplete = 0;
-//                // 判断当前是否是现在数据
-//                if (currentDetailIds.contains(detail.getId()))
-//                    dto.setCurrent(1);
-//                if (detail.isFullDay()) {
-//                    dayTasks.add(dto);
-//                } else {
-//                    tasks.add(dto);
-//                }
-//            }
-            Map<String, Object> taskMap = new HashMap<>();
             List<HomePageTips> tips = this.tipsRepository.findAll();
 
-           /* for (int i = 0; i < 2; i ++){
-                int index = (int) System.currentTimeMillis() % tips.size();
-                taskMap.put("dayTips", tips.get(index).getTips());
-                if (taskMap.get("dayTips") != null) {
-                    taskMap.put("hourTips", tips.get(index).getTips());
-                }
-            }*/
             List<String> allTips = new ArrayList<>();
 
             if (tasks.size() == 1) {
@@ -199,13 +172,7 @@ public class HomePageController {
                 allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
                 allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
             }
-            taskMap.put("currentDay", DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
-//            taskMap.put("hourTask", tasks);
-//            taskMap.put("task", tasks);
-//            taskMap.put("dayComplete", dayComplete);
-//            taskMap.put("hourComplete", hourComplete);
-//            taskMap.put("dayTips", tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
-//            taskMap.put("hourTips", tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
+            resultMap.put("currentDay", DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
             resultMap.put("tips", allTips);
 
 
