@@ -16,10 +16,12 @@ $.get(typeUrl, function (data) {
     });
     $("#type").append(datas);
     $("#type-select").append(datas);
+    if(localStorage.getItem('typeId')!=null) {
+        var item = localStorage.getItem('typeId');
+        $('select').find('option[value="'+item+'"]').attr('selected', true);
+        searchArticle(item);
+    }
 });
-if(localStorage.getItem('typeId')!=null) {
-    searchArticle(localStorage.getItem('typeId'));
-}
 
 
 function openImgUpload() {

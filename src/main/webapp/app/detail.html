@@ -127,7 +127,6 @@
   var articleId = window.location.search.substring(1);
   articleId = articleId.split('&')[0];
 
-  console.log();
   $.get(url + articleId, function (data) {
     article = data.ret_values;
     $('#detail-img').attr('src', article.pictureUrl);
@@ -135,7 +134,7 @@
     $('#detail-title').html(article.title);
     $('#detail-count').html(article.clickCount + '人阅读');
     setTimeout(load(), 500);
-    $('title').html(article.title);
+//    $('title').html(article.title);
     var articleHeight = $('#details').height() + 20;
     var height = $(window).height() * 2;
     if (height < articleHeight) {
