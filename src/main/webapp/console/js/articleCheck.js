@@ -20,7 +20,7 @@ $.get(typeUrl, function (data) {
         var item = localStorage.getItem('typeId');
         $('select').find('option[value="'+item+'"]').attr('selected', true);
         console.log(1);
-        searchArticle(item);
+        //searchArticle(item);
     }
 });
 
@@ -124,7 +124,7 @@ function searchArticle(id) {
         //customer = null;
         $('#change-info-box').hide();
         $('#info-table').show();
-        $('#info-loading').html('信息读取成功！');
+        $('#info-loading').html('信息读取成功！一共'+articles.length+'条数据');
         searchCount=1;
     });
 
