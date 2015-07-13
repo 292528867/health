@@ -1,5 +1,7 @@
 package com.wonders.xlab.healthcloud.controller;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wonders.xlab.healthcloud.dto.hcpackage.DailyPackageDto;
 import com.wonders.xlab.healthcloud.dto.hcpackage.ProgressDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
@@ -52,32 +54,23 @@ public class HomePageController {
     @RequestMapping(value = "listHomePage/{userId}", method = RequestMethod.GET)
     public Object listHomePage(@PathVariable long userId) {
         try {
-            Map<String, Object> resultMap = new HashMap<>();
-
-//            JsonNodeFactory factory = JsonNodeFactory.instance;
-//            ObjectNode resultNode = factory.objectNode();
+            JsonNodeFactory factory = JsonNodeFactory.instance;
+            ObjectNode resultNode = factory.objectNode();
+            ObjectNode bannerNode = factory.objectNode();
 
             // 查询所有的标语
             List<Banner> topBanners = this.bannnerRepository.findByBannerTypeAndEnabled(BannerType.Top, true);
             List<Banner> bottomBanners = this.bannnerRepository.findByBannerTypeAndEnabled(BannerType.Bottom, true);
 
-            Map<String, List<Banner>> bannerMap = new HashMap<>();
-            bannerMap.put("topBanners", topBanners);
-            bannerMap.put("bottomBanners", bottomBanners);
+            bannerNode.putPOJO("topBanners", topBanners);
+            bannerNode.putPOJO("bottomBanners", bottomBanners);
 
-//            resultNode.putPOJO("topBanners", topBanners);
-//            resultNode.putPOJO("bottomBanners", bottomBanners);
-
-            resultMap.put("banner", bannerMap);
-//            resultNode.putPOJO("banner", bannerMap);
-
-
-
+            resultNode.putPOJO("banner", bannerNode);
             // 查找没有完成的健康包
             List<UserPackageOrder> userPackageOrders = this.userPackageCompleteRepository.findByUserIdAndPackageComplete(userId, false);
 
             List<HcPackageDetail> allDetailList = new ArrayList<>();
-            List<HcPackageDetail> trueDetailList = new ArrayList<>();
+            List<HcPackageDetail> finialDetailList = new ArrayList<>();
             // 完成计划的Id
             List<Long> completeDetailIds = new ArrayList<>();
             // 查看完成度
@@ -113,6 +106,7 @@ public class HomePageController {
                 List<HcPackageDetail> tempDetailFrom;
 
                 day += 1;
+                System.out.println(upo.getHcPackage().getId());
                 if (completeDetailIds.isEmpty()) {
                     tempDetailFrom = hcPackageDetailRepository.findByPackageIdAndDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day);
                 } else {
@@ -120,47 +114,76 @@ public class HomePageController {
                 }
                 allDetailList.addAll(tempDetailFrom);
             }
-            Collections.sort(allDetailList, new PackageDetailComparatorAsc());
+            // 升序
+            Collections.sort(allDetailList, new Comparator<HcPackageDetail>() {
+                @Override
+                public int compare(HcPackageDetail o1, HcPackageDetail o2) {
+                    HcPackageDetail hpd1 = o1;
+                    HcPackageDetail hpd2 = o2;
+                    return hpd1.getRecommendTimeFrom().compareTo(hpd2.getRecommendTimeFrom());
+                }
+            });
 
-            List<HcPackageDetail> topDetail = new ArrayList<>();
-            List<HcPackageDetail> bottomDetail = new ArrayList<>();
+            List<HcPackageDetail> beforeDetail = new ArrayList<>();
+            List<HcPackageDetail> afterDetail = new ArrayList<>();
             Calendar c = Calendar.getInstance();
+            Calendar cFrom = Calendar.getInstance();
             c.setTime(now);
 
+
             for (HcPackageDetail detail : allDetailList) {
-                c.set(Calendar.HOUR_OF_DAY, detail.getRecommendTimeFrom().getHours());
-                c.set(Calendar.MINUTE, detail.getRecommendTimeFrom().getMinutes());
+                cFrom.setTime(detail.getRecommendTimeFrom());
+
+                c.set(Calendar.HOUR_OF_DAY, cFrom.get(Calendar.HOUR_OF_DAY));
+                c.set(Calendar.MINUTE, cFrom.get(Calendar.MINUTE));
                 System.out.println(c.getTime());
                 if ((c.getTime().getTime() - now.getTime()) > 0) {
-                    bottomDetail.add(detail);
+                    afterDetail.add(detail);
                 } else {
-                    topDetail.add(detail);
+                    beforeDetail.add(detail);
                 }
             }
-            Collections.sort(topDetail, new PackageDetailComparatorDesc());
-            if (!bottomDetail.isEmpty()) {
-                trueDetailList.add(bottomDetail.get(0));
-                if (!topDetail.isEmpty()) {
+            // 当前时间钱的list倒叙，选取最接近的时间
+            Collections.sort(beforeDetail, new Comparator<HcPackageDetail>() {
+                @Override
+                public int compare(HcPackageDetail o1, HcPackageDetail o2) {
+                    HcPackageDetail hpd1 = o1;
+                    HcPackageDetail hpd2 = o2;
+                    return hpd2.getRecommendTimeFrom().compareTo(hpd1.getRecommendTimeFrom());
+                }
+            });
+            // 选取任务
+            if (!afterDetail.isEmpty()) {
+                finialDetailList.add(afterDetail.get(0));
+                if (!beforeDetail.isEmpty()) {
 
-                    trueDetailList.add(topDetail.get(0));
-                } else if (bottomDetail.size() > 1){
-                    trueDetailList.add(bottomDetail.get(1));
+                    finialDetailList.add(beforeDetail.get(0));
+                } else if (afterDetail.size() > 1){
+                    finialDetailList.add(afterDetail.get(1));
                 }
             } else {
-                if (!topDetail.isEmpty()) {
-                    trueDetailList.add(topDetail.get(0));
+                if (!beforeDetail.isEmpty()) {
+                    finialDetailList.add(beforeDetail.get(0));
                 }
-                if (topDetail.size() > 1) {
-                    trueDetailList.add(topDetail.get(1));
+                if (beforeDetail.size() > 1) {
+                    finialDetailList.add(beforeDetail.get(1));
                 }
             }
 
-            Collections.sort(trueDetailList, new PackageDetailComparatorAsc());
+            // 最终list升序
+            Collections.sort(finialDetailList, new Comparator<HcPackageDetail>() {
+                @Override
+                public int compare(HcPackageDetail o1, HcPackageDetail o2) {
+                    HcPackageDetail hpd1 = o1;
+                    HcPackageDetail hpd2 = o2;
+                    return hpd1.getRecommendTimeFrom().compareTo(hpd2.getRecommendTimeFrom());
+                }
+            });
             // 添加进度
-            resultMap.put("progress", progressDtos);
+            resultNode.putPOJO("progress", progressDtos);
 
             List<DailyPackageDto> tasks = new ArrayList<>();
-            for (HcPackageDetail detail : trueDetailList) {
+            for (HcPackageDetail detail : finialDetailList) {
                 DailyPackageDto dto = new DailyPackageDto(
                         detail.getId(),
                         detail.getRecommendTimeFrom(),
@@ -181,31 +204,15 @@ public class HomePageController {
             } else if (tasks.size() == 1) {
                 allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
             }
-            resultMap.put("currentDay", DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
-            resultMap.put("tips", allTips);
-            resultMap.put("task", tasks);
+            resultNode.put("currentDay", DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
+            resultNode.putPOJO("tips", allTips);
+            resultNode.putPOJO("task", tasks);
 
-            return new ControllerResult<>().setRet_code(0).setRet_values(resultMap).setMessage("成功");
+            return new ControllerResult<>().setRet_code(0).setRet_values(resultNode).setMessage("成功");
         } catch (Exception exp) {
             exp.printStackTrace();
             return new ControllerResult<String>().setRet_code(-1).setRet_values("失败啦").setMessage("失败");
         }
 
     }
-
-    class PackageDetailComparatorAsc implements Comparator {
-        public int compare(Object o1, Object o2) {
-            HcPackageDetail hpd1 = (HcPackageDetail) o1;
-            HcPackageDetail hpd2 = (HcPackageDetail) o2;
-            return hpd1.getRecommendTimeFrom().compareTo(hpd2.getRecommendTimeFrom());
-        }
-    }
-    class PackageDetailComparatorDesc implements Comparator {
-        public int compare(Object o1, Object o2) {
-            HcPackageDetail hpd1 = (HcPackageDetail) o1;
-            HcPackageDetail hpd2 = (HcPackageDetail) o2;
-            return hpd2.getRecommendTimeFrom().compareTo(hpd1.getRecommendTimeFrom());
-        }
-    }
-
 }
