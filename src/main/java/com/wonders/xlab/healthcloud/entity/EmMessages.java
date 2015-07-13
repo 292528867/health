@@ -99,7 +99,7 @@ public class EmMessages extends AbstractBaseEntity<Long> {
     /**
      * 群聊的ID
      */
-    private String groupChatId;
+    private String groupId;
 
     public String getFromUser() {
         return fromUser;
@@ -189,14 +189,14 @@ public class EmMessages extends AbstractBaseEntity<Long> {
         }
     }
 
-    public String getGroupChatId() {
-        return groupChatId;
+    public String getGroupId() {
+        return groupId;
     }
 
-    public void setGroupChatId(String groupChatId) {
+    public void setGroupId(String groupChatId) {
         if("".equals(this.targetType)){
-            this.groupChatId = this.toUser;
+            this.groupId = this.toUser;
         }
-        this.groupChatId = groupChatId;
+        this.groupId = groupChatId;
     }
 }
