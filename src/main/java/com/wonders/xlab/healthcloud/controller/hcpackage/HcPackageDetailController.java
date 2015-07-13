@@ -175,7 +175,7 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
                 for (int i = 0; i < detailIds.length; i++) {
                     longDetailIds.add(NumberUtils.toLong(detailIds[i]));
                 }
-
+                longDetailIds.add(hpDetail.getId());
             }
             order.setHcPackageDetailIds(StringUtils.join(longDetailIds, ","));
         } else {

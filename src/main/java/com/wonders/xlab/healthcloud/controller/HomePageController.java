@@ -121,14 +121,6 @@ public class HomePageController {
                                 progress
                         )
                 );
-//                // 查询当前包的需要完成当天任务
-//                List<HcPackageDetail> hcPackageDetails;
-//                if (completeDetailIds.size() > 0) {
-//                    hcPackageDetails = this.hcPackageDetailRepository.findByHcPackageIdOrderbyRecommendTimeFrom(upo.getHcPackage().getId(), day, completeDetailIds);
-//                } else {
-//                    hcPackageDetails = this.hcPackageDetailRepository.findByHcPackageIdOrderbyRecommendTimeFrom(upo.getHcPackage().getId(), day);
-//                }
-
                 // 查询当天离现在最近的任务
                 Page<HcPackageDetail> topDetailFrom;
                 Page<HcPackageDetail> bottomDetailFrom;
