@@ -97,7 +97,7 @@
 
 
         <div class="am-cf am-padding">
-            <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg" id="info-loading">信息(<i class="am-icon-refresh am-icon-spin"></i>读取中)</strong> /
+            <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg" id="info-loading">信息</strong> /
                 <small>Info</small>
             </div>
         </div>
@@ -322,7 +322,7 @@
                 <fieldset>
                     <h2>横条展示banner图片，banner图要宽一些。</h2>
                     <img src="" alt="" id="banner-img" style="height: 100px;"/>
-                    <input type="file" multiple accept="image/*" name="file"/>
+                    <input type="file" multiple accept="image/*" name="file" id="banner-file"/>
 
                     <button class="am-btn am-btn-secondary" type="submit" id="banner-img-sub">提交</button>
                 </fieldset>
@@ -359,6 +359,7 @@
 <script src="js/common.js"></script>
 <script src="js/jsform.js"></script>
 <script src="js/form.js"></script>
+<script src="common/js/jquery.pinyin.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         var bar = $('.bar');
@@ -421,6 +422,10 @@
         $('#banner-img-form').on('submit', function (e) {
             e.preventDefault(); // prevent native submit
             console.log('正在提交');
+            if($('#banner-file').val().length==0){
+                alert('请提交banner文件');
+                return false;
+            }
             $('#banner-img-sub').attr('disabled', 'disabled');
             $(this).ajaxSubmit({
                         target: '.am-padding-left',

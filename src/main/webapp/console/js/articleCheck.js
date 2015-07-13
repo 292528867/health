@@ -11,7 +11,7 @@ $.get(typeUrl, function (data) {
     //  location.reload();
     var datas = '';
     $.each(data.ret_values, function (n, value) {
-        datas += "<option value='" + value.id + "'>" + value.title + "</option>";
+        datas += "<option value='" + value.id + "'>" + value.title +codefans_net_CC2PY(value.title)+allCaps(codefans_net_CC2PY(value.title)) + "</option>";
 
     });
     $("#type").append(datas);

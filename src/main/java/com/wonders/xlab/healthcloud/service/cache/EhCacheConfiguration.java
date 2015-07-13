@@ -170,4 +170,48 @@ public class EhCacheConfiguration {
         return cache;
     }*/
 
+    @Bean
+    public Cache userQuestionCache(CacheManager ehcacheManager) {
+        // 创建用户提问属性缓存
+        // key: String              value: String
+        // userId_ask_time          时间戳
+        // userId_respondent        应答人员的ID
+        // userId_respondent_type   应答人员的类型
+        Cache cache = new Cache(
+                new CacheConfiguration(
+                        "userQuestionCache", // 缓存名
+                        600000 // 缓存最大个数
+                )
+                        .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.FIFO) // 当缓存满时，使用先进先出清理内存
+                        .eternal(false) // 对象是否永久有效
+                        .timeToIdleSeconds(0) // 对象失效前允许的闲置时间， 0，闲置时间无穷大
+                        .timeToLiveSeconds(0) // 对象的失效时间，0，永远有效
+                        .diskExpiryThreadIntervalSeconds(120) // 10秒间隔检测 idle 和 live状态
+                        .persistence(new PersistenceConfiguration().strategy(Strategy.LOCALTEMPSWAP)) // 当缓存满了，或者重启时，不持久化数据
+        );
+        ehcacheManager.addCache(cache); // 必须加入缓存，不要忘了
+        return cache;
+    }
+
+    @Bean
+    public Cache questionOrderCache(CacheManager ehcacheManager){
+        // 创建用户问题订单缓存，用于遍历检查应答时间是否超时
+        // key:String   value:String
+        // userId       question order id
+        Cache cache = new Cache(
+                new CacheConfiguration(
+                        "questionOrderCache", // 缓存名
+                        200000 // 缓存最大个数
+                )
+                        .memoryStoreEvictionPolicy(MemoryStoreEvictionPolicy.FIFO) // 当缓存满时，使用先进先出清理内存
+                        .eternal(false) // 对象是否永久有效
+                        .timeToIdleSeconds(0) // 对象失效前允许的闲置时间， 0，闲置时间无穷大
+                        .timeToLiveSeconds(0) // 对象的失效时间，0，永远有效
+                        .diskExpiryThreadIntervalSeconds(120) // 10秒间隔检测 idle 和 live状态
+                        .persistence(new PersistenceConfiguration().strategy(Strategy.LOCALTEMPSWAP)) // 当缓存满了，或者重启时，不持久化数据
+        );
+        ehcacheManager.addCache(cache); // 必须加入缓存，不要忘了
+        return cache;
+    }
+
 }

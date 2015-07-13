@@ -147,8 +147,6 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
     @RequestMapping(value = "confirmDetail/{userId}/{detailId}", method = RequestMethod.POST)
     public Object confirmDetail(@PathVariable Long userId, @PathVariable Long detailId, @RequestParam(required = false) String content) {
 
-
-
         User user = this.userRepository.findOne(userId);
 
         HcPackageDetail hpDetail = this.hcPackageDetailRepository.findOne(detailId);

@@ -27,4 +27,6 @@ public interface HCCache<KEYTYPE, VALUETYPE> {
 	 * @return 没有找到返回null。
 	 */
 	public VALUETYPE getFromCache(KEYTYPE key);
+
+	VALUETYPE putIfAbsent(KEYTYPE key, VALUETYPE value);
 }

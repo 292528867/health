@@ -22,15 +22,10 @@ import java.util.Random;
  */
 @RestController
 @RequestMapping("lottery")
-public class LotteryController extends AbstractBaseController<LotteryInfo, Long> {
+public class LotteryController  {
 
     @Autowired
-    LotteryRepository lotteryRepository;
-
-    @Override
-    protected MyRepository<LotteryInfo, Long> getRepository() {
-        return lotteryRepository;
-    }
+    private LotteryRepository lotteryRepository;
 
     @RequestMapping(value = "getResult", method = RequestMethod.GET)
     public Object getLotteryResult(@PageableDefault(sort = "lastModifiedDate", direction = Sort.Direction.DESC)
@@ -41,8 +36,6 @@ public class LotteryController extends AbstractBaseController<LotteryInfo, Long>
         float lowerProb = 0;
         LotteryInfo prize = new LotteryInfo();
         for (LotteryInfo lotteryInfo : list) {
-            //lowerProb = lotteryInfo.getProbability();
-            System.out.println("currentNumber"+ currentNumber+ " lower Prob. = " + lowerProb +" Higher Prob."+ (lowerProb + lotteryInfo.getProbability()));
             if( currentNumber * 100 <= lowerProb + lotteryInfo.getProbability()
                     && currentNumber * 100> lowerProb)
             {
@@ -53,6 +46,5 @@ public class LotteryController extends AbstractBaseController<LotteryInfo, Long>
             lowerProb += lotteryInfo.getProbability();
         }
         return new ControllerResult<String>().setRet_code(0).setRet_values(prize.getName()).setMessage("success");
-        //return "{\"success\": true, \"prize\":\"" + prize.getName()+"\"}";
     }
 }

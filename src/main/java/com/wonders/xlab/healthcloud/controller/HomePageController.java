@@ -78,7 +78,6 @@ public class HomePageController {
             Date now = new Date();
             // 查找用户完成的任务
             for (UserPackageOrder upo : userPackageOrders) {
-
                 String[] strdetails = StringUtils.split(upo.getHcPackageDetailIds(), ',');
                 if (strdetails != null) {
                     for (int i = 0; i < strdetails.length; i++) {
@@ -130,7 +129,6 @@ public class HomePageController {
             Calendar cFrom = Calendar.getInstance();
             c.setTime(now);
 
-
             for (HcPackageDetail detail : allDetailList) {
                 cFrom.setTime(detail.getRecommendTimeFrom());
 
@@ -156,7 +154,6 @@ public class HomePageController {
             if (!afterDetail.isEmpty()) {
                 finialDetailList.add(afterDetail.get(0));
                 if (!beforeDetail.isEmpty()) {
-
                     finialDetailList.add(beforeDetail.get(0));
                 } else if (afterDetail.size() > 1){
                     finialDetailList.add(afterDetail.get(1));

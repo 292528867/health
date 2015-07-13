@@ -50,6 +50,7 @@ else {
       $finish.html('已完成');
       $('.finish-divider').hide();
       $('.foot-box').hide();
+      $('#finish-btn').attr('disabled', true);
     }
     else {
     }
@@ -94,15 +95,15 @@ function finishTask() {
       else {
         $('#finish-btn').button('reset');
         $('#finish-btn').attr('disabled', false);
-        $('#error-content').html('请检查你的网络');
+        $('#error-content').html(response.ret_values);
         $('#error-alert').modal('toggle');
-
       }
 
 
     },
     error: function () {
-      alert('error');
+      $('#error-content').html('请检查你的网络');
+      $('#error-alert').modal('toggle');
     }
 
 

@@ -22,6 +22,13 @@ public class QuestionOrder extends AbstractBaseEntity<Long> {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Doctor doctor;
 
+    @Enumerated
+    private QuestionStatus questionStatus = QuestionStatus.newQuestion;
+
+    public enum QuestionStatus {
+        newQuestion, processing, done
+    }
+
     public User getUser() {
         return user;
     }
@@ -44,5 +51,13 @@ public class QuestionOrder extends AbstractBaseEntity<Long> {
 
     public void setDoctor(Doctor doctor) {
         this.doctor = doctor;
+    }
+
+    public QuestionStatus getQuestionStatus() {
+        return questionStatus;
+    }
+
+    public void setQuestionStatus(QuestionStatus questionStatus) {
+        this.questionStatus = questionStatus;
     }
 }
