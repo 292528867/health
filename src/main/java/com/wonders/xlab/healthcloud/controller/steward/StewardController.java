@@ -120,6 +120,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             rp.setServices(servicesSet);
 
             List<Steward> stewards = this.stewardRepository.findByRank(rp.getRank());
+            System.out.println();
             int idx = (int) (System.currentTimeMillis() % stewards.size());
 
             rp.setSteward(stewards.get(idx));
@@ -135,7 +136,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @return
      */
     @RequestMapping("listCustomPackage/{address}/{location}")
-    public Object listCustomPackage(@PathVariable String address,@PathVariable String location) {
+    public Object listCustomPackage(@PathVariable String address, @PathVariable String location) {
 
         //强制置顶
         List<Services> orderServices = this.servicesRepository.findByIsForceOrderByUsedNumberAsc(true);
@@ -193,7 +194,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         arithmeticList.add(level4Map);
         arithmeticList.add(level5Map);
 
-        List<Steward> stewards = this.stewardRepository.findAll();
+        List<Steward> stewards = this.stewardRepository.findByOrderByRankAsc();
 
         Map<String, Object> map = new HashMap<>();
         map.put("services", orderServices);
@@ -205,6 +206,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
     /**
      * 查看服务详情
+     *
      * @param serviceId
      * @return
      */
@@ -217,6 +219,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
     /**
      * 查询管家详情
+     *
      * @param stewardId
      * @return
      */
@@ -258,8 +261,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             while (it.hasNext() && (i < 2)) {
                 Map<String, Object> nameMap = new HashMap();
                 String key = it.next().toString();
-                nameMap.put("name",key);
-                nameMap.put("count",countServiceNumMap.get(key));
+                nameMap.put("name", key);
+                nameMap.put("count", countServiceNumMap.get(key));
                 steward.getStarService().add(nameMap);
                 i++;
             }
@@ -292,7 +295,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @return
      */
     @RequestMapping("payServices/{userId}/{payWay}")
-    public String payServices(@PathVariable Long userId,@PathVariable String payWay, @RequestBody @Valid ServiceDto serviceDto, BindingResult result) throws RuntimeException {
+    public String payServices(@PathVariable Long userId, @PathVariable String payWay, @RequestBody @Valid ServiceDto serviceDto, BindingResult result) throws RuntimeException {
 
         if (result.hasErrors()) {
 
@@ -345,7 +348,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", amount);
 
-        Charge charge = pingppService.payOrder(pingDto,payWay);
+        Charge charge = pingppService.payOrder(pingDto, payWay);
 
         String tradeNo = "u" + userId + new Date().getTime();
 
@@ -433,17 +436,16 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     @RequestMapping(value = "getOrdersDetail/{userId}/{chargeId}", method = RequestMethod.GET)
     public ControllerResult getOrdersDetail(@PathVariable Long userId, @PathVariable String chargeId) throws APIException, AuthenticationException, InvalidRequestException, APIConnectionException {
 
-        List<StewardOrder> stewardOrders = stewardOrderRepository.findAllByUser(userId);
+        StewardOrder stewardOrder = stewardOrderRepository.findByChargeId(chargeId);
 
-        if (!stewardOrders.isEmpty()) {
+        if (null != stewardOrder){
 
             //更新付款状态
             Charge charge = pingppService.queryCharge(chargeId);
 
-            StewardOrder stewardOrder = stewardOrders.get(0);
-
             //判断支付状态
             if (charge.getPaid()) {
+
                 stewardOrder.setOrderStatus(StewardOrder.OrderStatus.支付成功);
             } else {
                 stewardOrder.setOrderStatus(StewardOrder.OrderStatus.未支付);
@@ -469,7 +471,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
             return new ControllerResult<StewardOrder>().setRet_code(0).setRet_values(stewardOrder).setMessage("获取订单成功！");
 
-        } else {
+        }else{
 
             return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("获取订单失败！");
         }
