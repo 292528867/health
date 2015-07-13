@@ -18,8 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,10 +50,7 @@ public class HomePageController {
      * @return
      */
     @RequestMapping(value = "listHomePage/{userId}", method = RequestMethod.GET)
-    public Object listHomePage(@PathVariable long userId,
-                               @PageableDefault(page = 0, size = 1//, sort = "recommendTimeFrom", direction = Sort.Direction.DESC
-                               )
-                               Pageable pageable) {
+    public Object listHomePage(@PathVariable long userId) {
         try {
             Map<String, Object> resultMap = new HashMap<>();
 
