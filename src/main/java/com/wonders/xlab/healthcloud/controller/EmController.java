@@ -1,28 +1,29 @@
 package com.wonders.xlab.healthcloud.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.tencent.xinge.XingeApp;
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.EmDoctorNumber;
 import com.wonders.xlab.healthcloud.dto.emchat.*;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.EmMessages;
+import com.wonders.xlab.healthcloud.entity.QuestionOrder;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.doctor.Doctor;
+import com.wonders.xlab.healthcloud.enums.RespondentType;
 import com.wonders.xlab.healthcloud.repository.EmMessagesRepository;
+import com.wonders.xlab.healthcloud.repository.QuestionOrderRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.service.WordAnalyzerService;
+import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.utils.Constant;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
+import net.sf.ehcache.Cache;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Minutes;
-import org.joda.time.Period;
-import org.joda.time.PeriodType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -57,6 +58,18 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private QuestionOrderRepository questionOrderRepository;
+
+    @Autowired
+    @Qualifier("userQuestionCache")
+    private Cache userQuestionCache;
+
+    @Autowired
+    @Qualifier("questionOrderCache")
+    private Cache questionOrderCache;
+
 
     @Override
     protected MyRepository<EmMessages, Long> getRepository() {
@@ -127,9 +140,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     @RequestMapping(value = "sendTxtMessage", method = RequestMethod.POST)
     public ControllerResult sendTxtMessage(@RequestBody TexMessagesRequestBody body) throws IOException {
-        String messagesJson = objectMapper.writeValueAsString(body);
-        //发送信息
-        emUtils.requestEMChat(messagesJson,"POST", "messages", String.class);
+        //判断该用户的消息是否已有人在处理
+        long askTime = System.currentTimeMillis();
+        User user = userRepository.findByTel(body.getFrom());
+        HCCacheProxy<String, String> questionCache = new HCCacheProxy(userQuestionCache);
+        HCCacheProxy<String, String> orderCache = new HCCacheProxy<>(questionOrderCache);
+
         //保存消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
@@ -141,7 +157,54 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 true
         );
 
-        emMessagesRepository.save(emMessages);
+        emMessages = emMessagesRepository.save(emMessages);
+
+        if(StringUtils.isNotEmpty(orderCache.getFromCache(user.getId().toString()))){
+            //缓存中存在开放问题，此次发送消息不是新问题，直接发送
+            String respondentKey = user.getId() + "_RESPONDENT_TYPE";
+            String respondentType = questionCache.getFromCache(respondentKey);
+            if(RespondentType.none.toString().equals(respondentType)){
+                //TODO 没有人在处理
+            } else if(RespondentType.auto.toString().equals(respondentType)){
+                //TODO 上一条为系统自动答复
+
+            } else if(RespondentType.doctor.toString().equals(respondentType)){
+                //TODO 上一条为医生答复，直接推送给医生即可
+
+            } else if(RespondentType.service.toString().equals(respondentType)){
+                //TODO 上一条为运营人员答复
+
+            }
+        } else {
+            //本次提问是新问题，往QuestionOrder中插入一条新的记录
+            QuestionOrder questionOrder = new QuestionOrder();
+            questionOrder.setUser(user);
+            questionOrder.setMessages(emMessages);
+            questionOrder.setQuestionStatus(QuestionOrder.QuestionStatus.newQuestion);
+            questionOrder = questionOrderRepository.save(questionOrder);
+            orderCache.putIfAbsent(user.getId().toString(), questionOrder.getId().toString());
+            String userAskTime = user.getId() + "_ASK_TIME";
+            String askTimeStr = questionCache.putIfAbsent(userAskTime, String.valueOf(askTime));
+            if(String.valueOf(askTime).equals(askTimeStr)){
+                //TODO 首先自动回复一条消息
+
+                //TODO 发给医生抢答
+                //TODO 遍历医生逐个发送 or 发送到一个医生组里
+
+
+            } else {
+                //已有其他线程处理，禁止重复提交
+                return new ControllerResult()
+                        .setRet_code(-1)
+                        .setRet_values("")
+                        .setMessage("发送失败");
+            }
+
+        }
+
+        String messagesJson = objectMapper.writeValueAsString(body);
+        //发送信息
+        emUtils.requestEMChat(messagesJson,"POST", "messages", String.class);
 
         return new ControllerResult().setRet_code(0).setRet_values("").setMessage("文本消息发送成功");
 
