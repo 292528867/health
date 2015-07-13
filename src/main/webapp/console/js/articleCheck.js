@@ -130,12 +130,12 @@ function changeArticle(id) {
     var article = articles[id];
     data = article;
     $('#type').find('option').attr('selected',false);
+    $('#type').val(localStorage.getItem('typeId'));
     $('#type').find('option[value="'+localStorage.getItem('typeId')+'"]').attr('selected', true);
     console.log(localStorage.getItem('typeId'));
     $('#id').val(data.id);
     $('#title').val(data.title);
     $('#desc').val(data.description);
-    $('#type').val(localStorage.getItem('typeId'));
     $('#index-img-index').attr('src',data.pictureUrl);
     UE.getEditor('htmlInfo').setContent(data.htmlInfo);
     $('#index-img').attr('src',data.pictureUrl);
