@@ -19,7 +19,8 @@ $.get(typeUrl, function (data) {
     if(localStorage.getItem('typeId')!=null) {
         var item = localStorage.getItem('typeId');
         $('select').find('option[value="'+item+'"]').attr('selected', true);
-        searchArticle(item);
+        console.log(1);
+        //searchArticle(item);
     }
 });
 
@@ -86,7 +87,7 @@ function articleAdd() {
 var articles;
 var searchCount = 0;
 function searchArticle(id) {
-    if (id.length == 0||id==null||searchCount==1) {
+    if (id.length == 0||id==null) {
         return false;
     }
     $('#info-loading').html('信息(<i class="am-icon-refresh am-icon-spin"></i>正在读取！！！！！)');
@@ -123,7 +124,7 @@ function searchArticle(id) {
         //customer = null;
         $('#change-info-box').hide();
         $('#info-table').show();
-        $('#info-loading').html('信息读取成功！');
+        $('#info-loading').html('信息读取成功！一共'+articles.length+'条数据');
         searchCount=1;
     });
 

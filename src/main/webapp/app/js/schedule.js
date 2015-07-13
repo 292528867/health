@@ -68,6 +68,7 @@ function finishTask() {
     $('#finish-btn').button('reset');
     $('#finish-btn').attr('disabled', false);
     //alert('请填写内容吧！');
+    $('#error-content').html('请填写内容');
     $('#error-alert').modal('toggle');
 
     return false;
@@ -93,7 +94,9 @@ function finishTask() {
       else {
         $('#finish-btn').button('reset');
         $('#finish-btn').attr('disabled', false);
-        alert(response.ret_values);
+        $('#error-content').html('请检查你的网络');
+        $('#error-alert').modal('toggle');
+
       }
 
 
