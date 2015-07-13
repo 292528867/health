@@ -170,7 +170,7 @@ public class HomePageController {
                         detail.getId(),
                         detail.getRecommendTimeFrom(),
                         detail.getTaskName(),
-                        detail.getClickAmount()
+                        detail.getHcPackage().getClickAmount()
                 );
                 tasks.add(dto);
             }
@@ -178,16 +178,16 @@ public class HomePageController {
 
             List<String> allTips = new ArrayList<>();
 
-            if (tasks.size() == 1) {
+            if (tasks.isEmpty()) {
+                HomePageTips tipsOne = tips.get(RandomUtils.nextInt(0, tips.size()));
+                tips.remove(tipsOne);
+                allTips.add(tipsOne.getTips());
                 allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
-            } else if (tasks.isEmpty()) {
-                allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
+            } else if (tasks.size() == 1) {
                 allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
             }
             resultMap.put("currentDay", DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
             resultMap.put("tips", allTips);
-
-
             resultMap.put("task", tasks);
 
             return new ControllerResult<>().setRet_code(0).setRet_values(resultMap).setMessage("成功");
