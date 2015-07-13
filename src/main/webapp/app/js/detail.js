@@ -1,4 +1,3 @@
-
 var article = localStorage.getItem('article');
 var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
 var url = commonUrl + 'discovery/app/listInfo/';
@@ -21,7 +20,7 @@ $.get(url + articleId, function (data) {
     $('.banner-bg').show();
   }
 });
-if (article != null&&JSON.parse(article).id==articleId) {
+if (article != null && JSON.parse(article).id == articleId) {
   $('.detail-foot').show();
 }
 

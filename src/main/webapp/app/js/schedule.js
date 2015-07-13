@@ -5,6 +5,7 @@
 var article = localStorage.getItem('article');
 var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
 var url = commonUrl + 'task/retrievePackageDetail/';
+var shareUrl = commonUrl + 'task/sharePackageDetail/';
 var articleId = window.location.search.substring(1);
 var ids = articleId.split('&');
 var userId = ids[0];
@@ -13,13 +14,15 @@ articleId = ids[1];
 //  alert(articleId);
 
 if (userId == 'share') {
-  $.get(url + articleId, function (data) {
+  $.get(shareUrl + articleId, function (data) {
     article = data.ret_values;
     $('#detail-img').attr('src', article.pictureUrl);
     $('#details').html(article.detail);
     $('#detail-title').html(article.title);
     $('title').html(article.title);
     $('#detail-count').html(article.clickAmount + '人关注');
+    $('#schedule-img').attr('src', article.pictureUrl);
+    $('#schedule-img').show();
   });
 }
 
@@ -54,7 +57,7 @@ else {
     else {
     }
     $('.schedule-foot').show();
-    $('#schedule-img').attr('src', article.icon);
+    $('#schedule-img').attr('src', article.pictureUrl);
     $('#schedule-img').show();
   });
 
@@ -86,6 +89,7 @@ function finishTask() {
         $finish.html('已完成');
         $('.foot-box').hide();
         $('.finish-divider').hide();
+        location.href = '#finish';
       }
       else {
         $('#finish-btn').button('reset');
