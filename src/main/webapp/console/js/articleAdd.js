@@ -34,9 +34,10 @@ function articleAdd() {
 
     var htmlInfo = UE.getEditor('htmlInfo').getContent();
     //$('#courseDetail').val(editor.html());
-
+    $('#formSub').attr('disabled',true);
     if (title.length==0||desc.length==0||pictureUrl.length==0||pictureUrl2.length==0||htmlInfo.length==0||type.length==0) {
         alert('有字段没有填写');
+        $('#formSub').attr('disabled',false);
         return false;
     }
     articleAddUrl += type;
@@ -59,11 +60,14 @@ function articleAdd() {
                 alert('success');
                 location.reload();
             }
-            else
+            else{
                 alert(response.err_msg);
+                $('#formSub').attr('disabled',false);
+            }
 
         },
         error: function () {
+            $('#formSub').attr('disabled',false);
             alert('error');
         }
 
