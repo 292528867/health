@@ -39,7 +39,7 @@ public class HcPackageDetailDto {
      * 是否需要补充内容
      */
     @NotNull(message = "是否需要补充内容判断不能为空")
-    @Pattern(regexp = "^0|1$", message = "是否需要补充内容必须为0否1是")
+    @Pattern(regexp = "^true|false$", message = "是否需要补充内容必须为false否true是")
     private String isNeedSupplemented;
 
     /**
@@ -61,19 +61,21 @@ public class HcPackageDetailDto {
     @NotNull(message = "积分不能为空")
     private String integration;
 
+    @Pattern(regexp = "^true|false$", message = "是否为全天必须为false否true是")
     private String isFullDay;
 
     private MultipartFile file;
 
     public HcPackageDetail toNewHcPackageDetail(HcPackage hcPackage) {
-            HcPackageDetail hcPackageDetail = new HcPackageDetail(
-                    hcPackage,
-                    taskName,
-                    detail,
-                    Boolean.valueOf(isNeedSupplemented),
-                    supplemented,
-                    Integer.parseInt(integration),
-                    Boolean.valueOf(isFullDay));
+        HcPackageDetail hcPackageDetail = new HcPackageDetail(
+                hcPackage,
+                taskName,
+                detail,
+                Boolean.valueOf(isNeedSupplemented),
+                supplemented,
+                Integer.parseInt(integration),
+                Boolean.valueOf(isFullDay)
+        );
 
         try {
             hcPackageDetail.setRecommendTimeFrom(DateUtils.parseDate(recommendTimeFrom, "H:m:s"));

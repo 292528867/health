@@ -42,7 +42,7 @@ public class BannerDto {
     private String position;
 
     @NotNull(message = "启用位不能为空")
-    @Pattern(regexp = "^0|1$", message = "启用必须为 0｜1")
+    @Pattern(regexp = "^true|false$", message = "启用必须为 true｜false")
     private String enabled;
 
     public Banner toNewBanner() {

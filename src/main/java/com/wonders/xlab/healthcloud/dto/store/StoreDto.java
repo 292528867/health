@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.dto.market;
+package com.wonders.xlab.healthcloud.dto.store;
 
 import com.wonders.xlab.healthcloud.entity.market.Store;
 

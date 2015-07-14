@@ -2,7 +2,7 @@ package com.wonders.xlab.healthcloud.controller.market;
 
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
-import com.wonders.xlab.healthcloud.dto.market.StoreDto;
+import com.wonders.xlab.healthcloud.dto.store.StoreDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.market.Store;
 import com.wonders.xlab.healthcloud.repository.market.StoreRepository;
