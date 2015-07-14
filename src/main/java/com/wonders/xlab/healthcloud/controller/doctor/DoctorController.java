@@ -34,6 +34,7 @@ import javax.management.RuntimeErrorException;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.List;
 
 /**
  * Created by mars on 15/7/2.
@@ -114,12 +115,6 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         doctor.setAppPlatform(iden.getAppPlatform());
         doctor = this.doctorRepository.save(doctor);
         if (emUtils.registerEmUser("doctor" + iden.getTel(), iden.getTel())) {
-            //TODO 从缓存中获取环信token 医生群组暂时写死
-            String groupId = "82830104253694376";
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            emUtils.requestEMChat(headers, "post", "chatgroups/" + groupId + "/users/" + "doctor" + iden.getTel(), String.class);
 
             return new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor).setMessage("成功");
         }
@@ -321,6 +316,14 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
     @RequestMapping(value = "check/{doctorId}", method = RequestMethod.POST)
     public boolean checkDoctor(@PathVariable long doctorId, Doctor.Checked checked) {
         Doctor doctor = doctorRepository.findOne(doctorId);
+        if (checked.equals(Doctor.Checked.passed)) {
+            //TODO 从缓存中获取环信token 医生群组暂时写死
+            String groupId = "82830104253694376";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            emUtils.requestEMChat(headers, "post", "chatgroups/" + groupId + "/users/" + "doctor" + doctor.getTel(), String.class);
+        }
         doctor.setChecked(checked);
         try {
             modify(doctor);
@@ -328,6 +331,11 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         } catch (RuntimeErrorException exp) {
             return false;
         }
+    }
+
+    @RequestMapping("doctors/{checked}")
+    public List<Doctor> findApplyDoctors(@PathVariable Doctor.Checked checked) {
+        return doctorRepository.findByChecked(checked);
     }
 
 

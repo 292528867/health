@@ -1,10 +1,165 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>健康云后台</title>
+    <meta name="description" content="这是一个 user 页面">
+    <meta name="keywords" content="user">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <!--<link rel="icon" type="image/png" href="assets/i/favicon.png">-->
+    <link rel="apple-touch-icon-precomposed" href="../assets/i/app-icon72x72@2x.png">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+    <link rel="stylesheet" href="../assets/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="../css/doctor/doctor.css"/>
+    <style>
+        .progress {
+            position: relative;
+            width: 400px;
+            border: 1px solid #ddd;
+            padding: 1px;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+        }
+
+        .bar {
+            background-color: #B4F5B4;
+            width: 0%;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .percent {
+            position: absolute;
+            display: inline-block;
+            top: 3px;
+            left: 48%;
+        }
+    </style>
 </head>
 <body>
+<!--[if lte IE 9]>
+<p class="browsehappy">你正在使用<strong>过时</strong>的浏览器，Amaze UI 暂不支持。 请 <a href="http://browsehappy.com/" target="_blank">升级浏览器</a>
+    以获得更好的体验！</p>
+<![endif]-->
 
+<header class="am-topbar admin-header">
+    <div class="am-topbar-brand">
+        <strong>健康云</strong>
+        <small>管家后台管理</small>
+    </div>
+
+    <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only"
+            data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span
+            class="am-icon-bars"></span></button>
+
+    <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+
+        <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
+            <li class="am-dropdown" data-am-dropdown>
+                <a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">
+                    <span class="am-icon-users"></span> 管理员 <span class="am-icon-caret-down"></span>
+                </a>
+                <ul class="am-dropdown-content">
+                    <li><a href="#"><span class="am-icon-user"></span> 资料</a></li>
+                    <li><a href="#"><span class="am-icon-cog"></span> 设置</a></li>
+                    <li><a href="#"><span class="am-icon-power-off"></span> 退出</a></li>
+                </ul>
+            </li>
+            <li class="am-hide-sm-only"><a href="javascript:;" id="admin-fullscreen"><span
+                    class="am-icon-arrows-alt"></span> <span class="admin-fullText">开启全屏</span></a></li>
+        </ul>
+    </div>
+</header>
+
+<div class="am-cf admin-main">
+    <!-- sidebar start -->
+    <div class="admin-sidebar am-offcanvas" id="admin-offcanvas">
+    </div>
+    <!-- sidebar end -->
+
+    <!-- content start -->
+    <div class="admin-content">
+
+        <hr/>
+
+        <div class="am-g">
+
+            <div class="am-u-sm-12 am-u-md-4 am-u-md-push-8"></div>
+
+            <div class="am-g">
+                <div class="am-u-sm-12">
+                    <table class="am-table am-table-striped am-table-hover table-main">
+                        <thead>
+                        <tr>
+                            <th class="table-id">ID</th>
+                            <th class="table-title">头像</th>
+                            <th class="table-title">医生名字</th>
+                            <th class="table-title">职称</th>
+                            <th class="table-title">医院</th>
+                            <th class="table-title">科室</th>
+                            <th class="table-set">身份证</th>
+                            <th class="table-set">职称证</th>
+                            <th class="table-set">执行认证</th>
+                            <th class="table-title">电话号码</th>
+                            <th class="table-set">审核</th>
+                        </tr>
+                        </thead>
+                        <tbody id="datas">
+                        </tbody>
+                    </table>
+                    <hr/>
+                </div>
+                <div class="am-modal" tabindex="-1" id="doc-modal-1">
+                    <img class="modal-img" src="" alt=""/>
+                    <a href="javascript: void(0)" class="am-close am-close-spin modal-close" data-am-modal-close>&times;</a>
+
+                </div>
+                <div class="am-g">
+
+                    <div class="am-u-sm-12 am-u-md-4 am-u-md-push-8"></div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- content end -->
+
+</div>
+
+<a class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+
+<footer id="foot">
+    <hr>
+    <p class="am-padding-left">© 2015 By Wondersgroup.</p>
+</footer>
+
+
+<!--[if lt IE 9]>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="../assets/js/polyfill/rem.min.js"></script>
+<script src="../assets/js/polyfill/respond.min.js"></script>
+<script src="../assets/js/amazeui.legacy.js"></script>
+<![endif]-->
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="../assets/js/jquery.min.js"></script>
+<script src="../assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<script src="../assets/js/app.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/jsform.js"></script>
+<script src="../js/form.js"></script>
+<link rel="stylesheet" href="../kindeditor/themes/default/default.css"/>
+<script charset="utf-8" src="../kindeditor/kindeditor.js"></script>
+<script charset="utf-8" src="../kindeditor/lang/zh_CN.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=FD157821d97ffbfecba5325394413bfd"></script>
+<script type="text/javascript" src="../js/baiduMap.js"></script>
+<script src="../js/doctor/doctorManager.js"></script>
 </body>
 </html>

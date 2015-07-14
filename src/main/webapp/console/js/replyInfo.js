@@ -1,12 +1,11 @@
-var url = 'http://101.231.124.8:45677/xlab-healthcloud/';
-//var url = 'http://127.0.0.1:8080/';
+
 
 $(document).ready(function () {
 
     //加载医生下拉框信息
     $.ajax({
         'type':"get",
-        'url':url+'doctor/query',
+        'url':commonUrl+'doctor/query',
         success:function(result){
             console.log(result[0].nickName);
             var str = '';
@@ -32,10 +31,10 @@ function loadData(currentPage) {
         "doctorFlag_equal":1,
         "isReplied_equal":0
     }
-    console.log(url + 'em/query?filters='+JSON.stringify(filters)+'&page=' + currentPage);
+    console.log(commonUrl + 'em/query?filters='+JSON.stringify(filters)+'&page=' + currentPage);
     $.ajax({
         type: 'get',
-        url: url + 'em?filters='+JSON.stringify(filters)+'&page=' + currentPage,
+        url: commonUrl + 'em?filters='+JSON.stringify(filters)+'&page=' + currentPage,
         success: function (result) {
             var str = '',
             pageStr = '',
@@ -86,9 +85,9 @@ function replyInfo(fromUser, toUser,msgId) {
     $("#reply-modal").modal('toggle');
 
     //显示最新的5条聊天纪录
-    console.log(url + "em/getTop5Messages?groupId=" + toUser);
+    console.log(commonUrl + "em/getTop5Messages?groupId=" + toUser);
     $.ajax({
-        'url':url+"em/getTop5Messages?groupId="+toUser,
+        'url':commonUrl+"em/getTop5Messages?groupId="+toUser,
         'type':'get',
         success: function (data) {
             console.log(data[1].msg);
@@ -121,11 +120,12 @@ function replyInfo(fromUser, toUser,msgId) {
                 'type': 'txt',
                 'msg': content
             },
-            'from': $('#doctor_select').val()
+            'from': $('#doctor_select').val(),
+            'ext':{}
         };
 
         $.ajax({
-            'url': url + 'em/replyMessage/'+msgId+'/'+fromUser+'',
+            'url': commonUrl + 'em/replyMessage/'+msgId+'/'+fromUser+'',
             'type': 'POST',
             'data': JSON.stringify(message),
             headers: {

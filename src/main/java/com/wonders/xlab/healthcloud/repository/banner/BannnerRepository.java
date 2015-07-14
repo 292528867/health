@@ -21,4 +21,8 @@ public interface BannnerRepository extends MyRepository<Banner, Long> {
     List<Banner> findBannerOrderByLastModifiedDate();
 
     List<Banner> findByBannerTypeAndEnabled(BannerType type, boolean enabled);
+
+    List<Banner> findByBannerTagAndEnabled(BannerTag bannerTag, boolean enabled);
+
+    List<Banner> findByBannerTagNotAndEnabled(BannerTag bannerTag, boolean enabled);
 }

@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=description content="An Amaze UI template that helps you build fast, modern mobile web apps."><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>发现</title><meta name=renderer content=webkit><meta http-equiv=Cache-Control content=no-siteapp><link rel=icon type=image/png href=i/favicon.png><link rel=manifest href=manifest.json><meta name=mobile-web-app-capable content=yes><meta name=application-name content="Web Starter Kit"><link rel=icon sizes=192x192 href=i/touch/chrome-touch-icon-192x192.png><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black><meta name=apple-mobile-web-app-title content="Amaze UI Sfavicon.pngtarter Kit"><link rel=apple-touch-icon href=i/touch/apple-touch-icon.png><meta name=msapplication-TileImage content=i/touch/ms-touch-icon-144x144-precomposed.png><meta name=msapplication-TileColor content=#0e90d2><meta http-equiv=X-UA-Compatible content="IE=8"><meta http-equiv=Expires content=0><meta http-equiv=Pragma content=no-cache><meta http-equiv=Cache-control content=no-cache><meta http-equiv=Cache content=no-cache><link rel=stylesheet href=css/amazeui.min.css><link rel=stylesheet href=css/swiper.min.css><link rel=stylesheet href=css/main.min.css><style>
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=description content="An Amaze UI template that helps you build fast, modern mobile web apps."><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>发现</title><meta name=renderer content=webkit><meta http-equiv=Cache-Control content=no-siteapp><link rel=icon type=image/png href=i/favicon.png><link rel=manifest href=manifest.json><meta name=mobile-web-app-capable content=yes><meta name=application-name content="Web Starter Kit"><link rel=icon sizes=192x192 href=i/touch/chrome-touch-icon-192x192.png><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black><meta name=apple-mobile-web-app-title content="Amaze UI Sfavicon.pngtarter Kit"><link rel=apple-touch-icon href=i/touch/apple-touch-icon.png><meta name=msapplication-TileImage content=i/touch/ms-touch-icon-144x144-precomposed.png><meta name=msapplication-TileColor content=#0e90d2><meta http-equiv=X-UA-Compatible content="IE=8"><link rel=stylesheet href=css/amazeui.min.css><link rel=stylesheet href=css/swiper.min.css><link rel=stylesheet href=css/main.min.css><style>
     #header {
       position: fixed;
       left: 0;
@@ -36,4 +36,130 @@
       top: 200px;
       display: none;
     }
-  </style></head><body><img src=i/404.png id=error-png><div class="am-tabs am-tabs-d2 app-body"><div class=today-bar>今日推荐</div><div class=today-white><img src=i/header/white.png></div><div id=header><div class=swiper-wrapper id=swipers></div></div><div class=am-tabs-bd><div class="am-tab-panel am-active today-body"><div id=banners></div><div data-am-widget=list_news class="am-list-news am-list-news-default today-list"><div class=am-list-news-bd><ul class="am-list article" id=article></ul><div class=pull-action id=banner-scroll style="text-align: center;display: none;"><span class=pull-label id=pull-up-label>加载中</span> <span class="am-icon-spinner am-icon-spin"></span></div></div></div></div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script src=js/main.min.js></script><script src=js/swiper.min.js></script><script src=js/handlebars.min.js></script><script type=text/x-handlebars-template id=articlesBox>{{#each this}} <div class="banner-today today-body-banners" onclick="getDetails({{id}})"> <div class="banner-today-img" style="background: url({{pictureUrl2}}) 50% 50% / cover no-repeat;"> </div> <div class="banner-today-title-bg am-cf"> <div class="banner-today-title am-text-truncate">{{title}}</div> <div class="banner-today-click"> <img src="i/icon/read.png" alt="阅读"/>{{clickCount}}阅读 </div> </div> </div> {{/each}}</script><script type=text/x-handlebars-template id=bannerBox><div class="banner-today" onclick="getDetails({{id}})"> <div class="banner-today-img" style="background: url({{pictureUrl2}}) 50% 50% / cover no-repeat;"> </div> <div class="banner-today-title-bg am-cf"> <div class="banner-today-title am-text-truncate">{{title}}</div> <div class="banner-today-click"> <img src="i/icon/read.png" alt="阅读"/>{{clickCount}}阅读 </div> </div> </div></script><script type=text/x-handlebars-template id=todayBox>{{#each this}} <li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left" onclick="getDetails({{id}})" > <div class="am-u-sm-4 am-list-thumb article-img-box"> <a href="#" class="article-href"> <img src="{{pictureUrl}}" class="article-img"/> </a> </div> <div class=" am-u-sm-8 am-list-main article-content-box"> <h3 class="am-list-item-hd"> <a href="#" class="article-title article-href"> {{title}} </a> </h3> <div class="am-list-item-text article-description"> {{desc}} </div> <div class="article-clickCount"> <img src="i/icon/read-grey.png" alt="阅读"/>{{clickCount}}阅读 </div> </div> </li> {{/each}}</script><script type=text/x-handlebars-template id=swiperBox><div class="swiper-slide" style="width: 100px;"></div> {{#each this}} <div class="swiper-slide" onclick="loadArticles({{id}})">{{tag}}</div> {{/each}}</script><script src=js/index.min.js></script></html>
+
+
+
+
+    .detail-body img {
+      max-width: 100%;
+    }
+
+    .detail-body {
+      background: #f6f6f6;
+      padding: 0 15px;
+      margin: 0 !important;
+    }
+
+    #details {
+      overflow: hidden;
+    }
+
+    #detail-title {
+      color: #333333;
+      margin-top: 2rem;
+      font-size: 2.1rem;
+    }
+
+    #detail-img {
+      margin-bottom: 15px;
+    }
+
+    #detail-img {
+      width: 100%;
+    }
+
+    .data-body {
+      display: none;
+    }
+
+    .btn-divider {
+      color: #cfcfcf;
+    }
+
+    .foot-title {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      margin-left: -28px;
+      margin-top: -12px;
+      background: #f6f6f6;
+      color: #999999;
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    .detail-foot {
+      position: relative;
+      margin-top: 40px;
+    }
+
+    .finish-divider {
+      margin-bottom: 20px;
+    }
+
+    .share-btns {
+      max-width: 330px;
+      margin: auto;
+    }
+
+    .share-btns div {
+      float: left;
+      width: 33%;
+      text-align: center;
+    }
+
+    #detail-count {
+      color: #999999 !important;
+      font-size: 1.4rem;
+    }
+
+    .banner-bg {
+      background: url(http://s0.pstatp.com/resource/toutiao_wap/static/image/shadow_f90b6bd.png);
+      height: 25px;
+      background-size: cover;
+      margin-left: -10px;
+      margin-right: -10px;
+      margin-top: -45px;
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .unfold-field {
+      border-left: 0;
+      border-right: 0;
+      border-bottom: 0;
+      text-align: center;
+      margin-bottom: 0;
+      display: none;
+      position: relative;
+      margin-top: -25px;
+      color: #54a0dc;
+      background: #f6f6f6;
+    }
+
+    .unfold-field .text-link {
+      cursor: pointer;
+      background-size: contain;
+      display: inline-block;
+      width: 58px;
+      height: 58px;
+      background: rgba(255, 255, 255, 1);
+      border-radius: 29px;
+      font-size: 14px;
+      /*box-shadow: 0 -1px 4px 0 #e2e1e1;*/
+      color: #5784df;
+    }
+
+    .unfold-field .text-link i {
+      display: block;
+      line-height: 14px;
+      font-style: normal;
+      text-align: center;
+      color: #40ced9;
+    }
+
+    .unfold-field .text-link i:first-child {
+      margin-top: 15px;
+    }
+
+  </style></head><body><img src=i/404.png id=error-png><div class="am-tabs am-tabs-d2 app-body"><div class=today-bar>今日推荐</div><div class=today-white><img src=i/header/white.png></div><div id=header><div class=swiper-wrapper id=swipers></div></div><div class=am-tabs-bd><div class="am-tab-panel am-active today-body"><div id=banners></div><div data-am-widget=list_news class="am-list-news am-list-news-default today-list"><div class=am-list-news-bd><ul class="am-list article" id=article></ul><div class=pull-action id=banner-scroll style="text-align: center;display: none;"><span class=pull-label id=pull-up-label>加载中</span> <span class="am-icon-spinner am-icon-spin"></span></div></div></div></div></div></div><div class="data-body detail-body"><div id=detail-title></div><div style="margin-bottom: 10px"><img src=i/schedule/eye.jpg width=25 style="margin-left: 5px" class=am-text-middle> <span id=detail-count class=am-text-middle></span></div><div id=details></div><div class=banner-bg style="display: none;"></div><div class=unfold-field style="display: none;"><a href=javascript:; class="text-link unfold-btn" onclick=openArticle()><i>展开</i><i>全文</i></a></div><div class=detail-foot><div class=finish-divider><hr data-am-widget=divider class="am-divider am-divider-default btn-divider"><div class=foot-title>分享</div><div class="share-btns am-cf"><div><img src=i/share/wechat1.png width=50 onclick="activityList({'share':'wechat'});" id=session></div><div><img src=i/share/wechat2.png width=50 onclick="activityList({'share':'session'});" id=wechat></div><div><img src=i/share/weibo.png width=50 onclick="activityList({'share':'weibo'});" id=weibo></div></div></div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script src=js/main.min.js></script><script src=js/swiper.min.js></script><script src=js/handlebars.min.js></script><script type=text/x-handlebars-template id=articlesBox>{{#each this}} <div class="banner-today today-body-banners" onclick="getDetails({{id}})" id="{{id}}"> <div class="banner-today-img" style="background: url({{pictureUrl2}}) 50% 50% / cover no-repeat;"> <div class="banner-today-title-bg am-cf"> <div class="banner-today-title am-text-truncate">{{title}}</div> <div class="banner-today-click"> <img src="i/icon/read.png" alt="阅读"/>{{clickCount}}阅读 </div> </div> </div> </div> {{/each}}</script><script type=text/x-handlebars-template id=bannerBox><div class="banner-today" onclick="getDetails({{id}})" id="{{id}}"> <div class="banner-today-img" style="background: url({{pictureUrl2}}) 50% 50% / cover no-repeat;"> </div> <div class="banner-today-title-bg am-cf"> <div class="banner-today-title am-text-truncate">{{title}}</div> <div class="banner-today-click"> <img src="i/icon/read.png" alt="阅读"/>{{clickCount}}阅读 </div> </div> </div></script><script type=text/x-handlebars-template id=todayBox>{{#each this}} <li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left" onclick="getDetails({{id}})" id="{{id}}" > <div class="am-u-sm-4 am-list-thumb article-img-box"> <a href="#" class="article-href"> <img src="{{pictureUrl}}" class="article-img"/> </a> </div> <div class=" am-u-sm-8 am-list-main article-content-box"> <h3 class="am-list-item-hd"> <a href="#" class="article-title article-href"> {{title}} </a> </h3> <div class="am-list-item-text article-description"> {{desc}} </div> <div class="article-clickCount"> <img src="i/icon/read-grey.png" alt="阅读"/>{{clickCount}}阅读 </div> </div> </li> {{/each}}</script><script type=text/x-handlebars-template id=swiperBox><div class="swiper-slide" style="width: 100px;"></div> {{#each this}} <div class="swiper-slide" onclick="loadArticles({{id}})">{{tag}}</div> {{/each}}</script><script src=js/index.min.js></script></html>
