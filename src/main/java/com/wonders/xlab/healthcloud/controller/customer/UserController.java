@@ -22,6 +22,8 @@ import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.service.hcpackage.UserPackageOrderService;
 import com.wonders.xlab.healthcloud.utils.*;
 import net.sf.ehcache.Cache;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -212,7 +214,7 @@ public class UserController extends AbstractBaseController<User, Long> {
                 }
             }
         } catch (Exception e) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage(e.getLocalizedMessage());
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("登陆失败");
         }
     }
 
@@ -244,6 +246,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         user.setGroupId(objectMapper.readValue(responseEntity.getBody().toString(), ChatGroupsResponseBody.class).getData().getGroupid());
         user.setTel(idenCode.getTel());
         user.setAppPlatform(idenCode.getAppPlatform());
+        user.setInviteCode(RandomStringUtils.random(1,"abcdefghijklmnopqrstuvwxyz") + RandomStringUtils.random(3, "0123456789"));
         user = userRepository.save(user);
         return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("注册用户成功，并成功创建群组");
     }
@@ -317,10 +320,12 @@ public class UserController extends AbstractBaseController<User, Long> {
      * 邀约小伙伴
      * @return
      */
-    @RequestMapping(value = "inviteFriend/{userId}/{mobiles}", method = RequestMethod.POST)
-    public ControllerResult inviteFriend(@PathVariable long userId, String userName, @PathVariable String mobiles) {
+    @RequestMapping(value = "inviteFriend/{userId}/{userName}/{mobiles}", method = RequestMethod.GET)
+    public ControllerResult inviteFriend(@PathVariable long userId,@PathVariable String userName, @PathVariable String mobiles) {
 
-        int i = SmsUtils.inviteFriend(userName, mobiles);
+        User user = userRepository.findOne(userId);
+
+        int i = SmsUtils.inviteFriend(user.getNickName(), mobiles);
 
         AddressBook addressBook = new AddressBook(userName, mobiles);
 
@@ -329,8 +334,8 @@ public class UserController extends AbstractBaseController<User, Long> {
         if (i == 0) {
 
             addressBookRepository.save(addressBook);
-            return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("好友邀请成功!");
 
+            return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("好友邀请成功!");
         }
 
         return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("好友邀请失败!");

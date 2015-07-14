@@ -61,12 +61,12 @@ public class User extends BaseInfo<Long> {
     /**
      * 用户积分
      */
-    private Integer integrals;
+    private int integrals = 0;
 
     /**
      * 邀请码
      */
-    private String inviteCod;
+    private String inviteCode;
 
     /**
      * 邀请二维码的url
@@ -107,20 +107,20 @@ public class User extends BaseInfo<Long> {
         this.appPlatform = appPlatform;
     }
 
-    public Integer getIntegrals() {
+    public int getIntegrals() {
         return integrals;
     }
 
-    public void setIntegrals(Integer integrals) {
+    public void setIntegrals(int integrals) {
         this.integrals = integrals;
     }
 
-    public String getInviteCod() {
-        return inviteCod;
+    public String getInviteCode() {
+        return inviteCode;
     }
 
-    public void setInviteCod(String inviteCod) {
-        this.inviteCod = inviteCod;
+    public void setInviteCode(String inviteCode) {
+        this.inviteCode = inviteCode;
     }
 
     public String getInviteUrl() {
