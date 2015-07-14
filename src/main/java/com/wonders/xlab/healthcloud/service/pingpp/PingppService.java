@@ -1,24 +1,11 @@
 package com.wonders.xlab.healthcloud.service.pingpp;
 
+import com.pingplusplus.Pingpp;
+import com.pingplusplus.exception.*;
+import com.pingplusplus.model.Charge;
 import com.wonders.xlab.healthcloud.dto.pingpp.PingDto;
-import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
-import com.wonders.xlab.healthcloud.repository.steward.StewardOrderRepository;
-import com.wonders.xlab.healthcloud.service.pingplusplus.Pingpp;
-import com.wonders.xlab.healthcloud.service.pingplusplus.exception.APIConnectionException;
-import com.wonders.xlab.healthcloud.service.pingplusplus.exception.APIException;
-import com.wonders.xlab.healthcloud.service.pingplusplus.exception.AuthenticationException;
-import com.wonders.xlab.healthcloud.service.pingplusplus.exception.InvalidRequestException;
-import com.wonders.xlab.healthcloud.service.pingplusplus.model.Channel;
-import com.wonders.xlab.healthcloud.service.pingplusplus.model.Charge;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,7 +50,12 @@ public class PingppService {
 
         Pingpp.apiKey = apiKey;
 
-        Charge charge = Charge.retrieve(id);
+        Charge charge = null;
+        try {
+            charge = Charge.retrieve(id);
+        } catch (ChannelException e) {
+            e.printStackTrace();
+        }
 
         return charge;
     }
