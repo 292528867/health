@@ -14,4 +14,6 @@ public interface AddressBookRepository extends MyRepository<AddressBook, Long> {
 
     @Query("from AddressBook ab where ab.user.id =:userId")
     List<AddressBook> findAllByUserId(@Param("userId") long userId);
+
+    AddressBook findByUserIdAndMobile(long userId,String mobile);
 }
