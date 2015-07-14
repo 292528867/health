@@ -351,7 +351,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         } else {
             // 判断自定义积分换算金额
-            if (integration >= 0 && integration <= 4) {
+            if (integration <= 4) {
                 amount = 0.01;
             } else if (integration >= 5 && integration <= 10) {
                 amount = 28;

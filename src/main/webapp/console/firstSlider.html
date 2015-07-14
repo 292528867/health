@@ -18,6 +18,18 @@
         img {
             max-height: 50px;
         }
+
+        .am-form-group{
+            height: 30px;;
+        }
+
+        .am-form-group label{
+            text-align: right;
+        }
+
+        .am-selected-btn{
+            width: 280px;
+        }
     </style>
 </head>
 <body>
@@ -70,27 +82,18 @@
                 <small>Info</small>
             </div>
         </div>
-<!--
         <div class="am-g">
             <div class="am-u-sm-12 am-u-md-6">
                 <div class="am-btn-toolbar">
                     <div class="am-btn-group am-btn-group-xs">
-                        <button type="button" class="am-btn am-btn-default" onclick="openAddType()"><span
-                                class="am-icon-plus"></span> 新增
+                        <button type="button" class="am-btn am-btn-default" onclick="changeType();">
+                            <span class="am-icon-plus" ></span> 新增
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="am-u-sm-12 am-u-md-3">
-                <div class="am-input-group am-input-group-sm">
-                    <input type="text" class="am-form-field">
-          <span class="am-input-group-btn">
-            <button class="am-btn am-btn-default" type="button">搜索</button>
-          </span>
-                </div>
-            </div>
+
         </div>
--->
 
 
         <div class="am-g">
@@ -99,119 +102,16 @@
                     <table class="am-table am-table-striped am-table-hover table-main">
                         <thead>
                         <tr>
-                            <th class="table-check"><input type="checkbox"/></th>
                             <th class="table-id">ID</th>
-                            <th class="table-title">板块名称</th>
+                            <th class="table-title">开关</th>
+                            <th class="table-title">层级</th>
+                            <th class="table-title">位置</th>
                             <th class="table-title">标题</th>
-                            <th class="table-title">描述</th>
                             <th class="table-set">操作</th>
                         </tr>
                         </thead>
                         <tbody id="allDatas">
-                        <tr>
-                            <td><input type="checkbox"></td>
-                            <td>1</td>
-                            <td><a href="#">发现</a></td>
-                            <td class="am-hide-sm-only">banner底下显示文字</td>
-                            <td class="am-hide-sm-only">如果有什么描述。</td>
-                            <td>
-                                <div class="am-btn-toolbar">
-                                    <div class="am-btn-group am-btn-group-xs">
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-pencil-square-o"></span> 编辑
-                                        </button>
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-arrow-up"></span> 置顶
-                                        </button>
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-check"></span> 启用
-                                        </button>
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-close"></span> 下架
-                                        </button>
 
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox"></td>
-                            <td>2</td>
-                            <td><a href="#">日程</a></td>
-                            <td class="am-hide-sm-only">banner底下显示文字</td>
-                            <td class="am-hide-sm-only">如果有什么描述。</td>
-                            <td>
-                                <div class="am-btn-toolbar">
-                                    <div class="am-btn-group am-btn-group-xs">
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-pencil-square-o"></span> 编辑
-                                        </button>
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-arrow-up"></span> 置顶
-                                        </button>
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-check"></span> 启用
-                                        </button>
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-close"></span> 下架
-                                        </button>
-
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox"></td>
-                            <td>3</td>
-                            <td><a href="#">管家</a></td>
-                            <td class="am-hide-sm-only">banner底下显示文字</td>
-                            <td class="am-hide-sm-only">如果有什么描述。</td>
-                            <td>
-                                <div class="am-btn-toolbar">
-                                    <div class="am-btn-group am-btn-group-xs">
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-pencil-square-o"></span> 编辑
-                                        </button>
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-arrow-up"></span> 置顶
-                                        </button>
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-check"></span> 启用
-                                        </button>
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-close"></span> 下架
-                                        </button>
-
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox"></td>
-                            <td>4</td>
-                            <td><a href="#">轻问诊</a></td>
-                            <td class="am-hide-sm-only">banner底下显示文字</td>
-                            <td class="am-hide-sm-only">如果有什么描述。</td>
-                            <td>
-                                <div class="am-btn-toolbar">
-                                    <div class="am-btn-group am-btn-group-xs">
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-pencil-square-o"></span> 编辑
-                                        </button>
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-arrow-up"></span> 置顶
-                                        </button>
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-check"></span> 启用
-                                        </button>
-                                        <button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"
-                                                onclick="changeType(1)"><span class="am-icon-close"></span> 下架
-                                        </button>
-
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
                         </tbody>
                     </table>
                     <!--
@@ -256,46 +156,79 @@
 
 <div class="am-modal " tabindex="-1" id="change-modal">
     <div class="am-modal-dialog">
-        <div class="am-modal-hd">修改banner
+        <div class="am-modal-hd">编辑
             <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
         </div>
         <div class="am-modal-bd">
             <fieldset>
+                <input type="hidden" id="id"/>
+                <input type="hidden" id="articleId"/>
                 <div class="am-form-group">
-                    <label for="change-title">标题</label>
-                    <input type="text" id="change-title" placeholder=""
-                           required name="change-title"/>
-                </div>
-                <div class="am-form-group">
-                    <label for="change-tag">简称</label>
-                    <input type="text" id="change-tag" placeholder=""
-                           required name="change-tag"/>
-                </div>
-                <div class="am-form-group">
-                    <label for="change-desc">描述</label>
-                    <input type="text" id="change-desc" placeholder=""
-                           required name="change-desc"/>
-                </div>
-                <div class="am-form-group type-add-form">
-                    <label for="change-firstRelatedIds">一级关联</label>
-                    <select multiple
-                            data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'secondary', searchBox:1}"
-                            id="change-firstRelatedIds" name="change-firstRelatedIds" class="type-select">
+                    <label for="bannerTag" class="am-u-sm-3">选择板块</label>
+                    <select id="bannerTag" class="am-u-sm-8">
+                        <option value="0">计划</option>
+                        <option value="1">发现</option>
+                        <option value="2">管家</option>
+                        <option value="3">问诊</option>
+                        <option value="4">商城</option>
+                        <option value="5">个人中心</option>
+                        <option value="6">购药</option>
                     </select>
                 </div>
-                <div class="am-form-group type-add-form">
-                    <label for="change-secondRelatedIds">二级关联</label>
-                    <select multiple
-                            data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'warning', dropUp:1, searchBox:1}"
-                            id="change-secondRelatedIds" name="change-secondRelatedIds" class="type-select">
+                <div class="am-form-group">
+                    <label for="bannerType" class="am-u-sm-3">选择层级</label>
+                    <select id="bannerType" class="am-u-sm-8">
+                        <option value="0">一级</option>
+                        <option value="1">二级</option>
                     </select>
                 </div>
-
-
-                <input type="hidden" id="change-id"/>
+                <div class="am-form-group am-hide">
+                    <label for="package" class="am-u-sm-3">选择服务包</label>
+                    <select id="package" class="am-u-sm-8" data-am-selected="{searchBox: 1,maxHeight: 300}" >
+                        <option value="0"></option>
+                    </select>
+                </div>
+                <div class="am-form-group am-hide">
+                    <label for="topic" class="am-u-sm-3">选择文章</label>
+                    <select id="topic" class="am-u-sm-8" data-am-selected="{searchBox: 1,maxHeight: 300}" >
+                        <option value="0"></option>
+                    </select>
+                </div>
+                <div class="am-form-group">
+                    <label for="enabled" class="am-u-sm-3">是否开启</label>
+                    <input type="checkbox" class="am-u-sm-1" id="enabled"/>
+                </div>
+                <div class="am-form-group">
+                    <label for="position" class="am-u-sm-3">显示位置</label>
+                    <input type="number" class="am-u-sm-8" id="position" value="0"/>
+                </div>
+                <div class="am-form-group">
+                    <label for="title" class="am-u-sm-3">标题</label>
+                    <input type="text" class="am-u-sm-8" id="title" />
+                </div>
+                <div class="am-form-group">
+                    <label for="picUrl" class="am-u-sm-3">配图url</label>
+                    <input type="text" class="am-u-sm-8" id="picUrl"/>
+                </div>
+                <div class="am-form-group">
+                    <label for="linkUrl" class="am-u-sm-3">链接url</label>
+                    <input type="text" class="am-u-sm-8" id="linkUrl"/>
+                </div>
+                <form action="http://101.231.124.8:45677/xlab-healthcloud/discovery/cms/uploadPicture" class="am-form"
+                      id="index-img-form" method="post"
+                      enctype="multipart/form-data">
+                    <fieldset>
+                        <img src="" alt="" id="index-img" style="height: 50px;"/>
+                        <input type="file" multiple accept="image/*" name="file"/>
+                        <button class="am-btn" type="submit" id="img-sub">上传</button>
+                    </fieldset>
+                </form>
             </fieldset>
-
-            <button class="am-btn am-btn-secondary" type="button" id="type-chage" onclick="changeTypeSub()">提交</button>
+            <div class="progress">
+                <div class="bar"></div>
+                <div class="percent">0%</div>
+            </div>
+            <button class="am-btn am-btn-secondary" type="button" id="type-change" onclick="updateBanner()">提交</button>
             <br/>
 
 
@@ -354,6 +287,41 @@
                 location.reload();
             }
         }
+
+        function showResponseIndex(responseText, statusText, xhr, $form) {
+            console.log('status: ' + statusText + '\n\nresponseText: \n' + responseText);
+            console.log(responseText);
+            if (responseText.ret_code == '0') {
+                $('#index-img').attr('src', responseText.ret_values);
+//                $('#index-img-index').attr('src', responseText.ret_values);
+                $('#picUrl').val(responseText.ret_values);
+                $('#index-img-sub').attr('disabled', false);
+//                $('#change-modal').modal('toggle'),
+                percent.html('上传成功');
+            }
+        }
+
+        $('#index-img-form').on('submit', function (e) {
+            var uploadUrl = commonUrl + "/discovery/cms/uploadPicture";
+            e.preventDefault(); // prevent native submit
+            console.log('正在提交');
+            $('#index-img-sub').attr('disabled', 'disabled');
+            $(this).ajaxSubmit({
+                        url: uploadUrl,
+                        target: '.am-padding-left',
+                        success: showResponseIndex,
+                        uploadProgress: function (event, position, total, percentComplete) {
+                            var percentVal = percentComplete + '%';
+                            bar.width(percentVal)
+                            if (percentComplete == 100) {
+                                percentVal = "<i class='am-icon-spinner am-icon-spin'></i> 请等待服务器提交";
+                            }
+                            percent.html(percentVal);
+                        }
+                    },
+                    function () {
+                    })
+        });
     });
 </script>
 <script src="js/indexEdit/firstSliderAdd.js"></script>
