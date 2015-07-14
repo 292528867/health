@@ -216,40 +216,34 @@
 		</dependencies>
 	</dependencyManagement>
 
-
-	<profiles>
-		<profile>
-			<id>hcDebug</id>
-			<properties>
-				<show>true</show>
-				<format>true</format>
-			</properties>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-		</profile>
-		<profile>
-			<id>hcDeploy</id>
-			<properties>
-				<show>false</show>
-				<format>false</format>
-			</properties>
-		</profile>
-	</profiles>
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.7</version>
-			</plugin>
-		</plugins>
+	  <resources>
+	    <resource>
+		  <directory>src/main/resources</directory>
+		  <filtering>true</filtering>
+		</resource>
+	  </resources>
 	</build>
+	<profiles>
+	  <profile>
+	  <id>hcDebug</id>
+	  	<properties>
+	      <show-sql>true</show-sql>
+		  <format_sql>true</format_sql>
+		  <jsonIndetn>true</jsonIndetn>
+		</properties>
+		<activation>
+	      <activeByDefault>true</activeByDefault>
+		</activation>
+	  </profile>
+	  <profile>
+	  <id>hcDeploy</id>
+		<properties>
+	      <show>false</show>
+		  <format>false</format>
+		  <jsonIndent>false</jsonIndent>
+		</properties>
+	  </profile>
+	</profiles>
 
 </project>

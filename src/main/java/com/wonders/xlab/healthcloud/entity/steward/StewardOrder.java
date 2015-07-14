@@ -62,6 +62,12 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
     private String payWay;
 
     /**
+     * 是否在服务期
+     */
+    @Transient
+    private boolean effective;
+
+    /**
      * 服务 一个用户服务对应多个管家服务
      */
     @ManyToMany
@@ -163,5 +169,13 @@ public class StewardOrder extends AbstractBaseEntity<Long> {
 
     public void setPayWay(String payWay) {
         this.payWay = payWay;
+    }
+
+    public boolean isEffective() {
+        return effective;
+    }
+
+    public void setEffective(boolean effective) {
+        this.effective = effective;
     }
 }

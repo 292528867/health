@@ -58,6 +58,23 @@ public class User extends BaseInfo<Long> {
 
     private String groupId;
 
+    /**
+     * 用户积分
+     */
+    private int integrals = 0;
+
+    /**
+     * 邀请码
+     */
+    private String inviteCode;
+
+    /**
+     * 邀请二维码的url
+     * @return
+     */
+    private String inviteUrl;
+
+
     public Set<HcPackage> getHcPackages() {
         return hcPackages;
     }
@@ -88,5 +105,29 @@ public class User extends BaseInfo<Long> {
 
     public void setAppPlatform(AppPlatform appPlatform) {
         this.appPlatform = appPlatform;
+    }
+
+    public int getIntegrals() {
+        return integrals;
+    }
+
+    public void setIntegrals(int integrals) {
+        this.integrals = integrals;
+    }
+
+    public String getInviteCode() {
+        return inviteCode;
+    }
+
+    public void setInviteCode(String inviteCode) {
+        this.inviteCode = inviteCode;
+    }
+
+    public String getInviteUrl() {
+        return inviteUrl;
+    }
+
+    public void setInviteUrl(String inviteUrl) {
+        this.inviteUrl = inviteUrl;
     }
 }
