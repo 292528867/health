@@ -426,7 +426,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
             servicedPeriodMap.put("detailServicedPeriod", detilServicedPeriod);
 
-            if (currentServicedPeriod > totalServicePeriod){
+            if (currentServicedPeriod >= totalServicePeriod){
                 stewardOrder.setEffective(false);
             }else
                 stewardOrder.setEffective(true);

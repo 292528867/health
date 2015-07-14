@@ -317,8 +317,8 @@ public class UserController extends AbstractBaseController<User, Long> {
      * 邀约小伙伴
      * @return
      */
-    @RequestMapping(value = "inviteFriend/{userId}", method = RequestMethod.POST)
-    public ControllerResult inviteFriend(@PathVariable long userId, String userName, String mobiles) {
+    @RequestMapping(value = "inviteFriend/{userId}/{mobiles}", method = RequestMethod.POST)
+    public ControllerResult inviteFriend(@PathVariable long userId, String userName, @PathVariable String mobiles) {
 
         int i = SmsUtils.inviteFriend(userName, mobiles);
 
@@ -329,7 +329,7 @@ public class UserController extends AbstractBaseController<User, Long> {
         if (i == 0) {
 
             addressBookRepository.save(addressBook);
-            return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("好久邀请成功!");
+            return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("好友邀请成功!");
 
         }
 
@@ -341,12 +341,12 @@ public class UserController extends AbstractBaseController<User, Long> {
      * 查询通讯录
      * @return
      */
+    @RequestMapping(value = "queryAddressBook/{userId}",method = RequestMethod.GET)
     public ControllerResult queryAddressBook(@PathVariable long userId){
 
         List <AddressBook> addressBooksList = addressBookRepository.findAllByUserId(userId);
-        return new ControllerResult<>().setRet_code(0).setRet_values(addressBooksList).setMessage("好久邀请成功!");
+        return new ControllerResult<>().setRet_code(0).setRet_values(addressBooksList).setMessage("好友邀请成功!");
     }
-
 
     @Override
     protected MyRepository<User, Long> getRepository() {
