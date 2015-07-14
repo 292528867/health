@@ -136,4 +136,15 @@ public class AppController {
 		return new ControllerResult<HealthInfoDto>().setRet_code(0).setRet_values(dto).setMessage("成功");
 	}
 	
+	@RequestMapping(value = "testadd/{userId}/{categoryId}")
+	public String testAddRelate(@PathVariable Long userId, @PathVariable Long categoryId) {
+		this.discoveryService.addUserCategoryRelated(userId, categoryId);
+		return "yeah";
+	}
+	
+	@RequestMapping(value = "testdelete/{userId}/{categoryId}")
+	public String testDeleteRelate(@PathVariable Long userId, @PathVariable Long categoryId) {
+		this.discoveryService.deleteUserCategoryRelated(userId, categoryId);
+		return "yeah";
+	}
 }

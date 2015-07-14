@@ -63,4 +63,16 @@ public interface DiscoveryService {
 	 */
 	HealthInfoDto detailHealthInfo(HealthInfo healthInfo);
 	
+	/**
+	 * 添加用户包关联。
+	 * @param userId
+	 * @param categoryId
+	 */
+	void addUserCategoryRelated(Long userId, Long categoryId);
+	/**
+	 * 删除用户包关联。
+	 * @param userId
+	 * @param categoryId
+	 */
+	void deleteUserCategoryRelated(Long userId, Long categoryId);
 }

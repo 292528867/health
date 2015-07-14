@@ -1,9 +1,9 @@
-var article = localStorage.getItem('article');
+var articleIdLocal = localStorage.getItem('articleId');
 var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
 var url = commonUrl + 'discovery/app/listInfo/';
 var articleId = window.location.search.substring(1);
 articleId = articleId.split('&')[0];
-
+var article;
 $.get(url + articleId, function (data) {
   article = data.ret_values;
   $('#detail-img').attr('src', article.pictureUrl);
@@ -20,7 +20,7 @@ $.get(url + articleId, function (data) {
     $('.banner-bg').show();
   }
 });
-if (article != null && JSON.parse(article).id == articleId) {
+if (articleIdLocal != null && articleIdLocal == articleId) {
   $('.detail-foot').show();
 }
 

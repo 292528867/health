@@ -22,6 +22,7 @@ import com.wonders.xlab.healthcloud.utils.Constant;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import net.sf.ehcache.Cache;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -182,15 +183,14 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         //判断该用户的消息是否已有人在处理
         long askTime = System.currentTimeMillis();
         User user = userRepository.findByTel(body.getFrom());
-        if(user == null){
+        if (user == null) {
             return new ControllerResult()
                     .setRet_code(-1)
                     .setRet_values("")
                     .setMessage("用户不存在");
         }
         String userAskTime = user.getId() + "_ASK_TIME";
-        questionCache.putIfAbsent(userAskTime, String.valueOf(askTime));
-        String askTimeStr = questionCache.getFromCache(userAskTime);
+        String askTimeStr = questionCache.putIfAbsent(userAskTime, String.valueOf(askTime));
         if (!String.valueOf(askTime).equals(askTimeStr)) {
             //已有其他线程处理，禁止重复提交
             return new ControllerResult()
@@ -456,10 +456,10 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             }
             //取最新的2条纪录发送给前台
             Map<String, Object> map = new HashMap<>();
-            map.put("toUser_equal",groupId );
+            map.put("toUser_equal", groupId);
             map.put("isShowForDoctor_equal", 0);
             List<EmMessages> list = emMessagesRepository.findAll(map);
-            emDoctorNumber.setList(list.subList(list.size()-2,list.size()));
+            emDoctorNumber.setList(list.subList(list.size() - 2, list.size()));
 
             emDoctorNumber.setLastQuestionStatus(0);
             emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
@@ -523,9 +523,25 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             final User user = userRepository.findByTel(userTel);
             final Doctor doctor = doctorRepository.findByTel(doctorTel);
             String key = user.getId() + "_RESPONDENT";
-            questionCache.putIfAbsent(key, doctor.getId().toString());
-            if (doctor.getId().toString().equals(questionCache.getFromCache(key))) {
+            //缓存中用户抢单医生是否匹配 匹配成功则抢单成功
+            if (doctor.getId().toString().equals(questionCache.putIfAbsent(key, doctor.getId().toString()))) {
                 questionCache.addToCache(key, RespondentType.doctor.toString());
+
+                //查询用户未处理的问题
+                List<QuestionOrder> questionOrderList = questionOrderRepository.findAll(
+                        new HashMap<String, Object>() {{
+                            put("user.id_equal", user.getId());
+                            put("questionStatus_equal", QuestionOrder.QuestionStatus.newQuestion);
+                        }}
+                );
+                //抢单成功更新用户问题订单表信息为处理中并管理到抢单医生
+                if (CollectionUtils.isNotEmpty(questionOrderList)) {
+                    QuestionOrder questionOrder = questionOrderList.get(0);
+                    questionOrder.setDoctor(doctor);
+                    questionOrder.setQuestionStatus(QuestionOrder.QuestionStatus.processing);
+                    questionOrderRepository.save(questionOrder);
+                }
+
                 return new ControllerResult<>()
                         .setRet_code(0)
                         .setRet_values(

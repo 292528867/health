@@ -229,4 +229,36 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 		// 不用缓存，直接返回
 		return this.discoveryService.detailHealthInfo(healthInfo);
 	}
+	
+	@Override
+	public void addUserCategoryRelated(Long userId, Long categoryId) {
+		// 删除缓存的推荐标签和推荐文章
+		Date date = new Date();
+		HealthCategoryDiscovery healthCategoryDiscovery = this.healthCategoryDiscoveryRepository.findByUserIdAndDiscoveryDate(
+			userId, DateUtils.covertToYYYYMMDD(date));
+		HealthInfoDiscovery healthInfoDiscovery = this.healthInfoDiscoveryRepository.findByUserIdAndDiscoveryDate(
+			userId, DateUtils.covertToYYYYMMDD(date));
+		if (healthCategoryDiscovery != null)
+			this.healthCategoryDiscoveryRepository.delete(healthCategoryDiscovery);
+		if (healthInfoDiscovery != null)
+			this.healthInfoDiscoveryRepository.delete(healthInfoDiscovery);
+		
+		this.discoveryService.addUserCategoryRelated(userId, categoryId);
+	}
+	
+	@Override
+	public void deleteUserCategoryRelated(Long userId, Long categoryId) {
+		// 删除缓存的推荐标签和推荐文章
+		Date date = new Date();
+		HealthCategoryDiscovery healthCategoryDiscovery = this.healthCategoryDiscoveryRepository.findByUserIdAndDiscoveryDate(
+			userId, DateUtils.covertToYYYYMMDD(date));
+		HealthInfoDiscovery healthInfoDiscovery = this.healthInfoDiscoveryRepository.findByUserIdAndDiscoveryDate(
+			userId, DateUtils.covertToYYYYMMDD(date));
+		if (healthCategoryDiscovery != null)
+			this.healthCategoryDiscoveryRepository.delete(healthCategoryDiscovery);
+		if (healthInfoDiscovery != null)
+			this.healthInfoDiscoveryRepository.delete(healthInfoDiscovery);
+		
+		this.discoveryService.deleteUserCategoryRelated(userId, categoryId);
+	}
 }

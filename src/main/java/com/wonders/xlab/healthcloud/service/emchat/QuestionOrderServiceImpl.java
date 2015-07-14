@@ -54,6 +54,13 @@ public class QuestionOrderServiceImpl implements QuestionOrderService {
         orderCache = new HCCacheProxy<>(questionOrderCache);
     }
 
+    /**
+     * 给医生推送问题
+     * 如果不指定医生账号，则给所有的医生推送消息
+     * 问题列表根据提问时间和推送次数升序排列，推送列表中第一条消息给医生。如果该问题已被处理，则跳过，推送下一条
+     * @param doctorTel
+     * @throws Exception
+     */
     @Override
     public void sendQuestionToDoctors(String doctorTel) throws Exception{
         //获取问题列表
@@ -61,10 +68,20 @@ public class QuestionOrderServiceImpl implements QuestionOrderService {
 
         //遍历，判断是否已推送
         for(QuestionOrder order : orderList){
-            String cachedKey = order.getUser().getId().toString().concat("_RESPONDENT");
+            String uidStr = order.getUser().getId().toString();
+            String respondentKey = uidStr.concat("_RESPONDENT");
             //从缓存中判断该信息是否已有医生回复
             if(StringUtils.isNotEmpty(orderCache.getFromCache(order.getUser().getId().toString()))){
-                if(StringUtils.isNotEmpty(questionCache.getFromCache(cachedKey))){
+                String timeKey = uidStr.concat("_ASK_TIME");
+                String askTimeStr = questionCache.getFromCache(timeKey);
+                if(StringUtils.isNotEmpty(askTimeStr)){
+                    long askTime = Long.parseLong(askTimeStr);
+                    //如果距离提问时间超过15分钟，不再发送给医生
+                    if(System.currentTimeMillis() - askTime > 15 * 60 * 1000){
+                        continue;
+                    }
+                }
+                if(StringUtils.isNotEmpty(questionCache.getFromCache(respondentKey))){
                     continue;
                 } else {
                     TexMessagesRequestBody requestBody = new TexMessagesRequestBody();
