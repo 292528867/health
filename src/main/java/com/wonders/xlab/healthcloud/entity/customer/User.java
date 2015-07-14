@@ -81,13 +81,6 @@ public class User extends BaseInfo<Long> {
      */
     private String inviteUrl = "http://7xk3mz.com2.z0.glb.qiniucdn.com/healthinfo-icon-1436850530261";
 
-    /**
-     * bug反馈二维码的url
-     * @return
-     */
-    private String bugUrl = "http://7xk3mz.com2.z0.glb.qiniucdn.com/healthinfo-icon-1436863087518";
-
-
     public Set<HcPackage> getHcPackages() {
         return hcPackages;
     }
@@ -150,14 +143,6 @@ public class User extends BaseInfo<Long> {
 
     public void setByInviteCode(String byInviteCode) {
         ByInviteCode = byInviteCode;
-    }
-
-    public String getBugUrl() {
-        return bugUrl;
-    }
-
-    public void setBugUrl(String bugUrl) {
-        this.bugUrl = bugUrl;
     }
 
 }

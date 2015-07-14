@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -41,6 +42,7 @@ public class BaiduLBSUtilTest extends TestCase {
     }
 
     @Test
+    @Scheduled(cron = "1,10,20,30,40,50 * * * * ?")
     public void testNearbyJob() throws Exception {
 
         String coordinate = "121.01094570986,31.003614615668";
@@ -49,4 +51,6 @@ public class BaiduLBSUtilTest extends TestCase {
         LBSResult result = baiduLBSUtil.nearbyJob(coordinate, distance);
         System.out.println(result.getContents());
     }
+
+
 }
