@@ -220,6 +220,7 @@ public class CmsController {
 		HealthInfoClickInfo healthInfoClickInfo = new HealthInfoClickInfo();
 		int clickCountA = RandomUtils.nextInt(10, 50); // 随机生成clickCountA，10到50之间
 		healthInfoClickInfo.setClickCountA(clickCountA);
+		healthInfoClickInfo.setVirtualClickCount(clickCountA); // 初始虚拟点击数为clickCountA
 		healthInfoClickInfo.setHealthInfo(info);
 		info.setHealthInfoClickInfo(healthInfoClickInfo);		
 		this.healthInfoRepository.save(info);

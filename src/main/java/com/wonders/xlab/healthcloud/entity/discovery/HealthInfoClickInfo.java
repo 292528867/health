@@ -7,6 +7,8 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -39,8 +41,8 @@ public class HealthInfoClickInfo extends AbstractPersistable<Long> {
 	private int clickCountA;
 	
 	/** 关联的具体健康信息 */
-	@OneToOne(mappedBy = "healthInfoClickInfo", optional = false, cascade = CascadeType.ALL)
-	@PrimaryKeyJoinColumn
+	@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+	@JoinColumn(name = "HEALTH_INFO_ID")
 	private HealthInfo healthInfo;
 	
 	// TODO：其他字段再议
