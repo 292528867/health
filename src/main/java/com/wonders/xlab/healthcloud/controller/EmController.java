@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
@@ -494,15 +495,17 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     public ControllerResult<Page<EmMessages>> queryHistoryRecords(String groupId, Pageable pageable, String type) {
  /*       Map<String, Object> filterMap = new HashMap<>();
         filterMap.put("toUser_equal", groupId);*/
+        Sort sort = new Sort(Sort.Direction.DESC,"createdDate");
+        Pageable pageable1 = new PageRequest(pageable.getPageNumber(),pageable.getPageSize(),sort);
         Page<EmMessages> list = null;
         if (type.equals("user")) {
-            list = emMessagesRepository.findAll(Collections.singletonMap("toUser_equal", groupId), pageable);
+            list = emMessagesRepository.findAll(Collections.singletonMap("toUser_equal", groupId), pageable1);
         }
         if (type.equals("doctor")) {
             Map<String, Object> map = new HashMap<>();
             map.put("toUser_equal", groupId);
             map.put("isShowForDoctor_equal", 1);
-            list = emMessagesRepository.findAll(map, pageable);
+            list = emMessagesRepository.findAll(map, pageable1);
         }
         return new ControllerResult<Page<EmMessages>>().setRet_code(0).setRet_values(list).setMessage("");
     }
