@@ -470,9 +470,9 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     /**
      * 查询历史纪录
-     *
      * @param groupId
      * @param pageable
+     * @param type 医生查询还是用户查询
      * @return
      */
     @RequestMapping(value = "/queryRecords", method = RequestMethod.GET)
@@ -484,7 +484,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             list = emMessagesRepository.findAll(Collections.singletonMap("toUser_equal", groupId), pageable);
         }
         if (type.equals("doctor")) {
-            list = emMessagesRepository.findByIsShowForDoctorAndToUserOrderByCreateDateDesc(1,groupId);
+           // list = emMessagesRepository.findByIsShowForDoctorAndToUserOrderByCreateDateDesc(1,groupId);
         }
         return new ControllerResult<Page<EmMessages>>().setRet_code(0).setRet_values(list).setMessage("");
     }

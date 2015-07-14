@@ -15,5 +15,5 @@ public interface EmMessagesRepository extends MyRepository<EmMessages, Long> {
 
     EmMessages findTop1ByFromUserOrderByCreatedDateDesc(String fromUser);
 
-    Page<EmMessages> findByIsShowForDoctorAndToUserOrderByCreateDateDesc(int flag,String toUser);
+ //   Page<EmMessages> findByIsShowForDoctorAndToUserOrderByCreateDateDesc(int flag,String toUser);
 }
