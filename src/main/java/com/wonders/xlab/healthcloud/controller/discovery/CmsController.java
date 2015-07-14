@@ -229,9 +229,9 @@ public class CmsController {
 	
 	// 查询分类健康信息
 	@RequestMapping(value = "listInfo/{healthCategoryId}", method = RequestMethod.GET)
-	public ControllerResult<?> listHealthInfo(@PathVariable Long healthCategoryId, Pageable pageable) {
+	public ControllerResult<?> listHealthInfo(@PathVariable Long healthCategoryId) {
 		return new ControllerResult<List<HealthInfo>>().setRet_code(0).setRet_values(
-				this.healthInfoRepository.findByHealthCategoryId(healthCategoryId, pageable)).setMessage("成功");
+				this.healthInfoRepository.findByHealthCategoryId(healthCategoryId, null)).setMessage("成功");
 	}
 	
 	// 查询分类健康信息
