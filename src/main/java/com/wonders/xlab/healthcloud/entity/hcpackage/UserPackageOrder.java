@@ -3,10 +3,7 @@ package com.wonders.xlab.healthcloud.entity.hcpackage;
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by mars on 15/7/8.
@@ -24,6 +21,7 @@ public class UserPackageOrder extends AbstractBaseEntity<Long> {
     private HcPackage hcPackage;
 
     /** 健康包计划 逗号隔开 */
+    @Lob
     private String hcPackageDetailIds;
 
     /** 循环次数 */
