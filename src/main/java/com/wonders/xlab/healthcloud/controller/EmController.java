@@ -504,7 +504,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         if (type.equals("doctor")) {
             Map<String, Object> map = new HashMap<>();
             map.put("toUser_equal", groupId);
-            map.put("isShowForDoctor_equal", 1);
+            map.put("isShowForDoctor_equal", 0);
             list = emMessagesRepository.findAll(map, pageable1);
         }
         return new ControllerResult<Page<EmMessages>>().setRet_code(0).setRet_values(list).setMessage("");

@@ -1,146 +1,199 @@
 /**
  * Created by wade on 15/5/25.
  */
-var allTypeUrl = commonUrl + "discovery/cms/listCategory/",
-    groupTypeUrl= commonUrl +'discovery/cms/listCategory/groupinfo';
+commonUrl="http://10.10.10.219:8080/";
+var packageUrl= commonUrl +'hcPackage/listHcPackage',
+    bannerListUrl= commonUrl +'banner/listBannerForConsole',
+    topicListUrl= commonUrl +'banner/retrieveHealthInfos/',
+    addBanner= commonUrl +'banner/addBanner',
+    updateBannerUrl= commonUrl +'banner/updateBanner/';
 
-/*
-$.get(allTypeUrl, function (data) {
-    console.log(data);
-    //  location.reload();
-    var datas = '';
-    $.each(data.ret_values, function (n, value) {
-        datas += "<tr style='display: none' ><td><input type='checkbox'/></td><td>" +
-        value.id +
-        "</td>" +
-        "<td><a href='#'>" + value.title + "</a></td>" +
-        "<td class='am-hide-sm-only'>" + value.tag + "</td>" +
-        "<td class='am-hide-sm-only'>" + value.description + "</td>" +
-        "<td><div class='am-btn-toolbar'><div class='am-btn-group am-btn-group-xs'>" +
-        "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick='changeType(" + value.id + ")'>" +
-        "<span class='am-icon-pencil-square-o'></span> 编辑</button>" ;
-        datas += "</button>" +
-*/
-/*
-        "<button type='button' class='am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only' " +
-        "onclick='deleteCourse(" + value.id + ")'  >" +
-        "<span class='am-icon-trash-o'></span> 删除</button>" +
-*//*
-
-        "</div></div></td></tr>";
-    });
-    $("#allDatas").append(datas);
-    $("#allDatas tr").fadeIn(300);
-    //customer = null;
-});
-*/
 
 //编辑
-function changeType(id) {
+function changeType(e) {
+    $("#package,#topic").closest(".am-form-group").addClass("am-hide");
+    $(".am-modal-bd input,.am-modal-bd select").each(function(){
+        if($(this).attr("id")=="package")
+             return true;
+        $(this).val("");
+    });
+    if(e){
+        var data= eval("("+$(e).closest("tr").attr("data-all")+")");
+        console.log(data);
+        $("#id").val(data.id);
+        $("#title").val(data.title);
+        $("#picUrl").val(data.picUrl);
+        $("#linkUrl").val(data.linkUrl);
+        $("#position").val(data.position);
+        $("#bannerTag").val(data.bannerTag);
+        $("#bannerType").val(data.bannerType);
+        $("#articleId").val(data.articleId);
+    }
     $('#change-modal').modal('toggle');
-    $.get(allTypeUrl+id, function (data) {
-        data = data.ret_values;
-        //console.log(data);
-        $('#change-title').val(data.title);
-        $('#change-tag').val(data.tag);
-        $('#change-desc').val(data.description);
-        $('#change-id').val(data.id);
-        var $changeFirst = $('#change-firstRelatedIds'),
-            firstRelatedIds=data.firstRelatedIds.split(','),
-            $changeSecond = $('#change-secondRelatedIds'),
-            secondRelatedIds =data.secondRelatedIds.split(',');
-
-        var $selectedOne = changeSelected($changeFirst, firstRelatedIds),
-            $selectedTwo = changeSelected($changeSecond, secondRelatedIds);
-
-        if (!$.AMUI.support.mutationobserver) {
-            $selectedOne.trigger('changed.selected.amui');
-            $selectedTwo.trigger('changed.selected.amui');
-        }
 
 
-    })
 }
-//更改select选项框
-function changeSelected($change, relatedIds) {
-    $change.find('option').each(function () {
-        $(this).attr('selected', false);
+/**
+ * 获取所有健康包
+ */
+function getPackageList(){
+    $.get(packageUrl, function (groupTypes) {
+        console.log(groupTypes);
+        var groups = groupTypes.ret_values,
+            typeList = '';
+        $.each(groups, function (n, group) {
+            typeList+='<option value="'+group.id+'">'+group.title+'</option>';
+        });
+        $("#package").empty().append(typeList);
     });
-    for (var n in  relatedIds) {
-        //console.log(relatedIds[n]);
-        var $selected = $change.find('option[value="' + relatedIds[n] + '"]');
-        $selected.attr('selected', true);
-    }
-    return $selected;
 }
 
-function deleteCourse(course_id) {
-    confirm_ = confirm('确定删除？');
-    if (confirm_) {
-        $.ajax({
-            type: "DELETE",
-            url: commonUrl + 'course/' + course_id,
-            success: function (msg) {
-                location.reload();
-            },
-            error: function () {
-                alert('已经有人选择了课程');
-            }
-
+/**
+ * 根据包  获取文章
+ */
+function getTopicList(id){
+    $.get(topicListUrl+id, function (groupTypes) {
+        console.log(groupTypes);
+        var groups = groupTypes.ret_values,
+            typeList = '';
+        $.each(groups, function (n, group) {
+            typeList+='<option value="'+group.id+'">'+group.title+'</option>';
         });
-    }
-};
-
-$.get(groupTypeUrl, function (groupTypes) {
-
-    var groups = groupTypes.ret_values,
-        typeList = '',
-        categorieList= '';
-    $.each(groups, function (n, group) {
-        typeList += '<optgroup label=\''+group.type+'\'>';
-        $.each(group.categories, function (n, categorie) {
-            categorieList+= '<option value=\''+categorie.id+'\'>'+categorie.title+'</option>'
-        });
-        typeList+=categorieList;
-        typeList += '</optgroup>';
+        $("#topic").empty().append(typeList);
     });
-    $('.type-select').append(typeList);
-    $('#firstRelatedIds').on('change', changeSecond);
-    $('#change-firstRelatedIds').on('change', changeSecondChange);
+}
+
+$("#bannerTag").on("change",function(){
+    //如果是计划或者发现的 加载package
+    if($(this).val()==0 || $(this).val()==1){
+        $("#package,#topic").closest(".am-form-group").removeClass("am-hide");
+    }else{
+        $("#package,#topic").closest(".am-form-group").addClass("am-hide");
+        $("#topic").html("<option></option>");
+        $("#articleId").val("");
+    }
 });
 
-//一级关联分类选择好以后，对二级关联进行不可选操作
-function changeSecond() {
-    var $selected = $('#secondRelatedIds');
-    var categories = $(this).val();
-    if (categories) {
-        var options = $selected.find('option');
-        for (var n in options) {
-            options[n].disabled=false;
+$("#package").on("change",function(){
+    $("#topic").html("<option></option>");
+    getTopicList($(this).val());
+});
+
+getPackageList();
+
+/**
+ * 获取 所有banner
+ * */
+$.post(bannerListUrl, function (groupTypes) {
+    console.log(groupTypes);
+    var groups = groupTypes.ret_values,
+        typeList = '';
+    var text="",open="";
+    $.each(groups, function (n, group) {
+
+        if(group.bannerType){
+            text="二级";
+        }else{
+            text="一级";
         }
-        for (var i in categories) {
-            var $disabled = $selected.find('option[value="'+categories[i]+'"]');
-            $disabled[0].disabled = true;
+        if(group.enabled){
+            open="禁用";
+        }else{
+            open="启用";
         }
-        if (!$.AMUI.support.mutationobserver) {
-            $selected.trigger('changed.selected.amui');
-        }
+        typeList+='<tr data-all=\''+JSON.stringify(group)+'\'>'+
+        '<td>'+group.id+'</td>'+
+        '<td><a href="javascript:void(0)" onclick="enabledBanner(this)">'+ open +'</a></td>'+
+        '<td>'+ text +'</td>'+
+        '<td class="am-hide-sm-only">'+ group.position +'</td>'+
+        '<td class="am-hide-sm-only">'+ group.title +'</td>'+
+        '<td>'+
+        '<div class="am-btn-toolbar">'+
+        '<div class="am-btn-group am-btn-group-xs">'+
+        '<button class="am-btn am-btn-default am-btn-xs am-text-secondary" type="button"'+
+        'onclick="changeType(this)"><span class="am-icon-pencil-square-o"></span> 编辑'+
+        '</button>'+
+        '</div>'+
+        '</div>'+
+        '</td>'+
+        '</tr>';
+    });
+    $('#allDatas').empty().append(typeList);
+});
+
+
+/**
+ * 提交
+ */
+function updateBanner(){
+    var title=$("#title").val();
+    var picUrl=$("#picUrl").val();
+    var linkUrl=$("#linkUrl").val();
+    var position=$("#position").val();
+    var bannerTag=$("#bannerTag").val();
+    var bannerType=$("#bannerType").val();
+
+    if(picUrl==""){
+        alert("请先上传图片");
     }
+    var json ={
+        "title": title,
+        "picUrl": picUrl,
+        "linkUrl":linkUrl,
+        "bannerTag":bannerTag,
+        "bannerType":bannerType,
+        "position":position,
+        "enabled":true
+    };
+
+
+    if($("#id").val()){
+        json.id = $("#id").val();
+    }
+    postBanner(json);
+
 }
-function changeSecondChange() {
-    var $selected = $('#change-secondRelatedIds');
-    var categories = $(this).val();
-    if (categories) {
-        var options = $selected.find('option');
-        for (var n in options) {
-            options[n].disabled=false;
-        }
-        for (var i in categories) {
-            var $disabled = $selected.find('option[value="'+categories[i]+'"]');
-            $disabled[0].disabled = true;
-        }
-        if (!$.AMUI.support.mutationobserver) {
-            $selected.trigger('changed.selected.amui');
-        }
+
+function enabledBanner(e){
+    var param =eval("("+$(e).closest("tr").attr("data-all")+")");
+    var json ={
+        "title": param.title,
+        "picUrl": param.picUrl,
+        "linkUrl":param.linkUrl,
+        "bannerTag":param.bannerTag,
+        "bannerType":param.bannerType,
+        "position":param.position,
+        "enabled":param.enabled?false:true,
+        "id":param.id
+    };
+    postBanner(json);
+}
+
+function postBanner(json){
+    var ajaxUrl = addBanner;
+    if(json.id){
+        ajaxUrl=updateBannerUrl+json.id;
+        delete json.id;
     }
+
+    json = JSON.stringify(json);
+    $.ajax({
+        url: ajaxUrl,
+        type: "POST",
+        data: json,
+        dataType: "json",
+        headers: {"Accept": "application/json", "Content-Type": "application/json; charset=UTF-8"},
+        success: function (response) {
+            console.log(response);
+            if (response.ret_code == 0) {
+                location.reload();
+            }
+            else
+                alert(response.message);
+
+        },
+        error: function () {
+            alert('error');
+        }
+    });
 }

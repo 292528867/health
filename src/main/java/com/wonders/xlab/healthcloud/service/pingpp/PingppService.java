@@ -32,7 +32,7 @@ public class PingppService {
         chargeParams.put("subject", "健康套餐");
         chargeParams.put("body", "健康云养生套餐");
         chargeParams.put("client_ip", "127.0.0.1");
-//        chargeParams.put("channel", Channel.WECHAT);
+        //支付宝:alipay 微信:wx
         chargeParams.put("channel", payWay);
         Map<String, String> initialMetadata = new HashMap<String, String>();
         chargeParams.put("metadata", initialMetadata);
