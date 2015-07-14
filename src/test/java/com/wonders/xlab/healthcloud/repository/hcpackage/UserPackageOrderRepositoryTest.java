@@ -93,4 +93,10 @@ public class UserPackageOrderRepositoryTest {
         Object joinPlan = userPackageOrderService.joinPlan(47l, 1l);
         System.out.println("joinPlan = " + joinPlan);
     }
+
+    @Test
+    public void testFindSizeByUserIdAndPackageComplete() throws Exception {
+        int size = userPackageOrderRepository.findSizeByUserIdAndPackageComplete(54l, false);
+        Assert.isTrue(size == 2);
+    }
 }
