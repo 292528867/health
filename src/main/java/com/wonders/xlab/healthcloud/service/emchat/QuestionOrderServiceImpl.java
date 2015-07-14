@@ -50,7 +50,7 @@ public class QuestionOrderServiceImpl implements QuestionOrderService {
 
     @PostConstruct
     private void init(){
-        questionCache = new HCCacheProxy(userQuestionCache);
+        questionCache = new HCCacheProxy<>(userQuestionCache);
         orderCache = new HCCacheProxy<>(questionOrderCache);
     }
 
@@ -96,6 +96,8 @@ public class QuestionOrderServiceImpl implements QuestionOrderService {
                     if(HttpStatus.OK == result.getStatusCode()){
                         order.setPushCount(order.getPushCount() + 1);
                         orderRepository.save(order);
+                        //每次只群推一条消息，发送成功以后就退出循环
+                        break;
                     }
                 }
             } else {
