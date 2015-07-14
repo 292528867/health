@@ -500,27 +500,31 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      */
     @RequestMapping(value = "rushOrder/{userTel}/{doctorTel}")
     public ControllerResult rushOrder(@PathVariable final String userTel, @PathVariable final String doctorTel) {
-        final User user = userRepository.findByTel(userTel);
-        final Doctor doctor = doctorRepository.findByTel(doctorTel);
-        if (questionCache.putIfAbsent(user.getId() + "_RESPONDENT", String.valueOf(doctor.getId())).equals(doctor.getId())) {
-            questionCache.addToCache(user.getId() + "_RESPONDENT_TYPE", RespondentType.doctor.toString());
-            return new ControllerResult<>()
-                    .setRet_code(0)
-                    .setRet_values(
-                            new HashMap<String, Object>() {{
-                                put("userId", user.getId());
-                                put("groupId", user.getGroupId());
-                            }}
-                    )
-                    .setMessage("抢单成功！");
-        } else {
-            try {
+        try {
+            final User user = userRepository.findByTel(userTel);
+            final Doctor doctor = doctorRepository.findByTel(doctorTel);
+            String key = user.getId() + "_RESPONDENT";
+            questionCache.putIfAbsent(key, doctor.getId().toString());
+            if (doctor.getId().toString().equals(questionCache.getFromCache(key))) {
+                questionCache.addToCache(key, RespondentType.doctor.toString());
+                return new ControllerResult<>()
+                        .setRet_code(0)
+                        .setRet_values(
+                                new HashMap<String, Object>() {{
+                                    put("userId", user.getId());
+                                    put("groupId", user.getGroupId());
+                                    put("userTel", userTel);
+                                }}
+                        )
+                        .setMessage("抢单成功！");
+            } else {
                 questionOrderService.sendQuestionToDoctors(doctor.getTel());
                 return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("抢单失败！");
-            } catch (Exception e) {
-                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("抢单失败！");
             }
+        } catch (Exception e) {
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("抢单失败！");
         }
+
     }
 
 }
