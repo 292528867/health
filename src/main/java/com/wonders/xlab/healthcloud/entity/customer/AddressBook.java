@@ -3,6 +3,7 @@ package com.wonders.xlab.healthcloud.entity.customer;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -23,7 +24,8 @@ public class AddressBook extends AbstractPersistable<Long> {
      */
     private String mobile;
 
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     public AddressBook(String name, String mobile) {

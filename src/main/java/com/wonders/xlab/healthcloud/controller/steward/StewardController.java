@@ -431,6 +431,11 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
             servicedPeriodMap.put("detailServicedPeriod", detilServicedPeriod);
 
+            if (currentServicedPeriod >= totalServicePeriod){
+                stewardOrder.setEffective(false);
+            }else
+                stewardOrder.setEffective(true);
+
             stewardOrder.setServicedPeriodStatus(servicedPeriodMap);
 
             return new ControllerResult<StewardOrder>().setRet_code(0).setRet_values(stewardOrder).setMessage("获取订单成功！");
