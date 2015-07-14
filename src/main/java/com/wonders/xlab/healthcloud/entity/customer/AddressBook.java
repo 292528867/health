@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * Created by lixuanwu on 15/7/12.
@@ -28,6 +29,11 @@ public class AddressBook extends AbstractPersistable<Long> {
     public enum InviteStatus{
         邀请中,已添加
     }
+
+    /**
+     * 创建时间
+     */
+    private Date createDate = new Date();
 
     /**
      * 邀请状态
@@ -76,5 +82,13 @@ public class AddressBook extends AbstractPersistable<Long> {
 
     public void setInviteStatus(InviteStatus inviteStatus) {
         this.inviteStatus = inviteStatus;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 }
