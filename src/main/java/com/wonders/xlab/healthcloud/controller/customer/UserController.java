@@ -246,7 +246,10 @@ public class UserController extends AbstractBaseController<User, Long> {
         user.setGroupId(objectMapper.readValue(responseEntity.getBody().toString(), ChatGroupsResponseBody.class).getData().getGroupid());
         user.setTel(idenCode.getTel());
         user.setAppPlatform(idenCode.getAppPlatform());
-        user.setInviteCode(RandomStringUtils.random(1,"abcdefghijklmnopqrstuvwxyz") + RandomStringUtils.random(3, "0123456789"));
+
+        //邀请码唯一
+
+        user.setInviteCode(RandomStringUtils.random(1, "abcdefghijklmnopqrstuvwxyz") + RandomStringUtils.random(3, "0123456789"));
         user = userRepository.save(user);
         return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("注册用户成功，并成功创建群组");
     }
@@ -318,10 +321,11 @@ public class UserController extends AbstractBaseController<User, Long> {
 
     /**
      * 邀约小伙伴
+     *
      * @return
      */
     @RequestMapping(value = "inviteFriend/{userId}/{userName}/{mobiles}", method = RequestMethod.GET)
-    public ControllerResult inviteFriend(@PathVariable long userId,@PathVariable String userName, @PathVariable String mobiles) {
+    public ControllerResult inviteFriend(@PathVariable long userId, @PathVariable String userName, @PathVariable String mobiles) {
 
         User user = userRepository.findOne(userId);
 
@@ -344,13 +348,67 @@ public class UserController extends AbstractBaseController<User, Long> {
 
     /**
      * 查询通讯录
+     *
      * @return
      */
-    @RequestMapping(value = "queryAddressBook/{userId}",method = RequestMethod.GET)
-    public ControllerResult queryAddressBook(@PathVariable long userId){
+    @RequestMapping(value = "queryAddressBook/{userId}", method = RequestMethod.GET)
+    public ControllerResult queryAddressBook(@PathVariable long userId) {
 
-        List <AddressBook> addressBooksList = addressBookRepository.findAllByUserId(userId);
+        List<AddressBook> addressBooksList = addressBookRepository.findAllByUserId(userId);
         return new ControllerResult<>().setRet_code(0).setRet_values(addressBooksList).setMessage("好友邀请成功!");
+    }
+
+    /**
+     * 验证邀请码
+     *
+     * @return
+     */
+    @RequestMapping(value = "checkoutInviteCode", method = RequestMethod.POST)
+    public ControllerResult checkoutInviteCode(Long userId,String inviteCode) {
+
+        User friendUser = userRepository.findByInviteCode(inviteCode);
+
+        User user = userRepository.findOne(userId);
+
+        //验证成功(朋友二维码存在且从未填写过邀请码)
+        if (null != friendUser && null != user) {
+
+            //不能填写自己的邀请码
+            if (inviteCode.equals(user.getInviteCode())){
+
+                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("不能输入自己的邀请码!");
+
+            }else {
+
+                //邀请码只能填写一次
+                if (null == user.getByInviteCode()){
+
+                    AddressBook addressBook = addressBookRepository.findByUserIdAndMobile(friendUser.getId(), user.getTel());
+                    if (null != addressBook) {
+
+                        addressBook.setInviteStatus(AddressBook.InviteStatus.已添加);
+
+                        addressBookRepository.save(addressBook);
+                    }
+
+                    user.setIntegrals(user.getIntegrals() + 5);
+                    user.setByInviteCode(inviteCode);
+                    userRepository.save(user);
+
+                    friendUser.setIntegrals(friendUser.getIntegrals() + 5);
+                    userRepository.save(friendUser);
+
+                    return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("邀请码验证成功!");
+
+                }else {
+
+                    return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("不能重复填写邀请码!");
+                }
+            }
+        }
+
+        return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("邀请码验证失败!");
+
     }
 
     @Override

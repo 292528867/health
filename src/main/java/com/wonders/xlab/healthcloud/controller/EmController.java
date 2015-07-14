@@ -17,6 +17,7 @@ import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.service.WordAnalyzerService;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
+import com.wonders.xlab.healthcloud.service.emchat.QuestionOrderService;
 import com.wonders.xlab.healthcloud.utils.Constant;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
@@ -75,6 +76,9 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     private HCCacheProxy<String, String> questionCache;
 
     private HCCacheProxy<String, String> orderCache;
+
+    @Autowired
+    private QuestionOrderService questionOrderService;
 
     @Override
     protected MyRepository<EmMessages, Long> getRepository() {
@@ -499,7 +503,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * @param doctorTel 医生电话
      * @return 成功返回userId和环信groupId
      */
-    @RequestMapping(value = "rushOrder")
+    @RequestMapping(value = "rushOrder/{userTel}/{doctorTel}")
     public ControllerResult rushOrder(@PathVariable final String userTel, @PathVariable final String doctorTel) {
         final User user = userRepository.findByTel(userTel);
         final Doctor doctor = doctorRepository.findByTel(doctorTel);
@@ -515,7 +519,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                     )
                     .setMessage("抢单成功！");
         } else {
-            return new ControllerResult().setRet_code(-1).setRet_values("").setMessage("抢单失败！");
+            try {
+                questionOrderService.sendQuestionToDoctors(doctor.getTel());
+                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("抢单失败！");
+            } catch (Exception e) {
+                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("抢单失败！");
+            }
         }
     }
 

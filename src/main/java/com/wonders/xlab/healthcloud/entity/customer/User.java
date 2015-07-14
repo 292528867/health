@@ -69,10 +69,21 @@ public class User extends BaseInfo<Long> {
     private String inviteCode;
 
     /**
+     * 被邀请码
+     */
+    private String ByInviteCode;
+
+    /**
      * 邀请二维码的url
      * @return
      */
     private String inviteUrl;
+
+    /**
+     * bug反馈二维码的url
+     * @return
+     */
+    private String bugUrl;
 
 
     public Set<HcPackage> getHcPackages() {
@@ -130,4 +141,21 @@ public class User extends BaseInfo<Long> {
     public void setInviteUrl(String inviteUrl) {
         this.inviteUrl = inviteUrl;
     }
+
+    public String getByInviteCode() {
+        return ByInviteCode;
+    }
+
+    public void setByInviteCode(String byInviteCode) {
+        ByInviteCode = byInviteCode;
+    }
+
+    public String getBugUrl() {
+        return bugUrl;
+    }
+
+    public void setBugUrl(String bugUrl) {
+        this.bugUrl = bugUrl;
+    }
+
 }

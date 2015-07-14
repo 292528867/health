@@ -15,4 +15,6 @@ public interface UserRepository extends MyRepository<User,Long>,UserRepositoryCu
     User queryUserHealthInfo(Long userId);
 
     User findByTel(String tel);
+
+    User findByInviteCode(String inviteCode);
 }
