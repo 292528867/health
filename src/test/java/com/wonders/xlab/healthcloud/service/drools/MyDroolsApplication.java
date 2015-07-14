@@ -18,7 +18,7 @@ public class MyDroolsApplication {
 		ApplicationContext ctx = app.run(args);
 		
 		DiscoveryArticleRuleService discoveryArticleRuleService = ctx.getBean(DiscoveryArticleRuleService.class);
-		discoveryArticleRuleService.testRule();
+//		discoveryArticleRuleService.testRule();
 		
 	}
 }

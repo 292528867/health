@@ -2,6 +2,9 @@ package com.wonders.xlab.healthcloud.service.discovery;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.wonders.xlab.healthcloud.dto.discovery.HealthInfoDto;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
@@ -30,12 +33,13 @@ public interface DiscoveryService {
 	 */
 	List<HealthCategory> getRecommandTag(User user, HealthCategory... categories);
 	/**
-	 * 获取指定分类标签，某个用户的健康info信息
+	 * 分页获取指定分类标签，某个用户的健康info信息
 	 * @param healthCategory 健康分类
 	 * @param user 用户
+	 * @pageable 分页对象
 	 * @return 所有信息文章
 	 */
-	List<HealthInfoDto> getTagInfos(HealthCategory healthCategory, User user);
+	Page<HealthInfoDto> getTagInfos(HealthCategory healthCategory, User user, Pageable pageable);
 	
 	/**
 	 * 获取推荐文章。

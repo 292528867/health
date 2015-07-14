@@ -3,28 +3,36 @@ package com.wonders.xlab.healthcloud.service.discovery;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.wonders.xlab.healthcloud.dto.discovery.HealthInfoDto;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfoClickInfo;
+import com.wonders.xlab.healthcloud.entity.discovery.HealthInfoDiscovery;
+import com.wonders.xlab.healthcloud.entity.discovery.HealthInfoUserClickInfo;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoClickInfoRepository;
+import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoDiscoveryRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoRepository;
+import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoUserClickInfoRepository;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.DiscoveryArticleRuleService;
+import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoClickSample;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoSample;
 import com.wonders.xlab.healthcloud.service.drools.discovery.tag.DiscoveryTagRuleService;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
@@ -49,6 +57,10 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 	private HealthInfoRepository healthInfoRepository;
 	@Autowired
 	private HealthInfoClickInfoRepository healthInfoClickInfoRepository;
+	@Autowired
+	private HealthInfoUserClickInfoRepository healthInfoUserClickInfoRepository;
+	@Autowired
+	private HealthInfoDiscoveryRepository healthInfoDiscoveryRepository;
 	
 	@Override
 	public List<HealthCategory> getRecommandTag(User user) {
@@ -100,155 +112,166 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 	
 	@Override
 	public List<HealthInfoDto> getRecommandArticles(User user) {
-		List<HealthInfo> healthInfos_1 = new ArrayList<>();
-		// 用户关心分类下的健康信息文章
+		// 1、查出首页配置给发现的文章1篇（目前没有）
+		// TODO：
+		
+		// 2、查出用户关心分类下文章4篇
+		List<HealthInfo> healthInfos_2 = new ArrayList<>();
 		User user_all = this.userRepository.queryUserHealthInfo(user.getId());
 		for (HealthCategory healthCategory : user_all.getHcs()) 
-			healthInfos_1.addAll(healthCategory.getHins());			
-		Map<Long, Long> idMaps = discoveryArticleRuleService.pushArticles(user.getId(), healthInfos_1, 4);
-		
-		List<HealthInfo> healthInfos = this.healthInfoRepository.findAll(idMaps.keySet());
-		List<HealthInfoDto> healthInfoDtoes = new ArrayList<HealthInfoDto>();
-		for (HealthInfo h : healthInfos) {
-			HealthInfoDto dto = new HealthInfoDto().toNewHealthInfoDto(h); 
-			dto.setClickCount(idMaps.get(h.getId()));
-			healthInfoDtoes.add(dto);
+			healthInfos_2.addAll(healthCategory.getHins());
+		List<HealthInfoSample> healthInfoSamples_2 = new ArrayList<>();
+		for (HealthInfo healthInfo : healthInfos_2) {
+			HealthInfoSample healthInfoSample = new HealthInfoSample(
+				user.getId(), user.getCreatedDate(), healthInfo.getId(), 
+				healthInfo.getTitle(), healthInfo.getHealthInfoClickInfo().getVirtualClickCount(), healthInfo);
+			healthInfoSamples_2.add(healthInfoSample);
 		}
+		List<HealthInfo> healthInfos_out_2 = discoveryArticleRuleService.pushArticles(user.getId(), healthInfoSamples_2, 4);
 		
-		// 查出1级关联，无关级关联的文章各1篇
-		// 查询所有category
+		// 3、查出1级关联分类文章1篇
 		List<String> ids_1_strs = new ArrayList<>();
-		List<String> ids_n_strs = new ArrayList<>();
 		for (HealthCategory hc : user.getHcs()) {
-			ids_1_strs.addAll(Arrays.asList(StringUtils.split(hc.getFirstRelatedIds(), ",")));
-			ids_n_strs.addAll(Arrays.asList(StringUtils.split(hc.getOtherRelatedIds(), ",")));
+			if (StringUtils.isNotEmpty(hc.getFirstRelatedIds())) 
+				ids_1_strs.addAll(Arrays.asList(StringUtils.split(hc.getFirstRelatedIds(), ",")));	
 		}
 		List<Long> ids_1_long = new ArrayList<>();
-		List<Long> ids_n_long = new ArrayList<>();
 		for (String str : ids_1_strs) 
 			ids_1_long.add(Long.parseLong(str));
+		List<HealthInfo> healthInfos_3 = new ArrayList<>();
+		if (ids_1_long.size() > 0)
+			healthInfos_3.addAll(this.healthInfoRepository.findHealthCategoryIdsWithClickInfo(ids_1_long.toArray(new Long[0])));
+		List<HealthInfoSample> healthInfoSamples_3 = new ArrayList<>();
+		for (HealthInfo healthInfo : healthInfos_3) {
+			HealthInfoSample healthInfoSample = new HealthInfoSample(
+				user.getId(), user.getCreatedDate(), healthInfo.getId(), 
+				healthInfo.getTitle(), healthInfo.getHealthInfoClickInfo().getVirtualClickCount(), healthInfo);
+			healthInfoSamples_3.add(healthInfoSample);
+		}
+		List<HealthInfo> healthInfos_out_3 = discoveryArticleRuleService.pushArticles(user.getId(), healthInfoSamples_3, 1);
+		
+		
+		// 4、查出无级关联分类文章1篇
+		List<String> ids_n_strs = new ArrayList<>();
+		for (HealthCategory hc : user.getHcs()) {
+			if (StringUtils.isNotEmpty(hc.getFirstRelatedIds())) 
+				ids_n_strs.addAll(Arrays.asList(StringUtils.split(hc.getFirstRelatedIds(), ",")));
+		}
+		List<Long> ids_n_long = new ArrayList<>();
 		for (String str : ids_n_strs) 
 			ids_n_long.add(Long.parseLong(str));
-		List<HealthInfo> ids_1_long_infos = this.healthInfoRepository.findHealthCategoryIds(ids_1_long.toArray(new Long[0]));
-		List<HealthInfo> ids_n_long_infos = this.healthInfoRepository.findHealthCategoryIds(ids_n_long.toArray(new Long[0]));
-		
-		System.out.println("ids_1_long.size() - >" + ids_1_long_infos.size());
-		System.out.println("ids_n_long.size() - >" + ids_n_long_infos.size());
-		
-		Map<Long, Long> idMaps_2_1 = discoveryArticleRuleService.pushArticles(user.getId(), ids_1_long_infos, 1);
-		Map<Long, Long> idMaps_2_3 = discoveryArticleRuleService.pushArticles(user.getId(), ids_n_long_infos, 1);
-		
-		System.out.println("关联ids，1级别关联：" + idMaps_2_1);
-		System.out.println("关联ids，无关级别关联：" + idMaps_2_3);
-		
-		
-		List<HealthInfo> healthInfos_2_1_list = this.healthInfoRepository.findAll(idMaps_2_1.keySet());
-		List<HealthInfo> healthInfos_2_3_list = this.healthInfoRepository.findAll(idMaps_2_3.keySet());
-		
-		List<HealthInfoDto> healthInfoDtoes2 = new ArrayList<HealthInfoDto>();
-		for (HealthInfo h : healthInfos_2_1_list) {
-			HealthInfoDto dto = new HealthInfoDto().toNewHealthInfoDto(h); 
-			dto.setClickCount(idMaps_2_1.get(h.getId()));
-			healthInfoDtoes2.add(dto);
+		List<HealthInfo> healthInfos_4 = new ArrayList<>();
+		if (healthInfos_4.size() > 0)
+			healthInfos_4.addAll(this.healthInfoRepository.findHealthCategoryIdsWithClickInfo(ids_n_long.toArray(new Long[0])));
+		List<HealthInfoSample> healthInfoSamples_4 = new ArrayList<>();
+		for (HealthInfo healthInfo : healthInfos_4) {
+			HealthInfoSample healthInfoSample = new HealthInfoSample(
+				user.getId(), user.getCreatedDate(), healthInfo.getId(), 
+				healthInfo.getTitle(), healthInfo.getHealthInfoClickInfo().getVirtualClickCount(), healthInfo);
+			healthInfoSamples_4.add(healthInfoSample);
 		}
-		for (HealthInfo h : healthInfos_2_3_list) {
-			HealthInfoDto dto = new HealthInfoDto().toNewHealthInfoDto(h); 
-			dto.setClickCount(idMaps_2_3.get(h.getId()));
-			healthInfoDtoes2.add(dto);
+		List<HealthInfo> healthInfos_out_4 = discoveryArticleRuleService.pushArticles(user.getId(), healthInfoSamples_4, 1);
+		
+		// End，更新到数据库中
+		List<HealthInfo> allHealthInfos = new ArrayList<>();
+		allHealthInfos.addAll(healthInfos_out_2);
+		allHealthInfos.addAll(healthInfos_out_3);
+		allHealthInfos.addAll(healthInfos_out_4);
+		List<HealthInfoDto> healthInfoDtoes = new ArrayList<>();
+		for (HealthInfo healthInfo : healthInfos_out_2) {
+			HealthInfoDto healthInfoDto = new HealthInfoDto();
+			healthInfoDto = new HealthInfoDto().toNewHealthInfoDto(healthInfo);
+			healthInfoDto.setClickCount(healthInfo.getHealthInfoClickInfo().getVirtualClickCount());
+			healthInfoDtoes.add(healthInfoDto);
 		}
-		
-		healthInfoDtoes.addAll(healthInfoDtoes2);
-		
-//		if (healthInfoDtoes2.size() == 1) {
-//			healthInfoDtoes.remove(5);
-//			healthInfoDtoes.addAll(healthInfoDtoes2);
-//		}
-//		if (healthInfoDtoes2.size() == 2) {
-//			healthInfoDtoes.remove(5);
-//			healthInfoDtoes.remove(4);
-//			healthInfoDtoes.addAll(healthInfoDtoes2);
-//		}
 		
 		return healthInfoDtoes;
 	}
 	
 	@Override
-	public List<HealthInfoDto> getTagInfos(HealthCategory healthCategory, User user) {
-		// 获取某个标签所有信息
-		List<HealthInfo> healthInfos = this.healthInfoRepository.findByHealthCategoryId(healthCategory.getId());
-		// 获取其相关点击数
-		List<Object> clickInfos = this.healthInfoClickInfoRepository.healthInfoTotalClickCountWithCategoryId(healthCategory.getId());
-		Map<Long, Long> actual_clickInfos_map = new HashMap<>();
-		if (clickInfos != null) {
-			for (Object record : clickInfos) {
-				Object[] record_values = (Object[]) record;
-				Long infoId = (Long) record_values[0];
-				Long clickCount = (Long) record_values[1];
-				actual_clickInfos_map.put(infoId, clickCount);
-			}
+	public Page<HealthInfoDto> getTagInfos(HealthCategory healthCategory, User user, Pageable pageable) {
+		// 获取推荐的文章
+		HealthInfoDiscovery healthInfoDiscovery = this.healthInfoDiscoveryRepository.findByUserIdAndDiscoveryDate(
+				user.getId(), DateUtils.covertToYYYYMMDD(new Date()));
+		List<Long> ids_long_list = new ArrayList<>();
+		if (healthInfoDiscovery != null) {
+			String[] ids_str_array = StringUtils.split(healthInfoDiscovery.getDiscoveryHealthInfoIds(), ",");
+			for (String id : ids_str_array) 
+				ids_long_list.add(Long.parseLong(id));
 		}
 		
-		// 构造样本数据，计算模拟点击数
-		List<HealthInfoSample> healthInfoSamples = new ArrayList<>();
-		for (HealthInfo healthInfo : healthInfos) {
-			HealthInfoSample sample = new HealthInfoSample(
-				user.getId(), 
-				healthInfo.getCreatedDate(), 
-				healthInfo.getId(), 
-				healthInfo.getTitle(), 
-				actual_clickInfos_map.get(healthInfo.getId()) == null ? 0 : actual_clickInfos_map.get(healthInfo.getId()), 
-				healthInfo.getClickCountA()
-			);
-			healthInfoSamples.add(sample);
+		
+		Page<HealthInfo> page = null;
+		if (ids_long_list.size() == 0) {
+			page = this.healthInfoRepository.pageablefindByCategoryId(
+					healthCategory.getId(), 
+					pageable);
+		} else {
+			page = this.healthInfoRepository.pageablefindByCategoryIdWithOutIds(
+					healthCategory.getId(), 
+					ids_long_list, 
+					pageable);
 		}
-		// 规则计算虚拟点击数目
-		Map<Long, Long> virtual_clickInfos_maps = this.discoveryArticleRuleService.calcuClickCount(0.1, healthInfoSamples);
-		// 整合dto输出
-		List<HealthInfoDto> dtos = new ArrayList<>();
-		for (HealthInfo healthInfo : healthInfos) {
+				
+				
+				
+		// 重置分组内容
+		List<HealthInfoDto> dtoes = new ArrayList<>();
+		for (HealthInfo healthInfo : page.getContent()) {
 			HealthInfoDto dto = new HealthInfoDto().toNewHealthInfoDto(healthInfo);
-			dto.setClickCount(virtual_clickInfos_maps.get(healthInfo.getId()));
-			dtos.add(dto);
+			dto.setClickCount(healthInfo.getHealthInfoClickInfo().getVirtualClickCount());
+			dtoes.add(dto);
 		}
-		return dtos;
+		PageImpl<HealthInfoDto> newpage = new PageImpl<>(dtoes, pageable, page.getTotalElements());
+		return newpage;
 	}
 	
 	@Override
+	@Transactional(isolation=Isolation.READ_COMMITTED, propagation=Propagation.REQUIRED)
 	public HealthInfoClickInfo clickHealthInfo(User user, HealthInfo healthInfo) {
-		HealthInfoClickInfo clickInfo = this.healthInfoClickInfoRepository.findByUserIdAndClickDateAndHealthInfoId(
+		HealthInfoClickInfo healthInfoClickInfo = this.healthInfoClickInfoRepository.findByHealthInfoId(healthInfo.getId());
+		if (healthInfoClickInfo == null) 
+			throw new RuntimeException("HealthInfoClickInfo 应该和 HealthInfo一同创建！");
+		HealthInfoUserClickInfo healthInfoUserClickInfo = this.healthInfoUserClickInfoRepository.findByUserIdAndClickDateAndHealthInfoId(
 				user.getId(), DateUtils.covertToYYYYMMDD(new Date()), healthInfo.getId());
-		if (clickInfo == null) {
-			clickInfo = new HealthInfoClickInfo();
-			clickInfo.setClickCount(0L);
-			clickInfo.setClickDate(DateUtils.covertToYYYYMMDD(new Date()));
-			clickInfo.setHealthInfo(healthInfo);
-			clickInfo.setUser(user);
+		if (healthInfoUserClickInfo == null) { // 用户点击为空，则创建
+			healthInfoUserClickInfo = new HealthInfoUserClickInfo();
+			healthInfoUserClickInfo.setClickCount(0L);
+			healthInfoUserClickInfo.setVirtualClickCount(0L);
+			healthInfoUserClickInfo.setClickDate(DateUtils.covertToYYYYMMDD(new Date()));
+			healthInfoUserClickInfo.setHealthInfo(healthInfo);
+			healthInfoUserClickInfo.setUser(user);
+			this.healthInfoUserClickInfoRepository.save(healthInfoUserClickInfo);
 		}
-		clickInfo.setClickCount(clickInfo.getClickCount() + 1);
-		this.healthInfoClickInfoRepository.save(clickInfo);
-		return clickInfo;
+		// 用户实际点击数+1（可能丢失更新）
+		healthInfoUserClickInfo.setClickCount(healthInfoUserClickInfo.getClickCount() + 1);
+		// 文章实际点击数+1（可能丢失更新）
+		healthInfoClickInfo.setClickCount(healthInfoClickInfo.getClickCount() + 1);
+		
+		// 规则计算点击数
+		HealthInfoClickSample healthInfoClickSample = new HealthInfoClickSample(
+			healthInfo.getId(), healthInfo.getCreatedDate(), healthInfoUserClickInfo.getClickCount(), healthInfoClickInfo.getClickCountA()
+		);
+		Map<Long, Long> click_map = this.discoveryArticleRuleService.calcuClickCount(0.1, healthInfoClickSample); // X=0.1
+		long virtualHealthInfoClickCount = click_map.get(healthInfo.getId());
+		
+		// 更新用户虚拟点击数（可能丢失更新）
+		healthInfoUserClickInfo.setVirtualClickCount(virtualHealthInfoClickCount);
+		// 累加文章虚拟点击数（可能丢失更新）
+		healthInfoClickInfo.setVirtualClickCount(healthInfoClickInfo.getVirtualClickCount() + virtualHealthInfoClickCount);
+		
+		return healthInfoClickInfo;
 	}
 	
 	@Override
 	public HealthInfoDto detailHealthInfo(HealthInfo healthInfo) {
-		// 获取点击数
-		Long clickCount = this.healthInfoClickInfoRepository.healthInfoTotalClickCount(healthInfo.getId());
-		
-		// 规则计算点击数
-		HealthInfoSample sample = new HealthInfoSample(
-			0L, 
-			healthInfo.getCreatedDate(), 
-			healthInfo.getId(), 
-			healthInfo.getTitle(), 
-			clickCount == null ? 0 : clickCount, 
-			healthInfo.getClickCountA()
-		);
-		List<HealthInfoSample> sampleList = new ArrayList<>();
-		sampleList.add(sample);
-		Map<Long, Long> click_map = this.discoveryArticleRuleService.calcuClickCount(0.1, sampleList);
+		// 直接从healthInfoClickInfo中获取虚拟点击数
+		// 如果要实时计算，则使用规则重新计算罗，参照clickHealthInfo方法
+		HealthInfoClickInfo healthInfoClickInfo = this.healthInfoClickInfoRepository.findByHealthInfoId(healthInfo.getId());
+		long clickCount = healthInfoClickInfo.getVirtualClickCount();
 		
 		HealthInfoDto dto = new HealthInfoDto().toNewHealthInfoDto(healthInfo);
-		dto.setClickCount(click_map.get(healthInfo.getId()));
+		dto.setClickCount(clickCount);
 		
 		return dto;
 	}

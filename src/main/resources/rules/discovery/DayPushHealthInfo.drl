@@ -200,13 +200,12 @@ rule "tagresult"
 			"$selectedSampleList=" + $selectedSampleList);
 			
 		articleoutput.setUserId($userId);
-		articleoutput.setHealthInfoCount($selectedSampleListSize);
-		Long[] ids = new Long[$selectedSampleListSize];
+		ArrayList infos = new ArrayList();
 		for (int i = 0; i < $selectedSampleListSize; i++) {
 			HealthInfoSample sample = (HealthInfoSample) $selectedSampleList.get(i);
-			ids[i] = sample.getHealthInfoId();
+			infos.add(sample.getBo());
 		}
-		articleoutput.setHealthInfoIds(ids);
+		articleoutput.getBoes().addAll(infos);
 		
 end
 

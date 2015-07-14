@@ -37,6 +37,7 @@ function articleAdd() {
     var pictureUrl2 = $('#pictureUrl2').val();
     var type = $('#type').val();
     var id = $('#id').val();
+    $('#formSub').attr('disabled',true);
 
     //var htmlInfo = editor.html();
     var htmlInfo = UE.getEditor('htmlInfo').getContent();
@@ -44,6 +45,7 @@ function articleAdd() {
 
     if (title.length == 0 || desc.length == 0 || pictureUrl.length == 0 ||pictureUrl2.length == 0 || htmlInfo.length == 0 || type.length == 0) {
         alert('有字段没有填写');
+        $('#formSub').attr('disabled',false);
         return false;
     }
 
@@ -72,12 +74,16 @@ function articleAdd() {
                 //    $('#info-table').show();
                 //});
             }
-            else
+            else{
                 alert(response.err_msg);
+                $('#formSub').attr('disabled',false);
+            }
+
 
         },
         error: function () {
             alert('error');
+            $('#formSub').attr('disabled',false);
         }
 
 
