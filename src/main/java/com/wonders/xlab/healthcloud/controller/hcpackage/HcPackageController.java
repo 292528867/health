@@ -18,9 +18,7 @@ import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderReposit
 import com.wonders.xlab.healthcloud.utils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
@@ -62,10 +60,11 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      * @return
      */
     @RequestMapping(value = "listHcPackage", method = RequestMethod.GET)
-    public Object listHcPackage(
-            @PageableDefault(sort = "recommendValue", direction = Sort.Direction.DESC)
-            Pageable pageable) {
-        return new ControllerResult<List<HcPackage>>().setRet_code(0).setRet_values(hcPackageRepository.findAll(pageable).getContent()).setMessage("成功");
+    public Object listHcPackage() {
+        Sort sort = new Sort(Sort.Direction.DESC, "recommendValue");
+        return new ControllerResult<List<HcPackage>>()
+                .setRet_code(0).setRet_values(hcPackageRepository.findAll(sort))
+                .setMessage("成功");
     }
 
     /**

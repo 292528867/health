@@ -2,7 +2,9 @@ package com.wonders.xlab.healthcloud.repository.banner;
 
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.entity.banner.Banner;
+import com.wonders.xlab.healthcloud.entity.banner.BannerTag;
 import com.wonders.xlab.healthcloud.entity.banner.BannerType;
+import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
