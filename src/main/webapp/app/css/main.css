@@ -198,6 +198,9 @@
 .today-body-banners:nth-last-child(1) {
   padding-bottom: 6px;
 }
+.article-clickCount img {
+  vertical-align: middle;
+}
 body,
 html {
   font-family: "Microsoft YaHei", "Segoe UI", "Lucida Grande", Helvetica, Arial, "Microsoft YaHei", FreeSans, Arimo, "Droid Sans", "wenquanyi micro hei", "Hiragino Sans GB", "Hiragino Sans GB W3", FontAwesome, sans-serif !important;
