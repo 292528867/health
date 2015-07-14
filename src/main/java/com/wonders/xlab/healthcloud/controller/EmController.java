@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -122,10 +123,14 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Doctor doctor = doctorRepository.find(Collections.singletonMap("tel_equal", body.getFrom()));
         //TODO 发短信注释
         SmsUtils.sendEmReplyInfo(userTel);
+
         //修改app发送信息状态为已回复
         EmMessages oldEm = emMessagesRepository.findOne(id);
         oldEm.setIsReplied(true);
         emMessagesRepository.save(oldEm);
+        QuestionOrder questionOrder = questionOrderRepository.find(Collections.singletonMap("messages.id_equal", oldEm.getId()));
+        questionOrder.setQuestionStatus(QuestionOrder.QuestionStatus.done);
+        questionOrderRepository.save(questionOrder);
 
         //从缓存里面移除该问题
         questionCache.removeFromCache(userTel + body.getFrom() + "_RESPONDENT");
@@ -438,8 +443,14 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 newMessages.setToUser(groupId);
                 newMessages.setIsShowForDoctor(1); //不让医生端看到
                 emMessagesRepository.save(newMessages);
-
             }
+            //取最新的2条纪录发送给前台
+            Map<String, Object> map = new HashMap<>();
+            map.put("toUser_equal",groupId );
+            map.put("isShowForDoctor_equal", 0);
+            List<EmMessages> list = emMessagesRepository.findAll(map);
+            emDoctorNumber.setList(list.subList(list.size()-2,list.size()));
+
             emDoctorNumber.setLastQuestionStatus(0);
             emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
             emDoctorNumber.setEmMessages(newMessages);
