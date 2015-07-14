@@ -61,10 +61,20 @@ public class QuestionOrderServiceImpl implements QuestionOrderService {
 
         //遍历，判断是否已推送
         for(QuestionOrder order : orderList){
-            String cachedKey = order.getUser().getId().toString().concat("_RESPONDENT");
+            String uidStr = order.getUser().getId().toString();
+            String respondentKey = uidStr.concat("_RESPONDENT");
             //从缓存中判断该信息是否已有医生回复
             if(StringUtils.isNotEmpty(orderCache.getFromCache(order.getUser().getId().toString()))){
-                if(StringUtils.isNotEmpty(questionCache.getFromCache(cachedKey))){
+                String timeKey = uidStr.concat("_ASK_TIME");
+                String askTimeStr = questionCache.getFromCache(timeKey);
+                if(StringUtils.isNotEmpty(askTimeStr)){
+                    long askTime = Long.parseLong(askTimeStr);
+                    //如果距离提问时间超过15分钟，不再发送给医生
+                    if(System.currentTimeMillis() - askTime > 15 * 60 * 1000){
+                        continue;
+                    }
+                }
+                if(StringUtils.isNotEmpty(questionCache.getFromCache(respondentKey))){
                     continue;
                 } else {
                     TexMessagesRequestBody requestBody = new TexMessagesRequestBody();
