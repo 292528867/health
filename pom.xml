@@ -230,7 +230,7 @@
 	  	<properties>
 	      <show-sql>true</show-sql>
 		  <format_sql>true</format_sql>
-		  <jsonIndetn>true</jsonIndetn>
+		  <jsonIndent>true</jsonIndent>
 		</properties>
 		<activation>
 	      <activeByDefault>true</activeByDefault>
@@ -239,8 +239,8 @@
 	  <profile>
 	  <id>hcDeploy</id>
 		<properties>
-	      <show>false</show>
-		  <format>false</format>
+	      <show-sql>false</show-sql>
+		  <format_sql>false</format_sql>
 		  <jsonIndent>false</jsonIndent>
 		</properties>
 	  </profile>
