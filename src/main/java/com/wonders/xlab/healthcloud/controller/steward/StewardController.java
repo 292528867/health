@@ -109,7 +109,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     @RequestMapping("getRecommendPackageDetail/{packageId}")
     public Object getRecommendPackageDetail(@PathVariable Long packageId) {
 
-        RecommendPackage rp = this.recommendPackageRepository.findOne(packageId);
+        RecommendPackage rp = recommendPackageRepository.findOne(packageId);
 
         if (!StringUtils.isEmpty(rp.getServiceIds())) {
 
@@ -129,7 +129,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             servicesSet.addAll(services);
             rp.setServices(servicesSet);
 
-            List<Steward> stewards = this.stewardRepository.findByRank(rp.getRank());
+            List<Steward> stewards = stewardRepository.findByRank(rp.getRank());
 
             int idx = (int) (System.currentTimeMillis() % stewards.size());
 
@@ -149,10 +149,10 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     public Object listCustomPackage(@PathVariable String address, @PathVariable String location) {
 
         //强制置顶
-        List<Services> orderServices = this.servicesRepository.findByIsForceOrderByUsedNumberAsc(true);
+        List<Services> orderServices = servicesRepository.findByIsForceOrderByUsedNumberAsc(true);
 
         //去除强制置顶以后在用算法
-        List<Services> services = this.servicesRepository.findByIsForceOrderByUsedNumberAsc(false);
+        List<Services> services = servicesRepository.findByIsForceOrderByUsedNumberAsc(false);
         List<Services> resultServices = new ArrayList<>();
         for (Services service : services) {
             resultServices.add(service);
@@ -204,7 +204,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         arithmeticList.add(level4Map);
         arithmeticList.add(level5Map);
 
-        List<Steward> stewards = this.stewardRepository.findByOrderByRankAsc();
+        List<Steward> stewards = stewardRepository.findByOrderByRankAsc();
 
         Map<String, Object> map = new HashMap<>();
         map.put("services", orderServices);
