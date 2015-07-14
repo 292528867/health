@@ -22,7 +22,6 @@ import com.wonders.xlab.healthcloud.utils.Constant;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
@@ -167,6 +167,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      */
 
     @RequestMapping(value = "sendTxtMessage", method = RequestMethod.POST)
+    @Transactional
     public ControllerResult sendTxtMessage(@RequestBody TexMessagesRequestBody body) throws IOException {
         //判断该用户的消息是否已有人在处理
         long askTime = System.currentTimeMillis();
@@ -212,12 +213,9 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             String userAskTime = user.getId() + "_ASK_TIME";
             String askTimeStr = questionCache.putIfAbsent(userAskTime, String.valueOf(askTime));
             if (String.valueOf(askTime).equals(askTimeStr)) {
-                //TODO 首先自动回复一条消息
-
-                //TODO 发给医生抢答
-                //TODO 遍历医生逐个发送 or 发送到一个医生组里
-
-
+                String messagesJson = objectMapper.writeValueAsString(body);
+                //发送信息
+                emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);
             } else {
                 //已有其他线程处理，禁止重复提交
                 return new ControllerResult()
@@ -225,12 +223,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                         .setRet_values("")
                         .setMessage("发送失败");
             }
-
         }
-
-        String messagesJson = objectMapper.writeValueAsString(body);
-        //发送信息
-        emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);
 
         return new ControllerResult().setRet_code(0).setRet_values("").setMessage("文本消息发送成功");
 

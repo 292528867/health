@@ -38,6 +38,10 @@ public class TexMessagesRequestBody {
      */
     private Map<String,Object> ext;
 
+    public enum EmMessageTargetType{
+        users, chatgroups
+    }
+
 
     public String getTargetType() {
         return targetType;
