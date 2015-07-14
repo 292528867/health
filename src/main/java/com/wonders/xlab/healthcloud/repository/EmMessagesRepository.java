@@ -2,6 +2,8 @@ package com.wonders.xlab.healthcloud.repository;
 
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.entity.EmMessages;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -13,4 +15,5 @@ public interface EmMessagesRepository extends MyRepository<EmMessages, Long> {
     List<EmMessages> findTop5ByToUserOrderByCreatedDateAsc(String groupId);
 
     EmMessages findTop1ByFromUserOrderByCreatedDateDesc(String fromUser);
+
 }

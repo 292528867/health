@@ -71,6 +71,13 @@ public class EmMessages extends AbstractBaseEntity<Long> {
      */
     private boolean doctorFlag;
 
+    /**
+     *
+     * 是否显示给医生
+     */
+    private int isShowForDoctor;
+
+
 
     public EmMessages() {
     }
@@ -100,6 +107,14 @@ public class EmMessages extends AbstractBaseEntity<Long> {
      * 群聊的ID
      */
     private String groupId;
+
+    public int getIsShowForDoctor() {
+        return isShowForDoctor;
+    }
+
+    public void setIsShowForDoctor(int isShowForDoctor) {
+        this.isShowForDoctor = isShowForDoctor;
+    }
 
     public String getFromUser() {
         return fromUser;

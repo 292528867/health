@@ -17,6 +17,19 @@ public class RequestTexMsg {
 
     private String msg;
 
+    public enum EmMessageType {
+        txt, img, audio, video, cmd
+    }
+
+
+    public RequestTexMsg() {
+    }
+
+    public RequestTexMsg(String type, String msg) {
+        this.type = type;
+        this.msg = msg;
+    }
+
     public String getType() {
         return type;
     }

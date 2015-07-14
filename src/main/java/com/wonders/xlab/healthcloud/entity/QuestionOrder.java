@@ -25,9 +25,16 @@ public class QuestionOrder extends AbstractBaseEntity<Long> {
     @Enumerated
     private QuestionStatus questionStatus = QuestionStatus.newQuestion;
 
+    /**
+     * 推送次数
+     */
+    private int pushCount;
+
     public enum QuestionStatus {
         newQuestion, processing, done
     }
+
+
 
     public User getUser() {
         return user;
@@ -59,5 +66,13 @@ public class QuestionOrder extends AbstractBaseEntity<Long> {
 
     public void setQuestionStatus(QuestionStatus questionStatus) {
         this.questionStatus = questionStatus;
+    }
+
+    public int getPushCount() {
+        return pushCount;
+    }
+
+    public void setPushCount(int pushCount) {
+        this.pushCount = pushCount;
     }
 }
