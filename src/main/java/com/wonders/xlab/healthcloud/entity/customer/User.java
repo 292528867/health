@@ -22,7 +22,7 @@ public class User extends BaseInfo<Long> {
             inverseJoinColumns = @JoinColumn(name = "package_id")
     )
     @OrderBy("id asc")
-    private Set<HcPackage> hcPackages = new HashSet<>(0);
+    private Set<HcPackage> hcPackages;
 
     /**
      * 分类
@@ -151,10 +151,10 @@ public class User extends BaseInfo<Long> {
     }
 
     public void addHcPackage(HcPackage hcPackage) {
-        if (hcPackage != null) {
-            hcPackages.add(hcPackage);
+        if (hcPackages == null) {
+            hcPackages = new HashSet<>();
         }
-
+        hcPackages.add(hcPackage);
     }
 
 }

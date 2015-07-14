@@ -313,6 +313,7 @@ public class UserController extends AbstractBaseController<User, Long> {
 
         userDto.setValid(User.Valid.valid);
         User user = userRepository.findOne(userId);
+        System.out.println("user.getHcPackages() = " + user.getHcPackages());
 
         BeanUtils.copyNotNullProperties(userDto, user, "hcPackageId");
         HcPackage hcPackage = hcPackageRepository.findOne(userDto.getHcPackageId());
