@@ -336,3 +336,241 @@ public class AjaxAuthenticationFilter extends FormAuthenticationFilter {
 		}
 	}
 }
+
+
+package org.bsth.gjzgs.busbattery.core.security.shiro.realm;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.shiro.authc.AccountException;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.Permission;
+import org.apache.shiro.cache.Cache;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.bsth.gjzgs.busbattery.core.security.shiro.cache.SysEhCacheManager;
+import org.bsth.gjzgs.busbattery.core.security.shiro.permission.SysResourcePermission;
+import org.bsth.gjzgs.busbattery.core.security.shiro.permission.SysResourcePermissionResolver;
+import org.bsth.gjzgs.busbattery.core.security.shiro.permission.SysResourceType;
+import org.bsth.gjzgs.busbattery.core.security.shiro.principal.BasicPrincipal;
+import org.bsth.gjzgs.busbattery.dao.BaseRepository;
+import org.bsth.gjzgs.busbattery.entity.security.SysBatteryBus;
+import org.bsth.gjzgs.busbattery.entity.security.SysUser;
+import org.bsth.gjzgs.busbattery.service.security.SysTransactionScript;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Component;
+
+/**
+ * sys jdbc realm。（由spring 注入）
+ * @author user
+ *
+ */
+@Component
+public class SysJDBCRealm extends AuthorizingRealm {
+	@Autowired
+	private SysTransactionScript systs;
+	@Autowired
+	private BaseRepository br;
+	
+	public SysJDBCRealm() {
+		// realm域名
+		setName("sysJDBCRealm");
+		// 自定义SysResourcePermission权限解析器
+		setPermissionResolver(new SysResourcePermissionResolver());
+		// 开启cache ,缓存管理器 使用Ehcache实现
+		setCachingEnabled(true);
+		setAuthenticationCachingEnabled(true);
+		setAuthorizationCachingEnabled(true);
+		setAuthenticationCacheName("sysAuthenticationCache"); // authentication缓存名
+		setAuthorizationCacheName("sysAuthorizationCache"); // authorization缓存名
+		SysEhCacheManager cm = new SysEhCacheManager();
+		cm.setCacheManagerConfigFile("classpath:ehcache.xml");
+		setCacheManager(cm);
+	}
+	
+	@Override
+	protected AuthenticationInfo doGetAuthenticationInfo(
+			AuthenticationToken token) throws AuthenticationException {
+		// TODO：以后改
+		
+		SysUserAccountToken upToken = (SysUserAccountToken) token;
+		String loginname = upToken.getUsername();
+		if (loginname == null || "".equals(loginname)) {
+			throw new AccountException("用户名必须填写！");
+		}
+		
+		try {
+			SysUser user = new SysUser().addBaseRepository(br).queryByLoginname(loginname);
+			if (user == null || (user.getUserpassword() == null || "".equals(user.getUserpassword()))) {
+				throw new UnknownAccountException("登录名为：" + loginname + " 的账户不存在！");
+			}
+			
+			// 返回身份验证信息
+			return new UserAccount(getName(), user);
+		} catch (UnknownAccountException exp) {
+			throw exp;
+		} catch (DataAccessException exp) {
+			exp.printStackTrace();
+			throw new AuthenticationException("数据访问对象异常！", exp);
+		} catch (RuntimeException exp) {
+			exp.printStackTrace();
+			throw new AuthenticationException("运行时异常！", exp);
+		} catch (Exception exp) {
+			exp.printStackTrace();
+			throw new AuthenticationException("其他错误！", exp);
+		}
+	}
+	@Override
+	protected AuthorizationInfo doGetAuthorizationInfo(
+			PrincipalCollection principals) {
+		// TODO：以后改
+		String loginname = ((BasicPrincipal) principals.getPrimaryPrincipal()).getLoginname();
+		SysUser user = new SysUser().addBaseRepository(br).queryByLoginname(loginname);
+		if (user != null) 
+			// 返回授权信息
+			return new UserAccount(
+					getName(), 
+					systs.getAllRolesByUser(user.getUserId()), 
+					systs.getAllPermissionsByUser(user.getUserId()));
+		else 
+			return null;
+	}
+	
+	/**
+	 * 根据指定的身份用户车辆数据权限，返回可访问的车辆数据。
+	 * @return
+	 */
+	public List<SysBatteryBus> getClinfoForSubject(PrincipalCollection pcs) {
+		List<SysBatteryBus> return_clinfos = new ArrayList<SysBatteryBus>();
+		// 获取当前subject的permission（从cache中获取）
+		// 从cache中获取授权信息来自 AuthorizingRealm getAuthorizationInfo方法
+		List<Permission> allpermissions = new ArrayList<Permission>();
+		AuthorizationInfo authorizationInfo = this.getAuthorizationInfo(pcs);
+		if (authorizationInfo != null) 
+			allpermissions.addAll(authorizationInfo.getObjectPermissions());
+		List<String> clzbhs = new ArrayList<String>();
+		for (Permission p : allpermissions) {
+			SysResourcePermission sp = (SysResourcePermission) p;
+			if (sp.getSysResourceType() == SysResourceType.CLINFO_RESOURCE) 
+				clzbhs.add(sp.getPermissionstring()); // 车辆数据权限字符串就是自编号
+		}
+		
+		if (clzbhs.size() > 0)
+			return_clinfos.addAll(new SysBatteryBus().addBaseRepository(br).queryByZbhs(clzbhs.toArray(new String[0])));
+
+		return return_clinfos;
+	}
+	
+	/**
+	 * 清空指定用户的授权cache。
+	 * @param subject
+	 */
+	public void clearAuthoriaztionInfoForSysuser(SysUser user) {
+		AuthenticationInfo account = new UserAccount(getName(), user);
+		// key是用户的principals tostring
+		this.clearCachedAuthorizationInfo(account.getPrincipals());
+	}
+	/**
+	 * 清空指定用户的身份cache。
+	 * @param user
+	 */
+	public void clearAuthenticationInfoForSysuser(SysUser user) {
+		// key是token的getPrincipal，默认返回的是登录用户名（参见SysUserAccountToken）
+		BasicPrincipal basicPrincipal = new BasicPrincipal();
+		basicPrincipal.setRealusername(user.getUsername()); // 用户名
+		basicPrincipal.setLoginname(user.getLoginname()); // 登录名
+		basicPrincipal.setPassword(user.getUserpassword()); // 密码
+		
+		SimplePrincipalCollection spc = new SimplePrincipalCollection();
+		spc.add(basicPrincipal, getName());
+		this.clearCachedAuthenticationInfo(spc);
+	}
+	
+	@Override
+	protected void clearCachedAuthenticationInfo(PrincipalCollection principals) {
+		BasicPrincipal basicPrincipal = (BasicPrincipal) principals.getPrimaryPrincipal();
+		SimplePrincipalCollection spc = new SimplePrincipalCollection(basicPrincipal.getLoginname(), getName());
+		super.clearCachedAuthenticationInfo(spc);
+	}
+	
+	/**
+	 * 判定一个用户是否缓存身份。
+	 * @param user
+	 * @return
+	 */
+	public boolean isCachedAuthenticationInfo(SysUser user, boolean isRememberMe, String host) {
+		AuthenticationToken token = new SysUserAccountToken(user.getLoginname(), user.getUserpassword(), isRememberMe, host);
+        Cache<Object, AuthenticationInfo> cache = getAuthenticationCache();
+        AuthenticationInfo info = null;
+        Object key = getAuthenticationCacheKey(token);
+        info = cache.get(key);
+        if (info == null) 
+        	return false; // 被clear了，如调用了clearAuthenticationInfoForSysuser
+        else
+        	return true; // 没有clear
+	}
+}
+
+package org.bsth.gjzgs.busbattery.core.security.shiro.realm;
+
+import java.io.Serializable;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.shiro.authc.UsernamePasswordToken;
+
+/**
+ * 自定义token用于验证身份（添加equals，hashcode方法用于缓存处理）。
+ * @author user
+ *
+ */
+public class SysUserAccountToken extends UsernamePasswordToken implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public SysUserAccountToken(final String username, final String password, final boolean rememberMe, final String host) {
+		super(username, password, rememberMe, host);
+	}
+	
+	@Override
+	public Object getPrincipal() {
+		// 这个是key值，默认返回用户名，以后要改
+		return super.getPrincipal();
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (this == other)
+			return true;
+		if (!(other instanceof SysUserAccountToken))
+			return false;
+		SysUserAccountToken castOther = (SysUserAccountToken) other;
+		return new EqualsBuilder()
+			.append(this.getUsername(), castOther.getUsername())
+			.append(this.getPassword(), castOther.getPassword())
+			.isEquals();
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(this.getUsername())
+			.append(this.getPassword())
+			.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+	
+}
