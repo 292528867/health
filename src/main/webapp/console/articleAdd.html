@@ -197,7 +197,7 @@
                 <fieldset>
                     <h2>今日推荐的图片,长宽相等</h2>
                     <img src="" alt="" id="index-img" style="height: 100px;"/>
-                    <input type="file" multiple accept="image/*" name="file"/>
+                    <input type="file" multiple accept="image/*" name="file" id="index-file"/>
 
                     <button class="am-btn am-btn-secondary" type="submit" id="index-img-sub">提交</button>
                 </fieldset>
@@ -285,6 +285,10 @@
         $('#index-img-form').on('submit', function (e) {
             e.preventDefault(); // prevent native submit
             console.log('正在提交');
+            if($('#index-file').val().length==0){
+                alert('请提交文件');
+                return false;
+            }
             $('#index-img-sub').attr('disabled', 'disabled');
             $(this).ajaxSubmit({
                         target: '.am-padding-left',

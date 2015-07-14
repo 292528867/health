@@ -6,17 +6,6 @@ window.onload = function () {
 }
 
 
-var strcookie = document.cookie;
-var arrcookie = strcookie.split("=")
-var statuscookie = arrcookie[1];
-if (statuscookie == "" || statuscookie == "0") {
-  document.cookie = "statuscookie=1";
-} else if(statuscookie == "1") {
-  document.cookie = "statuscookie=0";
-  window.location.reload(true);
-}
-
-
 var articleList;
 var articleItem;
 var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
@@ -135,7 +124,7 @@ function loadArticles(id) {
 
   $.get(typeArticleUrl, function (data) {
 //      console.log(data.ret_values);
-    var values = data.ret_values;
+    var values = data.ret_values.content;
     articleList = values;
     var u = '';
     $.each(values, function (n, value) {
