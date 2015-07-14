@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Table(name = "hc_banner")
 public class Banner extends AbstractBaseEntity<Long> {
 
-    /** Banner标签 0 日程 1 发现 2 管家 3 问诊 */
+    /** Banner标签 0 计划 1 发现 2 管家 3 问诊 4 商城 5 个人中心 6 购药 */
     @Enumerated
     @Column(nullable = false)
     private BannerTag bannerTag;
@@ -39,6 +39,8 @@ public class Banner extends AbstractBaseEntity<Long> {
     /** 是否启用 */
     private boolean enabled;
 
+    private int position;
+
     public Banner() {
     }
 
@@ -50,6 +52,17 @@ public class Banner extends AbstractBaseEntity<Long> {
         this.picUrl = picUrl;
         this.linkUrl = linkUrl;
         this.enabled = enabled;
+    }
+
+    public Banner(BannerTag bannerTag, BannerType bannerType, Long articleId, String title, String picUrl, String linkUrl, boolean enabled, int position) {
+        this.bannerTag = bannerTag;
+        this.bannerType = bannerType;
+        this.articleId = articleId;
+        this.title = title;
+        this.picUrl = picUrl;
+        this.linkUrl = linkUrl;
+        this.enabled = enabled;
+        this.position = position;
     }
 
     public int getBannerTag() {
@@ -107,4 +120,13 @@ public class Banner extends AbstractBaseEntity<Long> {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
 }

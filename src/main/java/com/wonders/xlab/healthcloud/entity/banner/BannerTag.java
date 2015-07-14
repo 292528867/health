@@ -6,9 +6,9 @@ package com.wonders.xlab.healthcloud.entity.banner;
 public enum BannerTag {
 
     /**
-     * 日程
+     * 计划
      */
-    Schedule("日程"),
+    Plan("计划"),
 
     /**
      * 发现
@@ -23,7 +23,23 @@ public enum BannerTag {
     /**
      * 问诊
      */
-    Inquiry("问诊");
+    Inquiry("问诊"),
+
+    /**
+     * 商城
+     */
+    Store("商城"),
+
+    /**
+     * 个人中心
+     */
+    PersonCenter("个人中心"),
+
+    /**
+     * 购药
+     */
+    ShoppingDrug("购药")
+    ;
 
     private String name;
 

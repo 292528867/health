@@ -62,6 +62,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 	@Autowired
 	private HealthInfoDiscoveryRepository healthInfoDiscoveryRepository;
 	
+	
 	@Override
 	public List<HealthCategory> getRecommandTag(User user) {
 		// 查询所有category
@@ -280,5 +281,17 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 		return dto;
 	}
 	
+	@Override
+	public void addUserCategoryRelated(Long userId, Long categoryId) {
+		User user = this.userRepository.findOne(userId);
+		HealthCategory healthCategory = this.healthCategoryRepository.findOne(categoryId);
+		user.getHcs().add(healthCategory);
+	}
 	
+	@Override
+	public void deleteUserCategoryRelated(Long userId, Long categoryId) {
+		User user = this.userRepository.findOne(userId);
+		HealthCategory healthCategory = this.healthCategoryRepository.findOne(categoryId);
+		user.getHcs().remove(healthCategory);
+	}
 }
