@@ -19,6 +19,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * 健康信息。
  * @author xu
@@ -51,6 +53,7 @@ public class HealthInfo extends AbstractPersistable<Long> {
 	private HealthCategory healthCategory;
 	
 	/** 点击信息 */
+	@JsonIgnore
 	@OneToOne(mappedBy="healthInfo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private HealthInfoClickInfo healthInfoClickInfo;
 	
