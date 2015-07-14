@@ -141,6 +141,9 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 		List<HealthInfo> healthInfos_3 = new ArrayList<>();
 		if (ids_1_long.size() > 0)
 			healthInfos_3.addAll(this.healthInfoRepository.findHealthCategoryIdsWithClickInfo(ids_1_long.toArray(new Long[0])));
+		
+		System.out.println(healthInfos_3.size());
+		
 		List<HealthInfoSample> healthInfoSamples_3 = new ArrayList<>();
 		for (HealthInfo healthInfo : healthInfos_3) {
 			HealthInfoSample healthInfoSample = new HealthInfoSample(
@@ -155,13 +158,13 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 		List<String> ids_n_strs = new ArrayList<>();
 		for (HealthCategory hc : user.getHcs()) {
 			if (StringUtils.isNotEmpty(hc.getFirstRelatedIds())) 
-				ids_n_strs.addAll(Arrays.asList(StringUtils.split(hc.getFirstRelatedIds(), ",")));
+				ids_n_strs.addAll(Arrays.asList(StringUtils.split(hc.getOtherRelatedIds(), ",")));
 		}
 		List<Long> ids_n_long = new ArrayList<>();
 		for (String str : ids_n_strs) 
 			ids_n_long.add(Long.parseLong(str));
 		List<HealthInfo> healthInfos_4 = new ArrayList<>();
-		if (healthInfos_4.size() > 0)
+		if (ids_n_long.size() > 0)
 			healthInfos_4.addAll(this.healthInfoRepository.findHealthCategoryIdsWithClickInfo(ids_n_long.toArray(new Long[0])));
 		List<HealthInfoSample> healthInfoSamples_4 = new ArrayList<>();
 		for (HealthInfo healthInfo : healthInfos_4) {
@@ -178,7 +181,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 		allHealthInfos.addAll(healthInfos_out_3);
 		allHealthInfos.addAll(healthInfos_out_4);
 		List<HealthInfoDto> healthInfoDtoes = new ArrayList<>();
-		for (HealthInfo healthInfo : healthInfos_out_2) {
+		for (HealthInfo healthInfo : allHealthInfos) {
 			HealthInfoDto healthInfoDto = new HealthInfoDto();
 			healthInfoDto = new HealthInfoDto().toNewHealthInfoDto(healthInfo);
 			healthInfoDto.setClickCount(healthInfo.getHealthInfoClickInfo().getVirtualClickCount());
@@ -232,33 +235,34 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 		HealthInfoClickInfo healthInfoClickInfo = this.healthInfoClickInfoRepository.findByHealthInfoId(healthInfo.getId());
 		if (healthInfoClickInfo == null) 
 			throw new RuntimeException("HealthInfoClickInfo 应该和 HealthInfo一同创建！");
+		Date calcu_date = new Date();
 		HealthInfoUserClickInfo healthInfoUserClickInfo = this.healthInfoUserClickInfoRepository.findByUserIdAndClickDateAndHealthInfoId(
-				user.getId(), DateUtils.covertToYYYYMMDD(new Date()), healthInfo.getId());
+				user.getId(), DateUtils.covertToYYYYMMDD(calcu_date), healthInfo.getId());
 		if (healthInfoUserClickInfo == null) { // 用户点击为空，则创建
 			healthInfoUserClickInfo = new HealthInfoUserClickInfo();
 			healthInfoUserClickInfo.setClickCount(0L);
 			healthInfoUserClickInfo.setVirtualClickCount(0L);
-			healthInfoUserClickInfo.setClickDate(DateUtils.covertToYYYYMMDD(new Date()));
+			healthInfoUserClickInfo.setClickDate(DateUtils.covertToYYYYMMDD(calcu_date));
 			healthInfoUserClickInfo.setHealthInfo(healthInfo);
 			healthInfoUserClickInfo.setUser(user);
 			this.healthInfoUserClickInfoRepository.save(healthInfoUserClickInfo);
 		}
-		// 用户实际点击数+1（可能丢失更新）
+		
+		// 更新用户实际点击数+1
 		healthInfoUserClickInfo.setClickCount(healthInfoUserClickInfo.getClickCount() + 1);
-		// 文章实际点击数+1（可能丢失更新）
-		healthInfoClickInfo.setClickCount(healthInfoClickInfo.getClickCount() + 1);
-		
-		// 规则计算点击数
+		// 规则计算用户虚拟点击数并更新
 		HealthInfoClickSample healthInfoClickSample = new HealthInfoClickSample(
-			healthInfo.getId(), healthInfo.getCreatedDate(), healthInfoUserClickInfo.getClickCount(), healthInfoClickInfo.getClickCountA()
-		);
+				healthInfo.getId(), healthInfo.getCreatedDate(), healthInfoUserClickInfo.getClickCount(), healthInfoClickInfo.getClickCountA()
+			);
 		Map<Long, Long> click_map = this.discoveryArticleRuleService.calcuClickCount(0.1, healthInfoClickSample); // X=0.1
-		long virtualHealthInfoClickCount = click_map.get(healthInfo.getId());
+		long new_virtualHealthInfoClickCount = click_map.get(healthInfo.getId());
+		long old_virtualHealthInfoClickCount = healthInfoUserClickInfo.getVirtualClickCount();
+		healthInfoUserClickInfo.setVirtualClickCount(new_virtualHealthInfoClickCount);
 		
-		// 更新用户虚拟点击数（可能丢失更新）
-		healthInfoUserClickInfo.setVirtualClickCount(virtualHealthInfoClickCount);
-		// 累加文章虚拟点击数（可能丢失更新）
-		healthInfoClickInfo.setVirtualClickCount(healthInfoClickInfo.getVirtualClickCount() + virtualHealthInfoClickCount);
+		// 更新文章总点击数+1
+		healthInfoClickInfo.setClickCount(healthInfoClickInfo.getClickCount() + 1);
+		// 更新文章虚拟点击数（用差值）
+		healthInfoClickInfo.setVirtualClickCount(new_virtualHealthInfoClickCount - old_virtualHealthInfoClickCount);
 		
 		return healthInfoClickInfo;
 	}

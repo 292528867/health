@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface UserRepository extends MyRepository<User,Long>,UserRepositoryCustom {
 
 
-    @Query("select u from User u left join fetch u.hcs hcs left join fetch hcs.hins hins left join fetch hins.healthInfoClickInfo where u.id = ?1")
+    @Query("select u from User u left join fetch u.hcs hcs left join fetch hcs.hins hins right join fetch hins.healthInfoClickInfo where u.id = ?1")
     User queryUserHealthInfo(Long userId);
 
     User findByTel(String tel);
