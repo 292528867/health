@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -126,10 +127,14 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Doctor doctor = doctorRepository.find(Collections.singletonMap("tel_equal", body.getFrom()));
         //TODO 发短信注释
         SmsUtils.sendEmReplyInfo(userTel);
+
         //修改app发送信息状态为已回复
         EmMessages oldEm = emMessagesRepository.findOne(id);
         oldEm.setIsReplied(true);
         emMessagesRepository.save(oldEm);
+        QuestionOrder questionOrder = questionOrderRepository.find(Collections.singletonMap("messages.id_equal", oldEm.getId()));
+        questionOrder.setQuestionStatus(QuestionOrder.QuestionStatus.done);
+        questionOrderRepository.save(questionOrder);
 
         //从缓存里面移除该问题
         questionCache.removeFromCache(userTel + body.getFrom() + "_RESPONDENT");
@@ -176,6 +181,26 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         //判断该用户的消息是否已有人在处理
         long askTime = System.currentTimeMillis();
         User user = userRepository.findByTel(body.getFrom());
+        if(user == null){
+            return new ControllerResult()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("用户不存在");
+        }
+        String userAskTime = user.getId() + "_ASK_TIME";
+        questionCache.putIfAbsent(userAskTime, String.valueOf(askTime));
+        String askTimeStr = questionCache.getFromCache(userAskTime);
+        if (!String.valueOf(askTime).equals(askTimeStr)) {
+            //已有其他线程处理，禁止重复提交
+            return new ControllerResult()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("发送失败");
+        } else {
+              /*  String messagesJson = objectMapper.writeValueAsString(body);
+                //发送信息给环信
+                emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);*/
+        }
         //保存消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
@@ -188,7 +213,6 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         );
 
         emMessages = emMessagesRepository.save(emMessages);
-
         //从缓存中查询该用户是否有正在提问的问题
         if (StringUtils.isNotEmpty(orderCache.getFromCache(user.getId().toString()))) {
             //缓存中存在开放问题，此次发送消息不是新问题，直接发送
@@ -214,20 +238,6 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             questionOrder.setQuestionStatus(QuestionOrder.QuestionStatus.newQuestion);
             questionOrder = questionOrderRepository.save(questionOrder);
             orderCache.putIfAbsent(user.getId().toString(), questionOrder.getId().toString());
-            String userAskTime = user.getId() + "_ASK_TIME";
-            questionCache.putIfAbsent(userAskTime, String.valueOf(askTime));
-            String askTimeStr = questionCache.getFromCache(userAskTime);
-            if (String.valueOf(askTime).equals(askTimeStr)) {
-              /*  String messagesJson = objectMapper.writeValueAsString(body);
-                //发送信息
-                emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);*/
-            } else {
-                //已有其他线程处理，禁止重复提交
-                return new ControllerResult()
-                        .setRet_code(-1)
-                        .setRet_values("")
-                        .setMessage("发送失败");
-            }
         }
 
         return new ControllerResult().setRet_code(0).setRet_values("").setMessage("文本消息发送成功");
@@ -442,8 +452,14 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 newMessages.setToUser(groupId);
                 newMessages.setIsShowForDoctor(1); //不让医生端看到
                 emMessagesRepository.save(newMessages);
-
             }
+            //取最新的2条纪录发送给前台
+            Map<String, Object> map = new HashMap<>();
+            map.put("toUser_equal",groupId );
+            map.put("isShowForDoctor_equal", 0);
+            List<EmMessages> list = emMessagesRepository.findAll(map);
+            emDoctorNumber.setList(list.subList(list.size()-2,list.size()));
+
             emDoctorNumber.setLastQuestionStatus(0);
             emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
             emDoctorNumber.setEmMessages(newMessages);
