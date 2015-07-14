@@ -138,6 +138,13 @@ function loadTodayArticles() {
 }
 
 function getDetails(id) {
+  var articleId = id;
+  var clickUrl = commonUrl + 'discovery/app/clickInfo/' + healthCategoryId + '/' + articleId;
+  $.get(clickUrl, function (data) {
+    localStorage.setItem('articleId', articleId);
+    window.location.href = 'detail.html?' + articleId;
+  });
+/*
   var articleId = articleList[id].id || JSON.parse(localStorage.getItem('articleList')[id].id);
   var clickUrl = commonUrl + 'discovery/app/clickInfo/' + healthCategoryId + '/' + articleId;
   articleList[id].clickCount = articleList[id].clickCount + 1;
@@ -146,6 +153,7 @@ function getDetails(id) {
     localStorage.setItem('articleList', JSON.stringify(articleList));
     window.location.href = 'detail.html?' + articleId;
   });
+*/
 }
 
 
