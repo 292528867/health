@@ -22,6 +22,8 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
@@ -111,9 +113,17 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         doctor.setTel(iden.getTel());
         doctor.setAppPlatform(iden.getAppPlatform());
         doctor = this.doctorRepository.save(doctor);
-        return emUtils.registerEmUser("doctor" + iden.getTel(), iden.getTel()) ?
-                new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor).setMessage("成功") :
-                new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败！");
+        if (emUtils.registerEmUser("doctor" + iden.getTel(), iden.getTel())) {
+            //TODO 从缓存中获取环信token 医生群组暂时写死
+            String groupId = "82830104253694376";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            emUtils.requestEMChat(headers, "post", "chatgroups/" + groupId + "/users/" + "doctor" + iden.getTel(), String.class);
+
+            return new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor).setMessage("成功");
+        }
+        return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败！");
     }
 
     /**
