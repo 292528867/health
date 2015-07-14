@@ -7,7 +7,11 @@ import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.banner.Banner;
 import com.wonders.xlab.healthcloud.entity.banner.BannerTag;
 import com.wonders.xlab.healthcloud.entity.banner.BannerType;
+import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
+import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.repository.banner.BannnerRepository;
+import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoRepository;
+import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
@@ -15,9 +19,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by mars on 15/7/6.
@@ -28,6 +30,12 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
 
     @Autowired
     private BannnerRepository bannnerRepository;
+
+    @Autowired
+    private HcPackageRepository hcPackageRepository;
+
+    @Autowired
+    private HealthInfoRepository healthInfoRepository;
 
     @Override
     protected MyRepository<Banner, Long> getRepository() {
@@ -152,6 +160,29 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
         }
     }
 
+    /**
+     * 通过获取文章
+     * @param packageId
+     * @return
+     */
+    @RequestMapping(value = "retrieveHealthInfos/{packageId}", method = RequestMethod.GET)
+    public Object retrieveHealthInfos(@PathVariable long packageId) {
 
+        HcPackage hcPackage = hcPackageRepository.findOne(packageId);
+        if (hcPackage == null) {
+            return new ControllerResult<>()
+                    .setRet_code(-1)
+                    .setRet_values("竟然没找到")
+                    .setMessage("失败");
+        }
+        List<HealthInfo> healthInfos = new ArrayList<>();
+        if (hcPackage.getHealthCategory() != null) {
+            healthInfos = healthInfoRepository.findByHealthCategoryId(hcPackage.getHealthCategory().getId());
+        }
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(healthInfos)
+                .setMessage("成功");
+    }
 
 }
