@@ -72,6 +72,7 @@ public class EmMessages extends AbstractBaseEntity<Long> {
     private boolean doctorFlag;
 
     /**
+     *
      * 是否显示给医生
      */
     private int isShowForDoctor;
