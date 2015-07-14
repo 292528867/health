@@ -21,12 +21,12 @@ public class PushQuestionToDoctorTask {
     private QuestionOrderService questionOrderService;
 
     /**
-     * 每隔30秒推新问题给医生
+     * 每隔60秒推新问题给医生
      */
     @Scheduled(cron = "0/20 * * * * ? ")
     private void push() {
         try {
-           // questionOrderService.sendQuestionToDoctors("");
+            questionOrderService.sendQuestionToDoctors("");
         } catch (Exception e) {
             e.printStackTrace();
         }
