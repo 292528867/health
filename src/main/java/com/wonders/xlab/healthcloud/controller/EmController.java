@@ -16,7 +16,6 @@ import com.wonders.xlab.healthcloud.repository.QuestionOrderRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.service.WordAnalyzerService;
-import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.service.emchat.QuestionOrderService;
 import com.wonders.xlab.healthcloud.utils.Constant;
@@ -98,15 +97,15 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * @param body
      * @return
      */
-    @RequestMapping(value = "replyMessage/{id}/{username}", method = RequestMethod.POST)
-    public ControllerResult replyMessage(@PathVariable("id") long id, @PathVariable("username") String username, @RequestBody TexMessagesRequestBody body) throws IOException {
+    @RequestMapping(value = "replyMessage/{id}/{userTel}", method = RequestMethod.POST)
+    public ControllerResult replyMessage(@PathVariable("id") long id, @PathVariable("userTel") String userTel, @RequestBody TexMessagesRequestBody body) throws IOException {
         String messagesJson = objectMapper.writeValueAsString(body);
         //扩展属性
         //   Map<String, String> extendAttr = wordAnalyzerService.analyzeText(body.getMsg().getMsg());
 
         // body.setExt(objectMapper.writeValueAsString(extendAttr));
         //推送给环信
-        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChat(messagesJson,"POST",  "messages", String.class);
+        ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);
         //保存医生或者运营回复消息
 
         EmMessages emMessages = new EmMessages(
@@ -126,18 +125,19 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Doctor doctor = doctorRepository.find(filterMap);*/
         Doctor doctor = doctorRepository.find(Collections.singletonMap("tel_equal", body.getFrom()));
         //TODO 发短信注释
-        SmsUtils.sendEmReplyInfo(username);
+        SmsUtils.sendEmReplyInfo(userTel);
         //修改app发送信息状态为已回复
         EmMessages oldEm = emMessagesRepository.findOne(id);
         oldEm.setIsReplied(true);
         emMessagesRepository.save(oldEm);
 
         //从缓存里面移除该问题
-        HCCache<String, String> cache = new HCCacheProxy<String, String>(userQuestionCache);
-        cache.removeFromCache(username+body.getFrom()+"_RESPONDENT");
-        cache.removeFromCache(username+"_ASK_TIME");
-        cache.removeFromCache(username+"_RESPONDENT_TYPE");
+        questionCache.removeFromCache(userTel + body.getFrom() + "_RESPONDENT");
+        questionCache.removeFromCache(userTel + "_ASK_TIME");
+        questionCache.removeFromCache(userTel + "_RESPONDENT_TYPE");
 
+        User user = userRepository.findByTel(userTel);
+        orderCache.removeFromCache(user.getId().toString());
 
         //回复信息耗时 TODO 推送给app 暂时注释
      /*   Period period = new Period(new DateTime(newMessage.getCreatedDate()), new DateTime(oldEm.getCreatedDate()), PeriodType.minutes());
@@ -158,7 +158,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     }
 
     @RequestMapping(value = "test", method = RequestMethod.POST)
-    public ControllerResult test(@RequestBody TexMessagesRequestBody body) throws Exception{
+    public ControllerResult test(@RequestBody TexMessagesRequestBody body) throws Exception {
         String messagesJson = objectMapper.writeValueAsString(body);
         //发送信息
         emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);
@@ -215,11 +215,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             questionOrder = questionOrderRepository.save(questionOrder);
             orderCache.putIfAbsent(user.getId().toString(), questionOrder.getId().toString());
             String userAskTime = user.getId() + "_ASK_TIME";
-            String askTimeStr = questionCache.putIfAbsent(userAskTime, String.valueOf(askTime));
+            questionCache.putIfAbsent(userAskTime, String.valueOf(askTime));
+            String askTimeStr = questionCache.getFromCache(userAskTime);
             if (String.valueOf(askTime).equals(askTimeStr)) {
-                String messagesJson = objectMapper.writeValueAsString(body);
+              /*  String messagesJson = objectMapper.writeValueAsString(body);
                 //发送信息
-                emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);
+                emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);*/
             } else {
                 //已有其他线程处理，禁止重复提交
                 return new ControllerResult()
@@ -436,11 +437,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         }
         if (emMessages.getIsReplied()) { //用户已回复
 
-            newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS,EMUtils.countDoctors()));
-            if(flag == 1) {
-                  newMessages.setToUser(groupId);
-                  newMessages.setIsShowForDoctor(1); //不让医生端看到
-                  emMessagesRepository.save(newMessages);
+            newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS, EMUtils.countDoctors()));
+            if (flag == 1) {
+                newMessages.setToUser(groupId);
+                newMessages.setIsShowForDoctor(1); //不让医生端看到
+                emMessagesRepository.save(newMessages);
 
             }
             emDoctorNumber.setLastQuestionStatus(0);
@@ -467,13 +468,14 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     /**
      * 查询历史纪录
+     *
      * @param groupId
      * @param pageable
-     * @param type 医生查询还是用户查询
+     * @param type     医生查询还是用户查询
      * @return
      */
     @RequestMapping(value = "/queryRecords", method = RequestMethod.GET)
-    public ControllerResult<Page<EmMessages>> queryHistoryRecords(String groupId, Pageable pageable,String type) {
+    public ControllerResult<Page<EmMessages>> queryHistoryRecords(String groupId, Pageable pageable, String type) {
  /*       Map<String, Object> filterMap = new HashMap<>();
         filterMap.put("toUser_equal", groupId);*/
         Page<EmMessages> list = null;
@@ -482,7 +484,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         }
         if (type.equals("doctor")) {
             Map<String, Object> map = new HashMap<>();
-            map.put("toUser_equal",groupId);
+            map.put("toUser_equal", groupId);
             map.put("isShowForDoctor_equal", 1);
             list = emMessagesRepository.findAll(map, pageable);
         }

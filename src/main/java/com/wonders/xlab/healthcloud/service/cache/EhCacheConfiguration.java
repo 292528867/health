@@ -172,11 +172,11 @@ public class EhCacheConfiguration {
 
     @Bean
     public Cache userQuestionCache(CacheManager ehcacheManager) {
-        // 创建用户提问属性缓存
+        // 创建用户提问属性缓存 说明：key中字母均为大写，userId为变量
         // key: String              value: String
-        // userId_ask_time          时间戳
-        // userId_respondent        应答人员的ID
-        // userId_respondent_type   应答人员的类型
+        // {userId}_ASK_TIME          时间戳
+        // {userId}_RESPONDENT        应答人员的ID
+        // {userId}_RESPONDENT_TYPE   应答人员的类型
         Cache cache = new Cache(
                 new CacheConfiguration(
                         "userQuestionCache", // 缓存名
@@ -197,7 +197,7 @@ public class EhCacheConfiguration {
     public Cache questionOrderCache(CacheManager ehcacheManager){
         // 创建用户问题订单缓存，用于遍历检查应答时间是否超时
         // key:String   value:String
-        // userId       question order id
+        // {userId}       question order id
         Cache cache = new Cache(
                 new CacheConfiguration(
                         "questionOrderCache", // 缓存名

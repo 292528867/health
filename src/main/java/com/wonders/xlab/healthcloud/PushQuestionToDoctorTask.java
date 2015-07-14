@@ -1,5 +1,6 @@
 package com.wonders.xlab.healthcloud;
 
+import com.wonders.xlab.healthcloud.service.emchat.QuestionOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
@@ -16,15 +17,19 @@ import org.springframework.stereotype.Component;
 public class PushQuestionToDoctorTask {
 
 
-
+    @Autowired
+    private QuestionOrderService questionOrderService;
 
     /**
      * 每隔30秒推新问题给医生
      */
-    @Scheduled(cron = "0 0/60 * * * ? ")
-    private void push(){
-
-
+    @Scheduled(cron = "0/20 * * * * ? ")
+    private void push() {
+        try {
+           // questionOrderService.sendQuestionToDoctors("");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
