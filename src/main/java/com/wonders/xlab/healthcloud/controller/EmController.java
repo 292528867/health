@@ -484,7 +484,10 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             list = emMessagesRepository.findAll(Collections.singletonMap("toUser_equal", groupId), pageable);
         }
         if (type.equals("doctor")) {
-           // list = emMessagesRepository.findByIsShowForDoctorAndToUserOrderByCreateDateDesc(1,groupId);
+            Map<String, Object> map = new HashMap<>();
+            map.put("toUser_equal",groupId);
+            map.put("isShowForDoctor_equal", 1);
+            list = emMessagesRepository.findAll(map, pageable);
         }
         return new ControllerResult<Page<EmMessages>>().setRet_code(0).setRet_values(list).setMessage("");
     }
