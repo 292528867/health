@@ -138,12 +138,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         questionOrder.setQuestionStatus(QuestionOrder.QuestionStatus.done);
         questionOrderRepository.save(questionOrder);
 
-        //从缓存里面移除该问题
-        questionCache.removeFromCache(userTel + body.getFrom() + "_RESPONDENT");
-        questionCache.removeFromCache(userTel + "_ASK_TIME");
-        questionCache.removeFromCache(userTel + "_RESPONDENT_TYPE");
-
         User user = userRepository.findByTel(userTel);
+        //从缓存里面移除该问题
+        questionCache.removeFromCache(user.getId() + "_RESPONDENT");
+        questionCache.removeFromCache(user.getId() + "_ASK_TIME");
+        questionCache.removeFromCache(user.getId() + "_RESPONDENT_TYPE");
+
         orderCache.removeFromCache(user.getId().toString());
 
         //回复信息耗时 TODO 推送给app 暂时注释

@@ -88,7 +88,10 @@ public class QuestionOrderServiceImpl implements QuestionOrderService {
                     EmMessages message = order.getMessages();
                     requestBody.setFrom(message.getFromUser());
                     requestBody.setMsg(new RequestTexMsg(message.getMessageType(), message.getMsg()));
-                    Map<String, Object> extMap = Collections.singletonMap("messageId", (Object) message.getId().toString());
+                    Map<String, Object> extMap = new HashMap<>();
+                    extMap.put("messageId", message.getId().toString());
+                    //toUser为用户groupId
+                    extMap.put("userGroupId", message.getToUser());
                     requestBody.setExt(extMap);
 
                     if(StringUtils.isNotEmpty(doctorTel)){
