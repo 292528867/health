@@ -77,6 +77,9 @@ public class HomePageController {
             List<ProgressDto> progressDtos = new ArrayList<>();
             Date now = new Date();
             // 查找用户完成的任务
+            // TODO: 时间还需优化，按照天算
+            Calendar cfrom = Calendar.getInstance();
+            Calendar cto = Calendar.getInstance();
             for (UserPackageOrder upo : userPackageOrders) {
                 String[] strdetails = StringUtils.split(upo.getHcPackageDetailIds(), ',');
                 if (strdetails != null) {
@@ -88,7 +91,20 @@ public class HomePageController {
                 // 持续时间
                 int duration = upo.getHcPackage().getDuration();
                 // 每个任务的时间 - 循环过的时间
-                int day = DateUtils.calculatePeiorDaysOfTwoDate(upo.getCreatedDate(), now) - duration * upo.getCurrentCycleIndex();
+
+                cfrom.setTime(upo.getCreatedDate());
+                cto.setTime(now);
+                cfrom.set(Calendar.HOUR_OF_DAY, 0);
+                cfrom.set(Calendar.MINUTE, 0);
+                cfrom.set(Calendar.SECOND, 0);
+                cfrom.set(Calendar.MILLISECOND, 0);
+
+                cto.set(Calendar.HOUR_OF_DAY, 0);
+                cto.set(Calendar.MINUTE, 0);
+                cto.set(Calendar.SECOND, 0);
+                cto.set(Calendar.MILLISECOND, 0);
+
+                int day = DateUtils.calculatePeiorDaysOfTwoDate(cfrom.getTime(), cto.getTime()) - duration * upo.getCurrentCycleIndex();
                 int progress = 1;
                 if (day != 0) {
                     progress = day * 100 / duration;

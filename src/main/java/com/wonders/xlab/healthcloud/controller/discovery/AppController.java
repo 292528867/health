@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -78,8 +80,8 @@ public class AppController {
 	}
 	
 	// 显示每个分类标签的健康info信息
-	@RequestMapping(value = "recommand/tag/articles/{categoryId}/{userId}")
-	public ControllerResult<?> getTagInfos(@PathVariable Long categoryId, @PathVariable Long userId) {
+	@RequestMapping(value = "recommand/tag/articles/{categoryId}/{userId}", method = RequestMethod.GET)
+	public ControllerResult<?> getTagInfos(@PathVariable Long categoryId, @PathVariable Long userId, Pageable pageable) {
 		// 查询用户
 		User user = userRepository.queryUserHealthInfo(userId);
 		if (user == null) 
@@ -89,9 +91,9 @@ public class AppController {
 		if (healthCategory == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("指定分类竟然不存在").setMessage("指定分类竟然不存在");
 		// 服务执行
-		List<HealthInfoDto> healthInfoDtoes = this.discoveryService.getTagInfos(healthCategory, user);
+		Page<HealthInfoDto> healthInfoDtoes = this.discoveryService.getTagInfos(healthCategory, user, pageable);
 		// 输出dto
-		return new ControllerResult<List<HealthInfoDto>>().setRet_code(0).setRet_values(healthInfoDtoes).setMessage("成功");
+		return new ControllerResult<Page<HealthInfoDto>>().setRet_code(0).setRet_values(healthInfoDtoes).setMessage("成功");
 	}
 	
 	
@@ -111,7 +113,7 @@ public class AppController {
 	// 点击某个标签，记录点击
 	@RequestMapping(value = "clickInfo/{userId}/{infoId}")
 	public ControllerResult<?> clickHealthInfo(@PathVariable Long userId, @PathVariable Long infoId) {
-		User user = this.userRepository.queryUserHealthInfo(userId);
+		User user = this.userRepository.findOne(userId);
 		if (user == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("用户不存在").setMessage("用户不存在！");
 		HealthInfo healthInfo = this.healthInfoRepository.findOne(infoId);

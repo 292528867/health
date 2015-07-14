@@ -26,10 +26,10 @@ global HashMap clickCountOutputMap; // key=文章id，value=OutputHealthInfoClic
 rule "calcu healthinfo clickCount"
 	when
 		HealthInfoClickSample ( 
-			$id : healInfoSample.healthInfoId, 
-			$createTime : healInfoSample.createTime, 
-			$clickCount : healInfoSample.clickCount,
-			$clickCount_A : healInfoSample.clickCount_A 
+			$id : id, 
+			$createTime : createTime, 
+			$clickCount : clickCount,
+			$clickCount_A : clickCount_A 
 		)
 	then
 		// 当前时间间隔文章创建时间天数

@@ -11,4 +11,6 @@ import java.util.List;
 public interface ServicesRepository extends MyRepository<Services, Long> {
 
     List<Services> findByIsForceOrderByUsedNumberAsc(boolean isForce);
+
+    List<Services> findByServiceId(List<String> ids);
 }

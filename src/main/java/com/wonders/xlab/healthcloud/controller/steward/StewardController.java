@@ -1,19 +1,25 @@
 package com.wonders.xlab.healthcloud.controller.steward;
 
+import com.pingplusplus.exception.APIConnectionException;
+import com.pingplusplus.exception.APIException;
+import com.pingplusplus.exception.AuthenticationException;
+import com.pingplusplus.exception.InvalidRequestException;
+import com.pingplusplus.model.Charge;
 import com.wonders.xlab.framework.controller.AbstractBaseController;
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.dto.pingpp.PingDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.dto.steward.ServiceDto;
 import com.wonders.xlab.healthcloud.entity.customer.User;
-import com.wonders.xlab.healthcloud.entity.steward.*;
+import com.wonders.xlab.healthcloud.entity.steward.RecommendPackage;
+import com.wonders.xlab.healthcloud.entity.steward.Services;
+import com.wonders.xlab.healthcloud.entity.steward.Steward;
+import com.wonders.xlab.healthcloud.entity.steward.StewardOrder;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
-import com.wonders.xlab.healthcloud.repository.steward.*;
-import com.wonders.xlab.healthcloud.service.pingplusplus.exception.APIConnectionException;
-import com.wonders.xlab.healthcloud.service.pingplusplus.exception.APIException;
-import com.wonders.xlab.healthcloud.service.pingplusplus.exception.AuthenticationException;
-import com.wonders.xlab.healthcloud.service.pingplusplus.exception.InvalidRequestException;
-import com.wonders.xlab.healthcloud.service.pingplusplus.model.Charge;
+import com.wonders.xlab.healthcloud.repository.steward.RecommendPackageRepository;
+import com.wonders.xlab.healthcloud.repository.steward.ServicesRepository;
+import com.wonders.xlab.healthcloud.repository.steward.StewardOrderRepository;
+import com.wonders.xlab.healthcloud.repository.steward.StewardRepository;
 import com.wonders.xlab.healthcloud.service.pingpp.PingppService;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +62,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     }
 
     /**
-     * 获取所有的任务包
+     * 获取所有的推荐包
      *
      * @return
      */
@@ -106,21 +112,25 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         RecommendPackage rp = this.recommendPackageRepository.findOne(packageId);
 
         if (!StringUtils.isEmpty(rp.getServiceIds())) {
-            String[] strIds = rp.getServiceIds().split(",");
 
+            List<String> ids = new ArrayList<>();
 
-            Long[] serviceIds = new Long[strIds.length];
-            for (int i = 0; i < strIds.length; i++)
-                serviceIds[i] = Long.parseLong(strIds[i]);
-            // 查询服务，管家
-            List<Services> services = this.servicesRepository.findAll(Arrays.asList(serviceIds));
+            String[] strIds = StringUtils.split(rp.getServiceIds(), ',');
+            if (strIds != null) {
+                for (String strId : strIds) {
+                    ids.add(strId);
+                }
+            }
+            Map<String, Object> filters = new HashMap<>();
+            filters.put("serviceId_in", ids);
+            List<Services> services = servicesRepository.findAll(filters);
 
             Set<Services> servicesSet = new HashSet<>();
             servicesSet.addAll(services);
             rp.setServices(servicesSet);
 
             List<Steward> stewards = this.stewardRepository.findByRank(rp.getRank());
-            System.out.println();
+
             int idx = (int) (System.currentTimeMillis() % stewards.size());
 
             rp.setSteward(stewards.get(idx));
@@ -300,6 +310,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         if (result.hasErrors()) {
 
             StringBuilder builder = new StringBuilder();
+
             for (ObjectError error : result.getAllErrors()) {
                 builder.append(error.getDefaultMessage());
             }
@@ -311,12 +322,17 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         //金额
         double amount = 0.00;
 
-        String[] strIds = serviceDto.getServiceIds().split(",");
-        Long[] serviceIds = new Long[strIds.length];
-        for (int i = 0; i < strIds.length; i++)
-            serviceIds[i] = Long.parseLong(strIds[i]);
-        // 查询服务，管家
-        List<Services> services = servicesRepository.findAll(Arrays.asList(serviceIds));
+        List<String> ids = new ArrayList<>();
+        String[] strIds = StringUtils.split(serviceDto.getServiceIds(), ',');
+        if (strIds != null) {
+            for (String strId : strIds) {
+                ids.add(strId);
+            }
+        }
+
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("serviceId_in", ids);
+        List<Services> services = servicesRepository.findAll(filters);
 
         Steward steward = stewardRepository.findOne(Long.parseLong(serviceDto.getStewardId()));
 
@@ -343,6 +359,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 amount = 78;
             } else if (integration >= 18 && integration <= 48) {
                 amount = 158;
+            } else {
+                amount = 298;
             }
         }
 
@@ -364,9 +382,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             service.setUsedNumber(service.getUsedNumber() + 1);
             servicesRepository.save(service);
         }
-        //管家服务次数＋＋
-        steward.setServicedPeriod(steward.getServicedPeriod() + 1);
-        stewardRepository.save(steward);
 
         return charge.toString();
 
@@ -387,8 +402,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     }
 
     /**
-     * 获取订单号详情
-     *
+     * 判断用户是否已经登陆
      * @param userId
      * @return
      */
@@ -438,7 +452,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         StewardOrder stewardOrder = stewardOrderRepository.findAllByChargeId(chargeId);
 
-        if (null != stewardOrder){
+        if (null != stewardOrder) {
 
             //更新付款状态
             Charge charge = pingppService.queryCharge(chargeId);
@@ -471,7 +485,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
             return new ControllerResult<StewardOrder>().setRet_code(0).setRet_values(stewardOrder).setMessage("获取订单成功！");
 
-        }else{
+        } else {
 
             return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("获取订单失败！");
         }

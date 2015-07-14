@@ -1,7 +1,5 @@
 package com.wonders.xlab.healthcloud.service.drools.discovery.article;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
-import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoClickInfoRepository;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoClickSample;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.HealthInfoSample;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.input.UserQuerySample;
@@ -34,8 +31,6 @@ public class DiscoveryArticleRuleService {
 	@Autowired
 	@Qualifier("discoveryKBase")
 	private KieBase kieBase;
-	@Autowired
-	private HealthInfoClickInfoRepository healthInfoClickInfoRepository;
 	
 	/**
 	 * 重新计算点击数。
@@ -43,7 +38,7 @@ public class DiscoveryArticleRuleService {
 	 * @param sample 样本
 	 * @return Map(key=文章id，value=文章点击数)
 	 */
-	public Map<Long, Long> calcuClickCount(double X, List<HealthInfoSample> sampleList) {
+	public Map<Long, Long> calcuClickCount(double X, HealthInfoClickSample... sampleList) {
 		// 1、创建session，内部配置的是stateful
 		KieSession session = kieBase.newKieSession();
 		// 2、构造global对象，分析后返回
@@ -52,10 +47,7 @@ public class DiscoveryArticleRuleService {
 		session.setGlobal("clickCountOutputMap", output);
 		
 		// 3、构建fact放入规则中
-		List<HealthInfoClickSample> healthInfoClickSampleList = new ArrayList<>();
-		for (HealthInfoSample sample : sampleList) 
-			healthInfoClickSampleList.add(new HealthInfoClickSample(sample));
-		for (HealthInfoClickSample sample : healthInfoClickSampleList)
+		for (HealthInfoClickSample sample : sampleList)
 			session.insert(sample);
 
 		// 4、执行rule
@@ -71,9 +63,9 @@ public class DiscoveryArticleRuleService {
 	 * @param userId 用户id
 	 * @param healthInfos 健康文章info
 	 * @param articleCount 欲选择的文章数
-	 * @return Map(key=文章id，value=文章点击数)
+	 * @return List<Long> 推荐的文章id列表
 	 */
-	public Map<Long, Long> pushArticles(Long userId, List<HealthInfo> healthInfos, int articleCount) {
+	public List<HealthInfo> pushArticles(Long userId, List<HealthInfoSample> healthInfoSamples, int articleCount) {
 		// 1、创建session，内部配置的是stateful
 		KieSession session = kieBase.newKieSession();
 		// 2、构造global对象，分析后返回
@@ -85,69 +77,14 @@ public class DiscoveryArticleRuleService {
 		UserQuerySample userQuerySample = new UserQuerySample(userId);
 		session.insert(userQuerySample);
 		
-		List<HealthInfoSample> healthInfoSampleList = new ArrayList<>();
-		Map<Long, Long> allClickCount = new HashMap<>();
-		List<Object> allClickCountList = this.healthInfoClickInfoRepository.healthInfoTotalClickCount();
-		for (Object record : allClickCountList) {
-			Object[] record_values = (Object[]) record;
-			allClickCount.put((Long) record_values[0], (Long) record_values[1]);
-		}
-		for (HealthInfo healthInfo : healthInfos) {
-			// 创建sample fact
-			HealthInfoSample healthInfoSample = new HealthInfoSample(
-					userId, 
-					healthInfo.getCreatedDate(),
-					healthInfo.getId(), 
-					healthInfo.getTitle(), 
-					allClickCount.get(healthInfo.getId()) == null ? 0 : allClickCount.get(healthInfo.getId()), 
-					healthInfo.getClickCountA());
-			healthInfoSampleList.add(healthInfoSample);
-		}
-		
-		
-		// 重新计算clickCount，并重置到healthInfoSample中
-		Map<Long, Long> clickCounts = this.calcuClickCount(0.1, healthInfoSampleList);
-		for (HealthInfoSample sample : healthInfoSampleList) 
-			sample.setClickCount(clickCounts.get(sample.getHealthInfoId()));
-		for (HealthInfoSample sample : healthInfoSampleList) 
-			session.insert(sample);
-		
+		for (HealthInfoSample healthInfoSample : healthInfoSamples) 
+			session.insert(healthInfoSample);
 		
 		// 4、执行rule
 		session.fireAllRules();
 		// 5、销毁session
 		session.dispose();
 		
-		Long[] ids = output.getHealthInfoIds();
-		Map<Long, Long> returnMapIds = new HashMap<>();
-		for (Long id : ids) 
-			returnMapIds.put(id, clickCounts.get(id));
-		
-		return returnMapIds;
-	}
-	
-	public void testRule() {
-		// 1、创建session，内部配置的是stateful
-		KieSession session = kieBase.newKieSession();
-		
-		// 1.1 设置gloable对象，在drl中通过别名使用
-		OutputDaytHealthInfo output = new OutputDaytHealthInfo();
-		session.setGlobal("articleoutput", output);
-		
-		// 1.2 可以设置一些监听器，再议
-		
-		// 2、创建fact对象
-		UserQuerySample querySample = new UserQuerySample(1L);
-		for (long i = 28; i >= 0; i--) 
-			session.insert(new HealthInfoSample(1L, new Date(), i, "title" + i, new Long(i), 20));
-		
-		session.insert(querySample);
-		
-		// 3、执行rule
-		session.fireAllRules();
-		
-		
-		// 4、执行完毕销毁，有日志的也要关闭
-		session.dispose();
+		return output.getBoes();
 	}
 }
