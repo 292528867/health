@@ -8,7 +8,6 @@ import com.wonders.xlab.healthcloud.dto.hcpackage.ThirdPackageDto;
 import com.wonders.xlab.healthcloud.dto.hcpackage.UserPackageOrderDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
-import com.wonders.xlab.healthcloud.entity.hcpackage.Classification;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthCategoryRepository;
@@ -213,6 +212,10 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
         return new ControllerResult<List<UserPackageOrderDto>>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("成功");
     }
 
+    /**
+     * 首页用户注册默认健康包列表
+     * @return
+     */
     @RequestMapping("homePackages")
     public Object homePackages() {
         List<HcPackage> hcPackages = hcPackageRepository.findByIdLessThan(5l);

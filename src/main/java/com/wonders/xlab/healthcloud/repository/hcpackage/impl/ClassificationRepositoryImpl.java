@@ -19,7 +19,6 @@ public class ClassificationRepositoryImpl implements ClassificationRepositoryCus
 
     @Override
     public List<ThirdPackageDto> findOrderByCountPackage() {
-        System.out.println("entityManager = " + entityManager);
         String hql = "SELECT hcc.id, hcc.title, hcc.icon, hcc.description, count(hp.id) countPackage " +
                 "FROM hc_classification hcc " +
                 "left join hc_health_category ca on hcc.id = ca.classification_id " +
@@ -35,7 +34,7 @@ public class ClassificationRepositoryImpl implements ClassificationRepositoryCus
             dto.setId(Long.valueOf(objects[0].toString()));
             dto.setTitle((String) objects[1]);
             dto.setIconUrl((String) objects[2]);
-            dto.setDescription((String)objects[3]);
+            dto.setDescription((String) objects[3]);
             dto.setCountPackage(Integer.valueOf(objects[4].toString()));
             thirdPackageDtos.add(dto);
         }

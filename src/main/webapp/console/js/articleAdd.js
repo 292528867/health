@@ -40,7 +40,6 @@ function articleAdd() {
         $('#formSub').attr('disabled',false);
         return false;
     }
-    articleAddUrl += type;
     var json ={
         "title": title,
         "pictureUrl": pictureUrl,
@@ -50,7 +49,7 @@ function articleAdd() {
     };
     json = JSON.stringify(json);
     $.ajax({
-        url: articleAddUrl,
+        url: articleAddUrl + type,
         type: "POST",
         data: json,
         dataType: "json",

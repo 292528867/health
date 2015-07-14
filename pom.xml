@@ -216,4 +216,40 @@
 		</dependencies>
 	</dependencyManagement>
 
+
+	<profiles>
+		<profile>
+			<id>hcDebug</id>
+			<properties>
+				<show>true</show>
+				<format>true</format>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>hcDeploy</id>
+			<properties>
+				<show>false</show>
+				<format>false</format>
+			</properties>
+		</profile>
+	</profiles>
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
