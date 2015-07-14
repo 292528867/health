@@ -57,7 +57,7 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
                 return new ControllerResult<>()
                         .setRet_code(-1).setRet_values("").setMessage("为了能正常给您推荐健康计划必须保留一个包！");
             userPackageOrderRepository.delete(userPackageOrder.getId());
-            HcPackage hcPackage = hcPackageRepository.findById(packageId);
+            HcPackage hcPackage = hcPackageRepository.findOne(packageId);
             discoveryService.deleteUserCategoryRelated(userId, hcPackage.getHealthCategory().getId());
             return new ControllerResult<>()
                     .setRet_code(0).setRet_values("").setMessage("取消成功！");

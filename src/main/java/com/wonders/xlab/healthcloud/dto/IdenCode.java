@@ -25,7 +25,6 @@ public class IdenCode implements Serializable {
     private BaseInfo.AppPlatform appPlatform;
 
     public IdenCode() {
-        super();
     }
 
     public IdenCode(String tel, String code, BaseInfo.AppPlatform appPlatform) {

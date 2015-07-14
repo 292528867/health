@@ -13,4 +13,5 @@ public interface DoctorRepository extends MyRepository<Doctor, Long> {
     Doctor findByTel(String tel);
 
     List<Doctor> findByChecked(Doctor.Checked checked);
+
 }

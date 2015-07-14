@@ -12,13 +12,17 @@ import java.util.Set;
 @Entity
 @Table(name = "HC_USER")
 public class User extends BaseInfo<Long> {
+
     /**
      * 用户健康包
      */
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
-    @OrderBy(value = "id asc")
-    @JoinTable(name = "hc_user_package_relation", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "package_id"))
-    private Set<HcPackage> hcPackages;
+    @JoinTable(name = "hc_user_package_relation",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "package_id")
+    )
+    @OrderBy("id asc")
+    private Set<HcPackage> hcPackages = new HashSet<>(0);
 
     /**
      * 分类
@@ -77,6 +81,7 @@ public class User extends BaseInfo<Long> {
 
     /**
      * 邀请二维码的url
+     *
      * @return
      */
     private String inviteUrl = "http://7xk3mz.com2.z0.glb.qiniucdn.com/healthinfo-icon-1436850530261";
@@ -143,6 +148,13 @@ public class User extends BaseInfo<Long> {
 
     public void setByInviteCode(String byInviteCode) {
         ByInviteCode = byInviteCode;
+    }
+
+    public void addHcPackage(HcPackage hcPackage) {
+        if (hcPackage != null) {
+            hcPackages.add(hcPackage);
+        }
+
     }
 
 }

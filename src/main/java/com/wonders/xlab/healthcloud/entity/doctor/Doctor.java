@@ -78,7 +78,6 @@ public class Doctor extends BaseInfo<Long> {
     }
 
     public Doctor() {
-        super();
     }
 
     public AppPlatform getAppPlatform() {

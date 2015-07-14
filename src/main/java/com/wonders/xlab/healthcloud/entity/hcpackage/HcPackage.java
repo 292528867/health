@@ -4,19 +4,15 @@ package com.wonders.xlab.healthcloud.entity.hcpackage;
  * Created by mars on 15/7/3.
  * 健康包
  */
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wonders.xlab.healthcloud.entity.AbstractBaseEntity;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
-import com.wonders.xlab.healthcloud.service.hcpackage.HcpackageService;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
 @Table(name = "hc_package")
-@NamedEntityGraph(name = "HcPackage.healthCategory",
-        attributeNodes = @NamedAttributeNode("healthCategory"))
 public class HcPackage extends AbstractBaseEntity<Long> {
 
     /**
@@ -98,7 +94,7 @@ public class HcPackage extends AbstractBaseEntity<Long> {
      */
     private boolean loops;
 
-    @ManyToOne()
+    @ManyToOne
     private HealthCategory healthCategory;
 
     /** 循环次数 */
@@ -113,7 +109,7 @@ public class HcPackage extends AbstractBaseEntity<Long> {
      */
     private int coefficient;
 
-    @OneToMany(mappedBy = "hcPackage",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "hcPackage")
     private Set<HcPackageDetail> hcPackageDetails;
 
 //    /**
@@ -123,48 +119,6 @@ public class HcPackage extends AbstractBaseEntity<Long> {
 //    @OrderBy(value = "id asc")
 //    @JoinTable(name = "hc_user_package_relation", joinColumns = @JoinColumn(name = "package_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
 //    private Set<User> users;
-
-    public HcPackage() {
-    }
-
-    public HcPackage(String detailDescription) {
-        this.detailDescription = detailDescription;
-    }
-
-    public HcPackage(String title, String description, String iconUrl, boolean recommend, int recommendValue) {
-        this.title = title;
-        this.description = description;
-        this.icon = iconUrl;
-        this.recommend = recommend;
-        this.recommendValue = recommendValue;
-    }
-
-    public HcPackage(
-            String title, String subtitle, String description, String detailDescription,
-            int duration, String icon, String detailDescriptionIcon, boolean recommend,
-            int recommendValue, int clickAmount, int joinAmount, boolean isNeedSupplemented,
-            Sex sex, String supplemented, boolean loops, HealthCategory healthCategory,
-            int cycleLimit, String smallIcon, int coefficient) {
-        this.title = title;
-        this.subtitle = subtitle;
-        this.description = description;
-        this.detailDescription = detailDescription;
-        this.duration = duration;
-        this.icon = icon;
-        this.detailDescriptionIcon = detailDescriptionIcon;
-        this.recommend = recommend;
-        this.recommendValue = recommendValue;
-        this.clickAmount = clickAmount;
-        this.joinAmount = joinAmount;
-        this.isNeedSupplemented = isNeedSupplemented;
-        this.sex = sex;
-        this.supplemented = supplemented;
-        this.loops = loops;
-        this.healthCategory = healthCategory;
-        this.cycleLimit = cycleLimit;
-        this.smallIcon = smallIcon;
-        this.coefficient = coefficient;
-    }
 
     public String getTitle() {
         return title;
