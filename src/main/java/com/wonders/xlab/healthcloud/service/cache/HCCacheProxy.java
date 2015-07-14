@@ -49,7 +49,7 @@ public class HCCacheProxy<KEYTYPE, VALUETYPE> implements HCCache<KEYTYPE, VALUET
 	@Override
 	public VALUETYPE putIfAbsent(KEYTYPE key, VALUETYPE value){
 		Element element = new Element(key, value);
-		return (VALUETYPE)this.ehCache.putIfAbsent(element);
+		return (VALUETYPE)ehCache.putIfAbsent(element).getObjectValue();
 	}
 	
 }
