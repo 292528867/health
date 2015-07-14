@@ -24,6 +24,7 @@ public class AddressBook extends AbstractPersistable<Long> {
      */
     private String mobile;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
