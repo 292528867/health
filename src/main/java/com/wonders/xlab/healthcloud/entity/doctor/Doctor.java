@@ -113,16 +113,16 @@ public class Doctor extends BaseInfo<Long> {
         this.permitUrl = permitUrl;
     }
 
-    public Checked getChecked() {
-        return checked;
+    public int getChecked() {
+        return checked.ordinal();
     }
 
     public void setChecked(Checked checked) {
         this.checked = checked;
     }
 
-    public Valid getValid() {
-        return valid;
+    public int getValid() {
+        return valid.ordinal();
     }
 
     public void setValid(Valid valid) {
