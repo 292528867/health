@@ -31,6 +31,6 @@ public class HcSystemController extends AbstractBaseController<HcSystem,Long> {
     @RequestMapping(value = "findSystemInfo" , method = RequestMethod.GET)
     public Object findSystemInfo() {
 
-        return  new ControllerResult<List<HcSystem>>().setRet_code(-1).setRet_values(hcSystemRepository.findAll()).setMessage("查询成功");
+        return  new ControllerResult<List<HcSystem>>().setRet_code(0).setRet_values(hcSystemRepository.findAll()).setMessage("查询成功");
     }
 }
