@@ -262,7 +262,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 		// 更新文章总点击数+1
 		healthInfoClickInfo.setClickCount(healthInfoClickInfo.getClickCount() + 1);
 		// 更新文章虚拟点击数（用差值）
-		healthInfoClickInfo.setVirtualClickCount(new_virtualHealthInfoClickCount - old_virtualHealthInfoClickCount);
+		healthInfoClickInfo.setVirtualClickCount(healthInfoClickInfo.getVirtualClickCount() + new_virtualHealthInfoClickCount - old_virtualHealthInfoClickCount);
 		
 		return healthInfoClickInfo;
 	}
