@@ -83,7 +83,7 @@ public class AppController {
 	@RequestMapping(value = "recommand/tag/articles/{categoryId}/{userId}", method = RequestMethod.GET)
 	public ControllerResult<?> getTagInfos(@PathVariable Long categoryId, @PathVariable Long userId, Pageable pageable) {
 		// 查询用户
-		User user = userRepository.queryUserHealthInfo(userId);
+		User user = userRepository.findOne(userId);
 		if (user == null) 
 			return new ControllerResult<String>().setRet_code(-1).setRet_values("用户不存在").setMessage("用户不存在");
 		// 获取单个分类

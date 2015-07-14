@@ -11,12 +11,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.AbstractPersistable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * 健康信息。
@@ -50,7 +53,8 @@ public class HealthInfo extends AbstractPersistable<Long> {
 	private HealthCategory healthCategory;
 	
 	/** 点击信息 */
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JsonIgnore
+	@OneToOne(mappedBy="healthInfo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private HealthInfoClickInfo healthInfoClickInfo;
 	
 	

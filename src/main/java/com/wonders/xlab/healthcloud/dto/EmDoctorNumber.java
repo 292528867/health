@@ -2,6 +2,8 @@ package com.wonders.xlab.healthcloud.dto;
 
 import com.wonders.xlab.healthcloud.entity.EmMessages;
 
+import java.util.List;
+
 /**
  * Created by yk on 15/7/11.
  */
@@ -12,7 +14,11 @@ public class EmDoctorNumber {
 
     private String content;
 
+    //存放的是doctor数量的提示，ios要求要这样的格式
     private EmMessages emMessages;
+
+    //返回前2条纪录
+    private List<EmMessages> list;
 
     private String groupId;
 
@@ -46,5 +52,13 @@ public class EmDoctorNumber {
 
     public void setEmMessages(EmMessages emMessages) {
         this.emMessages = emMessages;
+    }
+
+    public List<EmMessages> getList() {
+        return list;
+    }
+
+    public void setList(List<EmMessages> list) {
+        this.list = list;
     }
 }

@@ -25,6 +25,16 @@ public class AddressBook extends AbstractPersistable<Long> {
     private String mobile;
 
 
+    public enum InviteStatus{
+        邀请中,已添加
+    }
+
+    /**
+     * 邀请状态
+     */
+    private InviteStatus inviteStatus = InviteStatus.邀请中;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
@@ -58,5 +68,13 @@ public class AddressBook extends AbstractPersistable<Long> {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public InviteStatus getInviteStatus() {
+        return inviteStatus;
+    }
+
+    public void setInviteStatus(InviteStatus inviteStatus) {
+        this.inviteStatus = inviteStatus;
     }
 }

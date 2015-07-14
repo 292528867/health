@@ -21,6 +21,10 @@ public class RequestTexMsg {
         txt, img, audio, video, cmd
     }
 
+
+    public RequestTexMsg() {
+    }
+
     public RequestTexMsg(String type, String msg) {
         this.type = type;
         this.msg = msg;

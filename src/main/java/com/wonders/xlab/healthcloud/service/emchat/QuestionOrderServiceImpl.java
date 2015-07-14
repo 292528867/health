@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.lang.Object;
 import java.util.*;
 
@@ -44,8 +45,14 @@ public class QuestionOrderServiceImpl implements QuestionOrderService {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    private HCCacheProxy<String, String> questionCache = new HCCacheProxy(userQuestionCache);
-    private HCCacheProxy<String, String> orderCache = new HCCacheProxy<>(questionOrderCache);
+    private HCCacheProxy<String, String> questionCache;
+    private HCCacheProxy<String, String> orderCache;
+
+    @PostConstruct
+    private void init(){
+        questionCache = new HCCacheProxy<>(userQuestionCache);
+        orderCache = new HCCacheProxy<>(questionOrderCache);
+    }
 
     @Override
     public void sendQuestionToDoctors(String doctorTel) throws Exception{
@@ -89,6 +96,8 @@ public class QuestionOrderServiceImpl implements QuestionOrderService {
                     if(HttpStatus.OK == result.getStatusCode()){
                         order.setPushCount(order.getPushCount() + 1);
                         orderRepository.save(order);
+                        //每次只群推一条消息，发送成功以后就退出循环
+                        break;
                     }
                 }
             } else {
