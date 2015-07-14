@@ -29,47 +29,29 @@ public class HealthDocsController {
         List<HealthDocs> docses = userRepository.findHealthDocs();
         List<HealthDocsDto> healthDocsDtos = new ArrayList<>();
         for (HealthDocs doc : docses) {
-            String[] diagnosisHistory = doc.getDiagnosisHistory().split(",", 4);
+
+            String[] diagnosisHistory = doc.getDiagnosisHistory().trim().split(",");
+
+            int length = diagnosisHistory.length / 4;
             List<DiagnosisDto> diagnosisDtos = new ArrayList<>();
-
-            for (String history : diagnosisHistory) {
-                String[] str = history.split(",");
-                for (int i = 0; i < str.length; i ++) {
-                    DiagnosisDto  dto = new DiagnosisDto();
-                    if (i == 0) {
-                        dto.setTime(str[0].trim());
-                    }
-                    if (i == 1) {
-                        dto.setArea(str[1].trim());
-                    }
-                    if (i == 2) {
-                        dto.setTreatmentMethod(str[2].trim());
-                    }
-                    if (i == 3) {
-                        dto.setDisease(str[3].trim());
-                    }
-                    diagnosisDtos.add(dto);
-                }
-
+            for (int i = 0; i < length; i++) {
+                DiagnosisDto dto = new DiagnosisDto();
+                dto.setTime(diagnosisHistory[4 * i]);
+                dto.setArea(diagnosisHistory[4 * i + 1]);
+                dto.setTreatmentMethod(diagnosisHistory[4 * i +2]);
+                dto.setDisease(diagnosisHistory[4 * i + 3]);
+                diagnosisDtos.add(dto);
             }
-            String[] medicineHistory = doc.getMedicineHistory().split(",", 3);
-            List<MedicationDto> medicationDtos = new ArrayList<>();
-            for (String history : medicineHistory) {
-                String[] str = history.split(",");
 
-                for (int i = 0; i < str.length; i++) {
-                    MedicationDto dto = new MedicationDto();
-                    if (i == 0) {
-                        dto.setTime(str[0].trim());
-                    }
-                    if (i == 1) {
-                        dto.setMedicineName(str[1].trim());
-                    }
-                    if (i == 2) {
-                        dto.setTakeMethod(str[2].trim());
-                    }
-                    medicationDtos.add(dto);
-                }
+            String[] medicineHistory = doc.getMedicineHistory().trim().split(",");
+            List<MedicationDto> medicationDtos = new ArrayList<>();
+            length = medicineHistory.length / 3;
+            for (int i = 0; i < length; i++) {
+                MedicationDto dto = new MedicationDto();
+                dto.setTime(medicineHistory[3 * i]);
+                dto.setMedicineName(medicineHistory[3 * i + 1]);
+                dto.setTakeMethod(medicineHistory[3 * i + 2]);
+                medicationDtos.add(dto);
             }
             HealthDocsDto dto = new HealthDocsDto(
                     doc.getName(),
