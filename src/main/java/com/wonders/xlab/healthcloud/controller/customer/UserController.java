@@ -248,8 +248,11 @@ public class UserController extends AbstractBaseController<User, Long> {
         user.setAppPlatform(idenCode.getAppPlatform());
 
         //邀请码唯一
+        userRepository.findAll();
 
         user.setInviteCode(RandomStringUtils.random(1, "abcdefghijklmnopqrstuvwxyz") + RandomStringUtils.random(3, "0123456789"));
+
+
         user = userRepository.save(user);
         return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("注册用户成功，并成功创建群组");
     }

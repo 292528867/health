@@ -1,5 +1,6 @@
 package com.wonders.xlab.healthcloud.entity.customer;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wonders.xlab.healthcloud.entity.BaseInfo;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthCategory;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
@@ -71,6 +72,7 @@ public class User extends BaseInfo<Long> {
     /**
      * 被邀请码
      */
+    @JsonIgnore
     private String ByInviteCode;
 
     /**
