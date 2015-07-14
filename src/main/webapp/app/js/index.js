@@ -13,7 +13,7 @@ var typeTagUrl = commonUrl + 'discovery/app/recommand/tags/';
 var typeArticleUrl = commonUrl + 'discovery/app/recommand/tag/articles/';
 
 var mySwiper;
-var size = 6, page = 0, loads = 0,totalPages= 0,number= 0,flag=0;
+var size = 6, page = 0, loads = 0, totalPages = 0, number = 0, flag = 0;
 
 
 if (sessionStorage.getItem('articleUrl') != null) {
@@ -26,7 +26,7 @@ else {
 function inLoad() {
   $('#error-png').hide();
   $('.today-body').removeClass('today-body-banners');
-  page = 0, loads = 0,totalPages= 0,number= 0,flag=1;
+  page = 0, loads = 0, totalPages = 0, number = 0, flag = 1;
   $.get(articleUrl + healthCategoryId, function (data) {
     var values = data.ret_values;
     articleList = values;
@@ -54,7 +54,7 @@ function inLoad() {
 
 
 function loadArticles(id) {
-  page = 0, loads = 0,totalPages= 0,number= 0,flag=0;
+  page = 0, loads = 0, totalPages = 0, number = 0, flag = 0;
   $('#banner-scroll').hide();
   $('#error-png').hide();
   $('.today-bar').attr('onclick', 'loadTodayArticles()');
@@ -97,7 +97,7 @@ function loadArticles(id) {
 
 
 function loadTodayArticles() {
-  page = 0, loads = 0,totalPages= 0,number= 0,flag=1;
+  page = 0, loads = 0, totalPages = 0, number = 0, flag = 1;
   $('#error-png').hide();
   $('.today-bar').attr('onclick', '');
   $('#banner-scroll').hide();
@@ -142,19 +142,36 @@ function getDetails(id) {
   var clickUrl = commonUrl + 'discovery/app/clickInfo/' + healthCategoryId + '/' + articleId;
   $.get(clickUrl, function (data) {
     localStorage.setItem('articleId', articleId);
-    window.location.href = 'detail.html?' + articleId;
+    //window.location.href = 'detail.html?' + articleId;
+    history.pushState('detail', '文章详情', 'detail.html?' + articleId);
+    $('.app-body').hide();
+    sessionStorage.setItem('index', id);
+    sessionStorage.setItem('top', document.body.scrollTop);
+    loadDetails(id);
   });
-/*
-  var articleId = articleList[id].id || JSON.parse(localStorage.getItem('articleList')[id].id);
-  var clickUrl = commonUrl + 'discovery/app/clickInfo/' + healthCategoryId + '/' + articleId;
-  articleList[id].clickCount = articleList[id].clickCount + 1;
-  $.get(clickUrl, function (data) {
-    localStorage.setItem('article', JSON.stringify(articleList[id]));
-    localStorage.setItem('articleList', JSON.stringify(articleList));
-    window.location.href = 'detail.html?' + articleId;
-  });
-*/
+  /*
+   var articleId = articleList[id].id || JSON.parse(localStorage.getItem('articleList')[id].id);
+   var clickUrl = commonUrl + 'discovery/app/clickInfo/' + healthCategoryId + '/' + articleId;
+   articleList[id].clickCount = articleList[id].clickCount + 1;
+   $.get(clickUrl, function (data) {
+   localStorage.setItem('article', JSON.stringify(articleList[id]));
+   localStorage.setItem('articleList', JSON.stringify(articleList));
+   window.location.href = 'detail.html?' + articleId;
+   });
+   */
 }
+window.onpopstate = function (event) {
+  var indexId = sessionStorage.getItem('index');
+  if (indexId != null) {
+    $('.app-body').show();
+    $('.data-body').hide();
+
+    //$('body').scrollTop($('#' + indexId).offset().top - $(window).height() / 2+80);
+    $('body').scrollTop(sessionStorage.getItem('top'));
+    sessionStorage.setItem('load', 0);
+    $('body').css('background','#ffffff');
+  }
+};
 
 
 function loadTypeArticles(id) {
@@ -162,17 +179,17 @@ function loadTypeArticles(id) {
     var values = data.ret_values.content;
     articleList = values;
     var articleTemple = Handlebars.compile($('#articlesBox').html());
-    if(flag===0)
-    $('#banners').append(articleTemple(articleList));
+    if (flag === 0)
+      $('#banners').append(articleTemple(articleList));
     if (values.length == 0) {
       $('#error-png').show();
       $('#banner-scroll').hide();
     }
-    page ++;
+    page++;
     loads = 1;
-    number = data.ret_values.number+1;
+    number = data.ret_values.number + 1;
     totalPages = data.ret_values.totalPages;
-    if(number===totalPages){
+    if (number === totalPages) {
       $('#banner-scroll').hide();
     }
   });
@@ -191,10 +208,45 @@ $(document).ready(function () {
     //alert(maxnum);
     totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
     documentHeight = ($(document).height());
-    if (documentHeight <= totalheight && loads === 1&&number<totalPages&&flag===0) {
+    if (documentHeight <= totalheight && loads === 1 && number < totalPages && flag === 0) {
       loads = 0;
       loadTypeArticles(sessionStorage.getItem('tag'));
     }
   });
 
 })
+
+
+
+function loadDetails(id) {
+  var article;
+  $.get(commonUrl+'discovery/app/listInfo/' + id, function (data) {
+    article = data.ret_values;
+    $('#detail-img').attr('src', article.pictureUrl);
+    $('#details').html(article.htmlInfo);
+    $('#detail-title').html(article.title);
+    $('#detail-count').html(article.clickCount + '人阅读');
+    setTimeout(load(), 500);
+    var articleHeight = $('#details').height() + 20;
+    var height = $(window).height() * 2;
+    if (height < articleHeight) {
+      $('#details').css('height', height);
+      $('.unfold-field').show();
+      $('.banner-bg').show();
+    }
+  });
+
+  function load() {
+    $('.data-body').fadeIn();
+    $('body').css('background','#f6f6f6');
+  }
+
+}
+function openArticle() {
+  $('#details').css('height', 'auto');
+  $('.unfold-field').hide();
+  $('.banner-bg').hide();
+}
+function activityList(id) {
+  window.location.href = 'share.html?' + id.share;
+}

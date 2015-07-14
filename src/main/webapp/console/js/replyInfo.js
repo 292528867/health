@@ -1,5 +1,5 @@
-var url = 'http://101.231.124.8:45677/xlab-healthcloud/';
-//var url = 'http://127.0.0.1:8080/';
+/*var url = 'http://101.231.124.8:45677/xlab-healthcloud/';*/
+var url = 'http://127.0.0.1:8080/';
 
 $(document).ready(function () {
 
@@ -121,7 +121,8 @@ function replyInfo(fromUser, toUser,msgId) {
                 'type': 'txt',
                 'msg': content
             },
-            'from': $('#doctor_select').val()
+            'from': $('#doctor_select').val(),
+            'ext':{} 
         };
 
         $.ajax({

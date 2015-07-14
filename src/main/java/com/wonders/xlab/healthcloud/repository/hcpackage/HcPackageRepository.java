@@ -2,6 +2,8 @@ package com.wonders.xlab.healthcloud.repository.hcpackage;
 
 import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -25,4 +27,7 @@ public interface HcPackageRepository extends MyRepository<HcPackage, Long> {
     List<HcPackage> findByCategoryId(@Param("categoryId")Long categoryId);
 
     List<HcPackage> findByIdLessThan(long packageId);
+
+    @EntityGraph(value = "HcPackage.healthCategory", type = EntityGraphType.LOAD)
+    HcPackage findById(long packageId);
 }
