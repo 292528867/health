@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by lixuanwu on 15/7/5.
@@ -32,10 +33,10 @@ public class TexMessagesRequestBody {
      */
     private String from;
 
-   /* *//**
+     /**
      * 扩展属性
-     *//*
-    private String ext;*/
+     */
+    private Map<String,Object> ext;
 
 
     public String getTargetType() {
@@ -70,11 +71,11 @@ public class TexMessagesRequestBody {
         this.from = from;
     }
 
-    /*public String getExt() {
+    public Map<String, Object> getExt() {
         return ext;
     }
 
-    public void setExt(String ext) {
+    public void setExt(Map<String, Object> ext) {
         this.ext = ext;
-    }*/
+    }
 }
