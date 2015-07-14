@@ -17,6 +17,11 @@ public class RequestTexMsg {
 
     private String msg;
 
+    public RequestTexMsg(String type, String msg) {
+        this.type = type;
+        this.msg = msg;
+    }
+
     public String getType() {
         return type;
     }
