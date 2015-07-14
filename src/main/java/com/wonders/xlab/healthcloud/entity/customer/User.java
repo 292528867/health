@@ -79,13 +79,13 @@ public class User extends BaseInfo<Long> {
      * 邀请二维码的url
      * @return
      */
-    private String inviteUrl;
+    private String inviteUrl = "http://7xk3mz.com2.z0.glb.qiniucdn.com/healthinfo-icon-1436850530261";
 
     /**
      * bug反馈二维码的url
      * @return
      */
-    private String bugUrl;
+    private String bugUrl = "http://7xk3mz.com2.z0.glb.qiniucdn.com/healthinfo-icon-1436863087518";
 
 
     public Set<HcPackage> getHcPackages() {

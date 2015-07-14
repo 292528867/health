@@ -5,6 +5,8 @@ import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.repository.customer.custom.UserRepositoryCustom;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 /**
  * Created by Jeffrey on 15/7/2.
  */
@@ -17,4 +19,7 @@ public interface UserRepository extends MyRepository<User,Long>,UserRepositoryCu
     User findByTel(String tel);
 
     User findByInviteCode(String inviteCode);
+
+    @Query("select u.inviteCode from User u")
+    List<String> findAllInviteCode();
 }

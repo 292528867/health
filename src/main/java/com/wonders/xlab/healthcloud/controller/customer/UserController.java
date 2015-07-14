@@ -22,6 +22,7 @@ import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.service.hcpackage.UserPackageOrderService;
 import com.wonders.xlab.healthcloud.utils.*;
 import net.sf.ehcache.Cache;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -247,11 +248,20 @@ public class UserController extends AbstractBaseController<User, Long> {
         user.setTel(idenCode.getTel());
         user.setAppPlatform(idenCode.getAppPlatform());
 
+        //四位随机验证码
+        String inviteCode = RandomStringUtils.random(1, "abcdefghijklmnopqrstuvwxyz") + RandomStringUtils.random(3, "0123456789");
+
         //邀请码唯一
-        userRepository.findAll();
-
-        user.setInviteCode(RandomStringUtils.random(1, "abcdefghijklmnopqrstuvwxyz") + RandomStringUtils.random(3, "0123456789"));
-
+        List<String> inviteCodeList = userRepository.findAllInviteCode();
+        boolean flag = true;
+        while (flag){
+            if (inviteCodeList.contains(inviteCode)){
+                inviteCode = RandomStringUtils.random(1, "abcdefghijklmnopqrstuvwxyz") + RandomStringUtils.random(3, "0123456789");
+            }else {
+                user.setInviteCode(inviteCode);
+                flag = false;
+            }
+        }
 
         user = userRepository.save(user);
         return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("注册用户成功，并成功创建群组");
