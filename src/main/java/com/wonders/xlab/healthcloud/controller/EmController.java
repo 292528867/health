@@ -17,6 +17,7 @@ import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.service.WordAnalyzerService;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
+import com.wonders.xlab.healthcloud.service.emchat.QuestionOrderService;
 import com.wonders.xlab.healthcloud.utils.Constant;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
@@ -76,6 +77,9 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     private HCCacheProxy<String, String> questionCache;
 
     private HCCacheProxy<String, String> orderCache;
+
+    @Autowired
+    private QuestionOrderService questionOrderService;
 
     @Override
     protected MyRepository<EmMessages, Long> getRepository() {
@@ -177,6 +181,26 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         //判断该用户的消息是否已有人在处理
         long askTime = System.currentTimeMillis();
         User user = userRepository.findByTel(body.getFrom());
+        if(user == null){
+            return new ControllerResult()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("用户不存在");
+        }
+        String userAskTime = user.getId() + "_ASK_TIME";
+        questionCache.putIfAbsent(userAskTime, String.valueOf(askTime));
+        String askTimeStr = questionCache.getFromCache(userAskTime);
+        if (!String.valueOf(askTime).equals(askTimeStr)) {
+            //已有其他线程处理，禁止重复提交
+            return new ControllerResult()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("发送失败");
+        } else {
+              /*  String messagesJson = objectMapper.writeValueAsString(body);
+                //发送信息给环信
+                emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);*/
+        }
         //保存消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
@@ -189,7 +213,6 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         );
 
         emMessages = emMessagesRepository.save(emMessages);
-
         //从缓存中查询该用户是否有正在提问的问题
         if (StringUtils.isNotEmpty(orderCache.getFromCache(user.getId().toString()))) {
             //缓存中存在开放问题，此次发送消息不是新问题，直接发送
@@ -215,20 +238,6 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             questionOrder.setQuestionStatus(QuestionOrder.QuestionStatus.newQuestion);
             questionOrder = questionOrderRepository.save(questionOrder);
             orderCache.putIfAbsent(user.getId().toString(), questionOrder.getId().toString());
-            String userAskTime = user.getId() + "_ASK_TIME";
-            questionCache.putIfAbsent(userAskTime, String.valueOf(askTime));
-            String askTimeStr = questionCache.getFromCache(userAskTime);
-            if (String.valueOf(askTime).equals(askTimeStr)) {
-              /*  String messagesJson = objectMapper.writeValueAsString(body);
-                //发送信息
-                emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);*/
-            } else {
-                //已有其他线程处理，禁止重复提交
-                return new ControllerResult()
-                        .setRet_code(-1)
-                        .setRet_values("")
-                        .setMessage("发送失败");
-            }
         }
 
         return new ControllerResult().setRet_code(0).setRet_values("").setMessage("文本消息发送成功");
@@ -505,7 +514,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * @param doctorTel 医生电话
      * @return 成功返回userId和环信groupId
      */
-    @RequestMapping(value = "rushOrder")
+    @RequestMapping(value = "rushOrder/{userTel}/{doctorTel}")
     public ControllerResult rushOrder(@PathVariable final String userTel, @PathVariable final String doctorTel) {
         final User user = userRepository.findByTel(userTel);
         final Doctor doctor = doctorRepository.findByTel(doctorTel);
@@ -521,7 +530,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                     )
                     .setMessage("抢单成功！");
         } else {
-            return new ControllerResult().setRet_code(-1).setRet_values("").setMessage("抢单失败！");
+            try {
+                questionOrderService.sendQuestionToDoctors(doctor.getTel());
+                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("抢单失败！");
+            } catch (Exception e) {
+                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("抢单失败！");
+            }
         }
     }
 
