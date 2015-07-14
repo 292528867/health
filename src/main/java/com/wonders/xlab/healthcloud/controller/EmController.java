@@ -16,11 +16,13 @@ import com.wonders.xlab.healthcloud.repository.QuestionOrderRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.service.WordAnalyzerService;
+import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.utils.Constant;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -89,9 +91,9 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         //   Map<String, String> extendAttr = wordAnalyzerService.analyzeText(body.getMsg().getMsg());
 
         // body.setExt(objectMapper.writeValueAsString(extendAttr));
-        //发送信息
+        //推送给环信
         ResponseEntity<String> responseEntity = (ResponseEntity<String>) emUtils.requestEMChat(messagesJson,"POST",  "messages", String.class);
-        //保存医生回复消息
+        //保存医生或者运营回复消息
         EmMessages emMessages = new EmMessages(
                 body.getFrom(),
                 body.getTarget().get(0),
@@ -115,6 +117,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         oldEm.setIsReplied(true);
         emMessagesRepository.save(oldEm);
 
+        //从缓存里面移除该问题
+        HCCache<String, String> cache = new HCCacheProxy<String, String>(userQuestionCache);
+        cache.removeFromCache(username+body.getFrom()+"_RESPONDENT");
+        cache.removeFromCache(username+"_ASK_TIME");
+        cache.removeFromCache(username+"_RESPONDENT_TYPE");
+
 
         //回复信息耗时 TODO 推送给app 暂时注释
      /*   Period period = new Period(new DateTime(newMessage.getCreatedDate()), new DateTime(oldEm.getCreatedDate()), PeriodType.minutes());
@@ -132,6 +140,15 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         return new ControllerResult().setRet_code(0).setRet_values(responseEntity.getBody()).setMessage("消息发送成功");
 
+    }
+
+    @RequestMapping(value = "test", method = RequestMethod.POST)
+    public ControllerResult test(@RequestBody TexMessagesRequestBody body) throws Exception{
+        String messagesJson = objectMapper.writeValueAsString(body);
+        //发送信息
+        emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);
+
+        return new ControllerResult().setRet_code(0).setRet_values("").setMessage("文本消息发送成功");
     }
 
     /**
@@ -205,7 +222,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         String messagesJson = objectMapper.writeValueAsString(body);
         //发送信息
-        emUtils.requestEMChat(messagesJson,"POST", "messages", String.class);
+        emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);
 
         return new ControllerResult().setRet_code(0).setRet_values("").setMessage("文本消息发送成功");
 
@@ -402,6 +419,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS, EMUtils.countDoctors()));
             if(flag == 1) {
                 newMessages.setToUser(groupId);
+                newMessages.setIsShowForDoctor(1); //不让医生端看到
                 emMessagesRepository.save(newMessages);
             }
             emDoctorNumber.setLastQuestionStatus(0);
@@ -412,7 +430,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         if (emMessages.getIsReplied()) { //用户已回复
             newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS,EMUtils.countDoctors()));
             if(flag == 1) {
-                newMessages.setToUser(groupId);
+                  newMessages.setToUser(groupId);
+                  newMessages.setIsShowForDoctor(1); //不让医生端看到
                   emMessagesRepository.save(newMessages);
             }
             emDoctorNumber.setLastQuestionStatus(0);
@@ -445,10 +464,16 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * @return
      */
     @RequestMapping(value = "/queryRecords", method = RequestMethod.GET)
-    public ControllerResult<Page<EmMessages>> queryHistoryRecords(String groupId, Pageable pageable) {
+    public ControllerResult<Page<EmMessages>> queryHistoryRecords(String groupId, Pageable pageable,String type) {
  /*       Map<String, Object> filterMap = new HashMap<>();
         filterMap.put("toUser_equal", groupId);*/
-        Page<EmMessages> list = emMessagesRepository.findAll(Collections.singletonMap("toUser_equal", groupId), pageable);
+        Page<EmMessages> list = null;
+        if (type.equals("user")) {
+            list = emMessagesRepository.findAll(Collections.singletonMap("toUser_equal", groupId), pageable);
+        }
+        if (type.equals("doctor")) {
+            list = emMessagesRepository.findByIsShowForDoctorOrderByCreateDateDesc(1);
+        }
         return new ControllerResult<Page<EmMessages>>().setRet_code(0).setRet_values(list).setMessage("");
     }
 
