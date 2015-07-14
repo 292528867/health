@@ -254,10 +254,10 @@ public class UserController extends AbstractBaseController<User, Long> {
         //邀请码唯一
         List<String> inviteCodeList = userRepository.findAllInviteCode();
         boolean flag = true;
-        while (flag){
-            if (inviteCodeList.contains(inviteCode)){
+        while (flag) {
+            if (inviteCodeList.contains(inviteCode)) {
                 inviteCode = RandomStringUtils.random(1, "abcdefghijklmnopqrstuvwxyz") + RandomStringUtils.random(3, "0123456789");
-            }else {
+            } else {
                 user.setInviteCode(inviteCode);
                 flag = false;
             }
@@ -275,22 +275,25 @@ public class UserController extends AbstractBaseController<User, Long> {
      * @return
      * @throws Exception
      */
-    @Transactional
     @RequestMapping(value = "uploadPic/{id}", method = RequestMethod.POST)
     public Object uploadPic(@PathVariable long id, @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             try {
+
                 User user = userRepository.findOne(id);
                 if (null == user)
+
                     return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("用户不存在!");
-                String filename = URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
-                String url = QiniuUploadUtils.upload(file.getBytes(), filename);
-                user.setIconUrl(url);
+
+                user.setIconUrl(QiniuUploadUtils.upload(file.getBytes(), URLDecoder.decode(file.getOriginalFilename(), "UTF-8")));
+
                 user = userRepository.save(user);
+
                 return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("图片上传成功!");
+
             } catch (Exception e) {
-                e.printStackTrace();
-                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage(e.getLocalizedMessage());
+
+                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("图片上传失败");
             }
         }
         return null;
@@ -377,7 +380,7 @@ public class UserController extends AbstractBaseController<User, Long> {
      * @return
      */
     @RequestMapping(value = "checkoutInviteCode", method = RequestMethod.POST)
-    public ControllerResult checkoutInviteCode(Long userId,String inviteCode) {
+    public ControllerResult checkoutInviteCode(Long userId, String inviteCode) {
 
         User friendUser = userRepository.findByInviteCode(inviteCode);
 
@@ -387,14 +390,14 @@ public class UserController extends AbstractBaseController<User, Long> {
         if (null != friendUser && null != user) {
 
             //不能填写自己的邀请码
-            if (inviteCode.equals(user.getInviteCode())){
+            if (inviteCode.equals(user.getInviteCode())) {
 
                 return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("不能输入自己的邀请码!");
 
-            }else {
+            } else {
 
                 //邀请码只能填写一次
-                if (null == user.getByInviteCode()){
+                if (null == user.getByInviteCode()) {
 
                     AddressBook addressBook = addressBookRepository.findByUserIdAndMobile(friendUser.getId(), user.getTel());
                     if (null != addressBook) {
@@ -413,7 +416,7 @@ public class UserController extends AbstractBaseController<User, Long> {
 
                     return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("邀请码验证成功!");
 
-                }else {
+                } else {
 
                     return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("不能重复填写邀请码!");
                 }
