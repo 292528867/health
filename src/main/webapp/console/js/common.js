@@ -3,4 +3,4 @@
  */
 var commonUrl = "http://101.231.124.8:45677/xlab-healthcloud/";
 //var commonUrl = "http://localhost:8080/";
-$('#admin-offcanvas').load('common/adminSidebar.html');
+$('#admin-offcanvas').load('/console/common/adminSidebar.html');
