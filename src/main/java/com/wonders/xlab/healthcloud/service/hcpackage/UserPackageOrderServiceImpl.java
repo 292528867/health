@@ -8,10 +8,12 @@ import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderRepository;
+import com.wonders.xlab.healthcloud.service.discovery.DiscoveryService;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,10 @@ public class UserPackageOrderServiceImpl implements UserPackageOrderService{
 
     @Autowired
     private HcPackageRepository hcPackageRepository;
+
+    @Autowired
+    @Qualifier("discoveryServiceProxy")
+    private DiscoveryService discoveryService;
 
     @Override
     @Transactional
@@ -119,10 +125,8 @@ public class UserPackageOrderServiceImpl implements UserPackageOrderService{
             userPackageOrder.setUser(user);
             userPackageOrder.setHcPackage(hcPackage);
             userPackageOrder.setCycleIndex(hcPackage.getDuration());
-            user.setHcs(new HashSet<HealthCategory>(){{
-                add(hcPackage.getHealthCategory());
-            }});
             userPackageOrderRepository.save(userPackageOrder);
+            discoveryService.addUserCategoryRelated(userId, hcPackage.getHealthCategory().getId());
             userRepository.save(user);
             return new ControllerResult<>()
                     .setRet_code(0)

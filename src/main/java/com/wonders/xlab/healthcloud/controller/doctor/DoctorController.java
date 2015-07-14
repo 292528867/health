@@ -34,6 +34,7 @@ import javax.management.RuntimeErrorException;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.List;
 
 /**
  * Created by mars on 15/7/2.
@@ -328,6 +329,11 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         } catch (RuntimeErrorException exp) {
             return false;
         }
+    }
+
+    @RequestMapping("doctors/{checked}")
+    public List<Doctor> findApplyDoctors(@PathVariable Doctor.Checked checked) {
+        return doctorRepository.findByChecked(checked);
     }
 
 

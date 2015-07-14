@@ -15,6 +15,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "hc_package")
+@NamedEntityGraph(name = "HcPackage.healthCategory",
+        attributeNodes = @NamedAttributeNode("healthCategory"))
 public class HcPackage extends AbstractBaseEntity<Long> {
 
     /**
