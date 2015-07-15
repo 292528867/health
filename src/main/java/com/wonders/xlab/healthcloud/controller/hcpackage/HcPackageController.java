@@ -226,7 +226,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      */
     @RequestMapping("homePackages")
     public Object homePackages() {
-        List<HcPackage> hcPackages = hcPackageRepository.findByIdLessThan(5l);
+        List<HcPackage> hcPackages = hcPackageRepository.findTop4ByOrderByRecommendValueDesc();
         List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
         for (HcPackage hcPackage : hcPackages) {
             UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();

@@ -110,7 +110,7 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         DayPackageDetailDto dto = new DayPackageDetailDto(
                 detail.getId(),
                 detail.getTaskName(),
-                detail.getClickAmount(),
+                detail.getHcPackage().getClickAmount(),
                 detail.getDetail(),
                 detail.getIcon()
         );
