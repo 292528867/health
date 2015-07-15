@@ -44,15 +44,6 @@ public class DayPackageDetailDto {
         this.pictureUrl = pictureUrl;
     }
 
-    public DayPackageDetailDto(Long detailId, String title, int clickAmount, int type, String detail, int complete) {
-        this.detailId = detailId;
-        this.title = title;
-        this.clickAmount = clickAmount;
-        this.type = type;
-        this.detail = detail;
-        this.complete = complete;
-    }
-
     public Long getDetailId() {
         return detailId;
     }

@@ -38,4 +38,6 @@ public interface UserPackageOrderRepository extends MyRepository<UserPackageOrde
 
     @Query("select count(uo.id) from UserPackageOrder uo where uo.user.id = :userId and uo.packageComplete = :packageComplete")
     int findSizeByUserIdAndPackageComplete(@Param("userId") Long userId, @Param("packageComplete") boolean packageComplete);
+
+    int countByUserIdAndPackageCompleteFalse(long userId);
 }

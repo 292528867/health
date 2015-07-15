@@ -99,4 +99,10 @@ public class UserPackageOrderRepositoryTest {
         int size = userPackageOrderRepository.findSizeByUserIdAndPackageComplete(54l, false);
         Assert.isTrue(size == 2);
     }
+
+    @Test
+    public void testCountByUserIdAndPackageCompleteFalse() throws Exception {
+        int size = userPackageOrderRepository.countByUserIdAndPackageCompleteFalse(47l);
+        Assert.isTrue(2 == size);
+    }
 }

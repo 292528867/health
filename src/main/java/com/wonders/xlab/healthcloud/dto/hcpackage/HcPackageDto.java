@@ -32,7 +32,6 @@ public class HcPackageDto {
     /**
      * 持续时间－－以天为单位
      */
-    @NotNull(message = "持续时间不能为空")
     private int duration;
 
     /**
@@ -56,7 +55,6 @@ public class HcPackageDto {
     /**
      * 推荐值
      */
-    @NotNull(message = "推荐值不能为空")
     private int recommendValue;
 
     /**

@@ -1,5 +1,8 @@
 package com.wonders.xlab.healthcloud.controller.steward;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pingplusplus.exception.APIConnectionException;
 import com.pingplusplus.exception.APIException;
 import com.pingplusplus.exception.AuthenticationException;
@@ -68,27 +71,14 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      */
     @RequestMapping(value = "getAllRecommendPackage/{address}", method = RequestMethod.GET)
     public Object getAllRecommendPackage(@PathVariable String address) {
-
         List<RecommendPackage> prList = recommendPackageRepository.findAll();
-
         boolean flag = true;
         for (RecommendPackage pr : prList) {
             if (!StringUtils.isEmpty(pr.getServiceIds())) {
-
-                List<String> ids = new ArrayList<>();
-
-                String[] strIds = pr.getServiceIds().split(",");
-
-                if (strIds != null) {
-                    for (String strId : strIds) {
-                        ids.add(strId);
-                    }
-                }
-
+                List<String> serviceIds = Arrays.asList(StringUtils.split(pr.getServiceIds(), ","));
                 Map<String, Object> filters = new HashMap<>();
-                filters.put("serviceId_in", ids);
+                filters.put("serviceId_in", serviceIds);
                 List<Services> services = servicesRepository.findAll(filters);
-
                 for (Services service : services) {
                     if (!address.contains("上海")) {
                         if (service.getServiceArea().equals(Services.ServiceArea.上海)) {
@@ -103,7 +93,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 }
             }
         }
-
         return new ControllerResult<List<RecommendPackage>>()
                 .setRet_code(0)
                 .setRet_values(prList)
@@ -118,21 +107,11 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      */
     @RequestMapping("getRecommendPackageDetail/{packageId}")
     public Object getRecommendPackageDetail(@PathVariable Long packageId) {
-
         RecommendPackage rp = recommendPackageRepository.findOne(packageId);
-
         if (!StringUtils.isEmpty(rp.getServiceIds())) {
-
-            List<String> ids = new ArrayList<>();
-
-            String[] strIds = StringUtils.split(rp.getServiceIds(), ',');
-            if (strIds != null) {
-                for (String strId : strIds) {
-                    ids.add(strId);
-                }
-            }
+            List<String> serviceIds = Arrays.asList(StringUtils.split(rp.getServiceIds(), ","));
             Map<String, Object> filters = new HashMap<>();
-            filters.put("serviceId_in", ids);
+            filters.put("serviceId_in", serviceIds);
 
             Set<Services> services = new HashSet<>();
             services.addAll(servicesRepository.findAll(filters));
@@ -142,9 +121,10 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             stewards.addAll(stewardRepository.findByRank(rp.getRank()));
             rp.setStewards(stewards);
         }
-
-        return new ControllerResult<RecommendPackage>().setRet_code(0).setRet_values(rp).setMessage("成功！");
-
+        return new ControllerResult<RecommendPackage>()
+                .setRet_code(0)
+                .setRet_values(rp)
+                .setMessage("成功！");
     }
 
     /**
@@ -154,10 +134,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      */
     @RequestMapping("listCustomPackage/{address}/{location}")
     public Object listCustomPackage(@PathVariable String address, @PathVariable String location) {
-
         //强制置顶
         List<Services> orderServices = servicesRepository.findByIsForceOrderByUsedNumberAsc(true);
-
         //去除强制置顶以后在用算法
         List<Services> services = servicesRepository.findByIsForceOrderByUsedNumberAsc(false);
         List<Services> resultServices = new ArrayList<>();
@@ -171,56 +149,86 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 }
             }
         }
-
         int servicesSize = resultServices.size();
         //服务单数从使用次数高到低排列,双数由低到高
         for (int j = servicesSize - 1, i = 0; j >= servicesSize / 2; j--, i++) {
-
             orderServices.add(resultServices.get(j));
-            if (i == servicesSize/2){
+            if (i == servicesSize / 2) {
                 break;
             }
             orderServices.add(resultServices.get(i));
         }
+//        List<Map<String, Object>> arithmeticList = new ArrayList<>();
+//        Map<String, Object> level1Map = new HashMap<>();
+//        Map<String, Object> level2Map = new HashMap<>();
+//        Map<String, Object> level3Map = new HashMap<>();
+//        Map<String, Object> level4Map = new HashMap<>();
+//        Map<String, Object> level5Map = new HashMap<>();
+//
+//        level1Map.put("range", "0,4");
+//        level1Map.put("money", "0.01");
+//        level2Map.put("range", "5,10");
+//        level2Map.put("money", "28");
+//        level3Map.put("range", "11,17");
+//        level3Map.put("money", "78");
+//        level4Map.put("range", "18,48");
+//        level4Map.put("money", "158");
+//        level5Map.put("range", "49");
+//        level5Map.put("money", "298");
+//
+//        arithmeticList.add(level1Map);
+//        arithmeticList.add(level2Map);
+//        arithmeticList.add(level3Map);
+//        arithmeticList.add(level4Map);
+//        arithmeticList.add(level5Map);
+//
+//        List<Steward> stewards = stewardRepository.findByOrderByRankAsc();
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("services", orderServices);
+//        map.put("steward", stewards);
+//        map.put("arithmetic", arithmeticList);
+//        return new ControllerResult<>()
+//                .setRet_code(0)
+//                .setRet_values(map)
 
-        List<Map<String, Object>> arithmeticList = new ArrayList<>();
 
+        JsonNodeFactory jsonNodeFactory = objectMapper.getNodeFactory();
+        ArrayNode arithmeticArrayNode = jsonNodeFactory.arrayNode();
 
-        Map<String, Object> level1Map = new HashMap<>();
-        Map<String, Object> level2Map = new HashMap<>();
-        Map<String, Object> level3Map = new HashMap<>();
-        Map<String, Object> level4Map = new HashMap<>();
-        Map<String, Object> level5Map = new HashMap<>();
+        ObjectNode node = jsonNodeFactory.objectNode();
+        node.put("range", "0,4");
+        node.put("money", "0.01");
+        arithmeticArrayNode.add(node);
 
-        level1Map.put("range", "0,4");
-        level1Map.put("money", "0.01");
+        node = jsonNodeFactory.objectNode();
+        node.put("range", "5,10");
+        node.put("money", "28");
+        arithmeticArrayNode.add(node);
 
-        level2Map.put("range", "5,10");
-        level2Map.put("money", "28");
+        node = jsonNodeFactory.objectNode();
+        node.put("range", "11,17");
+        node.put("money", "78");
+        arithmeticArrayNode.add(node);
 
-        level3Map.put("range", "11,17");
-        level3Map.put("money", "78");
+        node = jsonNodeFactory.objectNode();
+        node.put("range", "18,48");
+        node.put("money", "158");
+        arithmeticArrayNode.add(node);
 
-        level4Map.put("range", "18,48");
-        level4Map.put("money", "158");
+        node = jsonNodeFactory.objectNode();
+        node.put("range", "49");
+        node.put("money", "298");
+        arithmeticArrayNode.add(node);
 
-        level5Map.put("range", "49");
-        level5Map.put("money", "298");
+        ObjectNode result = jsonNodeFactory.objectNode();
+        result.putPOJO("services", services);
+        result.putPOJO("steward", stewardRepository.findByOrderByRankAsc());
+        result.putPOJO("arithmetic", arithmeticArrayNode);
 
-        arithmeticList.add(level1Map);
-        arithmeticList.add(level2Map);
-        arithmeticList.add(level3Map);
-        arithmeticList.add(level4Map);
-        arithmeticList.add(level5Map);
-
-        List<Steward> stewards = stewardRepository.findByOrderByRankAsc();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("services", orderServices);
-        map.put("steward", stewards);
-        map.put("arithmetic", arithmeticList);
-
-        return new ControllerResult<>().setRet_code(0).setRet_values(map).setMessage("成功");
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(result)
+                .setMessage("成功");
     }
 
     /**
@@ -231,9 +239,10 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      */
     @RequestMapping("serviceDetail/{serviceId}")
     public Object serviceDetail(@PathVariable Long serviceId) {
-
-        return new ControllerResult<Services>().setRet_code(0).setRet_values(this.servicesRepository.findOne(serviceId)).setMessage("成功！");
-
+        return new ControllerResult<Services>()
+                .setRet_code(0)
+                .setRet_values(this.servicesRepository.findOne(serviceId))
+                .setMessage("成功！");
     }
 
     /**
@@ -244,21 +253,16 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      */
     @RequestMapping("stewardDetail/{stewardId}")
     public Object stewardDetail(@PathVariable Long stewardId) {
-
         Steward steward = stewardRepository.findOne(stewardId);
-
         //获取明星服务
         List<StewardOrder> stewardOrders = stewardOrderRepository.findAllBySteward(stewardId);
-
         if (!stewardOrders.isEmpty()) {
             List<Set<Services>> ListServices = new ArrayList<>();
             //取订单中该管家所提供过的服务
             for (StewardOrder stewardOrder : stewardOrders) {
                 ListServices.add(stewardOrder.getServices());
             }
-
             Map<String, Integer> countServiceNumMap = new HashMap<>();
-
             //取出服务列表中每个服务被提供过的次数，并按value排序
             for (Set<Services> listService : ListServices) {
                 for (Services services : listService) {
@@ -270,9 +274,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                     }
                 }
             }
-
             sortMap(countServiceNumMap);
-
             //获取两条明星服务
             Set set = countServiceNumMap.keySet();
             Iterator it = set.iterator();
@@ -298,16 +300,20 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 steward.getStarService().add(firstMap);
                 steward.getStarService().add(secondMap);
             } else {
-                return new ControllerResult<Steward>().setRet_code(-1).setRet_values(steward).setMessage("管家不存在！");
+                return new ControllerResult<Steward>()
+                        .setRet_code(-1)
+                        .setRet_values(steward)
+                        .setMessage("管家不存在！");
             }
         }
-        return new ControllerResult<Steward>().setRet_code(0).setRet_values(steward).setMessage("成功！");
-
-
+        return new ControllerResult<Steward>()
+                .setRet_code(0)
+                .setRet_values(steward)
+                .setMessage("成功！");
     }
 
     /**
-     * 计算服务费用
+     * 订单支付
      *
      * @param serviceDto
      * @param result
@@ -315,7 +321,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      */
     @RequestMapping("payServices/{userId}/{payWay}")
     public String payServices(@PathVariable Long userId, @PathVariable String payWay, @RequestBody @Valid ServiceDto serviceDto, BindingResult result) throws RuntimeException {
-
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -326,7 +331,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                     .setRet_values(builder.toString())
                     .setMessage("失败");
         }
-
         int integration = 0; //积分
         double amount;  //金额
         List<String> serviceIds = Arrays.asList(StringUtils.split(serviceDto.getServiceIds(), ','));
@@ -339,16 +343,14 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             // 计算推荐包价格
             RecommendPackage rp = recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
             amount = Double.parseDouble(rp.getPrice());
-
             //随机一个管家
             List<Steward> stewards = stewardRepository.findByRank(rp.getRank());
-            int idx = (int) (System.currentTimeMillis() % stewards.size());
-            steward = stewards.get(idx);
+            steward = stewards.get((int) (System.currentTimeMillis() % stewards.size()));
         } else {
-            if (!StringUtils.isEmpty(serviceDto.getStewardId())){
+            if (!StringUtils.isEmpty(serviceDto.getStewardId())) {
                 steward = stewardRepository.findOne(Long.parseLong(serviceDto.getStewardId()));
                 // 计算积分
-                for (Services service : services){
+                for (Services service : services) {
                     integration += service.getServiceIntegration();
                 }
                 integration += steward.getStewardIntegration();
@@ -366,11 +368,9 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 amount = 298;
             }
         }
-
         PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", amount);
         Charge charge = pingppService.payOrder(pingDto, payWay);
         String tradeNo = "u" + userId + new Date().getTime();
-
         //保存订单详情
         StewardOrder stewardOrder = new StewardOrder(charge.getId(), tradeNo, amount);
         stewardOrder.setSteward(steward);
@@ -382,9 +382,88 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             service.setUsedNumber(service.getUsedNumber() + 1);
             servicesRepository.save(service);
         }
-
         return charge.toString();
+    }
 
+    /**
+     * 显示订单详情
+     *
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "getOrdersDetail/{userId}", method = RequestMethod.GET)
+    public ControllerResult getOrdersDetail(@PathVariable Long userId) throws Exception {
+
+        StewardOrder stewardOrder = stewardOrderRepository.findTop1ByUserIdOrderByCreatedDateDesc(userId);
+        Map<String, Object> value = new HashMap<>();
+        if (null != stewardOrder) {
+            Charge charge = pingppService.queryCharge(stewardOrder.getChargeId());
+            if (null != charge){
+                if (charge.getPaid()) {
+                    int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
+                    int currentServicedPeriod = DateUtils.calculateDaysOfTwoDateIgnoreHours(stewardOrder.getCreatedDate(), new Date());
+                    Map<String, Object> servicedPeriodMap = new HashMap<>();
+                    servicedPeriodMap.put("currentServicedPeriod", currentServicedPeriod);
+                    servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
+                    if (currentServicedPeriod >= totalServicePeriod) {
+                        value.put("effective", true);
+                    } else {
+                        value.put("effective", false);
+                    }
+                } else {
+                    value.put("effective", false);
+                }
+                value.put("chargeId", stewardOrder.getChargeId());
+            }else {
+                return new ControllerResult<String>()
+                        .setRet_code(-1)
+                        .setRet_values("")
+                        .setMessage("查询失败");
+            }
+        } else {
+            value.put("effective", false);
+            value.put("chargeId", "");
+        }
+        return new ControllerResult<Map>()
+                .setRet_code(0)
+                .setRet_values(value)
+                .setMessage("查询成功");
+    }
+    /**
+     * 支付完成以后的订单详情
+     *
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "getOrdersDetail/{userId}/{chargeId}", method = RequestMethod.GET)
+    public ControllerResult getOrdersDetail(@PathVariable Long userId, @PathVariable String chargeId) throws APIException, AuthenticationException, InvalidRequestException, APIConnectionException {
+
+        StewardOrder stewardOrder = stewardOrderRepository.findByChargeId(chargeId);
+        if (null != stewardOrder) {
+            stewardOrder.setOrderStatus(StewardOrder.OrderStatus.支付成功);
+            stewardOrder.setPayDate(new Date());
+            stewardOrderRepository.save(stewardOrder);
+            int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
+            String[] detilServicedPeriod = new String[totalServicePeriod];
+            for (int num = 0; num < detilServicedPeriod.length; num++) {
+                detilServicedPeriod[num] = DateUtils.calculateTodayForWeek(stewardOrder.getCreatedDate(), num);
+            }
+            int currentServicedPeriod = DateUtils.calculateDaysOfTwoDateIgnoreHours(stewardOrder.getCreatedDate(), new Date());
+            Map<String, Object> servicedPeriodMap = new HashMap<>();
+            servicedPeriodMap.put("currentServicedPeriod", currentServicedPeriod);
+            servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
+            servicedPeriodMap.put("detailServicedPeriod", detilServicedPeriod);
+            stewardOrder.setServicedPeriodStatus(servicedPeriodMap);
+            return new ControllerResult<StewardOrder>()
+                    .setRet_code(0)
+                    .setRet_values(stewardOrder)
+                    .setMessage("获取订单成功！");
+        } else {
+            return new ControllerResult<String>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("获取订单失败！");
+        }
     }
 
     /**
@@ -395,108 +474,9 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      */
     @RequestMapping(value = "saveSteward", method = RequestMethod.POST)
     public ControllerResult saveService(@RequestBody Steward steward) {
-
         stewardRepository.save(steward);
-
         return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("成功！");
     }
-
-    /**
-     * 判断用户是否已经登陆
-     *
-     * @param userId
-     * @return
-     */
-    @RequestMapping(value = "getOrdersDetail/{userId}", method = RequestMethod.GET)
-    public ControllerResult getOrdersDetail(@PathVariable Long userId) {
-
-        List<StewardOrder> stewardOrders = stewardOrderRepository.findAllByUser(userId);
-
-        if (!stewardOrders.isEmpty()) {
-
-            StewardOrder stewardOrder = stewardOrders.get(0);
-
-            int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
-
-            String[] detilServicedPeriod = new String[totalServicePeriod];
-
-            for (int num = 0; num < detilServicedPeriod.length; num++) {
-                detilServicedPeriod[num] = DateUtils.calculateTodayForWeek(stewardOrder.getCreatedDate(), num);
-            }
-
-            int currentServicedPeriod = DateUtils.calculateDaysOfTwoDateIgnoreHours(stewardOrder.getCreatedDate(), new Date());
-
-            Map<String, Object> servicedPeriodMap = new HashMap<>();
-
-            servicedPeriodMap.put("currentServicedPeriod", currentServicedPeriod);
-            servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
-            servicedPeriodMap.put("detailServicedPeriod", detilServicedPeriod);
-
-            if (currentServicedPeriod >= totalServicePeriod) {
-                stewardOrder.setEffective(false);
-            } else
-                stewardOrder.setEffective(true);
-
-            stewardOrder.setServicedPeriodStatus(servicedPeriodMap);
-
-            return new ControllerResult<StewardOrder>().setRet_code(0).setRet_values(stewardOrder).setMessage("获取订单成功！");
-
-        } else {
-
-            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("获取订单失败！");
-        }
-    }
-
-    /**
-     * 获取订单详情
-     *
-     * @param userId
-     * @return
-     */
-    @RequestMapping(value = "getOrdersDetail/{userId}/{chargeId}", method = RequestMethod.GET)
-    public ControllerResult getOrdersDetail(@PathVariable Long userId, @PathVariable String chargeId) throws APIException, AuthenticationException, InvalidRequestException, APIConnectionException {
-
-        StewardOrder stewardOrder = stewardOrderRepository.findAllByChargeId(chargeId);
-
-        if (null != stewardOrder) {
-
-            //更新付款状态
-            Charge charge = pingppService.queryCharge(chargeId);
-
-            //判断支付状态
-            if (charge.getPaid()) {
-
-                stewardOrder.setOrderStatus(StewardOrder.OrderStatus.支付成功);
-            } else {
-                stewardOrder.setOrderStatus(StewardOrder.OrderStatus.未支付);
-            }
-
-            int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
-
-            String[] detilServicedPeriod = new String[totalServicePeriod];
-
-            for (int num = 0; num < detilServicedPeriod.length; num++) {
-                detilServicedPeriod[num] = DateUtils.calculateTodayForWeek(stewardOrder.getCreatedDate(), num);
-            }
-
-            int currentServicedPeriod = DateUtils.calculateDaysOfTwoDateIgnoreHours(stewardOrder.getCreatedDate(), new Date());
-
-            Map<String, Object> servicedPeriodMap = new HashMap<>();
-
-            servicedPeriodMap.put("currentServicedPeriod", currentServicedPeriod);
-            servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
-            servicedPeriodMap.put("detailServicedPeriod", detilServicedPeriod);
-
-            stewardOrder.setServicedPeriodStatus(servicedPeriodMap);
-
-            return new ControllerResult<StewardOrder>().setRet_code(0).setRet_values(stewardOrder).setMessage("获取订单成功！");
-
-        } else {
-
-            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("获取订单失败！");
-        }
-    }
-
 
     /**
      * 根据map的value排序
@@ -520,6 +500,4 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         }
         return newMap;
     }
-
-
 }

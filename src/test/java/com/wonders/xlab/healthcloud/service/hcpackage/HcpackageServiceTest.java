@@ -21,4 +21,6 @@ public class HcpackageServiceTest {
         System.out.println("clickCount = " + clickCount);
 //        Assert.isTrue(clickCount == );
     }
+
+
 }

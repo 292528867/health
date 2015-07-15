@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mars on 15/7/4.
@@ -207,9 +209,13 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             userPackageOrderDtos.add(userPackageOrderDto);
         }
 
-        return new ControllerResult<List<UserPackageOrderDto>>()
+        int packageSize = userPackageOrderRepository.countByUserIdAndPackageCompleteFalse(userId);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("userPackageSize", packageSize);
+        resultMap.put("packages", userPackageOrderDtos);
+        return new ControllerResult<>()
                 .setRet_code(0)
-                .setRet_values(userPackageOrderDtos)
+                .setRet_values(resultMap)
                 .setMessage("成功");
     }
 
@@ -229,9 +235,12 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             userPackageOrderDto.setIsJoin(false);
             userPackageOrderDtos.add(userPackageOrderDto);
         }
-        return new ControllerResult<List<UserPackageOrderDto>>()
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("userPackageSize", 0);
+        resultMap.put("packages", userPackageOrderDtos);
+        return new ControllerResult<>()
                 .setRet_code(0)
-                .setRet_values(userPackageOrderDtos)
+                .setRet_values(resultMap)
                 .setMessage("成功");
     }
 
@@ -259,6 +268,12 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
                 .setMessage("关注成功！");
     }
 
+    /**
+     * 获取用户已订阅健康计划包
+     *
+     * @param userId
+     * @return
+     */
     @RequestMapping("checked/{userId}")
     public Object checkedPackege(@PathVariable Long userId) {
         List<UserPackageOrder> userPackageOrders = userPackageOrderRepository.findByUserIdAndPackageCompleteFalse(userId);
@@ -274,9 +289,13 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             );
             userPackageOrderDtos.add(userPackageOrderDto);
         }
+        int packageSize = userPackageOrderRepository.countByUserIdAndPackageCompleteFalse(userId);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("userPackageSize", packageSize);
+        resultMap.put("packages", userPackageOrderDtos);
         return new ControllerResult<>()
                 .setRet_code(0)
-                .setRet_values(userPackageOrderDtos)
+                .setRet_values(resultMap)
                 .setMessage("订阅计划列表获取成功！");
     }
 
