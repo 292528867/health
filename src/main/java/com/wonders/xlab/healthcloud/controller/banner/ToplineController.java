@@ -35,7 +35,9 @@ public class ToplineController extends AbstractBaseController<Topline, Long> {
      */
     @RequestMapping(value = "listToplines", method = RequestMethod.GET)
     public Object listToplines() {
-        Sort sort = new Sort(Sort.Direction.DESC, "lastModifiedDate");
+
+        String[] order = {"position", "lastModifiedDate"};
+        Sort sort = new Sort(Sort.Direction.DESC, order);
         return new ControllerResult<>()
                 .setRet_code(0)
                 .setRet_values(toplineRepository.findByEnabledTrue(sort))
