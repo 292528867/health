@@ -537,3 +537,131 @@ messages: 提问的问题对象
 	toUsers: 环信api需要，本接口中不需要处理
 questionStatus: 问题状态。newQuestion为新问题
 
+进入问诊页面接口
+ http://101.231.124.8:45677/xlab-healthcloud/em/toInterrogation/{userTel}
+请求方式：get
+ 返回结果说明：
+   lastQuestionStatus：  最新问题状态 0进入回答页面 1进入等待页面
+   content:  例子提示
+   list :当天的聊天记录
+   groupId:用户的群组id
+
+{
+    "ret_code": 0,
+    "ret_values": {
+        "lastQuestionStatus": 0,
+        "content": "我40岁，糖尿病7年，血糖一直偏高，空腹血糖一直在9左右，餐后血糖13左右。一直在吃阿卡波糖片，前段时间换了药，不但血糖没有降低，反而出现了心慌、胸闷、气短的症状。现在不知道要怎么办，需要打胰岛素吗？",
+            "list": [
+            {
+                "id": 355,
+                "createdDate": 1436932261000,
+                "lastModifiedDate": 1436932261000,
+                "fromUser": "17091959006",
+                "toUser": "82121541407474076",
+                "toUsers": [
+                    "82121541407474076"
+                ],
+                "msg": "adfasf",
+                "fileUrl": "",
+                "isReplied": true,
+                "messageType": "txt",
+                "chatName": "",
+                "targetType": "chatgroups",
+                "ext": "",
+                "doctorFlag": false,
+                "isShowForDoctor": 0,
+                "groupId": "",
+                "new": false
+            }
+        ],
+        "groupId": "82121541407474076"
+    },
+    "message": ""
+}
+
+轻问诊用户或者医生聊天历史记录查询接口
+http://101.231.124.8:45677/xlab-healthcloud/em/queryRecords?groupId=82889700230037920&page=0&type=user
+请求方式：get
+参数说明：type  user用户查询聊天记录（有提示语） doctor 医生查询历史记录 page＝0 第一页
+返回参数说明：isReplied true 回复的 false 未回答
+
+{
+    "ret_code": 0,
+    "ret_values": [
+        {
+            "id": 310,
+            "createdDate": 1436884715000,
+            "lastModifiedDate": 1436884715000,
+            "fromUser": "15800691691",
+            "toUser": "82889700230037920",
+            "toUsers": [
+                "82889700230037920"
+            ],
+            "msg": "抢单测试来一个10",
+            "fileUrl": "",
+            "isReplied": false,
+            "messageType": "txt",
+            "chatName": "",
+            "targetType": "chatgroups",
+            "ext": "",
+            "doctorFlag": true,
+            "isShowForDoctor": 0,
+            "groupId": "",
+            "new": false
+        }
+    ],
+    "message": ""
+}
+
+轻问诊用户发送消息接口
+http://101.231.124.8:45677/xlab-healthcloud/em/sendTxtMessage
+请求方式：post
+参数说明：
+{
+    "target_type" : "chatgroups",
+    "target" : ["82121541407474076"], //groupid
+    "msg" : {
+        "type" : "txt",
+        "msg" : "hello from rest4"  //发送消息内容
+        },
+    "from" : "15000367081",  //用户手机号
+    "ext" : {
+    }
+}
+ 返回结果
+{
+    "ret_code": 0,
+    "ret_values": {
+        "waiting": "此刻我们已从专业团队中预约了最符合您情况的专家为您解答困惑，为了您的健康，给专家留一小会时间吧~"
+    },
+    "message": "文本消息发送成功"
+}
+说明：waiting 进入等待页面的提示
+
+
+轻问诊医生或者后台回复消息接口
+http://101.231.124.8:45677/xlab-healthcloud/em/replyMessage/{msgId}/{userTel}
+请求方式：post
+参数说明： msgId 要回复的问题id userTel 用户手机号
+{
+    "target_type" : "chatgroups",
+    "target" : ["82121541407474076"], //groupid
+
+
+    "msg" : {
+        "type" : "txt",
+        "msg" : "hello from rest4"  //发送消息内容
+        },
+    "from" : "15000367081",  //医生手机号
+    "ext" : {
+    }
+}
+返回结果
+  {
+    "ret_code": 0,
+    "ret_values": {
+    },
+    "message": "文本消息发送成功"
+}
+
+
