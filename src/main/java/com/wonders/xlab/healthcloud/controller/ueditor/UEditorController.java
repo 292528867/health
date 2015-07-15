@@ -39,10 +39,7 @@ public class UEditorController {
 		if (upfile != null && !upfile.isEmpty()) {
 			try {
 				String fileName = "healtharticle-image-" + String.valueOf((new Date()).getTime());
-				String pictureUrl = QiniuUploadUtils.upload(upfile.getBytes(), fileName);
-				System.out.println(pictureUrl);
-				String fileName_output = pictureUrl.replace("http://7xk3mz.com2.z0.glb.qiniucdn.com/", "");
-				
+				String fileName_output = QiniuUploadUtils.upload_key(upfile.getBytes(), fileName);
 				
 				// {"url" : "http://7xk3mz.com2.z0.glb.qiniucdn.com/healtharticle-image-1436684006380"}
 				// {"url" : "http://7xk3mz.com2.z0.glb.qiniucdn.com/healtharticle-image-1436684074278"}
