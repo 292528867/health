@@ -24,4 +24,6 @@ public interface HcPackageDetailRepository extends MyRepository<HcPackageDetail,
 
     @Query("from HcPackageDetail hpd where hpd.hcPackage.id = ?1 and hpd.taskDay = ?2 and hpd.id not in (?3) order by hpd.recommendTimeFrom asc")
     List<HcPackageDetail> findByPackageIdAndDayOrderByTimeFromAsc(Long packageId, int Day, List<Long> ids);
+
+    int countByHcPackageId(long packageId);
 }

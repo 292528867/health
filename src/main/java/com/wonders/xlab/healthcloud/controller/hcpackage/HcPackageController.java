@@ -17,6 +17,7 @@ import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderRepository;
 import com.wonders.xlab.healthcloud.utils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
@@ -264,6 +265,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
                 userPackageOrderDto.setId(userPackageOrder.getHcPackage().getId());
                 BeanUtils.copyProperties(userPackageOrder.getHcPackage(), userPackageOrderDto);
                 userPackageOrderDto.setIsJoin(true);
+                userPackageOrderDto.setCountTask(hcPackageDetailRepository.countByHcPackageId(userPackageOrder.getHcPackage().getId()));
                 userPackageOrderDtos.add(userPackageOrderDto);
             }
             return new ControllerResult<>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("订阅计划列表获取成功！");
