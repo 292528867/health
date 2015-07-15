@@ -26,7 +26,7 @@ import java.util.List;
  * Created by Jeffrey on 15/7/9.
  */
 @Service("userPackageOrderService")
-public class UserPackageOrderServiceImpl implements UserPackageOrderService{
+public class UserPackageOrderServiceImpl implements UserPackageOrderService {
 
     private static Logger logger = LoggerFactory.getLogger(UserPackageOrderServiceImpl.class);
 
@@ -97,48 +97,30 @@ public class UserPackageOrderServiceImpl implements UserPackageOrderService{
 
     @Override
     @Transactional
-    public Object joinPlan(Long userId, Long packageId) {
+    public int joinHealthPlan(Long userId, Long packageId) {
 
         List<UserPackageOrder> userPackageOrders = userPackageOrderRepository.findFetchPackageByUserIdAndPackageCompleteFalse(userId);
 
-        //订购包大于2
-        if (userPackageOrders != null && userPackageOrders.size() >= 2) {
-            return new ControllerResult<>()
-                    .setRet_code(-1)
-                    .setRet_values("")
-                    .setMessage("最多选择两个健康包！");
+        //用户健康计划包大于2
+        if (!userPackageOrders.isEmpty() && userPackageOrders.size() >= 2) {
+            return 500;
         }
-        //未完成健康包已包含传入包
+        //用户健康计划包已关联
         for (UserPackageOrder userPackageOrder : userPackageOrders) {
             if (packageId == userPackageOrder.getHcPackage().getId()) {
-                return new ControllerResult<>()
-                        .setRet_code(-1)
-                        .setRet_values("")
-                        .setMessage("健康包已加入！");
+                return 400;
             }
         }
 
-        try {
-            User user = userRepository.findOne(userId);
-            final HcPackage hcPackage = hcPackageRepository.findOne(packageId);
-            UserPackageOrder userPackageOrder = new UserPackageOrder();
-            userPackageOrder.setUser(user);
-            userPackageOrder.setHcPackage(hcPackage);
-            userPackageOrder.setCycleIndex(hcPackage.getDuration());
-            userPackageOrderRepository.save(userPackageOrder);
-            discoveryService.addUserCategoryRelated(userId, hcPackage.getHealthCategory().getId());
-            userRepository.save(user);
-            return new ControllerResult<>()
-                    .setRet_code(0)
-                    .setRet_values("")
-                    .setMessage("加入成功！");
-        } catch (Exception e) {
-            return new ControllerResult<>()
-                    .setRet_code(-1)
-                    .setRet_values("")
-                    .setMessage("加入失败！");
-        }
-
+        User user = userRepository.findOne(userId);
+        HcPackage hcPackage = hcPackageRepository.findOne(packageId);
+        UserPackageOrder userPackageOrder = new UserPackageOrder();
+        userPackageOrder.setUser(user);
+        userPackageOrder.setHcPackage(hcPackage);
+        userPackageOrder.setCycleIndex(hcPackage.getDuration());
+        userPackageOrderRepository.save(userPackageOrder);
+        discoveryService.addUserCategoryRelated(userId, hcPackage.getHealthCategory().getId());
+        return 200;
     }
 
 }
