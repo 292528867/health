@@ -12,6 +12,9 @@ import java.util.List;
  */
 public interface UserPackageDetailStatementRepository extends MyRepository<UserPackageDetailStatement, Long> {
 
+    @Query("from UserPackageDetailStatement upds where upds.user.id = ?1 and upds.hcPackageDetail.hcPackage.id = ?2 and date_format(upds.createdDate, '%Y-%m-%d') = date_format(?3, '%Y-%m-%d') and upds.hcPackageDetail.isNeedSupplemented = true and upds.hcPackageDetail.id in (?4) order by upds.createdDate desc")
+    List<UserPackageDetailStatement> findByUserIdAndHcPackageIdAndDateWithDetailIds(Long userId, Long packageId, Date currentDate, List<Long> ids);
+
     @Query("from UserPackageDetailStatement upds where upds.user.id = ?1 and upds.hcPackageDetail.hcPackage.id = ?2 and date_format(upds.createdDate, '%Y-%m-%d') = date_format(?3, '%Y-%m-%d') and upds.hcPackageDetail.isNeedSupplemented = true order by upds.createdDate desc")
     List<UserPackageDetailStatement> findByUserIdAndHcPackageIdAndDate(Long userId, Long packageId, Date currentDate);
 }

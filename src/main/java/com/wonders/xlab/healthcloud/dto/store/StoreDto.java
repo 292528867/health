@@ -35,7 +35,7 @@ public class StoreDto {
     private String description;
 
     @NotNull(message = "顺序不能为空")
-    private String position;
+    private Integer position;
 
     public Store toNewStore() {
         Store store = new Store(
@@ -48,7 +48,7 @@ public class StoreDto {
         if (tag != null){
             store.setTag(Store.Tag.values()[Integer.parseInt(tag)]);
         }
-        store.setPosition(Integer.valueOf(position));
+        store.setPosition(position);
         return store;
     }
 
@@ -112,11 +112,11 @@ public class StoreDto {
         this.description = description;
     }
 
-    public String getPosition() {
+    public Integer getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
+    public void setPosition(Integer position) {
         this.position = position;
     }
 }

@@ -90,10 +90,23 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         // 获取健康包任务
         HcPackageDetail detail = this.hcPackageDetailRepository.findOne(detailId);
 
-        // 用户健康包任务语句
-        List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdAndHcPackageIdAndDate(userId, detail.getHcPackage().getId(), new Date());
         // 用户订单
         UserPackageOrder order = this.userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, detail.getHcPackage().getId(), false);
+
+        List<Long> completeDetailIds = new ArrayList<>();
+        if (order != null && order.getHcPackageDetailIds() != null) {
+            String[] detailIds = StringUtils.split(order.getHcPackageDetailIds(), ",");
+            for (String id : detailIds) {
+                completeDetailIds.add(NumberUtils.toLong(id));
+            }
+        }
+        // 用户健康包任务语句
+        List<UserPackageDetailStatement> userStatements;
+        if (completeDetailIds.isEmpty()) {
+            userStatements = userPackageDetailStatementRepository.findByUserIdAndHcPackageIdAndDate(userId, detail.getHcPackage().getId(), new Date());
+        } else {
+            userStatements = userPackageDetailStatementRepository.findByUserIdAndHcPackageIdAndDateWithDetailIds(userId, detail.getHcPackage().getId(), new Date(), completeDetailIds);
+        }
 
         List<UserStatementDto> statementDtos = new ArrayList<>();
 
@@ -122,16 +135,9 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
             dto.setPictureType(1);
         }
 
-        if (order != null && order.getHcPackageDetailIds() != null) {
-            String[] detailIds = order.getHcPackageDetailIds().split(",");
-            Long[] longDetailIds = new Long[detailIds.length];
-            for (int i = 0; i < detailIds.length; i++)
-                longDetailIds[i] = Long.parseLong(detailIds[i]);
-            if (Arrays.asList(longDetailIds).contains(detailId)) {
-                dto.setComplete(1);
-            }
+        if (completeDetailIds.contains(detailId)) {
+            dto.setComplete(1);
         }
-
         dto.setStatementDtos(statementDtos);
 
         return new ControllerResult<DayPackageDetailDto>().setRet_code(0).setRet_values(dto).setMessage("成功");
