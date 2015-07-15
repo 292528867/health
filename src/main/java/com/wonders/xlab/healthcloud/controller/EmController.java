@@ -100,6 +100,10 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     @RequestMapping(value = "replyMessage/{id}/{userTel}", method = RequestMethod.POST)
     public ControllerResult replyMessage(@PathVariable("id") long id, @PathVariable("userTel") String userTel, @RequestBody TexMessagesRequestBody body) throws IOException {
         EmMessages oldEm = emMessagesRepository.findOne(id);
+        if (body.getExt() == null) {
+            Map<String, Object> map = new HashMap<>();
+            body.setExt(map);
+        }
         if (oldEm == null) {
             return new ControllerResult()
                     .setRet_code(-1)
@@ -182,9 +186,6 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         //判断该用户的消息是否已有人在处理
         long askTime = System.currentTimeMillis();
         User user = userRepository.findByTel(body.getFrom());
-        Map<String, Object> map = new HashMap<>();
-        map.put("test", "1111");
-        body.setExt(map);
         if (user == null) {
             return new ControllerResult()
                     .setRet_code(-1)
