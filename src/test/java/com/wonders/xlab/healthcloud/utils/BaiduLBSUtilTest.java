@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.List;
+import java.util.logging.SocketHandler;
 
 /**
  * Created by lixuanwu on 15/7/13.
@@ -51,6 +52,5 @@ public class BaiduLBSUtilTest extends TestCase {
         LBSResult result = baiduLBSUtil.nearbyJob(coordinate, distance);
         System.out.println(result.getContents());
     }
-
 
 }
