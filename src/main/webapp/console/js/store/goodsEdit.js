@@ -5,7 +5,7 @@
 var goods;
 
 function openImgUpload() {
-    $('#change-modal').modal('toggle');
+    $('#change-modal').modal('open');
 }
 
 
@@ -16,7 +16,8 @@ function goodAdd(id) {
     var picUrl = $('#picUrl').val();
     var price = $('#price').val();
     var id = $('#id').val();
-    if (name.length==0||description.length==0||medicineUrl.length==0||picUrl.length==0||price.length==0) {
+    var position = $('#position').val();
+    if (name.length==0||description.length==0||medicineUrl.length==0||picUrl.length==0||price.length==0||position.length==0) {
         alert('有字段没有填写');
         return false;
     }
@@ -25,6 +26,7 @@ function goodAdd(id) {
         "description": description,
         "medicineUrl": medicineUrl,
         "picUrl": picUrl,
+        "position": position,
         "price": price
     };
     json = JSON.stringify(json);
@@ -40,7 +42,8 @@ function goodAdd(id) {
                 alert('success');
                 $.get(commonUrl+'store/listStores', function (data) {
                     goods = data.ret_values;
-                    location.href=location.href+'#';
+                    $('form').hide();
+                    location.reload();
                 });
 
             }
@@ -64,6 +67,7 @@ function goodAdd(id) {
             value.id +
             "</td>" +
             "<td><a href='#'>" + value.name + "</a></td>" +
+            "<td><a href='#'>" + value.position + "</a></td>" +
             "<td class='am-hide-sm-only'>" + value.description + "</td>" +
             "<td class='am-hide-sm-only'><img src='" + value.picUrl + "' style='max-height:80px;' /></td>" +
             "<td><div class='am-btn-toolbar'><div class='am-btn-group am-btn-group-xs'>" +
@@ -95,4 +99,6 @@ function changeGood(id) {
     $('#index-img-index').attr('src',data.picUrl);
     $('#index-img').attr('src',data.picUrl);
     $('#picUrl').val(data.picUrl);
+    $('#position').val(data.position);
+    $('table').hide();
 }
