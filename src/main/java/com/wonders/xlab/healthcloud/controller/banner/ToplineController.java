@@ -45,6 +45,22 @@ public class ToplineController extends AbstractBaseController<Topline, Long> {
     }
 
     /**
+     * 头条列表 后台
+     * @return
+     */
+    @RequestMapping(value = "listToplinesForConsole", method = RequestMethod.GET)
+    public Object listToplinesForConsole() {
+
+        String[] order = {"position", "lastModifiedDate"};
+        Sort sort = new Sort(Sort.Direction.DESC, order);
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(toplineRepository.findAll(sort))
+                .setMessage("成功");
+    }
+
+
+    /**
      * 添加头条
      * @param toplineDto
      * @param result
