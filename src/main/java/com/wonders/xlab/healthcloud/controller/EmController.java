@@ -24,6 +24,7 @@ import com.wonders.xlab.healthcloud.utils.SmsUtils;
 import net.sf.ehcache.Cache;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -420,10 +422,16 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      *
      * @return
      */
-    @RequestMapping(value = "toInterrogation/{tel}/{flag}", method = RequestMethod.GET)
-    public ControllerResult toInterrogation(@PathVariable("tel") String tel, @PathVariable("flag") int flag) {
-
-        EmMessages emMessages = emMessagesRepository.findTop1ByFromUserOrderByCreatedDateDesc(tel);
+    @RequestMapping(value = "toInterrogation/{tel}", method = RequestMethod.GET)
+    public ControllerResult toInterrogation(@PathVariable("tel") String tel) {
+        // 当天23:59:59
+        DateTime tmpTime = new DateTime(new Date());
+        Date endTime = new DateTime(
+                tmpTime.getYear(),
+                tmpTime.getMonthOfYear(),
+                tmpTime.getDayOfMonth(),
+                23, 59, 59
+        ).toDate();
 
         String groupId = userRepository.findByTel(tel).getGroupId();
 
@@ -433,37 +441,65 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         EmMessages newMessages = new EmMessages();
         newMessages.setCreatedDate(new Date());
 
-        //flag =1 用户每天第一次打开app的医生数量的提示语要保存在数据库作为历史纪录
-        if (emMessages == null) {
+        //最新问题是否被回复
+        EmMessages lastMessage = emMessagesRepository.findTopByToUserAndIsShowForDoctorOrderByCreatedDateDesc(groupId,0);
+
+
+        //判断当天是否有医生数量提示
+        EmMessages emMessages = emMessagesRepository.findByToUserAndIsShowForDoctorAndCreatedDateBetween(groupId, 1,
+                com.wonders.xlab.healthcloud.utils.DateUtils.covertToYYYYMMDD(new Date()), endTime);
+
+
+        // LastQuestionStatus 0进入提问页面 1进入等待页面
+        if (emMessages == null) {//没有插入医生数量提示
             newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS, EMUtils.countDoctors()));
-            if (flag == 1) {
-                newMessages.setToUser(groupId);
-                newMessages.setIsShowForDoctor(1); //不让医生端看到
-                emMessagesRepository.save(newMessages);
-            }
+            newMessages.setToUser(groupId);
+            newMessages.setIsShowForDoctor(1); //不让医生端看到
+            newMessages.setFromUser(tel);
+            emMessagesRepository.save(newMessages);
+
+            List<EmMessages> list = new ArrayList<>();
+            list.add(emMessages);
             emDoctorNumber.setLastQuestionStatus(0);
             emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
-            emDoctorNumber.setEmMessages(newMessages);
+            emDoctorNumber.setList(list);
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         }
-        if (emMessages.getIsReplied()) { //用户已回复
+
+        if (lastMessage == null) {//没有任何数据时
+            List<EmMessages> list = new ArrayList<>();
+            list.add(emMessages);
+            emDoctorNumber.setLastQuestionStatus(0);
+            emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
+            emDoctorNumber.setList(list);
+            return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
+        }
+
+        if (lastMessage.getIsReplied()) { //用户已回复
 
             newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS, EMUtils.countDoctors()));
-            if (flag == 1) {
-                newMessages.setToUser(groupId);
-                newMessages.setIsShowForDoctor(1); //不让医生端看到
-                emMessagesRepository.save(newMessages);
+
+            List<EmMessages> emMessagesList = null;
+
+            try {
+                emMessagesList = emMessagesRepository.findByToUserAndCreatedDateBetweenOrderByCreatedDateDesc(groupId,
+                        com.wonders.xlab.healthcloud.utils.DateUtils.covertToYYYYMMDD(new Date()), endTime);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            //取最新的2条纪录发送给前台
-            Map<String, Object> map = new HashMap<>();
-            map.put("toUser_equal", groupId);
-            map.put("isShowForDoctor_equal", 0);
-            List<EmMessages> list = emMessagesRepository.findAll(map);
-            emDoctorNumber.setList(list.subList(list.size() - 2, list.size()));
+
+/*
+            if (emMessagesList != null && emMessagesList.size() > 0) {
+                if (emMessagesList.get(0).getIsReplied()) {//回复的去掉
+                    emMessagesList.remove(0);
+                }
+            }*/
+
+            emDoctorNumber.setList(emMessagesList);
 
             emDoctorNumber.setLastQuestionStatus(0);
             emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
-            emDoctorNumber.setEmMessages(newMessages);
+            //  emDoctorNumber.setEmMessages(newMessages);
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         }
         //用户没有回复
@@ -492,22 +528,41 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * @return
      */
     @RequestMapping(value = "/queryRecords", method = RequestMethod.GET)
-    public ControllerResult<Page<EmMessages>> queryHistoryRecords(String groupId, Pageable pageable, String type) {
+    public ControllerResult<List<EmMessages>> queryHistoryRecords(String groupId, Pageable pageable, String type) {
  /*       Map<String, Object> filterMap = new HashMap<>();
         filterMap.put("toUser_equal", groupId);*/
-        Sort sort = new Sort(Sort.Direction.DESC,"createdDate");
-        Pageable pageable1 = new PageRequest(pageable.getPageNumber(),pageable.getPageSize(),sort);
-        Page<EmMessages> list = null;
+        Sort sort = new Sort(Sort.Direction.DESC, "createdDate");
+        Pageable pageable1 = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        List<EmMessages> list = null;
         if (type.equals("user")) {
-            list = emMessagesRepository.findAll(Collections.singletonMap("toUser_equal", groupId), pageable1);
-        }
-        if (type.equals("doctor")) {
             Map<String, Object> map = new HashMap<>();
             map.put("toUser_equal", groupId);
-            map.put("isShowForDoctor_equal", 1);
-            list = emMessagesRepository.findAll(map, pageable1);
+            map.put("createdDate_lessThan", com.wonders.xlab.healthcloud.utils.DateUtils.covertToYYYYMMDD(new Date())); //过滤掉今天的数据
+            list = emMessagesRepository.findAll(map, pageable1).getContent();
+            //如果今天的最早一条记录是回复状态 把这条记录拉到历史记录
+        /*    DateTime tmpTime = new DateTime(new Date());
+            Date end = new DateTime(
+                    tmpTime.getYear(),
+                    tmpTime.getMonthOfYear(),
+                    tmpTime.getDayOfMonth(),
+                    23, 59, 59
+            ).toDate();
+            List<EmMessages> todayList = emMessagesRepository.findByToUserAndIsShowForDoctorAndCreatedDateBetweenOrderByCreatedDateDesc(groupId, 0,
+                    com.wonders.xlab.healthcloud.utils.DateUtils.covertToYYYYMMDD(new Date()), end);
+            if (todayList != null && todayList.size() > 0) {
+                if (todayList.get(0).getIsReplied()) { //已回复
+                    list.add(todayList.get(0));
+                }
+            }*/
+
         }
-        return new ControllerResult<Page<EmMessages>>().setRet_code(0).setRet_values(list).setMessage("");
+        if (type.equals("doctor")) {
+            Map<String, Object> filterMap = new HashMap<>();
+            filterMap.put("toUser_equal", groupId);
+            filterMap.put("isShowForDoctor_equal", 0);
+            list = emMessagesRepository.findAll(filterMap, pageable1).getContent();
+        }
+        return new ControllerResult<List<EmMessages>>().setRet_code(0).setRet_values(list).setMessage("");
     }
 
     /**
@@ -561,5 +616,6 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         }
 
     }
+
 
 }
