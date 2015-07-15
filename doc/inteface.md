@@ -1,7 +1,7 @@
 获取用户已加入计划列表接口：
 
     接口地址：http://10.1.64.179:8080/xlab-healthcloud/hcPackage/checked/{userId}
-    methed: GET
+    method: GET
     ResponseBody:
 {
     "ret_code": 0,
@@ -35,7 +35,7 @@
 
 获取分类下计划包并标记用户是否加入
     接口地址：http://10.1.64.179:8080/xlab-healthcloud/hcPackage/listPackage/{classifitionId}/{userId}
-    methed:GET
+    method:GET
     ResponseBody:
 {
     "ret_code": 0,
@@ -106,7 +106,7 @@
 
 获取分类信息
 接口地址：http://10.1.64.179:8080/xlab-healthcloud/hcPackage/listPackageInfo
-methed：GET
+method：GET
 ResponseBody:
 {
     "ret_code": 0,
@@ -126,7 +126,7 @@ ResponseBody:
 }
 加入包计划接口
  接口地址：http://10.1.64.179:8080/xlab-healthcloud/plan/join/{userId}/{packageId}
-methed：POST
+method：POST
 ResponseBody:
 {
     "ret_code": 0,
@@ -136,7 +136,7 @@ ResponseBody:
 
 获取app菜单接口
 接口地址：http://10.1.64.179:8080/xlab-healthcloud/menu/findMenus
-methed：GET/POST
+method：GET/POST
 ResponseBody:
 {
     "ret_code": 0,
@@ -163,7 +163,7 @@ ResponseBody:
 
 取消选定健康包接口
 接口地址：http://10.1.64.179:8080/xlab-healthcloud/plan/cansel/{userId}/{packageId}
-methed: DELETE
+method: DELETE
 ResponseBody:
 {
     "ret_code": 0,
@@ -172,7 +172,7 @@ ResponseBody:
 }
 健康包关注自增接口
 接口地址：http://10.1.64.179:8080/xlab-healthcloud/hcPackage/packageClick/{packageId}
-methed:GET
+method:GET
 ResponseBody:
 {
     "ret_code": 0,
@@ -183,7 +183,7 @@ ResponseBody:
 医生端接口
 医生登陆接口
 接口地址：http://10.1.64.179:8080/xlab-healthcloud/doctor/hclogin
-methed：POST
+method：POST
 RequestBody:
 {
  "tel":"{tel}",
@@ -226,7 +226,7 @@ ResponseBody:
 
  医生基本信息更新接口
 接口地址：http://10.1.64.179:8080/xlab-healthcloud/doctor/updateBaseInfo/{doctorId}
-methed：POST
+method：POST
 RequestBody:
  {
     "iconUrl": "www.baidu.com",
@@ -275,7 +275,7 @@ ResponseBody:
 
 医生资格认证接口更新接口
 接口地址：http://10.1.64.179:8080/xlab-healthcloud/doctor/certification/{doctorId}
-methed:POST
+method:POST
 Request Headers:{"Content-Type":"multipart/form-data"}
 RequestBody:文件表单
        "icon":{icon}
@@ -293,7 +293,7 @@ ResponseBody:
 
 用户轻问诊发送消息接口
 接口地址：http://10.1.64.179:8080/xlab-healthcloud/em/sendTxtMessage
-methed： POST
+method： POST
 RequestBody:
 {
     “target_type” : “chatgroups”, 
@@ -316,7 +316,7 @@ ResponseBody:
 
 医生回复消息接口
 接口地址：http://10.1.64.179:8080/xlab-healthcloud/em/replyMessage/{msg_id}/{userTel} 
-methed：POST
+method：POST
 RequestBody:
 {
     “target_type” : “chatgroups”, 
@@ -338,7 +338,7 @@ ResponseBody:
 
 医生抢单接口
 接口地址：http://10.1.64.179:8080/xlab-healthcloud/em/rushOrder/{userTel}/{doctorTel}
-methed：POST/GET
+method：POST/GET
 RequestBody: null
 ResponseBody:
 {
