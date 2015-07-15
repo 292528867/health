@@ -93,20 +93,9 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         // 用户订单
         UserPackageOrder order = this.userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, detail.getHcPackage().getId(), false);
 
-        List<Long> completeDetailIds = new ArrayList<>();
-        if (order != null && order.getHcPackageDetailIds() != null) {
-            String[] detailIds = StringUtils.split(order.getHcPackageDetailIds(), ",");
-            for (String id : detailIds) {
-                completeDetailIds.add(NumberUtils.toLong(id));
-            }
-        }
         // 用户健康包任务语句
-        List<UserPackageDetailStatement> userStatements;
-        if (completeDetailIds.isEmpty()) {
-            userStatements = userPackageDetailStatementRepository.findByUserIdAndHcPackageIdAndDate(userId, detail.getHcPackage().getId(), new Date());
-        } else {
-            userStatements = userPackageDetailStatementRepository.findByUserIdAndHcPackageIdAndDateWithDetailIds(userId, detail.getHcPackage().getId(), new Date(), completeDetailIds);
-        }
+        List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdAndHcPackageIdAndDate(userId, detail.getHcPackage().getId(), new Date());
+
 
         List<UserStatementDto> statementDtos = new ArrayList<>();
 
@@ -135,9 +124,17 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
             dto.setPictureType(1);
         }
 
-        if (completeDetailIds.contains(detailId)) {
-            dto.setComplete(1);
+        List<Long> completeDetailIds = new ArrayList<>();
+        if (order != null && order.getHcPackageDetailIds() != null) {
+            String[] detailIds = order.getHcPackageDetailIds().split(",");
+            for (String id : detailIds) {
+                completeDetailIds.add(NumberUtils.toLong(id));
+            }
+            if (completeDetailIds.contains(detailId)) {
+                dto.setComplete(1);
+            }
         }
+
         dto.setStatementDtos(statementDtos);
 
         return new ControllerResult<DayPackageDetailDto>().setRet_code(0).setRet_values(dto).setMessage("成功");
@@ -170,6 +167,7 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
                     hpDetail,
                     content
             );
+            statement.setHcPackage(hpDetail.getHcPackage());
             this.userPackageDetailStatementRepository.save(statement);
         }
         // 已经有过计划完成

@@ -16,6 +16,9 @@ import javax.persistence.Table;
 public class UserPackageDetailStatement extends AbstractBaseEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
+    private HcPackage hcPackage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     /** 健康包详情 */
@@ -33,6 +36,7 @@ public class UserPackageDetailStatement extends AbstractBaseEntity<Long> {
         this.hcPackageDetail = hcPackageDetail;
         this.statement = statement;
     }
+
 
     public User getUser() {
         return user;
@@ -56,5 +60,13 @@ public class UserPackageDetailStatement extends AbstractBaseEntity<Long> {
 
     public void setStatement(String statement) {
         this.statement = statement;
+    }
+
+    public HcPackage getHcPackage() {
+        return hcPackage;
+    }
+
+    public void setHcPackage(HcPackage hcPackage) {
+        this.hcPackage = hcPackage;
     }
 }
