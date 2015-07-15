@@ -38,7 +38,7 @@ public class QiniuUploadUtils {
 
 	public static String upload(byte byteData[], String fileName) {
 
-		String upFileName = String.valueOf(new Date())+ fileName;
+		String upFileName = String.valueOf(System.currentTimeMillis())+ fileName;
 
         String address = null;
 
