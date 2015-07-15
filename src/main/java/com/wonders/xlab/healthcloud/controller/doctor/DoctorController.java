@@ -114,7 +114,6 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                 .setRet_code(0)
                 .setRet_values(doctor)
                 .setMessage("成功");
-
     }
 
     private ControllerResult<?> doctorRegister(Doctor doctor) {

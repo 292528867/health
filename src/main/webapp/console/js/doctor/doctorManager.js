@@ -31,7 +31,7 @@ var loadData = function () {
 }
 
 var modalLink = function (url) {
-    var dataModal = "data-am-modal=\"{target: '#doc-modal-1', closeViaDimmer: 0, width: 800, height: 800}\"";
+    var dataModal = "data-am-modal=\"{target: '#doc-modal-1', closeViaDimmer: 0, width: 600, height: 500}\"";
     return null == url || url =="" ? "": dataModal;
 };
 
