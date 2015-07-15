@@ -84,8 +84,7 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
         }
 
         try {
-            // 删除未完成的订单下的 用户对任务的语句
-            userPackageDetailStatementRepository.deleteByUserIdAndHcPackageIdAndCreatedDateGreaterThanEqualAndCreatedDateLessThanEqual(userId, packageId, userPackageOrder.getCreatedDate(), new Date());
+
             int orderSize = userPackageOrderRepository.findSizeByUserIdAndPackageComplete(userId, false);
             if (orderSize == 1)
                 return new ControllerResult<>()
@@ -93,6 +92,8 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
             userPackageOrderRepository.delete(userPackageOrder.getId());
             HcPackage hcPackage = hcPackageRepository.findOne(packageId);
             discoveryService.deleteUserCategoryRelated(userId, hcPackage.getHealthCategory().getId());
+            // 删除未完成的订单下的 用户对任务的语句
+            userPackageDetailStatementRepository.deleteByUserIdAndHcPackageIdAndCreatedDateGreaterThanEqualAndCreatedDateLessThanEqual(userId, packageId, userPackageOrder.getCreatedDate(), new Date());
             return new ControllerResult<>()
                     .setRet_code(0).setRet_values("").setMessage("取消成功！");
         } catch (Exception exp) {
