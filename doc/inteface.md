@@ -350,3 +350,190 @@ ResponseBody:
     },
     "message": "消息发送成功"
 }
+
+
+医生查询订单接口
+接口地址：http://10.1.64.179:8080/xlab-healthcloud/em/doctorOrders/{doctorId}
+method：GET
+RequestBody: null
+ResponseBody:
+{
+    "ret_code": 0,
+    "ret_values": {
+        "orders": [
+            {
+                "id": 31,
+                "createdDate": 1436878794000,
+                "lastModifiedDate": 1436882734000,
+                "user": {
+                    "id": 110,
+                    "height": 170,
+                    "weight": 57,
+                    "age": 1,
+                    "tel": "15021470585",
+                    "iconUrl": "",
+                    "nickName": "",
+                    "sex": "Male",
+                    "birthday": "",
+                    "createdDate": 1436868409000,
+                    "lastModifiedDate": 1436868429000,
+                    "hcPackages": "",
+                    "hcs": [],
+                    "valid": 1,
+                    "appPlatform": "Android",
+                    "groupId": "82908400114991516",
+                    "integrals": 0,
+                    "inviteCode": "n027",
+                    "inviteUrl": "",
+                    "byInviteCode": "",
+                    "new": false
+                },
+                "messages": {
+                    "id": 262,
+                    "createdDate": 1436878794000,
+                    "lastModifiedDate": 1436878794000,
+                    "fromUser": "15021470585",
+                    "toUser": "82908400114991516",
+                    "toUsers": [
+                        "82908400114991516"
+                    ],
+                    "msg": "东方红",
+                    "fileUrl": "",
+                    "isReplied": false,
+                    "messageType": "txt",
+                    "chatName": "",
+                    "targetType": "chatgroups",
+                    "ext": "",
+                    "doctorFlag": true,
+                    "isShowForDoctor": 0,
+                    "groupId": "",
+                    "new": false
+                },
+                "doctor": "",
+                "questionStatus": "processing",
+                "pushCount": 4,
+                "new": false
+            },
+            {
+                "id": 41,
+                "createdDate": 1436881260000,
+                "lastModifiedDate": 1436943724000,
+                "user": "",
+                "messages": {
+                    "id": 278,
+                    "createdDate": 1436881260000,
+                    "lastModifiedDate": 1436943724000,
+                    "fromUser": "15802132098",
+                    "toUser": "82106668153835928",
+                    "toUsers": [
+                        "82106668153835928"
+                    ],
+                    "msg": "hello from rest",
+                    "fileUrl": "",
+                    "isReplied": true,
+                    "messageType": "txt",
+                    "chatName": "",
+                    "targetType": "chatgroups",
+                    "ext": "",
+                    "doctorFlag": true,
+                    "isShowForDoctor": 0,
+                    "groupId": "",
+                    "new": false
+                },
+                "doctor": "",
+                "questionStatus": "done",
+                "pushCount": 5,
+                "new": false
+            }
+        ],
+        "newQuestion": ""
+    },
+    "message": "success"
+}
+参数说明：
+ret_values中的问题对象按照问题的状态和提问时间升序排列
+createdDate: 提问时间
+user: 提问的用户信息
+messages: 提问的问题对象
+	id: messageId 医生回复问题的接口需要用到该值
+	msg: 问题内容
+	toUser: 用户chatGroupId 医生回复问题时，需要发送至该chatGroupId
+	toUsers: 环信api需要，本接口中不需要处理
+questionStatus: 问题状态。processing为等待回答，done为已回答
+
+
+医生切换问题接口
+给医生返回一个新的问题（问题队列中，推送次数最少的问题）
+接口地址: http://10.1.64.179:8080/xlab-healthcloud/em/getNewQuestion
+method：GET
+RequestBody:null
+ResponseBody:
+{
+    "ret_code": 0,
+    "ret_values": {
+        "id": 88,
+        "createdDate": 1436947431000,
+        "lastModifiedDate": 1436947431000,
+        "user": {
+            "id": 106,
+            "height": 160,
+            "weight": 51,
+            "age": 27,
+            "tel": "13727791297",
+            "iconUrl": "",
+            "nickName": "",
+            "sex": "Female",
+            "birthday": "",
+            "createdDate": 1436864657000,
+            "lastModifiedDate": 1436864700000,
+            "hcPackages": "",
+            "hcs": [],
+            "valid": 1,
+            "appPlatform": "Ios",
+            "groupId": "82892284881797536",
+            "integrals": 0,
+            "inviteCode": "p769",
+            "inviteUrl": "",
+            "byInviteCode": "",
+            "new": false
+        },
+        "messages": {
+            "id": 381,
+            "createdDate": 1436947431000,
+            "lastModifiedDate": 1436947431000,
+            "fromUser": "13727791297",
+            "toUser": "82892284881797536",
+            "toUsers": [
+                "82892284881797536"
+            ],
+            "msg": "抢单测试来一个7",
+            "fileUrl": "",
+            "isReplied": false,
+            "messageType": "txt",
+            "chatName": "",
+            "targetType": "chatgroups",
+            "ext": "",
+            "doctorFlag": true,
+            "isShowForDoctor": 0,
+            "groupId": "",
+            "new": false
+        },
+        "doctor": "",
+        "questionStatus": "newQuestion",
+        "pushCount": 0,
+        "new": false
+    },
+    "message": "success"
+}
+
+参数说明：
+ret_values中只有一个问题对象
+createdDate: 提问时间
+user: 提问的用户信息
+messages: 提问的问题对象
+	id: messageId 医生回复问题的接口需要用到该值
+	msg: 问题内容
+	toUser: 用户chatGroupId 医生回复问题时，需要发送至该chatGroupId
+	toUsers: 环信api需要，本接口中不需要处理
+questionStatus: 问题状态。newQuestion为新问题
+
