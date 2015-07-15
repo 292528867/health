@@ -84,6 +84,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
             dto.setLinkUrl(banner.getLinkUrl());
             dto.setEnabled(String.valueOf(banner.isEnabled()));
             dto.setPosition(String.valueOf(banner.getPosition()));
+            dto.setTitle(banner.getTitle());
             bannerDtos.add(dto);
         }
         return new ControllerResult<List<BannerDto>>()
