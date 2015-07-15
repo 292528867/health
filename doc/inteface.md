@@ -291,29 +291,6 @@ ResponseBody:
 }
 
 
-用户轻问诊发送消息接口
-接口地址：http://10.1.64.179:8080/xlab-healthcloud/em/sendTxtMessage
-method： POST
-RequestBody:
-{
-    “target_type” : “chatgroups”, 
-    “target” : [“{userGroupId}”],          
-    “msg” : {
-        “type” : “txt”,
-        “msg” : “{messages}” 
-        },
-    “from” : “{用户环信账号}”, 
-    “ext” : { 
-    }    
-}
-
-ResponseBody:
-{
-    "ret_code": 0,
-    "ret_values": "",
-    "message": "文本消息发送成功"
-}
-
 医生回复消息接口
 接口地址：http://10.1.64.179:8080/xlab-healthcloud/em/replyMessage/{msg_id}/{userTel} 
 method：POST
@@ -619,12 +596,12 @@ http://101.231.124.8:45677/xlab-healthcloud/em/sendTxtMessage
 参数说明：
 {
     "target_type" : "chatgroups",
-    "target" : ["82121541407474076"], //groupid
+    "target" : ["82121541407474076"], //用户的环信聊天组ID groupId
     "msg" : {
         "type" : "txt",
         "msg" : "hello from rest4"  //发送消息内容
         },
-    "from" : "15000367081",  //用户手机号
+    "from" : "15000367081",  //用户环信账号
     "ext" : {
     }
 }
@@ -636,32 +613,6 @@ http://101.231.124.8:45677/xlab-healthcloud/em/sendTxtMessage
     },
     "message": "文本消息发送成功"
 }
-说明：waiting 进入等待页面的提示
-
-
-轻问诊医生或者后台回复消息接口
-http://101.231.124.8:45677/xlab-healthcloud/em/replyMessage/{msgId}/{userTel}
-请求方式：post
-参数说明： msgId 要回复的问题id userTel 用户手机号
-{
-    "target_type" : "chatgroups",
-    "target" : ["82121541407474076"], //groupid
-
-
-    "msg" : {
-        "type" : "txt",
-        "msg" : "hello from rest4"  //发送消息内容
-        },
-    "from" : "15000367081",  //医生手机号
-    "ext" : {
-    }
-}
-返回结果
-  {
-    "ret_code": 0,
-    "ret_values": {
-    },
-    "message": "文本消息发送成功"
-}
+说明：waiting 进入等待页面的提示语
 
 
