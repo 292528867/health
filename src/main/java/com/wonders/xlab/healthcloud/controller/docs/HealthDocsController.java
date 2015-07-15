@@ -64,8 +64,6 @@ public class HealthDocsController {
         }
 
         return new ControllerResult<List<HealthDocsDto>>().setRet_code(0).setRet_values(healthDocsDtos).setMessage("成功");
-//        return docses;
-
     }
 
 }
