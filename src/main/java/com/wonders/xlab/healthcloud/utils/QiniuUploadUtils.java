@@ -60,7 +60,7 @@ public class QiniuUploadUtils {
 	
 	public static String upload_key(byte byteData[], String fileName) {
 
-		String upFileName = String.valueOf(System.currentTimeMillis())+ fileName;
+		String upFileName = fileName;
 
         String address = null;
 
