@@ -1,7 +1,6 @@
 /**
  * Created by wade on 15/5/25.
  */
-commonUrl="http://10.10.10.219:8080/";
 var packageUrl= commonUrl +'hcPackage/listHcPackage',
     bannerListUrl= commonUrl +'banner/listBannerForConsole',
     topicListUrl= commonUrl +'banner/retrieveHealthInfos/',
@@ -112,6 +111,8 @@ $.post(bannerListUrl, function (groupTypes) {
         '<td>'+ text +'</td>'+
         '<td class="am-hide-sm-only">'+ group.position +'</td>'+
         '<td class="am-hide-sm-only">'+ group.title +'</td>'+
+        '<td class="am-hide-sm-only"><img src="'+ group.picUrl +'" /></td>'+
+        '<td class="am-hide-sm-only">'+ group.linkUrl +'</td>'+
         '<td>'+
         '<div class="am-btn-toolbar">'+
         '<div class="am-btn-group am-btn-group-xs">'+

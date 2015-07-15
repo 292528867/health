@@ -257,42 +257,8 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        var bar = $('.bar');
-        var percent = $('.percent');
-        var status = $('#status');
-        $('#form1').on('submit', function (e) {
-            e.preventDefault(); // prevent native submit
-            console.log('正在提交');
-            $('#formSub').attr('disabled', 'disabled');
-            $(this).ajaxSubmit({
-                        target: '.am-padding-left',
-                        success: showResponse,
-                        uploadProgress: function (event, position, total, percentComplete) {
-                            var percentVal = percentComplete + '%';
-                            bar.width(percentVal)
-                            if (percentComplete == 100) {
-                                percentVal = "<i class='am-icon-spinner am-icon-spin'></i> 请等待服务器提交";
-                            }
-                            percent.html(percentVal);
-                        }
-                    },
-                    function () {
-                    })
-        });
-        function progressLoad(event, position, total, percentComplete) {
-            console.log(percentComplete);
-        }
 
-        function showResponse(responseText, statusText, xhr, $form) {
-            console.log('status: ' + statusText + '\n\nresponseText: \n' + responseText);
-            alert(statusText);
-            if (statusText == 'success') {
-                location.reload();
-            }
-        }
     });
 </script>
-<script src="js/typeAdd.js"></script>
-<script src="js/loadAllType.js"></script>
 </body>
 </html>
