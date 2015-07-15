@@ -2,6 +2,7 @@ package com.wonders.xlab.healthcloud.dto.hcpackage;
 
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,7 +74,7 @@ public class HcPackageDetailDto {
                 detail,
                 Boolean.valueOf(isNeedSupplemented),
                 supplemented,
-                Integer.parseInt(integration),
+                NumberUtils.toInt(integration),
                 Boolean.valueOf(isFullDay)
         );
 

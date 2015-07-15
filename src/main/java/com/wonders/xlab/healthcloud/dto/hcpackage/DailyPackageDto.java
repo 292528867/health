@@ -16,22 +16,10 @@ public class DailyPackageDto {
     /** 任务名称 */
     private String taskName;
 
-//    /** 是否完成 0 未完成 1 完成 */
-//    private int isCompleted;
-
     /** 点击次数 */
     private int clickAmount;
 
-//    /** 是显示当前的数据 0 否 1 是 */
-//    private int current;
-
     public DailyPackageDto() {
-    }
-
-    public DailyPackageDto(Long packageDetailId, Date recommendTimeFrom, String taskName) {
-        this.packageDetailId = packageDetailId;
-        this.recommendTimeFrom = recommendTimeFrom;
-        this.taskName = taskName;
     }
 
     public DailyPackageDto(Long packageDetailId, Date recommendTimeFrom, String taskName, int clickAmount) {
@@ -73,5 +61,6 @@ public class DailyPackageDto {
     public void setClickAmount(int clickAmount) {
         this.clickAmount = clickAmount;
     }
+
 
 }

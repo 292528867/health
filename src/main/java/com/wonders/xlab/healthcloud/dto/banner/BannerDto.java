@@ -3,6 +3,7 @@ package com.wonders.xlab.healthcloud.dto.banner;
 import com.wonders.xlab.healthcloud.entity.banner.Banner;
 import com.wonders.xlab.healthcloud.entity.banner.BannerTag;
 import com.wonders.xlab.healthcloud.entity.banner.BannerType;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -52,8 +53,8 @@ public class BannerDto {
 
     public Banner toNewBanner() {
         Banner banner = new Banner(
-                BannerTag.values()[Integer.parseInt(bannerTag)],
-                BannerType.values()[Integer.parseInt(bannerType)],
+                BannerTag.values()[NumberUtils.toInt(bannerTag)],
+                BannerType.values()[NumberUtils.toInt(bannerType)],
                 articleId,
                 title,
                 picUrl,
@@ -65,14 +66,14 @@ public class BannerDto {
     }
 
     public Banner updateBanner(Banner banner) {
-        banner.setBannerTag(BannerTag.values()[Integer.parseInt(bannerTag)]);
-        banner.setBannerType(BannerType.values()[Integer.parseInt(bannerType)]);
+        banner.setBannerTag(BannerTag.values()[NumberUtils.toInt(bannerTag)]);
+        banner.setBannerType(BannerType.values()[NumberUtils.toInt(bannerType)]);
         banner.setArticleId(articleId);
         banner.setTitle(title);
         banner.setPicUrl(picUrl);
         banner.setLinkUrl(linkUrl);
         banner.setEnabled(Boolean.valueOf(enabled));
-        banner.setPosition(Integer.valueOf(position));
+        banner.setPosition(NumberUtils.toInt(position));
         return banner;
     }
 

@@ -36,7 +36,7 @@ public class StoreDto {
     private String description;
 
     @NotNull(message = "顺序不能为空")
-    private String position;
+    private Integer position;
 
     public Store toNewStore() {
         Store store = new Store(
@@ -47,9 +47,9 @@ public class StoreDto {
                 description
         );
         if (tag != null){
-            store.setTag(Store.Tag.values()[Integer.parseInt(tag)]);
+            store.setTag(Store.Tag.values()[NumberUtils.toInt(tag)]);
         }
-        store.setPosition(NumberUtils.toInt(position));
+        store.setPosition(position);
         return store;
     }
 
@@ -61,7 +61,7 @@ public class StoreDto {
         store.setDescription(description);
         store.setPosition(Integer.valueOf(position));
         if (tag != null)
-            store.setTag(Store.Tag.values()[Integer.parseInt(tag)]);
+            store.setTag(Store.Tag.values()[NumberUtils.toInt(tag)]);
         return store;
     }
 
@@ -113,11 +113,11 @@ public class StoreDto {
         this.description = description;
     }
 
-    public String getPosition() {
+    public Integer getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
+    public void setPosition(Integer position) {
         this.position = position;
     }
 }
