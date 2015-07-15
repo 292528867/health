@@ -429,7 +429,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 .setRet_values(value)
                 .setMessage("查询成功");
     }
-
     /**
      * 支付完成以后的订单详情
      *
@@ -439,18 +438,11 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
     @RequestMapping(value = "getOrdersDetail/{userId}/{chargeId}", method = RequestMethod.GET)
     public ControllerResult getOrdersDetail(@PathVariable Long userId, @PathVariable String chargeId) throws APIException, AuthenticationException, InvalidRequestException, APIConnectionException {
 
-        StewardOrder stewardOrder = stewardOrderRepository.findAllByChargeId(chargeId);
+        StewardOrder stewardOrder = stewardOrderRepository.findByChargeId(chargeId);
         if (null != stewardOrder) {
-            //更新付款状态
-            Charge charge = pingppService.queryCharge(chargeId);
-            //判断支付状态
-            if (charge.getPaid()) {
-                stewardOrder.setOrderStatus(StewardOrder.OrderStatus.支付成功);
-                stewardOrder.setPayDate(new Date());
-                stewardOrderRepository.save(stewardOrder);
-            } else {
-                stewardOrder.setOrderStatus(StewardOrder.OrderStatus.未支付);
-            }
+            stewardOrder.setOrderStatus(StewardOrder.OrderStatus.支付成功);
+            stewardOrder.setPayDate(new Date());
+            stewardOrderRepository.save(stewardOrder);
             int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
             String[] detilServicedPeriod = new String[totalServicePeriod];
             for (int num = 0; num < detilServicedPeriod.length; num++) {
