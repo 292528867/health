@@ -20,7 +20,6 @@ import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.service.customer.UserService;
 import com.wonders.xlab.healthcloud.utils.*;
 import net.sf.ehcache.Cache;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
