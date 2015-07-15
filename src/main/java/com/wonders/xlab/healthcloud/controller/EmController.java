@@ -635,9 +635,10 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Map<String, QuestionOrder.QuestionStatus> statusMap = new HashMap<>();
         statusMap.put("processing", QuestionOrder.QuestionStatus.processing);
         statusMap.put("done", QuestionOrder.QuestionStatus.done);
-        QuestionOrder.QuestionStatus[] statuses = new QuestionOrder.QuestionStatus[2];
-        statuses[0] = QuestionOrder.QuestionStatus.done;
-        statuses[1] = QuestionOrder.QuestionStatus.processing;
+        QuestionOrder.QuestionStatus[] statuses = new QuestionOrder.QuestionStatus[]{
+                QuestionOrder.QuestionStatus.done,
+                QuestionOrder.QuestionStatus.processing
+        };
 
         List<QuestionOrder> orders= questionOrderRepository.findQuestionOrdersByDoctorID(doctorId, statuses);
         QuestionOrder newQuestion = questionOrderService.findOneNewQuestion();
