@@ -21,11 +21,16 @@ public class ToplineDto {
     @NotNull(message = "启用不能为空")
     private Boolean enabled;
 
+    /** 排序 倒叙 */
+    @NotNull(message = "排序不能为空")
+    private Integer position;
+
     public Topline toNewTopline() {
         Topline topline = new Topline();
         topline.setPicUrl(picUrl);
         topline.setLinkUrl(linkUrl);
         topline.setEnabled(enabled);
+        topline.setPosition(position);
         return topline;
     }
 
@@ -33,6 +38,7 @@ public class ToplineDto {
         topline.setPicUrl(picUrl);
         topline.setLinkUrl(linkUrl);
         topline.setEnabled(enabled);
+        topline.setPosition(position);
         return topline;
     }
 
@@ -58,5 +64,13 @@ public class ToplineDto {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 }

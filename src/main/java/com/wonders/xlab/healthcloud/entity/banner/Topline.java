@@ -21,6 +21,9 @@ public class Topline extends AbstractBaseEntity<Long>{
     /** 启用 */
     private boolean enabled;
 
+    /** 排序 倒叙 */
+    private int position;
+
     public String getPicUrl() {
         return picUrl;
     }
@@ -43,5 +46,13 @@ public class Topline extends AbstractBaseEntity<Long>{
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 }
