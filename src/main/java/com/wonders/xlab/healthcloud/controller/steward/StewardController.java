@@ -188,7 +188,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         ObjectNode result = jsonNodeFactory.objectNode();
         result.putPOJO("services", services);
-        result.putPOJO("steward", stewardRepository.findByOrderByRankAsc());
+        result.putPOJO("steward", stewardRepository.findByOrderByRand());
         result.putPOJO("arithmetic", arithmeticArrayNode);
 
         return new ControllerResult<>()
