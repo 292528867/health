@@ -32,6 +32,9 @@ public class Store extends AbstractBaseEntity<Long> {
     /** 简述 */
     private String description;
 
+    /** 排序顺序 升序 */
+    private int position;
+
     public enum Tag {
         New, Hot
     }
@@ -93,5 +96,13 @@ public class Store extends AbstractBaseEntity<Long> {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 }
