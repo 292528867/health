@@ -46,4 +46,11 @@ public abstract class AbstractBaseEntity<ID extends Serializable> extends Abstra
         this.lastModifiedDate = lastModifiedDate;
     }
 
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 }

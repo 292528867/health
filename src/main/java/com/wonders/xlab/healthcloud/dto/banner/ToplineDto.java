@@ -3,7 +3,6 @@ package com.wonders.xlab.healthcloud.dto.banner;
 import com.wonders.xlab.healthcloud.entity.banner.Topline;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 /**
  * Created by mars on 15/7/15.
@@ -20,21 +19,20 @@ public class ToplineDto {
 
     /** 启用 */
     @NotNull(message = "启用不能为空")
-    @Pattern(regexp = "^true|false$", message = "启用必须为true|false")
-    private String enabled;
+    private Boolean enabled;
 
     public Topline toNewTopline() {
         Topline topline = new Topline();
         topline.setPicUrl(picUrl);
         topline.setLinkUrl(linkUrl);
-        topline.setEnabled(Boolean.valueOf(enabled));
+        topline.setEnabled(enabled);
         return topline;
     }
 
     public Topline updateTopline(Topline topline) {
         topline.setPicUrl(picUrl);
         topline.setLinkUrl(linkUrl);
-        topline.setEnabled(Boolean.valueOf(enabled));
+        topline.setEnabled(enabled);
         return topline;
     }
 
@@ -54,11 +52,11 @@ public class ToplineDto {
         this.linkUrl = linkUrl;
     }
 
-    public String getEnabled() {
+    public Boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(String enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 }
