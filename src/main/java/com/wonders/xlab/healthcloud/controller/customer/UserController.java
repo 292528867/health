@@ -19,12 +19,11 @@ import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
+import com.wonders.xlab.healthcloud.service.customer.UserService;
 import com.wonders.xlab.healthcloud.service.hcpackage.UserPackageOrderService;
 import com.wonders.xlab.healthcloud.utils.*;
 import net.sf.ehcache.Cache;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,9 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -64,7 +61,7 @@ public class UserController extends AbstractBaseController<User, Long> {
     private UserThirdRepository userThirdRepository;
 
     @Autowired
-    private HcPackageRepository hcPackageRepository;
+    private UserService userService;
 
     @Autowired
     @Qualifier(value = "idenCodeCache")
@@ -72,9 +69,6 @@ public class UserController extends AbstractBaseController<User, Long> {
 
     @Autowired
     private EMUtils emUtils;
-
-    @Autowired
-    private UserPackageOrderService userPackageOrderService;
 
     @PostConstruct
     private void init() {
@@ -300,7 +294,6 @@ public class UserController extends AbstractBaseController<User, Long> {
     }
 
     @RequestMapping(value = "modify/{userId}", method = RequestMethod.POST)
-    @Transactional
     public Object modify(@PathVariable long userId, @RequestBody @Valid UserDto userDto, BindingResult result) {
 
         if (result.hasErrors()) {
@@ -308,28 +301,27 @@ public class UserController extends AbstractBaseController<User, Long> {
             for (ObjectError error : result.getAllErrors()) {
                 builder.append(error.getDefaultMessage());
             }
-            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(builder.toString());
+            return new ControllerResult<String>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage(builder.toString());
         }
 
         userDto.setValid(User.Valid.valid);
         User user = userRepository.findOne(userId);
-        System.out.println("user.getHcPackages() = " + user.getHcPackages());
-
         BeanUtils.copyNotNullProperties(userDto, user, "hcPackageId");
-        HcPackage hcPackage = hcPackageRepository.findOne(userDto.getHcPackageId());
-        user.getHcPackages().add(hcPackage);
-        userRepository.save(user);
-
-        user.setHcPackages(null);
-        ControllerResult controllerResult = (ControllerResult) userPackageOrderService.joinPlan(userId, userDto.getHcPackageId());
-        if (controllerResult.getRet_code() == -1) {
-            return controllerResult;
+        int code = userService.updateUserAndJoinHealthPlan(user, userDto.getHcPackageId());
+        //500 用户已选择两个包，400 用户健康计划包已存在，200 加入成功
+        if (code == 200) {
+            return new ControllerResult<>()
+                    .setRet_code(0)
+                    .setRet_values(user)
+                    .setMessage("用户更新成功!");
         }
-
-        return new ControllerResult<>()
-                .setRet_code(0)
-                .setRet_values(user)
-                .setMessage("用户更新成功!");
+        return new ControllerResult<String>()
+                .setRet_code(-1)
+                .setRet_values("")
+                .setMessage("用户更新失败！");
     }
 
     /**

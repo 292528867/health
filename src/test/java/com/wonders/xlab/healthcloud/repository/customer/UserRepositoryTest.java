@@ -24,6 +24,6 @@ public class UserRepositoryTest {
     public void testFindOne() throws Exception {
 
         User user = userRepository.findOne(47l);
-        System.out.println("user.getHcPackages() = " + user.getHcPackages());
+        System.out.println("user.getHcPackages() = " + user.getHcs());
     }
 }

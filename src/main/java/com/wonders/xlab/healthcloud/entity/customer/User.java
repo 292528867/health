@@ -27,13 +27,13 @@ public class User extends BaseInfo<Long> {
     /**
      * 分类
      */
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "HC_USER_HEALTHGATEGORY",
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "HEALTHCATEGORY_ID")
     )
-    private Set<HealthCategory> hcs = new HashSet<>();
+    private Set<HealthCategory> hcs;
 
     //    invalid 用户无效（未完善用户信息），valid 用户有效
     @Enumerated
@@ -148,6 +148,13 @@ public class User extends BaseInfo<Long> {
 
     public void setByInviteCode(String byInviteCode) {
         ByInviteCode = byInviteCode;
+    }
+
+    public void addHealthCategory(HealthCategory healthCategory) {
+        if (hcs == null) {
+            hcs = new HashSet<>();
+        }
+        hcs.add(healthCategory);
     }
 
     public void addHcPackage(HcPackage hcPackage) {
