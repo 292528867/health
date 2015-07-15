@@ -24,8 +24,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by mars on 15/7/4.
@@ -207,9 +206,13 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             userPackageOrderDtos.add(userPackageOrderDto);
         }
 
-        return new ControllerResult<List<UserPackageOrderDto>>()
+        int packageSize = userPackageOrderRepository.countByUserIdAndPackageCompleteFalse(userId);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("userPackageSize", packageSize);
+        resultMap.put("packages", userPackageOrderDtos);
+        return new ControllerResult<>()
                 .setRet_code(0)
-                .setRet_values(userPackageOrderDtos)
+                .setRet_values(resultMap)
                 .setMessage("成功");
     }
 
