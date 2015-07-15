@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by mars on 15/7/6.
  */
-public interface BannnerRepository extends MyRepository<Banner, Long> {
+public interface BannerRepository extends MyRepository<Banner, Long> {
 
     @Query("from Banner b where b.bannerType = ?1 group by b.bannerTag order by b.lastModifiedDate desc ")
     List<Banner> findBannerOrderByLastModifiedDate(BannerType type);
