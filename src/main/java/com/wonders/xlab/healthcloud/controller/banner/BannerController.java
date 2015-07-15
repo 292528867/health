@@ -126,7 +126,6 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
         try {
             Banner banner = bannerDto.toNewBanner();
             this.bannerRepository.save(banner);
-            this.bannerRepository.save(banner);
             return new ControllerResult<>()
                     .setRet_code(0)
                     .setRet_values("添加成功")
