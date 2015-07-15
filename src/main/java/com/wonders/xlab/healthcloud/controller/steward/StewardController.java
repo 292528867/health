@@ -1,5 +1,8 @@
 package com.wonders.xlab.healthcloud.controller.steward;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pingplusplus.exception.APIConnectionException;
 import com.pingplusplus.exception.APIException;
 import com.pingplusplus.exception.AuthenticationException;
@@ -155,38 +158,76 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             }
             orderServices.add(resultServices.get(i));
         }
-        List<Map<String, Object>> arithmeticList = new ArrayList<>();
-        Map<String, Object> level1Map = new HashMap<>();
-        Map<String, Object> level2Map = new HashMap<>();
-        Map<String, Object> level3Map = new HashMap<>();
-        Map<String, Object> level4Map = new HashMap<>();
-        Map<String, Object> level5Map = new HashMap<>();
+//        List<Map<String, Object>> arithmeticList = new ArrayList<>();
+//        Map<String, Object> level1Map = new HashMap<>();
+//        Map<String, Object> level2Map = new HashMap<>();
+//        Map<String, Object> level3Map = new HashMap<>();
+//        Map<String, Object> level4Map = new HashMap<>();
+//        Map<String, Object> level5Map = new HashMap<>();
+//
+//        level1Map.put("range", "0,4");
+//        level1Map.put("money", "0.01");
+//        level2Map.put("range", "5,10");
+//        level2Map.put("money", "28");
+//        level3Map.put("range", "11,17");
+//        level3Map.put("money", "78");
+//        level4Map.put("range", "18,48");
+//        level4Map.put("money", "158");
+//        level5Map.put("range", "49");
+//        level5Map.put("money", "298");
+//
+//        arithmeticList.add(level1Map);
+//        arithmeticList.add(level2Map);
+//        arithmeticList.add(level3Map);
+//        arithmeticList.add(level4Map);
+//        arithmeticList.add(level5Map);
+//
+//        List<Steward> stewards = stewardRepository.findByOrderByRankAsc();
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("services", orderServices);
+//        map.put("steward", stewards);
+//        map.put("arithmetic", arithmeticList);
+//        return new ControllerResult<>()
+//                .setRet_code(0)
+//                .setRet_values(map)
 
-        level1Map.put("range", "0,4");
-        level1Map.put("money", "0.01");
-        level2Map.put("range", "5,10");
-        level2Map.put("money", "28");
-        level3Map.put("range", "11,17");
-        level3Map.put("money", "78");
-        level4Map.put("range", "18,48");
-        level4Map.put("money", "158");
-        level5Map.put("range", "49");
-        level5Map.put("money", "298");
 
-        arithmeticList.add(level1Map);
-        arithmeticList.add(level2Map);
-        arithmeticList.add(level3Map);
-        arithmeticList.add(level4Map);
-        arithmeticList.add(level5Map);
+        JsonNodeFactory jsonNodeFactory = objectMapper.getNodeFactory();
+        ArrayNode arithmeticArrayNode = jsonNodeFactory.arrayNode();
 
-        List<Steward> stewards = stewardRepository.findByOrderByRankAsc();
-        Map<String, Object> map = new HashMap<>();
-        map.put("services", orderServices);
-        map.put("steward", stewards);
-        map.put("arithmetic", arithmeticList);
+        ObjectNode node = jsonNodeFactory.objectNode();
+        node.put("range", "0,4");
+        node.put("money", "0.01");
+        arithmeticArrayNode.add(node);
+
+        node = jsonNodeFactory.objectNode();
+        node.put("range", "5,10");
+        node.put("money", "28");
+        arithmeticArrayNode.add(node);
+
+        node = jsonNodeFactory.objectNode();
+        node.put("range", "11,17");
+        node.put("money", "78");
+        arithmeticArrayNode.add(node);
+
+        node = jsonNodeFactory.objectNode();
+        node.put("range", "18,48");
+        node.put("money", "158");
+        arithmeticArrayNode.add(node);
+
+        node = jsonNodeFactory.objectNode();
+        node.put("range", "49");
+        node.put("money", "298");
+        arithmeticArrayNode.add(node);
+
+        ObjectNode result = jsonNodeFactory.objectNode();
+        result.putPOJO("services", services);
+        result.putPOJO("steward", stewardRepository.findByOrderByRankAsc());
+        result.putPOJO("arithmetic", arithmeticArrayNode);
+
         return new ControllerResult<>()
                 .setRet_code(0)
-                .setRet_values(map)
+                .setRet_values(result)
                 .setMessage("成功");
     }
 
@@ -351,34 +392,42 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @return
      */
     @RequestMapping(value = "getOrdersDetail/{userId}", method = RequestMethod.GET)
-    public ControllerResult getOrdersDetail(@PathVariable Long userId) {
+    public ControllerResult getOrdersDetail(@PathVariable Long userId) throws Exception {
 
-        List<StewardOrder> stewardOrders = stewardOrderRepository.findAllByUser(userId);
-        if (!stewardOrders.isEmpty()) {
-            Map<String,Object> value= new HashMap<>();
-            StewardOrder stewardOrder = stewardOrders.get(0);
-            int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
-            int currentServicedPeriod = DateUtils.calculateDaysOfTwoDateIgnoreHours(stewardOrder.getCreatedDate(), new Date());
-            Map<String, Object> servicedPeriodMap = new HashMap<>();
-            servicedPeriodMap.put("currentServicedPeriod", currentServicedPeriod);
-            servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
-
-            if (currentServicedPeriod >= totalServicePeriod) {
-                value.put("effective",false);
-            } else {
-                value.put("effective",true);
+        StewardOrder stewardOrder = stewardOrderRepository.findTop1ByUserIdOrderByCreatedDateDesc(userId);
+        Map<String, Object> value = new HashMap<>();
+        if (null != stewardOrder) {
+            Charge charge = pingppService.queryCharge(stewardOrder.getChargeId());
+            if (null != charge){
+                if (charge.getPaid()) {
+                    int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
+                    int currentServicedPeriod = DateUtils.calculateDaysOfTwoDateIgnoreHours(stewardOrder.getCreatedDate(), new Date());
+                    Map<String, Object> servicedPeriodMap = new HashMap<>();
+                    servicedPeriodMap.put("currentServicedPeriod", currentServicedPeriod);
+                    servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
+                    if (currentServicedPeriod >= totalServicePeriod) {
+                        value.put("effective", true);
+                    } else {
+                        value.put("effective", false);
+                    }
+                } else {
+                    value.put("effective", false);
+                }
+                value.put("chargeId", stewardOrder.getChargeId());
+            }else {
+                return new ControllerResult<String>()
+                        .setRet_code(-1)
+                        .setRet_values("")
+                        .setMessage("查询失败");
             }
-            value.put("chargeId",stewardOrder.getChargeId());
-            return new ControllerResult<Map>()
-                    .setRet_code(0)
-                    .setRet_values(value)
-                    .setMessage("获取订单成功！");
         } else {
-            return new ControllerResult<String>()
-                    .setRet_code(-1)
-                    .setRet_values("")
-                    .setMessage("获取订单失败！");
+            value.put("effective", false);
+            value.put("chargeId", "");
         }
+        return new ControllerResult<Map>()
+                .setRet_code(0)
+                .setRet_values(value)
+                .setMessage("查询成功");
     }
 
     /**
@@ -397,6 +446,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             //判断支付状态
             if (charge.getPaid()) {
                 stewardOrder.setOrderStatus(StewardOrder.OrderStatus.支付成功);
+                stewardOrder.setPayDate(new Date());
+                stewardOrderRepository.save(stewardOrder);
             } else {
                 stewardOrder.setOrderStatus(StewardOrder.OrderStatus.未支付);
             }
