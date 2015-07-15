@@ -234,3 +234,43 @@ html {
   color: #999999;
   margin-bottom: 20px;
 }
+.downloads-header {
+  height: 320px;
+  width: 100%;
+  padding: 30px 2% 0;
+  background: url("../i/download/background.png");
+  background-size: cover;
+  position: relative;
+  overflow: hidden;
+}
+.downloads-body {
+  text-align: center;
+  padding-top: 30px;
+}
+.downloads-title {
+  color: #333333;
+  font-size: 2.0rem;
+  margin-bottom: 30px;
+}
+.downloads-btn {
+  width: 80%;
+  font-size: 2.0rem;
+  height: 50px;
+  color: #FFFFFF;
+  border-radius: 5px;
+  line-height: 50px;
+  text-align: center;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.downloads-btn img {
+  height: 30px;
+  margin-right: 6px;
+}
+.apple-btn {
+  background: #1ad1df;
+}
+.android-btn {
+  background: #97c03c;
+}
