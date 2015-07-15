@@ -220,7 +220,7 @@ public class UserController extends AbstractBaseController<User, Long> {
                 }
             }
         } catch (Exception e) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("登陆失败");
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("登录失败");
         }
     }
 
