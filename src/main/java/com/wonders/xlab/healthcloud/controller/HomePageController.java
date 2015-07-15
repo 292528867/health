@@ -7,6 +7,7 @@ import com.wonders.xlab.healthcloud.dto.hcpackage.ProgressDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.HomePageTips;
 import com.wonders.xlab.healthcloud.entity.banner.Banner;
+import com.wonders.xlab.healthcloud.entity.banner.BannerTag;
 import com.wonders.xlab.healthcloud.entity.banner.BannerType;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
@@ -58,10 +59,43 @@ public class HomePageController {
             ObjectNode resultNode = factory.objectNode();
             ObjectNode bannerNode = factory.objectNode();
 
-            // 查询所有的标语
-            List<Banner> topBanners = this.bannnerRepository.findByBannerTypeAndEnabled(BannerType.Top, true);
-            List<Banner> bottomBanners = this.bannnerRepository.findByBannerTypeAndEnabled(BannerType.Bottom, true);
+            List<Banner> topBanners = new ArrayList<>();
+            List<Banner> bottomBanners = new ArrayList<>();
 
+            // 发现的标语
+            List<Banner> discoveryBanners = bannnerRepository.findByBannerTagAndEnabled(BannerTag.Discovery, true);
+            // 发现之外的标语
+            List<Banner> otherBanners = bannnerRepository.findByBannerTagNotAndEnabled(BannerTag.Discovery, true);
+
+            // 添加发现之外的banner
+            for (Banner basicBanner : otherBanners) {
+                if (basicBanner.getBannerType() == BannerType.Top.ordinal()) {
+                    topBanners.add(basicBanner);
+                } else {
+                    bottomBanners.add(basicBanner);
+                }
+            }
+            // 随机一个发现的banner
+            if (!discoveryBanners.isEmpty()) {
+                Banner disBanner = discoveryBanners.get(RandomUtils.nextInt(0, discoveryBanners.size()));
+                if (disBanner.getBannerType() == BannerType.Top.ordinal()) {
+                    topBanners.add(disBanner);
+                } else {
+                    bottomBanners.add(disBanner);
+                }
+            }
+            Collections.sort(topBanners, new Comparator<Banner>() {
+                @Override
+                public int compare(Banner o1, Banner o2) {
+                    return o1.getPosition() - o2.getPosition();
+                }
+            });
+            Collections.sort(bottomBanners, new Comparator<Banner>() {
+                @Override
+                public int compare(Banner o1, Banner o2) {
+                    return o1.getPosition() - o2.getPosition();
+                }
+            });
             bannerNode.putPOJO("topBanners", topBanners);
             bannerNode.putPOJO("bottomBanners", bottomBanners);
 

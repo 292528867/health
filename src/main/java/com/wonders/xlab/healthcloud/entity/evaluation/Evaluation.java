@@ -51,16 +51,6 @@ public class Evaluation extends AbstractBaseEntity<Long> {
         this.status = status;
     }
 
-    public Evaluation(EvaluationType evaluationType, String title, String instruction, String description, int recommendedValue, String tips, Status status) {
-        this.evaluationType = evaluationType;
-        this.title = title;
-        this.instruction = instruction;
-        this.description = description;
-        this.recommendedValue = recommendedValue;
-        this.tips = tips;
-        this.status = status;
-    }
-
     public EvaluationType getEvaluationType() {
         return evaluationType;
     }

@@ -39,7 +39,8 @@ public class StoreController extends AbstractBaseController<Store, Long> {
     @RequestMapping(value = "listStores", method = RequestMethod.GET)
     public Object listStores(@RequestParam(required = false) Integer tag) {
 
-        Sort sort = new Sort(Sort.Direction.ASC, "position");
+        String[] strings = {"position", "lastModifiedDate"};
+        Sort sort = new Sort(Sort.Direction.DESC, strings);
 
         if (tag != null) {
             Map<String, Object> filters = new HashMap<>();
