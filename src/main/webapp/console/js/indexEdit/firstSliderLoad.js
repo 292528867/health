@@ -1,6 +1,7 @@
 /**
  * Created by wade on 15/5/25.
  */
+
 var packageUrl= commonUrl +'hcPackage/listHcPackage',
     bannerListUrl= commonUrl +'banner/listBannerForConsole',
     topicListUrl= commonUrl +'banner/retrieveHealthInfos/',
@@ -95,14 +96,14 @@ $.post(bannerListUrl, function (groupTypes) {
     var text="",open="";
     $.each(groups, function (n, group) {
 
-        if(group.bannerType){
+        if(group.bannerType=="1"){
             text="二级";
-        }else{
+        }else if (group.bannerType=="0"){
             text="一级";
         }
-        if(group.enabled){
+        if(group.enabled=="true"){
             open="禁用";
-        }else{
+        }else if(group.enabled=="false"){
             open="启用";
         }
         typeList+='<tr data-all=\''+JSON.stringify(group)+'\'>'+
@@ -112,6 +113,7 @@ $.post(bannerListUrl, function (groupTypes) {
         '<td class="am-hide-sm-only">'+ group.position +'</td>'+
         '<td class="am-hide-sm-only">'+ group.title +'</td>'+
         '<td class="am-hide-sm-only"><img src="'+ group.picUrl +'" /></td>'+
+        '<td class="am-hide-sm-only">'+ group.articleId + "."+ group.articleTitle +'</td>'+
         '<td class="am-hide-sm-only">'+ group.linkUrl +'</td>'+
         '<td>'+
         '<div class="am-btn-toolbar">'+
@@ -172,7 +174,7 @@ function enabledBanner(e){
         "bannerTag":param.bannerTag,
         "bannerType":param.bannerType,
         "position":param.position,
-        "enabled":param.enabled?false:true,
+        "enabled":param.enabled=="true"?"false":"true",
         "id":param.id
     };
     postBanner(json);
@@ -186,6 +188,7 @@ function postBanner(json){
     }
 
     json = JSON.stringify(json);
+    console.log(json);
     $.ajax({
         url: ajaxUrl,
         type: "POST",
