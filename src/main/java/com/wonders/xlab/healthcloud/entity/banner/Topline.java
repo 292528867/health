@@ -12,6 +12,9 @@ import javax.persistence.Table;
 @Table(name = "hc_topline")
 public class Topline extends AbstractBaseEntity<Long>{
 
+    /** 头条名称 后台人员查看用 */
+    private String name;
+
     /** 头条图片 */
     private String picUrl;
 
@@ -23,6 +26,14 @@ public class Topline extends AbstractBaseEntity<Long>{
 
     /** 排序 倒叙 */
     private int position;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getPicUrl() {
         return picUrl;
