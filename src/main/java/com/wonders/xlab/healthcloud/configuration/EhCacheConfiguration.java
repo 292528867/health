@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.service.cache;
+package com.wonders.xlab.healthcloud.configuration;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -16,11 +16,12 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class EhCacheConfiguration {
+
     @Bean
     public CacheManager ehcacheManager() {
         // 使用默认 ehcache-failsafe.xml 配置，配置一个单例缓存管理器
     	CacheManager cm = CacheManager.create();
-    	
+
     	// 定义shiro内部使用的缓存，这部分缓存暂时不需要暴露到外部（以bean的形式）
     	// 1、创建shiroCache缓存，这个貌似是全局的
     	Cache shiroCache = new Cache(
@@ -70,7 +71,7 @@ public class EhCacheConfiguration {
                 .maxEntriesLocalDisk(0) // 磁盘中最大缓存对象数，0表示无限大
         );
         cm.addCache(shiro_activeSessionCache); // 必须加入缓存，不要忘了
-    	
+
         return cm;
     }
 
@@ -92,7 +93,7 @@ public class EhCacheConfiguration {
         ehcacheManager.addCache(cache); // 必须加入缓存，不要忘了
         return cache;
     }
-    
+
     @Bean
     public Cache discoveryCache(CacheManager ehcacheManager) {
         // discovery缓存
@@ -112,7 +113,7 @@ public class EhCacheConfiguration {
         ehcacheManager.addCache(cache); // 必须加入缓存，不要忘了
         return cache;
     }
-    
+
     @Bean
     public Cache luceneCache(CacheManager ehcacheManager) {
     	// 创建lucene分词缓存
