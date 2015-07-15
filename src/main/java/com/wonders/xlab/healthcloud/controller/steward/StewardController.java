@@ -1,5 +1,8 @@
 package com.wonders.xlab.healthcloud.controller.steward;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pingplusplus.exception.APIConnectionException;
 import com.pingplusplus.exception.APIException;
 import com.pingplusplus.exception.AuthenticationException;
@@ -183,44 +186,43 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             orderServices.add(resultServices.get(i));
         }
 
-        List<Map<String, Object>> arithmeticList = new ArrayList<>();
+        JsonNodeFactory jsonNodeFactory = objectMapper.getNodeFactory();
+        ArrayNode arithmeticArrayNode = jsonNodeFactory.arrayNode();
 
+        ObjectNode node = jsonNodeFactory.objectNode();
+        node.put("range", "0,4");
+        node.put("money", "0.01");
+        arithmeticArrayNode.add(node);
 
-        Map<String, Object> level1Map = new HashMap<>();
-        Map<String, Object> level2Map = new HashMap<>();
-        Map<String, Object> level3Map = new HashMap<>();
-        Map<String, Object> level4Map = new HashMap<>();
-        Map<String, Object> level5Map = new HashMap<>();
+        node = jsonNodeFactory.objectNode();
+        node.put("range", "5,10");
+        node.put("money", "28");
+        arithmeticArrayNode.add(node);
 
-        level1Map.put("range", "0,4");
-        level1Map.put("money", "0.01");
+        node = jsonNodeFactory.objectNode();
+        node.put("range", "11,17");
+        node.put("money", "78");
+        arithmeticArrayNode.add(node);
 
-        level2Map.put("range", "5,10");
-        level2Map.put("money", "28");
+        node = jsonNodeFactory.objectNode();
+        node.put("range", "18,48");
+        node.put("money", "158");
+        arithmeticArrayNode.add(node);
 
-        level3Map.put("range", "11,17");
-        level3Map.put("money", "78");
+        node = jsonNodeFactory.objectNode();
+        node.put("range", "49");
+        node.put("money", "298");
+        arithmeticArrayNode.add(node);
 
-        level4Map.put("range", "18,48");
-        level4Map.put("money", "158");
+        ObjectNode result = jsonNodeFactory.objectNode();
+        result.putPOJO("services", services);
+        result.putPOJO("steward", stewardRepository.findByOrderByRankAsc());
+        result.putPOJO("arithmetic", arithmeticArrayNode);
 
-        level5Map.put("range", "49");
-        level5Map.put("money", "298");
-
-        arithmeticList.add(level1Map);
-        arithmeticList.add(level2Map);
-        arithmeticList.add(level3Map);
-        arithmeticList.add(level4Map);
-        arithmeticList.add(level5Map);
-
-        List<Steward> stewards = stewardRepository.findByOrderByRankAsc();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("services", orderServices);
-        map.put("steward", stewards);
-        map.put("arithmetic", arithmeticList);
-
-        return new ControllerResult<>().setRet_code(0).setRet_values(map).setMessage("成功");
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(result)
+                .setMessage("成功");
     }
 
     /**
