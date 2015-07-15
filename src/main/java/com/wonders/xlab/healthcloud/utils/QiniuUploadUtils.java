@@ -6,6 +6,7 @@ import com.qiniu.util.Auth;
 import com.wonders.xlab.healthcloud.dto.QiniuRet;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * 上传图片到七牛云存储
@@ -37,13 +38,15 @@ public class QiniuUploadUtils {
 
 	public static String upload(byte byteData[], String fileName) {
 
+		String upFileName = String.valueOf(new Date())+ fileName;
+
         String address = null;
 
         try {
 
 			UploadManager uploadManager = new UploadManager();
 
-			Response res = uploadManager.put(byteData, fileName, getUpToken(fileName));
+			Response res = uploadManager.put(byteData, upFileName, getUpToken(upFileName));
 
 			QiniuRet ret = res.jsonToObject(QiniuRet.class);
 
