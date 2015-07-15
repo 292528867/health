@@ -20,6 +20,7 @@ import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 import com.wonders.xlab.healthcloud.utils.ValidateUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
@@ -85,40 +86,52 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                 return builder.toString();
             }
         }
-        try {
-            // 获取指定手机号的验证编码缓存并，比较是否相同
-            String cascheValue = hcCache.getFromCache(iden.getTel());
 
-            if (cascheValue == null) {
-                // cache失效罗
-                return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码失效！");
-            } else {
-                if (!cascheValue.equals(iden.getCode())) {
-                    // 前台输错验证码罗
-                    return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("验证码输入错误！");
-                } else {
-                    Doctor doctor = doctorRepository.findByTel(iden.getTel());
-                    return null == doctor ?
-                            addDoctorBeforeLogin(iden) :
-                            new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor).setMessage("成功");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(e.getLocalizedMessage());
+        String validCode = hcCache.getFromCache(iden.getTel());
+        if (validCode == null) { // 验证码在cache中过期了 (20分钟)
+            return new ControllerResult<String>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("验证码失效！");
         }
+
+        if (!StringUtils.equals(validCode, iden.getCode())) {
+            return new ControllerResult<String>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("验证码输入错误！");
+        }
+
+        Doctor doctor = doctorRepository.findByTel(iden.getTel());
+        if (doctor == null) {
+            doctor = new Doctor();
+            doctor.setTel(iden.getTel());
+            doctor.setAppPlatform(iden.getAppPlatform());
+            return doctorRegister(doctor);
+        }
+
+        return new ControllerResult<Doctor>()
+                .setRet_code(0)
+                .setRet_values(doctor)
+                .setMessage("成功");
+
     }
 
-    private Object addDoctorBeforeLogin(IdenCode iden) {
-        Doctor doctor = new Doctor();
-        doctor.setTel(iden.getTel());
-        doctor.setAppPlatform(iden.getAppPlatform());
-        doctor = this.doctorRepository.save(doctor);
-        if (emUtils.registerEmUser("doctor" + iden.getTel(), iden.getTel())) {
-
-            return new ControllerResult<Doctor>().setRet_code(0).setRet_values(doctor).setMessage("成功");
+    private ControllerResult<?> doctorRegister(Doctor doctor) {
+        String tel = doctor.getTel();
+        boolean success = emUtils.registerEmUser("doctor".concat(tel), tel);
+        if (success) {
+            doctorRepository.save(doctor);
+            return new ControllerResult<Doctor>()
+                    .setRet_code(0)
+                    .setRet_values(doctor)
+                    .setMessage("成功");
         }
-        return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败！");
+
+        return new ControllerResult<>()
+                .setRet_code(-1)
+                .setRet_values("")
+                .setMessage("注册失败！");
     }
 
     /**
@@ -262,7 +275,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
     }
 
     @RequestMapping(value = "certification/{doctorId}", method = RequestMethod.POST)
-    public Object supplementaryQualificationInfo(@PathVariable long doctorId, MultipartFile icon ,MultipartFile iCard, MultipartFile qualification, MultipartFile permit) {
+    public Object supplementaryQualificationInfo(@PathVariable long doctorId, MultipartFile icon, MultipartFile iCard, MultipartFile qualification, MultipartFile permit) {
         if (null == iCard || null == qualification || null == permit) {
             StringBuilder builder = new StringBuilder();
             if (null == iCard)
@@ -342,8 +355,8 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
     private String uploadQualification(MultipartFile file) throws IOException {
         return null == file ? "" :
                 QiniuUploadUtils.upload(
-                    file.getBytes(),
-                    URLDecoder.decode(file.getOriginalFilename(), "UTF-8")
+                        file.getBytes(),
+                        URLDecoder.decode(file.getOriginalFilename(), "UTF-8")
                 );
     }
 

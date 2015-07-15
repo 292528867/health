@@ -12,24 +12,28 @@ import java.util.Set;
 @Entity
 @Table(name = "HC_USER")
 public class User extends BaseInfo<Long> {
+
     /**
      * 用户健康包
      */
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
-    @OrderBy(value = "id asc")
-    @JoinTable(name = "hc_user_package_relation", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "package_id"))
+    @JoinTable(name = "hc_user_package_relation",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "package_id")
+    )
+    @OrderBy("id asc")
     private Set<HcPackage> hcPackages;
 
     /**
      * 分类
      */
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "HC_USER_HEALTHGATEGORY",
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "HEALTHCATEGORY_ID")
     )
-    private Set<HealthCategory> hcs = new HashSet<>();
+    private Set<HealthCategory> hcs;
 
     //    invalid 用户无效（未完善用户信息），valid 用户有效
     @Enumerated
@@ -77,6 +81,7 @@ public class User extends BaseInfo<Long> {
 
     /**
      * 邀请二维码的url
+     *
      * @return
      */
     private String inviteUrl = "http://7xk3mz.com2.z0.glb.qiniucdn.com/healthinfo-icon-1436850530261";
@@ -143,6 +148,20 @@ public class User extends BaseInfo<Long> {
 
     public void setByInviteCode(String byInviteCode) {
         ByInviteCode = byInviteCode;
+    }
+
+    public void addHealthCategory(HealthCategory healthCategory) {
+        if (hcs == null) {
+            hcs = new HashSet<>();
+        }
+        hcs.add(healthCategory);
+    }
+
+    public void addHcPackage(HcPackage hcPackage) {
+        if (hcPackages == null) {
+            hcPackages = new HashSet<>();
+        }
+        hcPackages.add(hcPackage);
     }
 
 }

@@ -15,7 +15,8 @@ function goodAdd() {
     var medicineUrl = $('#medicineUrl').val();
     var picUrl = $('#picUrl').val();
     var price = $('#price').val();
-    if (name.length==0||description.length==0||medicineUrl.length==0||picUrl.length==0||price.length==0) {
+    var position = $('#position').val();
+    if (name.length==0||description.length==0||medicineUrl.length==0||picUrl.length==0||price.length==0||position.length==0) {
         alert('有字段没有填写');
         return false;
     }
@@ -24,6 +25,7 @@ function goodAdd() {
         "description": description,
         "medicineUrl": medicineUrl,
         "picUrl": picUrl,
+        "position": position,
         "price": price
     };
     json = JSON.stringify(json);

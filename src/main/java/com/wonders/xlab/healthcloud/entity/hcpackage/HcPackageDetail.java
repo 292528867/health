@@ -75,11 +75,6 @@ public class HcPackageDetail extends AbstractBaseEntity<Long> {
     public HcPackageDetail() {
     }
 
-    public HcPackageDetail(HcPackage hcPackage, String detail) {
-        this.hcPackage = hcPackage;
-        this.detail = detail;
-    }
-
     public HcPackageDetail(HcPackage hcPackage, String taskName, String detail, boolean isNeedSupplemented, String supplemented, int integration, boolean isFullDay) {
         this.hcPackage = hcPackage;
         this.taskName = taskName;

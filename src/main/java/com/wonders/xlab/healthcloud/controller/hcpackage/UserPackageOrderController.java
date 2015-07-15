@@ -37,8 +37,21 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
     private DiscoveryService discoveryService;
 
     @RequestMapping(value = "join/{userId}/{packageId}", method = RequestMethod.POST)
-    public Object joinPlan(@PathVariable long userId, @PathVariable Long packageId) {
-        return userPackageOrderService.joinPlan(userId, packageId);
+    public ControllerResult<String> joinPlan(@PathVariable long userId, @PathVariable Long packageId) {
+        int code = userPackageOrderService.joinHealthPlan(userId, packageId);
+        ControllerResult<String> result = new ControllerResult<>();
+        if (500 == code) {
+            return result.setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("最多选择两个健康包！");
+        } else if (400 == code) {
+            return result.setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("健康包已加入！");
+        }
+        return result.setRet_code(0)
+                .setRet_values("")
+                .setMessage("加入成功！");
     }
 
     @RequestMapping(value = "cancel/{userId}/{packageId}", method = RequestMethod.POST)
@@ -57,7 +70,7 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
                 return new ControllerResult<>()
                         .setRet_code(-1).setRet_values("").setMessage("为了能正常给您推荐健康计划必须保留一个包！");
             userPackageOrderRepository.delete(userPackageOrder.getId());
-            HcPackage hcPackage = hcPackageRepository.findById(packageId);
+            HcPackage hcPackage = hcPackageRepository.findOne(packageId);
             discoveryService.deleteUserCategoryRelated(userId, hcPackage.getHealthCategory().getId());
             return new ControllerResult<>()
                     .setRet_code(0).setRet_values("").setMessage("取消成功！");

@@ -7,11 +7,12 @@ import com.wonders.xlab.healthcloud.dto.hcpackage.ProgressDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.HomePageTips;
 import com.wonders.xlab.healthcloud.entity.banner.Banner;
+import com.wonders.xlab.healthcloud.entity.banner.BannerTag;
 import com.wonders.xlab.healthcloud.entity.banner.BannerType;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.TipsRepository;
-import com.wonders.xlab.healthcloud.repository.banner.BannnerRepository;
+import com.wonders.xlab.healthcloud.repository.banner.BannerRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageCompleteRepository;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
@@ -41,7 +42,7 @@ public class HomePageController {
     private HcPackageDetailRepository hcPackageDetailRepository;
 
     @Autowired
-    private BannnerRepository bannnerRepository;
+    private BannerRepository bannerRepository;
 
     @Autowired
     private TipsRepository tipsRepository;
@@ -58,10 +59,44 @@ public class HomePageController {
             ObjectNode resultNode = factory.objectNode();
             ObjectNode bannerNode = factory.objectNode();
 
-            // 查询所有的标语
-            List<Banner> topBanners = this.bannnerRepository.findByBannerTypeAndEnabled(BannerType.Top, true);
-            List<Banner> bottomBanners = this.bannnerRepository.findByBannerTypeAndEnabled(BannerType.Bottom, true);
+            List<Banner> topBanners = new ArrayList<>();
+            List<Banner> bottomBanners = new ArrayList<>();
 
+            // 发现的标语
+            List<Banner> discoveryBanners = bannerRepository.findByBannerTagAndEnabled(BannerTag.Discovery, true);
+            // 发现之外的标语
+            List<Banner> otherBanners = bannerRepository.findByBannerTagNotAndEnabled(BannerTag.Discovery, true);
+            // 完成计划的Id
+            List<Long> completeDetailIds = new ArrayList<>();
+            // 添加发现之外的banner
+            for (Banner basicBanner : otherBanners) {
+                if (basicBanner.getBannerType() == BannerType.Top.ordinal()) {
+                    topBanners.add(basicBanner);
+                } else {
+                    bottomBanners.add(basicBanner);
+                }
+            }
+            // 随机一个发现的banner
+            if (!discoveryBanners.isEmpty()) {
+                Banner disBanner = discoveryBanners.get(RandomUtils.nextInt(0, discoveryBanners.size()));
+                if (disBanner.getBannerType() == BannerType.Top.ordinal()) {
+                    topBanners.add(disBanner);
+                } else {
+                    bottomBanners.add(disBanner);
+                }
+            }
+            Collections.sort(topBanners, new Comparator<Banner>() {
+                @Override
+                public int compare(Banner o1, Banner o2) {
+                    return o1.getPosition() - o2.getPosition();
+                }
+            });
+            Collections.sort(bottomBanners, new Comparator<Banner>() {
+                @Override
+                public int compare(Banner o1, Banner o2) {
+                    return o1.getPosition() - o2.getPosition();
+                }
+            });
             bannerNode.putPOJO("topBanners", topBanners);
             bannerNode.putPOJO("bottomBanners", bottomBanners);
 
@@ -71,8 +106,7 @@ public class HomePageController {
 
             List<HcPackageDetail> allDetailList = new ArrayList<>();
             List<HcPackageDetail> finialDetailList = new ArrayList<>();
-            // 完成计划的Id
-            List<Long> completeDetailIds = new ArrayList<>();
+
             // 查看完成度
             List<ProgressDto> progressDtos = new ArrayList<>();
             Date now = new Date();
@@ -81,6 +115,7 @@ public class HomePageController {
             Calendar cfrom = Calendar.getInstance();
             Calendar cto = Calendar.getInstance();
             for (UserPackageOrder upo : userPackageOrders) {
+                completeDetailIds.clear();
                 String[] strdetails = StringUtils.split(upo.getHcPackageDetailIds(), ',');
                 if (strdetails != null) {
                     for (int i = 0; i < strdetails.length; i++) {
@@ -133,9 +168,7 @@ public class HomePageController {
             Collections.sort(allDetailList, new Comparator<HcPackageDetail>() {
                 @Override
                 public int compare(HcPackageDetail o1, HcPackageDetail o2) {
-                    HcPackageDetail hpd1 = o1;
-                    HcPackageDetail hpd2 = o2;
-                    return hpd1.getRecommendTimeFrom().compareTo(hpd2.getRecommendTimeFrom());
+                    return o1.getRecommendTimeFrom().compareTo(o2.getRecommendTimeFrom());
                 }
             });
 
@@ -161,9 +194,7 @@ public class HomePageController {
             Collections.sort(beforeDetail, new Comparator<HcPackageDetail>() {
                 @Override
                 public int compare(HcPackageDetail o1, HcPackageDetail o2) {
-                    HcPackageDetail hpd1 = o1;
-                    HcPackageDetail hpd2 = o2;
-                    return hpd2.getRecommendTimeFrom().compareTo(hpd1.getRecommendTimeFrom());
+                    return o2.getRecommendTimeFrom().compareTo(o1.getRecommendTimeFrom());
                 }
             });
             // 选取任务
@@ -187,9 +218,7 @@ public class HomePageController {
             Collections.sort(finialDetailList, new Comparator<HcPackageDetail>() {
                 @Override
                 public int compare(HcPackageDetail o1, HcPackageDetail o2) {
-                    HcPackageDetail hpd1 = o1;
-                    HcPackageDetail hpd2 = o2;
-                    return hpd1.getRecommendTimeFrom().compareTo(hpd2.getRecommendTimeFrom());
+                    return o1.getRecommendTimeFrom().compareTo(o2.getRecommendTimeFrom());
                 }
             });
             // 添加进度

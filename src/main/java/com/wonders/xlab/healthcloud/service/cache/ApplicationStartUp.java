@@ -12,9 +12,9 @@ import org.springframework.context.event.ApplicationContextEvent;
 public class ApplicationStartUp implements ApplicationListener<ApplicationContextEvent> {
 
     @Override
-    public void onApplicationEvent(ApplicationContextEvent applicationContextEvent) {
-        Cache luceneCache = (Cache) applicationContextEvent.getApplicationContext().getBean("luceneCache");
-        DrugDictionaryRepository drugRepository = applicationContextEvent.getApplicationContext().getBean(DrugDictionaryRepository.class);
+    public void onApplicationEvent(ApplicationContextEvent event) {
+        Cache luceneCache = (Cache) event.getApplicationContext().getBean("luceneCache");
+        DrugDictionaryRepository drugRepository = event.getApplicationContext().getBean(DrugDictionaryRepository.class);
         LuceneCacheSvcImpl cacheSvc = new LuceneCacheSvcImpl();
         cacheSvc.setLuceneCache(luceneCache);
         cacheSvc.setDrugRepository(drugRepository);

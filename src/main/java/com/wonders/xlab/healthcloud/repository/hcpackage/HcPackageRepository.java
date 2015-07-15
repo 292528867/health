@@ -28,6 +28,4 @@ public interface HcPackageRepository extends MyRepository<HcPackage, Long> {
 
     List<HcPackage> findByIdLessThan(long packageId);
 
-    @EntityGraph(value = "HcPackage.healthCategory", type = EntityGraphType.LOAD)
-    HcPackage findById(long packageId);
 }

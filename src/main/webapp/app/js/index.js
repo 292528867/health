@@ -62,11 +62,6 @@ function loadArticles(id) {
   $('#banner-scroll').show();
   $('#banners').html('');
   $('#article').html('');
-  /*
-   if (typeof(mySwiper) != 'undefined') {
-   mySwiper.removeAllSlides();
-   }
-   */
   $.get(typeTagUrl + healthCategoryId + '/' + id, function (data) {
     data = data.ret_values;
     //console.log(data);
@@ -100,12 +95,14 @@ function loadTodayArticles() {
   page = 0, loads = 0, totalPages = 0, number = 0, flag = 1;
   $('#error-png').hide();
   $('.today-bar').attr('onclick', '');
-  $('#banner-scroll').hide();
+  $('#banner-scroll').show();
   /*
    if (typeof(mySwiper) != 'undefined') {
    mySwiper.removeAllSlides();
    }
    */
+  $('#banners').html('');
+  $('#article').html('');
   $.get(typeUrl + healthCategoryId, function (data) {
     data = data.ret_values;
     if (typeof(mySwiper) != 'undefined') {
@@ -134,6 +131,7 @@ function loadTodayArticles() {
     $('#article').html(articleTemple(values));
     typeArticleUrl = commonUrl + 'discovery/app/recommand/tag/articles/';
     sessionStorage.removeItem('articleUrl');
+    $('#banner-scroll').hide();
   })
 }
 
@@ -143,11 +141,16 @@ function getDetails(id) {
   $.get(clickUrl, function (data) {
     localStorage.setItem('articleId', articleId);
     //window.location.href = 'detail.html?' + articleId;
-    history.pushState('detail', '文章详情', 'detail.html?' + articleId);
-    $('.app-body').hide();
+    //history.pushState('detail', '文章详情', 'detail.html?' + articleId+'#');
+    //$('.app-body').hide();
     sessionStorage.setItem('index', id);
     sessionStorage.setItem('top', document.body.scrollTop);
-    loadDetails(id);
+    sessionStorage.setItem('height', document.body.height);
+    //loadDetails(id);
+    var clickcount = $('#' + id).find('.clickCount').text();
+    $('#' + id).find('.clickCount').text(parseInt(clickcount)+1);
+    window.location.href = 'detail.html?' + articleId;
+    //window.location.href = 'test.html';
   });
   /*
    var articleId = articleList[id].id || JSON.parse(localStorage.getItem('articleList')[id].id);
@@ -163,11 +166,15 @@ function getDetails(id) {
 window.onpopstate = function (event) {
   var indexId = sessionStorage.getItem('index');
   if (indexId != null) {
-    $('.app-body').show();
     $('.data-body').hide();
-
-    //$('body').scrollTop($('#' + indexId).offset().top - $(window).height() / 2+80);
-    $('body').scrollTop(sessionStorage.getItem('top'));
+    setTimeout(function () {
+      $('.app-body').show();
+      //$('body').css('height', sessionStorage.getItem('height'));
+      //$('body').scrollTop(sessionStorage.getItem('top'));
+      $('body').scrollTop($('#' + indexId).offset().top - $(window).height() / 2+80);
+    }, 300);
+    //console.log(sessionStorage.getItem('top'));
+    //$('body').animate({scrollTop: sessionStorage.getItem('top')}, 100);
     sessionStorage.setItem('load', 0);
     $('body').css('background','#ffffff');
   }
@@ -220,6 +227,7 @@ $(document).ready(function () {
 
 function loadDetails(id) {
   var article;
+  $('body').scrollTop(0);
   $.get(commonUrl+'discovery/app/listInfo/' + id, function (data) {
     article = data.ret_values;
     $('#detail-img').attr('src', article.pictureUrl);
@@ -237,7 +245,7 @@ function loadDetails(id) {
   });
 
   function load() {
-    $('.data-body').fadeIn();
+    $('.data-body').show();
     $('body').css('background','#f6f6f6');
   }
 

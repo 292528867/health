@@ -1,7 +1,6 @@
 /**
  * Created by wade on 15/5/25.
  */
-commonUrl="http://10.10.10.219:8080/";
 var packageUrl= commonUrl +'hcPackage/listHcPackage',
     bannerListUrl= commonUrl +'banner/listBannerForConsole',
     topicListUrl= commonUrl +'banner/retrieveHealthInfos/',
@@ -79,6 +78,11 @@ $("#package").on("change",function(){
     getTopicList($(this).val());
 });
 
+
+$("#topic").on("change",function(){
+    $("#articleId").val($(this).val());
+});
+
 getPackageList();
 
 /**
@@ -107,6 +111,8 @@ $.post(bannerListUrl, function (groupTypes) {
         '<td>'+ text +'</td>'+
         '<td class="am-hide-sm-only">'+ group.position +'</td>'+
         '<td class="am-hide-sm-only">'+ group.title +'</td>'+
+        '<td class="am-hide-sm-only"><img src="'+ group.picUrl +'" /></td>'+
+        '<td class="am-hide-sm-only">'+ group.linkUrl +'</td>'+
         '<td>'+
         '<div class="am-btn-toolbar">'+
         '<div class="am-btn-group am-btn-group-xs">'+
@@ -132,6 +138,7 @@ function updateBanner(){
     var position=$("#position").val();
     var bannerTag=$("#bannerTag").val();
     var bannerType=$("#bannerType").val();
+    var articleId=$("#articleId").val();
 
     if(picUrl==""){
         alert("请先上传图片");
@@ -142,6 +149,7 @@ function updateBanner(){
         "linkUrl":linkUrl,
         "bannerTag":bannerTag,
         "bannerType":bannerType,
+        "articleId":articleId,
         "position":position,
         "enabled":true
     };
@@ -160,6 +168,7 @@ function enabledBanner(e){
         "title": param.title,
         "picUrl": param.picUrl,
         "linkUrl":param.linkUrl,
+        "articleId":param.articleId,
         "bannerTag":param.bannerTag,
         "bannerType":param.bannerType,
         "position":param.position,

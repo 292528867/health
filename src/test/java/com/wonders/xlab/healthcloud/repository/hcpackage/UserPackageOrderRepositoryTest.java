@@ -90,8 +90,8 @@ public class UserPackageOrderRepositoryTest {
 
     @Test
     public void testJoinPlan() throws Exception {
-        Object joinPlan = userPackageOrderService.joinPlan(47l, 1l);
-        System.out.println("joinPlan = " + joinPlan);
+        Object joinPlan = userPackageOrderService.joinHealthPlan(47l, 1l);
+        System.out.println("joinHealthPlan = " + joinPlan);
     }
 
     @Test

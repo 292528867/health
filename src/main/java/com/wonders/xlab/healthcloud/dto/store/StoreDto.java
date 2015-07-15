@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.dto.market;
+package com.wonders.xlab.healthcloud.dto.store;
 
 import com.wonders.xlab.healthcloud.entity.market.Store;
 
@@ -34,6 +34,9 @@ public class StoreDto {
     @NotNull(message = "简述不能为空")
     private String description;
 
+    @NotNull(message = "顺序不能为空")
+    private String position;
+
     public Store toNewStore() {
         Store store = new Store(
                 name,
@@ -42,8 +45,10 @@ public class StoreDto {
                 picUrl,
                 description
         );
-        if (tag != null)
+        if (tag != null){
             store.setTag(Store.Tag.values()[Integer.parseInt(tag)]);
+        }
+        store.setPosition(Integer.valueOf(position));
         return store;
     }
 
@@ -53,6 +58,7 @@ public class StoreDto {
         store.setMedicineUrl(medicineUrl);
         store.setPicUrl(picUrl);
         store.setDescription(description);
+        store.setPosition(Integer.valueOf(position));
         if (tag != null)
             store.setTag(Store.Tag.values()[Integer.parseInt(tag)]);
         return store;
@@ -104,5 +110,13 @@ public class StoreDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
     }
 }
