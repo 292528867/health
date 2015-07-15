@@ -13,6 +13,6 @@ public interface StewardRepository extends MyRepository<Steward, Long> {
 
     List<Steward> findByRank(Steward.Rank rank);
 
-
-    List<Steward> findByOrderByRankAsc();
+    @Query("from Steward order by rand()")
+    List<Steward> findByOrderByRand();
 }

@@ -158,40 +158,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             }
             orderServices.add(resultServices.get(i));
         }
-//        List<Map<String, Object>> arithmeticList = new ArrayList<>();
-//        Map<String, Object> level1Map = new HashMap<>();
-//        Map<String, Object> level2Map = new HashMap<>();
-//        Map<String, Object> level3Map = new HashMap<>();
-//        Map<String, Object> level4Map = new HashMap<>();
-//        Map<String, Object> level5Map = new HashMap<>();
-//
-//        level1Map.put("range", "0,4");
-//        level1Map.put("money", "0.01");
-//        level2Map.put("range", "5,10");
-//        level2Map.put("money", "28");
-//        level3Map.put("range", "11,17");
-//        level3Map.put("money", "78");
-//        level4Map.put("range", "18,48");
-//        level4Map.put("money", "158");
-//        level5Map.put("range", "49");
-//        level5Map.put("money", "298");
-//
-//        arithmeticList.add(level1Map);
-//        arithmeticList.add(level2Map);
-//        arithmeticList.add(level3Map);
-//        arithmeticList.add(level4Map);
-//        arithmeticList.add(level5Map);
-//
-//        List<Steward> stewards = stewardRepository.findByOrderByRankAsc();
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("services", orderServices);
-//        map.put("steward", stewards);
-//        map.put("arithmetic", arithmeticList);
-//        return new ControllerResult<>()
-//                .setRet_code(0)
-//                .setRet_values(map)
-
-
         JsonNodeFactory jsonNodeFactory = objectMapper.getNodeFactory();
         ArrayNode arithmeticArrayNode = jsonNodeFactory.arrayNode();
 
@@ -222,7 +188,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
         ObjectNode result = jsonNodeFactory.objectNode();
         result.putPOJO("services", services);
-        result.putPOJO("steward", stewardRepository.findByOrderByRankAsc());
+        result.putPOJO("steward", stewardRepository.findByOrderByRand());
         result.putPOJO("arithmetic", arithmeticArrayNode);
 
         return new ControllerResult<>()
@@ -405,7 +371,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                     Map<String, Object> servicedPeriodMap = new HashMap<>();
                     servicedPeriodMap.put("currentServicedPeriod", currentServicedPeriod);
                     servicedPeriodMap.put("totalServicePeriod", totalServicePeriod);
-                    if (currentServicedPeriod >= totalServicePeriod) {
+                    if (currentServicedPeriod < totalServicePeriod) {
                         value.put("effective", true);
                     } else {
                         value.put("effective", false);

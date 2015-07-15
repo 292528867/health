@@ -249,7 +249,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             orderCache.putIfAbsent(user.getId().toString(), questionOrder.getId().toString());
         }
 
-        return new ControllerResult().setRet_code(0).setRet_values("").setMessage("文本消息发送成功");
+        return new ControllerResult().setRet_code(0).setRet_values(Collections.singletonMap("waiting",Constant.INTERROGATION_WAIT_CONTENT)).setMessage("文本消息发送成功");
 
     }
 

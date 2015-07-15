@@ -20,7 +20,7 @@ public class ToplineDto {
     private String linkUrl;
 
     /** 启用 */
-    @NotNull(message = "启用不能为空")
+//    @NotNull(message = "启用不能为空")
     private Boolean enabled;
 
     /** 排序 倒叙 */
@@ -41,7 +41,6 @@ public class ToplineDto {
         topline.setName(name);
         topline.setPicUrl(picUrl);
         topline.setLinkUrl(linkUrl);
-        topline.setEnabled(enabled);
         topline.setPosition(position);
         return topline;
     }
