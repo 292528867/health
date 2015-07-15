@@ -569,6 +569,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     }
 
 
+    /**
+     * 医生App查询抢单纪录
+     * @param doctorId 医生的id
+     * @return
+     */
     @RequestMapping(value = "/doctorOrders/{doctorId}", method = RequestMethod.GET)
     public ControllerResult findQuestionOrders(@PathVariable long doctorId){
 
@@ -588,6 +593,19 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         return new ControllerResult()
                 .setRet_code(0)
                 .setRet_values(resultMap)
+                .setMessage("success");
+    }
+
+    /**
+     * 给医生App返回一个新的问题
+     * @return
+     */
+    @RequestMapping(value = "/getNewQuestion", method = RequestMethod.GET)
+    public ControllerResult findOneQuestionRandom(){
+        QuestionOrder newQuestion = questionOrderService.findOneNewQuestion();
+        return new ControllerResult()
+                .setRet_code(0)
+                .setRet_values(newQuestion)
                 .setMessage("success");
     }
 
