@@ -44,16 +44,6 @@ public class Banner extends AbstractBaseEntity<Long> {
     public Banner() {
     }
 
-    public Banner(BannerTag bannerTag, BannerType bannerType, Long articleId, String title, String picUrl, String linkUrl, boolean enabled) {
-        this.bannerTag = bannerTag;
-        this.bannerType = bannerType;
-        this.articleId = articleId;
-        this.title = title;
-        this.picUrl = picUrl;
-        this.linkUrl = linkUrl;
-        this.enabled = enabled;
-    }
-
     public Banner(BannerTag bannerTag, BannerType bannerType, Long articleId, String title, String picUrl, String linkUrl, boolean enabled, int position) {
         this.bannerTag = bannerTag;
         this.bannerType = bannerType;

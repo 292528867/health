@@ -30,4 +30,6 @@ public interface HealthInfoRepository extends MyRepository<HealthInfo, Long> {
 			+ " order by info.healthInfoClickInfo.virtualClickCount, info.createdDate "
 	)
 	Page<HealthInfo> pageablefindByCategoryId(Long categoryId, Pageable pageable);
+
+	List<HealthInfo> findByHealthCategoryId(Long id);
 }

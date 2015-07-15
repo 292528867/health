@@ -104,6 +104,13 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      */
     @RequestMapping(value = "replyMessage/{id}/{userTel}", method = RequestMethod.POST)
     public ControllerResult replyMessage(@PathVariable("id") long id, @PathVariable("userTel") String userTel, @RequestBody TexMessagesRequestBody body) throws IOException {
+        EmMessages oldEm = emMessagesRepository.findOne(id);
+        if(oldEm == null){
+            return new ControllerResult()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("回复失败");
+        }
         String messagesJson = objectMapper.writeValueAsString(body);
         //扩展属性
         //   Map<String, String> extendAttr = wordAnalyzerService.analyzeText(body.getMsg().getMsg());
@@ -133,19 +140,18 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         SmsUtils.sendEmReplyInfo(userTel);
 
         //修改app发送信息状态为已回复
-        EmMessages oldEm = emMessagesRepository.findOne(id);
         oldEm.setIsReplied(true);
         emMessagesRepository.save(oldEm);
         QuestionOrder questionOrder = questionOrderRepository.find(Collections.singletonMap("messages.id_equal", oldEm.getId()));
         questionOrder.setQuestionStatus(QuestionOrder.QuestionStatus.done);
         questionOrderRepository.save(questionOrder);
 
-        //从缓存里面移除该问题
-        questionCache.removeFromCache(userTel + body.getFrom() + "_RESPONDENT");
-        questionCache.removeFromCache(userTel + "_ASK_TIME");
-        questionCache.removeFromCache(userTel + "_RESPONDENT_TYPE");
-
         User user = userRepository.findByTel(userTel);
+        //从缓存里面移除该问题
+        questionCache.removeFromCache(user.getId() + "_RESPONDENT");
+        questionCache.removeFromCache(user.getId() + "_ASK_TIME");
+        questionCache.removeFromCache(user.getId() + "_RESPONDENT_TYPE");
+
         orderCache.removeFromCache(user.getId().toString());
 
         //回复信息耗时 TODO 推送给app 暂时注释
@@ -616,6 +622,5 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         }
 
     }
-
 
 }

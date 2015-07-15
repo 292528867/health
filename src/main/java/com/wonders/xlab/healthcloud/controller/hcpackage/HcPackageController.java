@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mars on 15/7/4.
@@ -83,21 +85,17 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             }
             return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败");
         }
-        try {
 
-            HealthCategory healthCategory = healthCategoryRepository.findOne(healthCategoryId);
+        HealthCategory healthCategory = healthCategoryRepository.findOne(healthCategoryId);
 
-            HcPackage hcPackage = new HcPackage();
-            int value = (int) (10 + Math.random() * 40);
-            hcPackage.setHealthCategory(healthCategory);
-            hcPackage.setCoefficient(value);
-            BeanUtils.copyProperties(hcPackageDto, hcPackage, "healthCategoryId");
-            hcPackage.setIcon(hcPackageDto.getIcon());
-            hcPackageRepository.save(hcPackage);
-            return new ControllerResult<String>().setRet_code(0).setRet_values("").setMessage("添加成功！");
-        } catch (Exception e) {
-            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(e.getLocalizedMessage());
-        }
+        HcPackage hcPackage = new HcPackage();
+        int value = (int) (10 + Math.random() * 40);
+        hcPackage.setHealthCategory(healthCategory);
+        hcPackage.setCoefficient(value);
+        BeanUtils.copyProperties(hcPackageDto, hcPackage, "healthCategoryId");
+        hcPackage.setIcon(hcPackageDto.getIcon());
+        hcPackageRepository.save(hcPackage);
+        return new ControllerResult<String>().setRet_code(0).setRet_values("").setMessage("添加成功！");
     }
 
     /**
@@ -115,19 +113,20 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             for (ObjectError error : result.getAllErrors()) {
                 builder.append(error.getDefaultMessage());
             }
-            return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败");
+            return new ControllerResult<String>()
+                    .setRet_code(-1)
+                    .setRet_values(builder.toString())
+                    .setMessage("失败");
         }
-        try {
-            HcPackage hcPackage = this.hcPackageRepository.findOne(hcPackageId);
-            if (hcPackage == null) {
-                return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("竟然没找到！");
-            }
-            BeanUtils.copyProperties(hcPackageDto, hcPackage, "healthCategoryId");
-            hcPackageRepository.save(hcPackage);
-
-        } catch (Exception e){
-            e.printStackTrace();
+        HcPackage hcPackage = hcPackageRepository.findOne(hcPackageId);
+        if (hcPackage == null) {
+            return new ControllerResult<String>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("竟然没找到！");
         }
+        BeanUtils.copyProperties(hcPackageDto, hcPackage, "healthCategoryId");
+        hcPackageRepository.save(hcPackage);
         return new ControllerResult<String>().setRet_code(0)
                 .setRet_values("")
                 .setMessage("添加成功！");
@@ -150,16 +149,15 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             }
             return new ControllerResult<String>().setRet_code(-1).setRet_values(builder.toString()).setMessage("失败");
         }
-        try {
-            HcPackage hp = this.hcPackageRepository.findOne(hcPackageId);
-            if (hp == null)
-                return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没找到！").setMessage("竟然没找到！");
-            this.hcPackageDetailRepository.save(hcPackageDetailDto.toNewHcPackageDetail(hp));
-            return new ControllerResult<String>().setRet_code(0).setRet_values("添加成功").setMessage("成功");
-        } catch (Exception exp) {
-            exp.printStackTrace();
-            return new ControllerResult<String>().setRet_code(-1).setRet_values(exp.getLocalizedMessage()).setMessage("失败");
+        HcPackage hp = this.hcPackageRepository.findOne(hcPackageId);
+        if (hp == null) {
+            return new ControllerResult<String>().setRet_code(-1).setRet_values("竟然没找到！").setMessage("竟然没找到！");
         }
+        hcPackageDetailRepository.save(hcPackageDetailDto.toNewHcPackageDetail(hp));
+        return new ControllerResult<String>()
+                .setRet_code(0)
+                .setRet_values("添加成功")
+                .setMessage("成功");
     }
 
 
@@ -172,7 +170,10 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     public Object listPackageInfo() {
         // 查询所有分类（二大类）
         List<ThirdPackageDto> thirdPackageDtos = classificationRepository.findOrderByCountPackage();
-        return new ControllerResult<List<ThirdPackageDto>>().setRet_code(0).setRet_values(thirdPackageDtos).setMessage("成功");
+        return new ControllerResult<List<ThirdPackageDto>>()
+                .setRet_code(0)
+                .setRet_values(thirdPackageDtos)
+                .setMessage("成功");
     }
 
     /**
@@ -208,11 +209,19 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             userPackageOrderDtos.add(userPackageOrderDto);
         }
 
-        return new ControllerResult<List<UserPackageOrderDto>>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("成功");
+        int packageSize = userPackageOrderRepository.countByUserIdAndPackageCompleteFalse(userId);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("userPackageSize", packageSize);
+        resultMap.put("packages", userPackageOrderDtos);
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(resultMap)
+                .setMessage("成功");
     }
 
     /**
      * 首页用户注册默认健康包列表
+     *
      * @return
      */
     @RequestMapping("homePackages")
@@ -226,59 +235,83 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
             userPackageOrderDto.setIsJoin(false);
             userPackageOrderDtos.add(userPackageOrderDto);
         }
-        return new ControllerResult<List<UserPackageOrderDto>>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("成功");
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("userPackageSize", 0);
+        resultMap.put("packages", userPackageOrderDtos);
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(resultMap)
+                .setMessage("成功");
     }
 
     /**
      * 根据ID查询包信息，以及category信息
+     *
      * @param id
      * @return
      */
-    @RequestMapping(value = "findOnePackage/{id}",method = RequestMethod.GET)
-    public HcPackage findOnePackage(@PathVariable Long id){
+    @RequestMapping(value = "findOnePackage/{id}", method = RequestMethod.GET)
+    public HcPackage findOnePackage(@PathVariable Long id) {
         HcPackage hcPackage = hcPackageRepository.findOnePackage(id);
         return hcPackage;
     }
 
     @RequestMapping("packageClick/{packageId}")
     public Object packageClick(@PathVariable Long packageId) {
-        try {
-            HcPackage hcPackage = hcPackageRepository.findOne(packageId);
-            int clickCount = hcPackage.getClickAmount() + 1;
-            hcPackage.setClickAmount(clickCount);
-            hcPackageRepository.save(hcPackage);
-            return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("关注成功！");
-        } catch (Exception exp) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("关注失败！");
-        }
-
+        HcPackage hcPackage = hcPackageRepository.findOne(packageId);
+        int clickCount = hcPackage.getClickAmount() + 1;
+        hcPackage.setClickAmount(clickCount);
+        hcPackageRepository.save(hcPackage);
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values("")
+                .setMessage("关注成功！");
     }
 
+    /**
+     * 获取用户已订阅健康计划包
+     *
+     * @param userId
+     * @return
+     */
     @RequestMapping("checked/{userId}")
-    Object checkedPackege(@PathVariable Long userId) {
-        try {
-            List<UserPackageOrder> userPackageOrders = userPackageOrderRepository.findByUserIdAndPackageCompleteFalse(userId);
-            List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
-            for (UserPackageOrder userPackageOrder : userPackageOrders) {
-                UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
-                userPackageOrderDto.setId(userPackageOrder.getHcPackage().getId());
-                BeanUtils.copyProperties(userPackageOrder.getHcPackage(), userPackageOrderDto);
-                userPackageOrderDto.setIsJoin(true);
-                userPackageOrderDtos.add(userPackageOrderDto);
-            }
-            return new ControllerResult<>().setRet_code(0).setRet_values(userPackageOrderDtos).setMessage("订阅计划列表获取成功！");
-        } catch (Exception exp) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("订阅计划列表获取失败！");
+    public Object checkedPackege(@PathVariable Long userId) {
+        List<UserPackageOrder> userPackageOrders = userPackageOrderRepository.findByUserIdAndPackageCompleteFalse(userId);
+        List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
+        for (UserPackageOrder userPackageOrder : userPackageOrders) {
+            long packageId = userPackageOrder.getHcPackage().getId();
+            UserPackageOrderDto userPackageOrderDto = new UserPackageOrderDto();
+            userPackageOrderDto.setId(packageId);
+            BeanUtils.copyProperties(userPackageOrder.getHcPackage(), userPackageOrderDto);
+            userPackageOrderDto.setIsJoin(true);
+            userPackageOrderDto.setCountTask(
+                    hcPackageDetailRepository.countByHcPackageId(packageId)
+            );
+            userPackageOrderDtos.add(userPackageOrderDto);
         }
+        int packageSize = userPackageOrderRepository.countByUserIdAndPackageCompleteFalse(userId);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("userPackageSize", packageSize);
+        resultMap.put("packages", userPackageOrderDtos);
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(resultMap)
+                .setMessage("订阅计划列表获取成功！");
     }
 
     @RequestMapping(value = "findPackagesByCategoryId/{categoryId}", method = RequestMethod.GET)
-    public ControllerResult findPackagesByCategoryId(@PathVariable Long categoryId){
+    public ControllerResult findPackagesByCategoryId(@PathVariable Long categoryId) {
         List<HcPackage> packageList = hcPackageRepository.findByCategoryId(categoryId);
-        if(CollectionUtils.isNotEmpty(packageList)){
-            return new ControllerResult<>().setRet_code(0).setRet_values(packageList).setMessage("成功");
+        if (CollectionUtils.isNotEmpty(packageList)) {
+            return new ControllerResult<>()
+                    .setRet_code(0)
+                    .setRet_values(packageList)
+                    .setMessage("成功");
         } else {
-            return new ControllerResult<>().setRet_code(-1).setRet_values(null).setMessage("未获取到数据");
+            return new ControllerResult<>()
+                    .setRet_code(-1)
+                    .setRet_values(null)
+                    .setMessage("未获取到数据");
         }
     }
 

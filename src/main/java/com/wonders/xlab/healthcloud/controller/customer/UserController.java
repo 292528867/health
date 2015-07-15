@@ -12,24 +12,18 @@ import com.wonders.xlab.healthcloud.entity.ThirdBaseInfo;
 import com.wonders.xlab.healthcloud.entity.customer.AddressBook;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.entity.customer.UserThird;
-import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.repository.customer.AddressBookRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserThirdRepository;
-import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
-import com.wonders.xlab.healthcloud.service.hcpackage.UserPackageOrderService;
+import com.wonders.xlab.healthcloud.service.customer.UserService;
 import com.wonders.xlab.healthcloud.utils.*;
 import net.sf.ehcache.Cache;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
@@ -38,9 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -64,7 +56,7 @@ public class UserController extends AbstractBaseController<User, Long> {
     private UserThirdRepository userThirdRepository;
 
     @Autowired
-    private HcPackageRepository hcPackageRepository;
+    private UserService userService;
 
     @Autowired
     @Qualifier(value = "idenCodeCache")
@@ -72,9 +64,6 @@ public class UserController extends AbstractBaseController<User, Long> {
 
     @Autowired
     private EMUtils emUtils;
-
-    @Autowired
-    private UserPackageOrderService userPackageOrderService;
 
     @PostConstruct
     private void init() {
@@ -182,9 +171,13 @@ public class UserController extends AbstractBaseController<User, Long> {
     public Object hcLogin(@RequestBody @Valid IdenCode idenCode, BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
-            for (ObjectError error : result.getAllErrors())
+            for (ObjectError error : result.getAllErrors()) {
                 builder.append(error.getDefaultMessage());
-            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(builder.toString());
+            }
+            return new ControllerResult<String>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage(builder.toString());
         }
         try {
             // 获取指定手机号的验证编码缓存并，比较是否相同
@@ -198,11 +191,23 @@ public class UserController extends AbstractBaseController<User, Long> {
                 } else {
                     User user = userRepository.findByTel(idenCode.getTel());
                     //用户不存在 ？创建并返回用户 ：直接返回用户
-//                    return null == user ? addUserBeforeLogin(idenCode) :
+//                    return null == user ? userRegister(idenCode) :
 //                            new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("获取用户成功!");
                     if (null == user) {
                         //创建环信账号并创建一个群组
-                        return addUserBeforeLogin(idenCode);
+                        user = new User();
+                        user.setTel(idenCode.getTel());
+                        user.setAppPlatform(idenCode.getAppPlatform());
+                        user = userRegister(user);
+                        return null != user ?
+                                new ControllerResult<User>()
+                                        .setRet_code(0)
+                                        .setRet_values(user)
+                                        .setMessage("获取用户成功!") :
+                                new ControllerResult<>()
+                                        .setRet_code(-1)
+                                        .setRet_values("")
+                                        .setMessage("注册用户失败!");
                     } else {
                         //判断数据库平台是否与登陆一致，不一致更新数据库
                         if (idenCode.getAppPlatform().equals(user.getAppPlatform())) {
@@ -219,52 +224,32 @@ public class UserController extends AbstractBaseController<User, Long> {
         }
     }
 
-    private ControllerResult<?> addUserBeforeLogin(IdenCode idenCode) throws Exception {
+    private User userRegister(User user) throws Exception {
+
+        String tel = user.getTel();
 
         //创建环信账号
-        boolean result = emUtils.registerEmUser(idenCode.getTel(), idenCode.getTel());
+        boolean result = emUtils.registerEmUser(tel, tel);
         if (!result) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("注册失败!");
+            return null;
         }
 
         //创建一个群组
-        ChatGroupsRequestBody groupsBody = new ChatGroupsRequestBody(idenCode.getTel(), "万达健康云_" + idenCode.getTel(), true, 1, false, idenCode.getTel());
-
+        ChatGroupsRequestBody groupsBody = new ChatGroupsRequestBody(tel, "万达健康云_" + tel, true, 1, false, tel);
         String requestBody = objectMapper.writeValueAsString(groupsBody);
-
         ResponseEntity<String> responseEntity;
-
         String newRequestBody = StringUtils.replace(requestBody, "_public", "public");
-
         try {
             responseEntity = (ResponseEntity<String>) emUtils.requestEMChat(newRequestBody, "POST", "chatgroups", String.class);
-
         } catch (HttpClientErrorException e) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("创建群组失败");
+            return null;
         }
-
-        User user = new User();
-        user.setGroupId(objectMapper.readValue(responseEntity.getBody().toString(), ChatGroupsResponseBody.class).getData().getGroupid());
-        user.setTel(idenCode.getTel());
-        user.setAppPlatform(idenCode.getAppPlatform());
-
-        //四位随机验证码
-        String inviteCode = RandomStringUtils.random(1, "abcdefghijklmnopqrstuvwxyz") + RandomStringUtils.random(3, "0123456789");
-
-        //邀请码唯一
-        List<String> inviteCodeList = userRepository.findAllInviteCode();
-        boolean flag = true;
-        while (flag) {
-            if (inviteCodeList.contains(inviteCode)) {
-                inviteCode = RandomStringUtils.random(1, "abcdefghijklmnopqrstuvwxyz") + RandomStringUtils.random(3, "0123456789");
-            } else {
-                user.setInviteCode(inviteCode);
-                flag = false;
-            }
-        }
-
+        String groupId = objectMapper.readValue(responseEntity.getBody().toString(), ChatGroupsResponseBody.class)
+                .getData()
+                .getGroupid();
+        user.setGroupId(groupId);
         user = userRepository.save(user);
-        return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("注册用户成功，并成功创建群组");
+        return user;
     }
 
     /**
@@ -300,39 +285,34 @@ public class UserController extends AbstractBaseController<User, Long> {
     }
 
     @RequestMapping(value = "modify/{userId}", method = RequestMethod.POST)
-    @Transactional
     public Object modify(@PathVariable long userId, @RequestBody @Valid UserDto userDto, BindingResult result) {
 
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
-            for (ObjectError error : result.getAllErrors())
+            for (ObjectError error : result.getAllErrors()) {
                 builder.append(error.getDefaultMessage());
-            return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(builder.toString());
-        }
-        userDto.setValid(User.Valid.valid);
-        User user = userRepository.findOne(userId);
-        try {
-            BeanUtils.copyNotNullProperties(userDto, user, "hcPackageId");
-            final HcPackage hcPackage = hcPackageRepository.findOne(userDto.getHcPackageId());
-            if (user.getHcPackages() == null) {
-                user.setHcPackages(new HashSet<HcPackage>() {{
-                    add(hcPackage);
-                }});
-            } else {
-                user.getHcPackages().add(hcPackage);
             }
-            user = modify(user);
-            user.setHcPackages(null);
-            ControllerResult controllerResult = (ControllerResult) userPackageOrderService.joinPlan(userId, userDto.getHcPackageId());
-            if (controllerResult.getRet_code() != 0) {
-                return controllerResult;
-            } else {
-                return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("用户更新成功!");
-            }
-        } catch (Exception exp) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("更新失败!");
+            return new ControllerResult<String>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage(builder.toString());
         }
 
+        userDto.setValid(User.Valid.valid);
+        User user = userRepository.findOne(userId);
+        BeanUtils.copyNotNullProperties(userDto, user, "hcPackageId");
+        int code = userService.updateUserAndJoinHealthPlan(user, userDto.getHcPackageId());
+        //500 用户已选择两个包，400 用户健康计划包已存在，200 加入成功
+        if (code == 200) {
+            return new ControllerResult<>()
+                    .setRet_code(0)
+                    .setRet_values(user)
+                    .setMessage("用户更新成功!");
+        }
+        return new ControllerResult<String>()
+                .setRet_code(-1)
+                .setRet_values("")
+                .setMessage("用户更新失败！");
     }
 
     /**

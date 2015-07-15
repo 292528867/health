@@ -8,38 +8,65 @@
     padding: 0 15px;
     margin: 0 !important;
   }
-.tile-box p{
-  float: left;
-  /*width: 15%;*/
-  text-align: left;
-  vertical-align: middle;
-  margin-top: 1.6rem;
-  padding-left: 6px;
-  margin-bottom: 0;
-}
-  #cardName{
+
+  .tile-box p {
+    float: left;
+    /*width: 15%;*/
+    text-align: left;
+    vertical-align: middle;
+    margin-top: 1.6rem;
+    padding-left: 6px;
+    margin-bottom: 0;
+  }
+
+  #cardName {
     min-width: 50%;
   }
+
   tr td:nth-child(1) {
     font-size: 1.2rem;
     vertical-align: text-bottom;
 
   }
 
-</style><body style="padding: 0 20px"><h2>个人健康档案</h2><div class="tile-box am-kai"><div class=am-cf><p id=name>毛钰汀</p><p id=sex style="padding-left: 30px">女</p></div><div class=am-cf><p>卡号：</p><p id=cardName>133002000009309</p></div></div><h3>就诊记录</h3><table class="am-table am-table-bordered am-table-radius am-table-striped"><thead><tr class=am-success><th style="width: 91px;">时间</th><th>社区</th><th style="width: 50px">门诊</th><th>病症</th></tr></thead><tbody><tr><td>2012-11-14</td><td>永丰社区</td><td>门诊</td><td>-(-)</td></tr><tr><td>2012-11-14</td><td>永丰社区</td><td>门诊</td><td>急性上呼吸道感染(J06.902)</td></tr><tr><td>2012-11-14</td><td>永丰社区</td><td>门诊</td><td>-(-)</td></tr><tr><td>2012-11-06</td><td>方松社区</td><td>门诊</td><td>-(-)</td></tr><tr><td>2012-11-05</td><td>周家桥社区</td><td>门诊</td><td>-(-)</td></tr></tbody></table><h3>近期用药清单</h3><table class="am-table am-table-bordered am-table-radius am-table-striped"><thead><tr class=am-primary><th style="width: 91px;">时间</th><th>药品名称</th><th style="width: 82px">服用方法</th></tr></thead><tbody><tr><td>2011-12-01</td><td>(甲)复方血栓通胶囊</td><td>口服</td></tr><tr><td>2011-12-01</td><td>(甲)甲硝唑片</td><td>口服</td></tr><tr><td>2011-12-01</td><td>(乙10%)▲羟苯磺酸钙胶囊(可元)</td><td>口服</td></tr><tr><td>2011-12-01</td><td>(乙10%)头孢丙烯分散片(银力舒)</td><td>口服</td></tr><tr><td>2011-12-01</td><td>(乙10%)头孢丙烯分散片(银力舒)</td><td>口服</td></tr></tbody></table></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
+</style><body style="padding: 0 20px"><h2>个人健康档案</h2><div class="tile-box am-kai"><div class=am-cf><p id=name></p><p id=gender style="padding-left: 30px"></p></div><div class=am-cf><p>卡号：</p><p id=cardNumber></p></div></div><h3>就诊记录</h3><table class="am-table am-table-bordered am-table-radius am-table-striped"><thead><tr class=am-success><th style="width: 91px;">时间</th><th>社区</th><th style="width: 50px">门诊</th><th>病症</th></tr></thead><tbody id=disease></tbody></table><h3>近期用药清单</h3><table class="am-table am-table-bordered am-table-radius am-table-striped"><thead><tr class=am-primary><th style="width: 91px;">时间</th><th>药品名称</th><th style="width: 82px">服用方法</th></tr></thead><tbody id=my></tbody></table></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
   var commonUrl = 'http://101.231.124.8:45677/xlab-healthcloud/';
-  var data = [
-    {
-      "name": "毛钰汀",
-      "gender": "女",
-      "cardNumber": "133002000009309",
-      "diagnosisHistory": "2012-11-14 ,永丰社区,门诊,-(-),2012-11-14 ,永丰社区,门诊,急性上呼吸道感染(J06.902),2012-11-14 ,永丰社区,门诊,-(-),2012-11-06 ,方松社区,门诊,-(-),2012-11-05 ,周家桥社区,门诊,-(-)",
-      "medicineHistory": "2011-12-01 ,(甲)复方血栓通胶囊,口服,2011-12-01 ,(甲)甲硝唑片,口服,2011-12-01 ,(乙10%)▲羟苯磺酸钙胶囊(可元),口服,2011-12-01 ,(乙10%)头孢丙烯分散片(银力舒),口服,2011-12-01 ,(乙10%)头孢丙烯分散片(银力舒),口服"
-    }
-  ];
-  var url = commonUrl + '';
-  var diagnosisHistory = data[0].medicineHistory.split(',');
-  console.log(diagnosisHistory);
+  var url = commonUrl + 'healthDocs/listHealthDocs/';
+  $.get(url, function (data) {
+    console.log(data.ret_values);
+    var person = data.ret_values;
+    person = person[0];
+    $('#name').html(person.name);
+    $('#gender').html(person.gender);
+    $('#cardNumber').html(person.cardNumber);
+    var string = '';
+    var string2 = '';
+    $.each(person.diagnosisDtos,function(n,value) {
+      string +='<tr> <td>'+value.time+'</td><td>'+value.area+'</td><td>'+value.treatmentMethod+'</td><td>'+value.disease+'</td></tr>';
+    })
+    $.each(person.medicationDtos,function(n,value) {
+      string2 +='<tr> <td>'+value.time+'</td><td>'+value.medicineName+'</td><td>'+value.takeMethod+'</td></tr>';
+    })
+    $('#disease').html(string);
+    $('#my').html(string2);
+/*
+    $.each(diagnosisHistory,function(n,value) {
+      console.log(value);
+      if(diagnosisHistory[n].trim().length==0) {
+        console.log(n);
+      }
+
+    })
+*/
+  });
+//  var data = [
+//    {
+//      "name": "毛钰汀",
+//      "gender": "女",
+//      "cardNumber": "133002000009309",
+//      "diagnosisHistory": "2012-11-14 ,永丰社区,门诊,-(-),2012-11-14 ,永丰社区,门诊,急性上呼吸道感染(J06.902),2012-11-14 ,永丰社区,门诊,-(-),2012-11-06 ,方松社区,门诊,-(-),2012-11-05 ,周家桥社区,门诊,-(-)",
+//      "medicineHistory": "2011-12-01 ,(甲)复方血栓通胶囊,口服,2011-12-01 ,(甲)甲硝唑片,口服,2011-12-01 ,(乙10%)▲羟苯磺酸钙胶囊(可元),口服,2011-12-01 ,(乙10%)头孢丙烯分散片(银力舒),口服,2011-12-01 ,(乙10%)头孢丙烯分散片(银力舒),口服"
+//    }
+//  ];
   var string = '';
-  string
 </script></html>

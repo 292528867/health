@@ -1,11 +1,16 @@
 package com.wonders.xlab.healthcloud.controller.docs;
 
+import com.wonders.xlab.healthcloud.dto.docs.DiagnosisDto;
+import com.wonders.xlab.healthcloud.dto.docs.HealthDocsDto;
+import com.wonders.xlab.healthcloud.dto.docs.MedicationDto;
+import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.docs.HealthDocs;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,23 +27,31 @@ public class HealthDocsController {
     public Object listHealthDocs() {
 
         List<HealthDocs> docses = userRepository.findHealthDocs();
-       /* List<HealthDocsDto> healthDocsDtos = new ArrayList<>();
+        List<HealthDocsDto> healthDocsDtos = new ArrayList<>();
         for (HealthDocs doc : docses) {
-            String[] diagnosisHistory = doc.getDiagnosisHistory().split(",", 4);
+
+            String[] diagnosisHistory = doc.getDiagnosisHistory().trim().split(",");
+
+            int length = diagnosisHistory.length / 4;
             List<DiagnosisDto> diagnosisDtos = new ArrayList<>();
-            for (String history : diagnosisHistory) {
-                String[] str = history.split(",");
-                for (int i = 0; i < str.length; i ++) {
-
-                }
-                diagnosisDtos.add(new DiagnosisDto(str[0], str[1], str[2], str[3]));
+            for (int i = 0; i < length; i++) {
+                DiagnosisDto dto = new DiagnosisDto();
+                dto.setTime(diagnosisHistory[4 * i]);
+                dto.setArea(diagnosisHistory[4 * i + 1]);
+                dto.setTreatmentMethod(diagnosisHistory[4 * i +2]);
+                dto.setDisease(diagnosisHistory[4 * i + 3]);
+                diagnosisDtos.add(dto);
             }
-            String[] medicineHistory = doc.getMedicineHistory().split(",", 4);
-            List<MedicationDto> medicationDtos = new ArrayList<>();
-            for (String history : medicineHistory) {
-                String[] str = history.split(",");
 
-                medicationDtos.add(new MedicationDto(str[0], str[1], str[2]));
+            String[] medicineHistory = doc.getMedicineHistory().trim().split(",");
+            List<MedicationDto> medicationDtos = new ArrayList<>();
+            length = medicineHistory.length / 3;
+            for (int i = 0; i < length; i++) {
+                MedicationDto dto = new MedicationDto();
+                dto.setTime(medicineHistory[3 * i]);
+                dto.setMedicineName(medicineHistory[3 * i + 1]);
+                dto.setTakeMethod(medicineHistory[3 * i + 2]);
+                medicationDtos.add(dto);
             }
             HealthDocsDto dto = new HealthDocsDto(
                     doc.getName(),
@@ -50,9 +63,7 @@ public class HealthDocsController {
             healthDocsDtos.add(dto);
         }
 
-        return new ControllerResult<List<HealthDocsDto>>().setRet_code(0).setRet_values(healthDocsDtos).setMessage("成功");*/
-        return docses;
-
+        return new ControllerResult<List<HealthDocsDto>>().setRet_code(0).setRet_values(healthDocsDtos).setMessage("成功");
     }
 
 }

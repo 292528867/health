@@ -1,6 +1,7 @@
-package com.wonders.xlab.healthcloud.dto.market;
+package com.wonders.xlab.healthcloud.dto.store;
 
 import com.wonders.xlab.healthcloud.entity.market.Store;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -34,6 +35,9 @@ public class StoreDto {
     @NotNull(message = "简述不能为空")
     private String description;
 
+    @NotNull(message = "顺序不能为空")
+    private Integer position;
+
     public Store toNewStore() {
         Store store = new Store(
                 name,
@@ -42,8 +46,10 @@ public class StoreDto {
                 picUrl,
                 description
         );
-        if (tag != null)
-            store.setTag(Store.Tag.values()[Integer.parseInt(tag)]);
+        if (tag != null){
+            store.setTag(Store.Tag.values()[NumberUtils.toInt(tag)]);
+        }
+        store.setPosition(position);
         return store;
     }
 
@@ -53,8 +59,9 @@ public class StoreDto {
         store.setMedicineUrl(medicineUrl);
         store.setPicUrl(picUrl);
         store.setDescription(description);
+        store.setPosition(Integer.valueOf(position));
         if (tag != null)
-            store.setTag(Store.Tag.values()[Integer.parseInt(tag)]);
+            store.setTag(Store.Tag.values()[NumberUtils.toInt(tag)]);
         return store;
     }
 
@@ -104,5 +111,13 @@ public class StoreDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 }

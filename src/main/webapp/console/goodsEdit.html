@@ -105,6 +105,7 @@
                             <th class="table-check"><input type="checkbox"/></th>
                             <th class="table-id">ID</th>
                             <th class="table-title">名称</th>
+                            <th class="table-title">排序位置</th>
                             <th class="table-title">简介</th>
                             <th class="table-title">图片</th>
                             <th class="table-set">操作</th>
@@ -168,6 +169,11 @@
                             <label for="price">商品价格：（请填写数字）</label>
                             <input type="tel" id="price" placeholder=""
                                    required name="price"/>
+                        </div>
+                        <div class="am-form-group">
+                            <label for="position">商品排序：（请填写数字，数值越大排序越前，依此类推，相同数字的按照更新时间）</label>
+                            <input type="tel" id="position" placeholder=""
+                                   required name="position"/>
                         </div>
                         <div class="am-form-group">
                             <label for="medicineUrl">商品地址：</label>

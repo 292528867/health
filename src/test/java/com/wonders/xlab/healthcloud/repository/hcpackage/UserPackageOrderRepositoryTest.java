@@ -90,13 +90,19 @@ public class UserPackageOrderRepositoryTest {
 
     @Test
     public void testJoinPlan() throws Exception {
-        Object joinPlan = userPackageOrderService.joinPlan(47l, 1l);
-        System.out.println("joinPlan = " + joinPlan);
+        Object joinPlan = userPackageOrderService.joinHealthPlan(47l, 1l);
+        System.out.println("joinHealthPlan = " + joinPlan);
     }
 
     @Test
     public void testFindSizeByUserIdAndPackageComplete() throws Exception {
         int size = userPackageOrderRepository.findSizeByUserIdAndPackageComplete(54l, false);
         Assert.isTrue(size == 2);
+    }
+
+    @Test
+    public void testCountByUserIdAndPackageCompleteFalse() throws Exception {
+        int size = userPackageOrderRepository.countByUserIdAndPackageCompleteFalse(47l);
+        Assert.isTrue(2 == size);
     }
 }

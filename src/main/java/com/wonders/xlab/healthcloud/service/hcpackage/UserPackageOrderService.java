@@ -17,7 +17,7 @@ public interface UserPackageOrderService {
      * 用户加入健康包计划
      * @param userId
      * @param packageId
-     * @return
+     * @return 500 用户已选择两个包，400 用户健康计划包已存在，200 加入成功
      */
-    Object joinPlan(Long userId, Long packageId);
+    int joinHealthPlan(Long userId, Long packageId);
 }

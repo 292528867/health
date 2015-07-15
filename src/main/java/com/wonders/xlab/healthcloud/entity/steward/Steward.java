@@ -74,7 +74,7 @@ public class Steward extends BaseInfo<Long> {
      * 明星服务
      */
     @Transient
-    private List<Map<String, Object>> starService = new ArrayList();
+    private List<Map<String, Object>> starService = new ArrayList<>();
 
 
     public Rank getRank() {

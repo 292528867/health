@@ -58,7 +58,7 @@ public class HcPackageRepositoryTest {
 
     @Test
     public void testFindByIdFetchHealthCategory() throws Exception {
-        HcPackage hcPackage = hcPackageRepository.findById(1l);
+        HcPackage hcPackage = hcPackageRepository.findOne(1l);
         Assert.isTrue(hcPackage.getHealthCategory().getId() == 7l);
     }
 }

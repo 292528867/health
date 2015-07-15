@@ -3,7 +3,6 @@ package com.wonders.xlab.healthcloud.service.drools;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 
-import com.wonders.xlab.healthcloud.service.cache.EhCacheConfiguration;
 import com.wonders.xlab.healthcloud.service.drools.discovery.article.DiscoveryArticleRuleService;
 
 /**

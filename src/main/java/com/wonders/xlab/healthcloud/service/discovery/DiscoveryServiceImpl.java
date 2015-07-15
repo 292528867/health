@@ -247,23 +247,42 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 			healthInfoUserClickInfo.setHealthInfo(healthInfo);
 			healthInfoUserClickInfo.setUser(user);
 			this.healthInfoUserClickInfoRepository.save(healthInfoUserClickInfo);
+			
+			// 更新用户实际点击数+1
+			healthInfoUserClickInfo.setClickCount(healthInfoUserClickInfo.getClickCount() + 1);
+			// 规则计算用户虚拟点击数并更新
+			HealthInfoClickSample healthInfoClickSample = new HealthInfoClickSample(
+					healthInfo.getId(), healthInfo.getCreatedDate(), healthInfoUserClickInfo.getClickCount(), healthInfoClickInfo.getClickCountA()
+				);
+			Map<Long, Long> click_map = this.discoveryArticleRuleService.calcuClickCount(0.1, healthInfoClickSample); // X=0.1
+			long new_virtualHealthInfoClickCount = click_map.get(healthInfo.getId());
+			healthInfoUserClickInfo.setVirtualClickCount(new_virtualHealthInfoClickCount);
+			
+			// 更新文章总点击数+1
+			healthInfoClickInfo.setClickCount(healthInfoClickInfo.getClickCount() + 1);
+			// 更新文章虚拟点击数（用差值）
+			healthInfoClickInfo.setVirtualClickCount(new_virtualHealthInfoClickCount);
+			
+		} else {
+			// 更新用户实际点击数+1
+			healthInfoUserClickInfo.setClickCount(healthInfoUserClickInfo.getClickCount() + 1);
+			// 规则计算用户虚拟点击数并更新
+			HealthInfoClickSample healthInfoClickSample = new HealthInfoClickSample(
+					healthInfo.getId(), healthInfo.getCreatedDate(), healthInfoUserClickInfo.getClickCount(), healthInfoClickInfo.getClickCountA()
+				);
+			Map<Long, Long> click_map = this.discoveryArticleRuleService.calcuClickCount(0.1, healthInfoClickSample); // X=0.1
+			long new_virtualHealthInfoClickCount = click_map.get(healthInfo.getId());
+			long old_virtualHealthInfoClickCount = healthInfoUserClickInfo.getVirtualClickCount();
+			healthInfoUserClickInfo.setVirtualClickCount(new_virtualHealthInfoClickCount);
+			
+			// 更新文章总点击数+1
+			healthInfoClickInfo.setClickCount(healthInfoClickInfo.getClickCount() + 1);
+			// 更新文章虚拟点击数（用差值）
+			healthInfoClickInfo.setVirtualClickCount(
+					healthInfoClickInfo.getVirtualClickCount() + new_virtualHealthInfoClickCount - old_virtualHealthInfoClickCount);
 		}
 		
-		// 更新用户实际点击数+1
-		healthInfoUserClickInfo.setClickCount(healthInfoUserClickInfo.getClickCount() + 1);
-		// 规则计算用户虚拟点击数并更新
-		HealthInfoClickSample healthInfoClickSample = new HealthInfoClickSample(
-				healthInfo.getId(), healthInfo.getCreatedDate(), healthInfoUserClickInfo.getClickCount(), healthInfoClickInfo.getClickCountA()
-			);
-		Map<Long, Long> click_map = this.discoveryArticleRuleService.calcuClickCount(0.1, healthInfoClickSample); // X=0.1
-		long new_virtualHealthInfoClickCount = click_map.get(healthInfo.getId());
-		long old_virtualHealthInfoClickCount = healthInfoUserClickInfo.getVirtualClickCount();
-		healthInfoUserClickInfo.setVirtualClickCount(new_virtualHealthInfoClickCount);
 		
-		// 更新文章总点击数+1
-		healthInfoClickInfo.setClickCount(healthInfoClickInfo.getClickCount() + 1);
-		// 更新文章虚拟点击数（用差值）
-		healthInfoClickInfo.setVirtualClickCount(healthInfoClickInfo.getVirtualClickCount() + new_virtualHealthInfoClickCount - old_virtualHealthInfoClickCount);
 		
 		return healthInfoClickInfo;
 	}

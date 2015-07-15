@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -44,7 +45,7 @@ public class RecommendPackage extends AbstractPersistable<Long> {
     private Set<Services> services;
 
     @Transient
-    private Steward steward;
+    private Set<Steward> stewards;
 
     /**
      * 服务id，逗号分开
@@ -105,14 +106,6 @@ public class RecommendPackage extends AbstractPersistable<Long> {
         this.services = services;
     }
 
-    public Steward getSteward() {
-        return steward;
-    }
-
-    public void setSteward(Steward steward) {
-        this.steward = steward;
-    }
-
     public String getServiceIds() {
         return serviceIds;
     }
@@ -121,14 +114,13 @@ public class RecommendPackage extends AbstractPersistable<Long> {
         this.serviceIds = serviceIds;
     }
 
-    //    public Set<Services> getServices() {
-//        return services;
-//    }
-//
-//    public void setServices(Set<Services> services) {
-//        this.services = services;
-//    }
-//
+    public Set<Steward> getStewards() {
+        return stewards;
+    }
+
+    public void setStewards(Set<Steward> stewards) {
+        this.stewards = stewards;
+    }
 
     public String getPicUrl() {
         return picUrl;

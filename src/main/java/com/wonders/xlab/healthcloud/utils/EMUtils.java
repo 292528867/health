@@ -24,7 +24,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -60,7 +59,7 @@ public class EMUtils {
 
     static {
         restTemplate = new RestTemplate();
-        restTemplate.setMessageConverters(new ArrayList<HttpMessageConverter<?>>(){{
+        restTemplate.setMessageConverters(new ArrayList<HttpMessageConverter<?>>() {{
             add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
         }});
     }
@@ -72,7 +71,8 @@ public class EMUtils {
     }
 
     /**
-     *  获取环信appToken放入到缓存
+     * 获取环信appToken放入到缓存
+     *
      * @return
      */
     public String pushTokenToCache() {
@@ -111,11 +111,9 @@ public class EMUtils {
     }
 
     /**
-     *
      * @param method 请求方式
-     * @param path 向默认地址后拼接path路径 ：http://a1.easemob.com/xlab/ugyufuy/{path}
-     * @param clazz 返回值body类型
-     * @return 请求返回ResponseEntity
+     * @param path   向默认地址后拼接path路径 ：http://a1.easemob.com/xlab/ugyufuy/{path}
+     * @param clazz  返回值body类型
      * @return
      */
     public ResponseEntity<?> requestEMChat(String method, String path, Class<?> clazz) {
@@ -123,12 +121,10 @@ public class EMUtils {
     }
 
     /**
-     *
      * @param method 请求方式
-     * @param body 请求体
-     * @param path 向默认地址后拼接path路径 ：http://a1.easemob.com/xlab/ugyufuy/{path}
-     * @param clazz 返回值body类型
-     * @return 请求返回ResponseEntity
+     * @param body   请求体
+     * @param path   向默认地址后拼接path路径 ：http://a1.easemob.com/xlab/ugyufuy/{path}
+     * @param clazz  返回值body类型
      * @return
      */
     public ResponseEntity<?> requestEMChat(Object body, String method, String path, Class<?> clazz) {
@@ -136,12 +132,10 @@ public class EMUtils {
     }
 
     /**
-     *
      * @param headers 请求头
-     * @param method 请求方式
-     * @param path 向默认地址后拼接path路径 ：http://a1.easemob.com/xlab/ugyufuy/{path}
-     * @param clazz 返回值body类型
-     * @return 请求返回ResponseEntity
+     * @param method  请求方式
+     * @param path    向默认地址后拼接path路径 ：http://a1.easemob.com/xlab/ugyufuy/{path}
+     * @param clazz   返回值body类型
      * @return
      */
     public ResponseEntity<?> requestEMChat(HttpHeaders headers, String method, String path, Class<?> clazz) {
@@ -149,12 +143,11 @@ public class EMUtils {
     }
 
     /**
-     *
      * @param headers 请求头
-     * @param method 请求方式
-     * @param body 请求体
-     * @param path 向默认地址后拼接path路径 ：http://a1.easemob.com/xlab/ugyufuy/{path}
-     * @param clazz 返回值body类型
+     * @param method  请求方式
+     * @param body    请求体
+     * @param path    向默认地址后拼接path路径 ：http://a1.easemob.com/xlab/ugyufuy/{path}
+     * @param clazz   返回值body类型
      * @return 请求返回ResponseEntity
      */
     public ResponseEntity<?> requestEMChat(HttpHeaders headers, final Object body, final String method, String path, Class<?> clazz) {
@@ -194,10 +187,10 @@ public class EMUtils {
                 null == body ? new HttpEntity(headers) :
                         body instanceof Map ?
                                 //传入body为键值对创建键值对请求体
-                                new HttpEntity(new LinkedMultiValueMap<String, Object>() {{
+                                new HttpEntity<>(new LinkedMultiValueMap<String, Object>() {{
                                     setAll((Map) body);
                                 }}, headers) :
-                                new HttpEntity(body, headers),
+                                new HttpEntity<>(body, headers),
                 clazz,
                 uriVariables
         );
@@ -217,7 +210,7 @@ public class EMUtils {
         Calendar calendar = Calendar.getInstance();
         String today = sdf.format(calendar.getTime()); //当前天格式：2015-05-05*/
 
-        String today =  DateFormatUtils.format(new Date(), "yyyy-MM-dd");//当前天格式：2015-05-05*/
+        String today = DateFormatUtils.format(new Date(), "yyyy-MM-dd");//当前天格式：2015-05-05*/
         long currentHour = org.apache.commons.lang3.time.DateUtils.
                 getFragmentInHours(new Date(), Calendar.DATE);  //当前小时
 
@@ -240,7 +233,7 @@ public class EMUtils {
         if (dayForWeek <= 5) {//工作日
             if (currentHour >= 9 && currentHour < 18) {
                 value = doctorNumber1;
-            }else {
+            } else {
                 value = doctorNumber3;
             }
         } else {//周末
@@ -255,7 +248,7 @@ public class EMUtils {
      * @return
      */
     public static int getOvertime() {
-        String today =  DateFormatUtils.format(new Date(), "yyyy-MM-dd");//当前天格式：2015-05-05*/
+        String today = DateFormatUtils.format(new Date(), "yyyy-MM-dd");//当前天格式：2015-05-05*/
         long currentHour = org.apache.commons.lang3.time.DateUtils.
                 getFragmentInHours(new Date(), Calendar.DATE);  //当前小时
         int dayForWeek = DateUtils.calculateTodayForWeek(); //当天是星期几

@@ -3,6 +3,7 @@ package com.wonders.xlab.healthcloud.dto.banner;
 import com.wonders.xlab.healthcloud.entity.banner.Banner;
 import com.wonders.xlab.healthcloud.entity.banner.BannerTag;
 import com.wonders.xlab.healthcloud.entity.banner.BannerType;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -11,6 +12,8 @@ import javax.validation.constraints.Pattern;
  * Created by mars on 15/7/6.
  */
 public class BannerDto {
+
+    private Long id;
 
     /** Banner标签 0 计划 1 发现 2 管家 3 问诊 4 商城 5 个人中心 6 购药 */
     @NotNull(message = "标签不能为空")
@@ -42,13 +45,16 @@ public class BannerDto {
     private String position;
 
     @NotNull(message = "启用位不能为空")
-    @Pattern(regexp = "^0|1$", message = "启用必须为 0｜1")
+    @Pattern(regexp = "^true|false$", message = "启用必须为 true｜false")
     private String enabled;
+
+    /** 文章标题 */
+    private String articleTitle;
 
     public Banner toNewBanner() {
         Banner banner = new Banner(
-                BannerTag.values()[Integer.parseInt(bannerTag)],
-                BannerType.values()[Integer.parseInt(bannerType)],
+                BannerTag.values()[NumberUtils.toInt(bannerTag)],
+                BannerType.values()[NumberUtils.toInt(bannerType)],
                 articleId,
                 title,
                 picUrl,
@@ -60,15 +66,24 @@ public class BannerDto {
     }
 
     public Banner updateBanner(Banner banner) {
-        banner.setBannerTag(BannerTag.values()[Integer.parseInt(bannerTag)]);
-        banner.setBannerType(BannerType.values()[Integer.parseInt(bannerType)]);
+        banner.setBannerTag(BannerTag.values()[NumberUtils.toInt(bannerTag)]);
+        banner.setBannerType(BannerType.values()[NumberUtils.toInt(bannerType)]);
         banner.setArticleId(articleId);
         banner.setTitle(title);
         banner.setPicUrl(picUrl);
         banner.setLinkUrl(linkUrl);
         banner.setEnabled(Boolean.valueOf(enabled));
-        banner.setPosition(Integer.valueOf(position));
+        banner.setPosition(NumberUtils.toInt(position));
         return banner;
+    }
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getBannerTag() {
@@ -133,5 +148,13 @@ public class BannerDto {
 
     public void setEnabled(String enabled) {
         this.enabled = enabled;
+    }
+
+    public String getArticleTitle() {
+        return articleTitle;
+    }
+
+    public void setArticleTitle(String articleTitle) {
+        this.articleTitle = articleTitle;
     }
 }
