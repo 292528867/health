@@ -1,5 +1,7 @@
 package com.wonders.xlab.healthcloud.service.emchat;
 
+import com.wonders.xlab.healthcloud.entity.QuestionOrder;
+
 /**
  * Created by wukai on 15/7/14.
  */
@@ -12,4 +14,10 @@ public interface QuestionOrderService {
      * @throws Exception
      */
     void sendQuestionToDoctors(String doctorTel) throws Exception;
+
+    /**
+     * 查找一条可以推送的问题
+     * @return
+     */
+    QuestionOrder findOneNewQuestion();
 }

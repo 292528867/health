@@ -12,4 +12,7 @@ import java.util.List;
 public interface QuestionOrderRepository extends MyRepository<QuestionOrder, Long> {
     @Query(value = "select q from QuestionOrder q left join fetch q.user left join fetch q.messages where q.questionStatus = ?1 order by q.pushCount asc, q.id asc")
     List<QuestionOrder> findAllNewQuestionsOrderByPushCountAndId(QuestionOrder.QuestionStatus questionStatus);
+
+    @Query(value = "select q from QuestionOrder q left join fetch q.messages where q.doctor.id = ?1 and q.questionStatus in ?2 order by q.questionStatus asc, q.id asc")
+    List<QuestionOrder> findQuestionOrdersByDoctorID(long doctorId, QuestionOrder.QuestionStatus[] statusArray);
 }
