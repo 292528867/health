@@ -12,6 +12,8 @@ import javax.validation.constraints.Pattern;
  */
 public class BannerDto {
 
+    private Long id;
+
     /** Banner标签 0 计划 1 发现 2 管家 3 问诊 4 商城 5 个人中心 6 购药 */
     @NotNull(message = "标签不能为空")
     @Pattern(regexp = "^0|1|2|3|4|5|6$", message = "标签必须为 0日程｜1发现｜2管家｜3问诊｜4商城｜5个人中心｜6购药")
@@ -45,6 +47,9 @@ public class BannerDto {
     @Pattern(regexp = "^true|false$", message = "启用必须为 true｜false")
     private String enabled;
 
+    /** 文章标题 */
+    private String articleTitle;
+
     public Banner toNewBanner() {
         Banner banner = new Banner(
                 BannerTag.values()[Integer.parseInt(bannerTag)],
@@ -69,6 +74,15 @@ public class BannerDto {
         banner.setEnabled(Boolean.valueOf(enabled));
         banner.setPosition(Integer.valueOf(position));
         return banner;
+    }
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getBannerTag() {
@@ -133,5 +147,13 @@ public class BannerDto {
 
     public void setEnabled(String enabled) {
         this.enabled = enabled;
+    }
+
+    public String getArticleTitle() {
+        return articleTitle;
+    }
+
+    public void setArticleTitle(String articleTitle) {
+        this.articleTitle = articleTitle;
     }
 }

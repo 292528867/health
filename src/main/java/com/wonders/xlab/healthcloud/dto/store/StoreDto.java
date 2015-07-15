@@ -1,6 +1,7 @@
 package com.wonders.xlab.healthcloud.dto.store;
 
 import com.wonders.xlab.healthcloud.entity.market.Store;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -48,7 +49,7 @@ public class StoreDto {
         if (tag != null){
             store.setTag(Store.Tag.values()[Integer.parseInt(tag)]);
         }
-        store.setPosition(Integer.valueOf(position));
+        store.setPosition(NumberUtils.toInt(position));
         return store;
     }
 

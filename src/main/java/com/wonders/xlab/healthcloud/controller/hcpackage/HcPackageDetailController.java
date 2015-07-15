@@ -90,10 +90,12 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
         // 获取健康包任务
         HcPackageDetail detail = this.hcPackageDetailRepository.findOne(detailId);
 
-        // 用户健康包任务语句
-        List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdAndHcPackageIdAndDate(userId, detail.getHcPackage().getId(), new Date());
         // 用户订单
         UserPackageOrder order = this.userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, detail.getHcPackage().getId(), false);
+
+        // 用户健康包任务语句
+        List<UserPackageDetailStatement> userStatements = this.userPackageDetailStatementRepository.findByUserIdAndHcPackageIdAndDate(userId, detail.getHcPackage().getId(), new Date());
+
 
         List<UserStatementDto> statementDtos = new ArrayList<>();
 
@@ -122,12 +124,13 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
             dto.setPictureType(1);
         }
 
+        List<Long> completeDetailIds = new ArrayList<>();
         if (order != null && order.getHcPackageDetailIds() != null) {
             String[] detailIds = order.getHcPackageDetailIds().split(",");
-            Long[] longDetailIds = new Long[detailIds.length];
-            for (int i = 0; i < detailIds.length; i++)
-                longDetailIds[i] = Long.parseLong(detailIds[i]);
-            if (Arrays.asList(longDetailIds).contains(detailId)) {
+            for (String id : detailIds) {
+                completeDetailIds.add(NumberUtils.toLong(id));
+            }
+            if (completeDetailIds.contains(detailId)) {
                 dto.setComplete(1);
             }
         }
@@ -164,6 +167,7 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
                     hpDetail,
                     content
             );
+            statement.setHcPackage(hpDetail.getHcPackage());
             this.userPackageDetailStatementRepository.save(statement);
         }
         // 已经有过计划完成

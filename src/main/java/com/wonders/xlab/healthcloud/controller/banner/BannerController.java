@@ -9,7 +9,7 @@ import com.wonders.xlab.healthcloud.entity.banner.BannerTag;
 import com.wonders.xlab.healthcloud.entity.banner.BannerType;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
-import com.wonders.xlab.healthcloud.repository.banner.BannnerRepository;
+import com.wonders.xlab.healthcloud.repository.banner.BannerRepository;
 import com.wonders.xlab.healthcloud.repository.discovery.HealthInfoRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ import java.util.*;
 public class BannerController extends AbstractBaseController<Banner, Long> {
 
     @Autowired
-    private BannnerRepository bannnerRepository;
+    private BannerRepository bannerRepository;
 
     @Autowired
     private HcPackageRepository hcPackageRepository;
@@ -39,7 +39,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
 
     @Override
     protected MyRepository<Banner, Long> getRepository() {
-        return bannnerRepository;
+        return bannerRepository;
     }
 
     /**
@@ -65,9 +65,30 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
         }
         Sort sort = new Sort(Sort.Direction.DESC, "lastModifiedDate");
 
-        return new ControllerResult<List<Banner>>()
+        List<Banner> banners = bannerRepository.findAll(filters, sort);
+
+        List<BannerDto> bannerDtos = new ArrayList<>();
+        for (Banner banner : banners) {
+            BannerDto dto = new BannerDto();
+            dto.setId(banner.getId());
+            dto.setBannerTag(String.valueOf(banner.getBannerTag()));
+            dto.setBannerType(String.valueOf(banner.getBannerType()));
+            if (banner.getArticleId() != null) {
+                HealthInfo hi = healthInfoRepository.findOne(banner.getArticleId());
+                if (hi != null) {
+                    dto.setArticleId(banner.getArticleId());
+                    dto.setArticleTitle(hi.getTitle());
+                }
+            }
+            dto.setPicUrl(banner.getPicUrl());
+            dto.setLinkUrl(banner.getLinkUrl());
+            dto.setEnabled(String.valueOf(banner.isEnabled()));
+            dto.setPosition(String.valueOf(banner.getPosition()));
+            bannerDtos.add(dto);
+        }
+        return new ControllerResult<List<BannerDto>>()
                 .setRet_code(0)
-                .setRet_values(this.bannnerRepository.findAll(filters, sort))
+                .setRet_values(bannerDtos)
                 .setMessage("成功");
     }
 
@@ -79,7 +100,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
     public Object listBanner() {
         return new ControllerResult<List<Banner>>()
                 .setRet_code(0)
-                .setRet_values(this.bannnerRepository.findBannerOrderByLastModifiedDate())
+                .setRet_values(this.bannerRepository.findBannerOrderByLastModifiedDate())
                 .setMessage("成功");
     }
 
@@ -103,8 +124,8 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
         }
         try {
             Banner banner = bannerDto.toNewBanner();
-            this.bannnerRepository.save(banner);
-            this.bannnerRepository.save(banner);
+            this.bannerRepository.save(banner);
+            this.bannerRepository.save(banner);
             return new ControllerResult<>()
                     .setRet_code(0)
                     .setRet_values("添加成功")
@@ -138,7 +159,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
                     .setMessage("失败");
         }
         try {
-            Banner banner = this.bannnerRepository.findOne(bannerId);
+            Banner banner = this.bannerRepository.findOne(bannerId);
             if (banner == null) {
                 return new ControllerResult<String>()
                         .setRet_code(-1)
@@ -146,7 +167,7 @@ public class BannerController extends AbstractBaseController<Banner, Long> {
                         .setMessage("失败");
             }
             banner = bannerDto.updateBanner(banner);
-            this.bannnerRepository.save(banner);
+            this.bannerRepository.save(banner);
             return new ControllerResult<>()
                     .setRet_code(0)
                     .setRet_values("更新成功")
