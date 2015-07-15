@@ -96,10 +96,34 @@ public class ToplineController extends AbstractBaseController<Topline, Long> {
                     .setRet_values("竟然没找到")
                     .setMessage("失败");
         }
-        toplineRepository.save(toplineDto.updateTopline(topline));
+        Topline top = toplineDto.updateTopline(topline);
+        if (toplineDto.getEnabled() != null) {
+            top.setEnabled(toplineDto.getEnabled());
+        }
+        toplineRepository.save(top);
         return new ControllerResult<>()
                 .setRet_code(0)
-                .setRet_values("添加成功")
+                .setRet_values("更新成功")
+                .setMessage("成功");
+    }
+
+    /**
+     * 禁用启用
+     * @param toplineId
+     * @param enabled
+     * @return
+     */
+    @RequestMapping(value = "enabledTopline/{toplineId}", method = RequestMethod.GET)
+    public Object enabledTopline(@PathVariable long toplineId, @RequestParam Boolean enabled) {
+        Topline topline = toplineRepository.findOne(toplineId);
+
+        if (enabled != null) {
+            topline.setEnabled(enabled);
+        }
+        toplineRepository.save(topline);
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values("更新成功")
                 .setMessage("成功");
     }
 }
