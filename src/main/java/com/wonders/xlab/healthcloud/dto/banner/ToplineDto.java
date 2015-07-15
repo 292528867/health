@@ -9,6 +9,8 @@ import javax.validation.constraints.NotNull;
  */
 public class ToplineDto {
 
+    private String name;
+
     /** 图片 */
     @NotNull(message = "图片地址不能为空")
     private String picUrl;
@@ -27,6 +29,7 @@ public class ToplineDto {
 
     public Topline toNewTopline() {
         Topline topline = new Topline();
+        topline.setName(name);
         topline.setPicUrl(picUrl);
         topline.setLinkUrl(linkUrl);
         topline.setEnabled(enabled);
@@ -35,11 +38,20 @@ public class ToplineDto {
     }
 
     public Topline updateTopline(Topline topline) {
+        topline.setName(name);
         topline.setPicUrl(picUrl);
         topline.setLinkUrl(linkUrl);
         topline.setEnabled(enabled);
         topline.setPosition(position);
         return topline;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPicUrl() {

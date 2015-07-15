@@ -199,8 +199,16 @@ public class UserController extends AbstractBaseController<User, Long> {
                         user = new User();
                         user.setTel(idenCode.getTel());
                         user.setAppPlatform(idenCode.getAppPlatform());
-
-                        return userRegister(user);
+                        user = userRegister(user);
+                        return null != user ?
+                                new ControllerResult<User>()
+                                        .setRet_code(0)
+                                        .setRet_values(user)
+                                        .setMessage("获取用户成功!") :
+                                new ControllerResult<>()
+                                        .setRet_code(-1)
+                                        .setRet_values("")
+                                        .setMessage("注册用户失败!");
                     } else {
                         //判断数据库平台是否与登陆一致，不一致更新数据库
                         if (idenCode.getAppPlatform().equals(user.getAppPlatform())) {
