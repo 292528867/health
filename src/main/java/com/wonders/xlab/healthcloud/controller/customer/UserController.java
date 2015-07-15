@@ -305,34 +305,31 @@ public class UserController extends AbstractBaseController<User, Long> {
 
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
-            for (ObjectError error : result.getAllErrors())
+            for (ObjectError error : result.getAllErrors()) {
                 builder.append(error.getDefaultMessage());
+            }
             return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage(builder.toString());
         }
+
         userDto.setValid(User.Valid.valid);
         User user = userRepository.findOne(userId);
-        try {
-            BeanUtils.copyNotNullProperties(userDto, user, "hcPackageId");
-            final HcPackage hcPackage = hcPackageRepository.findOne(userDto.getHcPackageId());
-            if (user.getHcPackages() == null) {
-                user.setHcPackages(new HashSet<HcPackage>() {{
-                    add(hcPackage);
-                }});
-            } else {
-                user.getHcPackages().add(hcPackage);
-            }
-            user = modify(user);
-            user.setHcPackages(null);
-            ControllerResult controllerResult = (ControllerResult) userPackageOrderService.joinPlan(userId, userDto.getHcPackageId());
-            if (controllerResult.getRet_code() != 0) {
-                return controllerResult;
-            } else {
-                return new ControllerResult<>().setRet_code(0).setRet_values(user).setMessage("用户更新成功!");
-            }
-        } catch (Exception exp) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("更新失败!");
+        System.out.println("user.getHcPackages() = " + user.getHcPackages());
+
+        BeanUtils.copyNotNullProperties(userDto, user, "hcPackageId");
+        HcPackage hcPackage = hcPackageRepository.findOne(userDto.getHcPackageId());
+        user.getHcPackages().add(hcPackage);
+        userRepository.save(user);
+
+        user.setHcPackages(null);
+        ControllerResult controllerResult = (ControllerResult) userPackageOrderService.joinPlan(userId, userDto.getHcPackageId());
+        if (controllerResult.getRet_code() == -1) {
+            return controllerResult;
         }
 
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(user)
+                .setMessage("用户更新成功!");
     }
 
     /**

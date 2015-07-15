@@ -79,6 +79,11 @@ $("#package").on("change",function(){
     getTopicList($(this).val());
 });
 
+
+$("#topic").on("change",function(){
+    $("#articleId").val($(this).val());
+});
+
 getPackageList();
 
 /**
@@ -132,6 +137,7 @@ function updateBanner(){
     var position=$("#position").val();
     var bannerTag=$("#bannerTag").val();
     var bannerType=$("#bannerType").val();
+    var articleId=$("#articleId").val();
 
     if(picUrl==""){
         alert("请先上传图片");
@@ -142,6 +148,7 @@ function updateBanner(){
         "linkUrl":linkUrl,
         "bannerTag":bannerTag,
         "bannerType":bannerType,
+        "articleId":articleId,
         "position":position,
         "enabled":true
     };
@@ -160,6 +167,7 @@ function enabledBanner(e){
         "title": param.title,
         "picUrl": param.picUrl,
         "linkUrl":param.linkUrl,
+        "articleId":param.articleId,
         "bannerTag":param.bannerTag,
         "bannerType":param.bannerType,
         "position":param.position,
