@@ -1,4 +1,4 @@
-package com.wonders.xlab.healthcloud.service;
+package com.wonders.xlab.healthcloud.service.lucene;
 
 import com.wonders.xlab.healthcloud.service.cache.LuceneCacheService;
 import org.apache.lucene.analysis.Analyzer;
@@ -7,7 +7,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import java.io.IOException;
@@ -15,11 +15,11 @@ import java.io.StringReader;
 import java.util.Map;
 
 /**
- * Created by wukai on 15/7/3.
+ * 中文分词
+ * Created by wukai on 15/7/16.
  */
-@Service
-public class WordAnalyzerSvcImpl implements WordAnalyzerService {
-
+@Component
+public class WordAnalyzer {
     @Autowired
     private LuceneCacheService luceneCache;
 
@@ -28,7 +28,6 @@ public class WordAnalyzerSvcImpl implements WordAnalyzerService {
      * @param text
      * @return
      */
-    @Override
     public Map<String, String> analyzeText(String text) {
         Map<String, String> resultMap = null;
         //构建IK分词器，为true使用smart分词模式
@@ -50,9 +49,9 @@ public class WordAnalyzerSvcImpl implements WordAnalyzerService {
             while (ts.incrementToken()) {
                 String key = term.toString();
                 //单个字单分词直接跳过
-				if(key.length() == 1){
-					continue;
-				}
+                if(key.length() == 1){
+                    continue;
+                }
                 //如果缓存中是否有药名匹配,进行后续处理
                 if(luceneCache.exist(key)){
                     //TODO 生成URL

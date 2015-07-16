@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class QuestionOrderServiceImpl implements QuestionOrderService {
      * @throws Exception
      */
     @Override
+    @Transactional
     public void sendQuestionToDoctors(String doctorTel) throws Exception{
         //获取问题列表
         List<QuestionOrder> orderList = orderRepository.findAllNewQuestionsOrderByPushCountAndId(QuestionOrder.QuestionStatus.newQuestion);
