@@ -322,16 +322,11 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                     ||(rp.getRank().ordinal()==1 && serviceUserNum < stewards.size()*2)
                     ||(rp.getRank().ordinal()==0 && serviceUserNum < stewards.size()*2)) {
                 //随机一个管家
-                List<Steward> stewardList = new ArrayList<>();
                 for (Steward s : stewards) {
-                    stewardList.add(s);
-                }
-                for (Steward sl : stewardList) {
-                    if (sl.getServiceUserNum()>=2){
-                        stewards.remove(sl);
+                    if (s.getServiceUserNum()>=2){
+                        stewards.remove(s);
                     }
                 }
-
                 steward = stewards.get((int) (System.currentTimeMillis() % stewards.size()));
 
                 amount = Double.parseDouble(rp.getPrice());
