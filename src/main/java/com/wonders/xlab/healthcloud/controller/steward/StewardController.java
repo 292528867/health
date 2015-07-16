@@ -69,7 +69,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      *
      * @return
      */
-    @RequestMapping(value = "getAllRecommendPackage/{address}", method = RequestMethod.GET)
+    @RequestMapping(value = "4/{address}", method = RequestMethod.GET)
     public Object getAllRecommendPackage(@PathVariable String address) {
         List<RecommendPackage> prList = recommendPackageRepository.findAll();
         boolean flag = true;
@@ -310,8 +310,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             // 计算推荐包价格
 
             RecommendPackage rp = recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
-            amount = Double.parseDouble(rp.getPrice());
-
             List<Steward> stewards = stewardRepository.findByRank(rp.getRank());
             for (Steward s : stewards) {
                 serviceUserNum += s.getServiceUserNum();
@@ -324,12 +322,19 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                     ||(rp.getRank().ordinal()==1 && serviceUserNum < stewards.size()*2)
                     ||(rp.getRank().ordinal()==0 && serviceUserNum < stewards.size()*2)) {
                 //随机一个管家
+                List<Steward> stewardList = new ArrayList<>();
                 for (Steward s : stewards) {
-                    if (s.getServiceUserNum()>=2){
-                        stewards.remove(s);
+                    stewardList.add(s);
+                }
+                for (Steward sl : stewardList) {
+                    if (sl.getServiceUserNum()>=2){
+                        stewards.remove(sl);
                     }
                 }
+
                 steward = stewards.get((int) (System.currentTimeMillis() % stewards.size()));
+
+                amount = Double.parseDouble(rp.getPrice());
             } else {
                 return new ControllerResult<>()
                         .setRet_code(-1)
