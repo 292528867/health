@@ -1,5 +1,6 @@
 package com.wonders.xlab.healthcloud.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wonders.xlab.healthcloud.dto.hcpackage.ProgressDto;
@@ -19,10 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by mars on 15/7/8.
@@ -40,6 +38,9 @@ public class HomePageController {
     @Autowired
     private HomePageService homePageService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     /**
      * 首页
      * @param userId
@@ -48,10 +49,14 @@ public class HomePageController {
     @RequestMapping(value = "listHomePage/{userId}", method = RequestMethod.GET)
     public Object listHomePage(@PathVariable long userId) {
         try {
-            JsonNodeFactory factory = JsonNodeFactory.instance;
-            ObjectNode resultNode = factory.objectNode();
-            ObjectNode bannerNode = factory.objectNode();
-            resultNode.putPOJO("banner", homePageService.retrieveBannerNode(bannerNode));
+
+            JsonNodeFactory jsonNodeFactory = objectMapper.getNodeFactory();
+            // 前台数据已定，暂不采用ArrayNode
+//            ArrayNode resultArrayNode = jsonNodeFactory.arrayNode();
+            ObjectNode resultNode = jsonNodeFactory.objectNode();
+            Map<String, Object> bannerMap = homePageService.retrieveBannerNode();
+
+            resultNode.putPOJO("banner", bannerMap);
 
             // 完成计划的Id
             List<Long> completeDetailIds = new ArrayList<>();
@@ -109,13 +114,13 @@ public class HomePageController {
                 allDetailList.addAll(tempDetailFrom);
             }
             // 获取最终任务，tips
-            resultNode = homePageService.retrieveTasksAndTipsByAllDetailList(resultNode, allDetailList, now);
+            Map<String, Object> taskMap = homePageService.retrieveTasksAndTipsByAllDetailList(allDetailList, now);
 
+            resultNode.putPOJO("tips", taskMap.get("tips"));
+            resultNode.putPOJO("task", taskMap.get("task"));
             // 添加进度
             resultNode.putPOJO("progress", progressDtos);
-
             resultNode.put("currentDay", DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
-
             return new ControllerResult<>().setRet_code(0).setRet_values(resultNode).setMessage("成功");
         } catch (Exception exp) {
             exp.printStackTrace();
@@ -144,3 +149,4 @@ public class HomePageController {
         return DateUtils.calculatePeiorDaysOfTwoDate(cfrom.getTime(), cto.getTime());
     }
 }
+
