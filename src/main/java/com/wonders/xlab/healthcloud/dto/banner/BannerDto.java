@@ -3,7 +3,6 @@ package com.wonders.xlab.healthcloud.dto.banner;
 import com.wonders.xlab.healthcloud.entity.banner.Banner;
 import com.wonders.xlab.healthcloud.entity.banner.BannerTag;
 import com.wonders.xlab.healthcloud.entity.banner.BannerType;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.validation.constraints.NotNull;
@@ -62,16 +61,12 @@ public class BannerDto {
                 Boolean.valueOf(enabled),
                 Integer.valueOf(position)
         );
-        if (!StringUtils.equals(bannerTag, "none")) {
-            banner.setBannerTag(BannerTag.values()[NumberUtils.toInt(bannerTag)]);
-        }
+        banner.setBannerTag(BannerTag.values()[NumberUtils.toInt(bannerTag)]);
         return banner;
     }
 
     public Banner updateBanner(Banner banner) {
-        if (!StringUtils.equals(bannerTag, "none")) {
-            banner.setBannerTag(BannerTag.values()[NumberUtils.toInt(bannerTag)]);
-        }
+        banner.setBannerTag(BannerTag.values()[NumberUtils.toInt(bannerTag)]);
         banner.setBannerType(BannerType.values()[NumberUtils.toInt(bannerType)]);
         banner.setArticleId(articleId);
         banner.setTitle(title);
