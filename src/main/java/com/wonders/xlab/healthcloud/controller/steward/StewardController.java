@@ -404,16 +404,17 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         StewardOrder stewardOrder = stewardOrderRepository.findByChargeId(chargeId);
         if (null != stewardOrder) {
             stewardOrder.setOrderStatus(StewardOrder.OrderStatus.支付成功);
-            stewardOrder.setPayDate(new Date());
-            stewardOrderRepository.save(stewardOrder);
+            if (null == stewardOrder.getPayDate()){
+                stewardOrder.setPayDate(new Date());
+                stewardOrderRepository.save(stewardOrder);
 
-            Steward steward = stewardOrder.getSteward();
-            steward.setServiceUserNum(steward.getServiceUserNum() + 1);
-            if (steward.getServiceUserNum() == 2) {
-                steward.setChoice(false);
+                Steward steward = stewardOrder.getSteward();
+                steward.setServiceUserNum(steward.getServiceUserNum() + 1);
+                if (steward.getServiceUserNum() == 2) {
+                    steward.setChoice(false);
+                }
+                stewardRepository.save(steward);
             }
-            stewardRepository.save(steward);
-
             int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
             String[] detilServicedPeriod = new String[totalServicePeriod];
             for (int num = 0; num < detilServicedPeriod.length; num++) {
