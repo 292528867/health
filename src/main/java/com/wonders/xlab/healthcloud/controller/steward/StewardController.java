@@ -69,7 +69,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      *
      * @return
      */
-    @RequestMapping(value = "4/{address}", method = RequestMethod.GET)
+    @RequestMapping(value = "getAllRecommendPackage/{address}", method = RequestMethod.GET)
     public Object getAllRecommendPackage(@PathVariable String address) {
         List<RecommendPackage> prList = recommendPackageRepository.findAll();
         boolean flag = true;
