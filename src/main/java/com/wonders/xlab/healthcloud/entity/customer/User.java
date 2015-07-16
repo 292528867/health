@@ -27,7 +27,7 @@ public class User extends BaseInfo<Long> {
     /**
      * 分类
      */
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "HC_USER_HEALTHGATEGORY",
             joinColumns = @JoinColumn(name = "USER_ID"),

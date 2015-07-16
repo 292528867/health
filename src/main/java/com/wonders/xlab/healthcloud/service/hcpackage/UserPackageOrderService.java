@@ -86,6 +86,9 @@ public class UserPackageOrderService {
         }
     }
 
+    public void scheduleCalculateIsPackageFinished(int aliquotNumber, int number) {
+    }
+
 
     @Transactional
     public int joinHealthPlan(long userId, long packageId) {

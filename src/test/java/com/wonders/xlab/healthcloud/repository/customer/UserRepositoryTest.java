@@ -23,7 +23,7 @@ public class UserRepositoryTest {
     @Test
     public void testFindOne() throws Exception {
 
-        User user = userRepository.findOne(47l);
+        User user = userRepository.findOne(124l);
         System.out.println("user.getHcPackages() = " + user.getHcs());
     }
 }
