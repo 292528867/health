@@ -3,6 +3,10 @@ package com.wonders.xlab.healthcloud.controller.ueditor;
 import java.io.IOException;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.healthcloud.service.UEditorConfig;
 import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 
@@ -19,14 +24,25 @@ import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
 public class UEditorController {
 	@Autowired
 	private UEditorConfig config;
+	@Autowired
+	private ObjectMapper objectMapper;
 	
 	/**
 	 * 返回ueditor配置json（默认调用param，action=config）。
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.GET, params = "action=config")
-	public UEditorConfig getConfig() {
-		return config;
+	public String getConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// jsonp 回调函数名
+		String jsonpCallback = request.getParameter("callback");
+		String json = objectMapper.writeValueAsString(config);
+		if (StringUtils.isEmpty(jsonpCallback)) {
+			// 不是jsonp请求，直接返回json
+			return json;
+		} else {
+			// 是jsonp形式的跨域请求，拼装callback(json)
+			return jsonpCallback + "(" + json + ")";
+		}
 	}
 	
 	/**
@@ -35,7 +51,7 @@ public class UEditorController {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST, params = "action=uploadimage")
-	public UploadResult uploadimage(MultipartFile upfile) {
+	public UploadResult uploadimage(MultipartFile upfile, HttpServletRequest request, HttpServletResponse response) {
 		if (upfile != null && !upfile.isEmpty()) {
 			try {
 				String fileName = "healtharticle-image-" + String.valueOf((new Date()).getTime());
@@ -43,6 +59,7 @@ public class UEditorController {
 				
 				// {"url" : "http://7xk3mz.com2.z0.glb.qiniucdn.com/healtharticle-image-1436684006380"}
 				// {"url" : "http://7xk3mz.com2.z0.glb.qiniucdn.com/healtharticle-image-1436684074278"}
+				
 				
 				return new UploadResult().setState("SUCCESS").setTitle(fileName).setOriginal(fileName_output).setUrl(fileName);
 			} catch (IOException exp) {
