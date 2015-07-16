@@ -309,7 +309,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         if (!StringUtils.isEmpty(serviceDto.getPackageId())) {
             // 计算推荐包价格
 
-
             RecommendPackage rp = recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
             amount = Double.parseDouble(rp.getPrice());
 
@@ -335,7 +334,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 return new ControllerResult<>()
                         .setRet_code(-1)
                         .setRet_values("")
-                        .setMessage("管家已分配完成,请等待");
+                        .setMessage("管家已被使用完,请等待管家被释放");
             }
 
         } else {
@@ -376,7 +375,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         }
         return new ControllerResult<>()
                 .setRet_code(0)
-                .setRet_values(charge.toString())
+                .setRet_values(charge)
                 .setMessage("");
     }
 
