@@ -2,7 +2,6 @@ package com.wonders.xlab.healthcloud.dto.hcpackage;
 
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackage;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,8 +39,8 @@ public class HcPackageDetailDto {
      * 是否需要补充内容
      */
     @NotNull(message = "是否需要补充内容判断不能为空")
-    @Pattern(regexp = "^true|false$", message = "是否需要补充内容必须为false否true是")
-    private String isNeedSupplemented;
+//    @Pattern(regexp = "^true|false$", message = "是否需要补充内容必须为false否true是")
+    private Boolean isNeedSupplemented;
 
     /**
      * 补充内容
@@ -60,10 +59,11 @@ public class HcPackageDetailDto {
      * 任务积分
      */
     @NotNull(message = "积分不能为空")
-    private String integration;
+    private Integer integration;
 
-    @Pattern(regexp = "^true|false$", message = "是否为全天必须为false否true是")
-    private String isFullDay;
+//    @Pattern(regexp = "^true|false$", message = "是否为全天必须为false否true是")
+    @NotNull(message = "是否全天不能为空")
+    private Boolean isFullDay;
 
     private MultipartFile file;
 
@@ -72,10 +72,10 @@ public class HcPackageDetailDto {
                 hcPackage,
                 taskName,
                 detail,
-                Boolean.valueOf(isNeedSupplemented),
+                isNeedSupplemented,
                 supplemented,
-                NumberUtils.toInt(integration),
-                Boolean.valueOf(isFullDay)
+                integration,
+                isFullDay
         );
 
         try {
@@ -119,11 +119,11 @@ public class HcPackageDetailDto {
         this.detail = detail;
     }
 
-    public String getIsNeedSupplemented() {
+    public Boolean getIsNeedSupplemented() {
         return isNeedSupplemented;
     }
 
-    public void setIsNeedSupplemented(String isNeedSupplemented) {
+    public void setIsNeedSupplemented(Boolean isNeedSupplemented) {
         this.isNeedSupplemented = isNeedSupplemented;
     }
 
@@ -143,12 +143,16 @@ public class HcPackageDetailDto {
         this.recommendTimeFrom = recommendTimeFrom;
     }
 
-    public String getIntegration() {
+    public Integer getIntegration() {
         return integration;
     }
 
-    public void setIntegration(String integration) {
+    public void setIntegration(Integer integration) {
         this.integration = integration;
+    }
+
+    public void setIsFullDay(Boolean isFullDay) {
+        this.isFullDay = isFullDay;
     }
 
     public MultipartFile getFile() {
@@ -159,11 +163,7 @@ public class HcPackageDetailDto {
         this.file = file;
     }
 
-    public String getIsFullDay() {
+    public Boolean getIsFullDay() {
         return isFullDay;
-    }
-
-    public void setIsFullDay(String isFullDay) {
-        this.isFullDay = isFullDay;
     }
 }

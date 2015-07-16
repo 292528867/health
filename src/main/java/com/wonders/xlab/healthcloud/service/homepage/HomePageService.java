@@ -1,10 +1,10 @@
 package com.wonders.xlab.healthcloud.service.homepage;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mars on 15/7/16.
@@ -12,7 +12,7 @@ import java.util.List;
 public interface HomePageService {
 
 
-    ObjectNode retrieveBannerNode(ObjectNode node);
+    Map<String, Object> retrieveBannerNode();
 
-    ObjectNode retrieveTasksAndTipsByAllDetailList(ObjectNode resultNode, List<HcPackageDetail> prePackageDetailList, Date now);
+    Map<String, Object> retrieveTasksAndTipsByAllDetailList(List<HcPackageDetail> prePackageDetailList, Date now);
 }

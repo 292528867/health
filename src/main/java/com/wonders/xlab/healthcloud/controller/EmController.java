@@ -15,7 +15,6 @@ import com.wonders.xlab.healthcloud.repository.EmMessagesRepository;
 import com.wonders.xlab.healthcloud.repository.QuestionOrderRepository;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
-import com.wonders.xlab.healthcloud.service.WordAnalyzerService;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import com.wonders.xlab.healthcloud.service.emchat.QuestionOrderService;
 import com.wonders.xlab.healthcloud.utils.Constant;
@@ -642,7 +641,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         resultMap.put("orders", orders);
         resultMap.put("newQuestion", newQuestion);
 
-        return new ControllerResult()
+        return new ControllerResult<>()
                 .setRet_code(0)
                 .setRet_values(resultMap)
                 .setMessage("success");
@@ -656,7 +655,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     @RequestMapping(value = "/getNewQuestion", method = RequestMethod.GET)
     public ControllerResult findOneQuestionRandom() {
         QuestionOrder newQuestion = questionOrderService.findOneNewQuestion();
-        return new ControllerResult()
+        return new ControllerResult<>()
                 .setRet_code(0)
                 .setRet_values(newQuestion)
                 .setMessage("success");
