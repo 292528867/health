@@ -1,13 +1,20 @@
-#images-page, #audios-page{
+#images-page, #audios-page {
     margin-top: 20px;
 }
-#index-img,#index-img-index{
+
+#index-img, #index-img-index {
     max-height: 200px;
 
 }
+
 #change-info-box {
     /*display: none;*/
 }
+
 .admin-main {
     min-height: 800px;
+}
+
+.am-modal {
+    position: absolute !important;
 }
