@@ -73,3 +73,25 @@ function articleAdd() {
 
     });
 }
+function toLook() {
+    var title = $('#title').val();
+    var desc = $('#desc').val();
+    var pictureUrl = $('#pictureUrl').val();
+    var pictureUrl2 = $('#pictureUrl2').val();
+    var type = $('#type').val();
+    var htmlInfo = UE.getEditor('htmlInfo').getContent();
+    if (title.length == 0 || desc.length == 0 || pictureUrl.length == 0 ||pictureUrl2.length == 0 || htmlInfo.length == 0 || type.length == 0) {
+        alert('有字段没有填写');
+        return false;
+    }
+    var json = {
+        "title": title,
+        "pictureUrl": pictureUrl,
+        "pictureUrl2": pictureUrl2,
+        "htmlInfo": htmlInfo,
+        "desc": desc
+    };
+    json = JSON.stringify(json);
+    localStorage.setItem('article', json);
+    window.open('http://101.231.124.8:45677/xlab-healthcloud/app/check.html','','width=400,height=600');
+}

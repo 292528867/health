@@ -163,6 +163,7 @@ function getDetails(id) {
    });
    */
 }
+/*
 window.onpopstate = function (event) {
   var indexId = sessionStorage.getItem('index');
   if (indexId != null) {
@@ -179,6 +180,7 @@ window.onpopstate = function (event) {
     $('body').css('background','#ffffff');
   }
 };
+*/
 
 
 function loadTypeArticles(id) {
@@ -225,6 +227,7 @@ $(document).ready(function () {
 
 
 
+/*
 function loadDetails(id) {
   var article;
   $('body').scrollTop(0);
@@ -258,3 +261,4 @@ function openArticle() {
 function activityList(id) {
   window.location.href = 'share.html?' + id.share;
 }
+*/

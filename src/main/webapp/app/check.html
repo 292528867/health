@@ -1,0 +1,151 @@
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=description content="An Amaze UI template that helps you build fast, modern mobile web apps."><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>文章详情</title><meta name=renderer content=webkit><meta http-equiv=Cache-Control content=no-siteapp><link rel=icon type=image/png href=i/favicon.png><link rel=manifest href=manifest.json><meta name=mobile-web-app-capable content=yes><meta name=application-name content="Web Starter Kit"><link rel=icon sizes=192x192 href=i/touch/chrome-touch-icon-192x192.png><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black><meta name=apple-mobile-web-app-title content="Amaze UI Sfavicon.pngtarter Kit"><link rel=apple-touch-icon href=i/touch/apple-touch-icon.png><meta name=msapplication-TileImage content=i/touch/ms-touch-icon-144x144-precomposed.png><meta name=msapplication-TileColor content=#0e90d2><link rel=stylesheet href=css/amazeui.min.css><link rel=stylesheet href=css/main.css></head><style>
+  .detail-body img {
+    max-width: 100%;
+  }
+
+  .detail-body {
+    background: #f6f6f6;
+    padding: 0 15px;
+    margin: 0 !important;
+  }
+
+  #details {
+    overflow: hidden;
+  }
+
+  #detail-title {
+    color: #333333;
+    margin-top: 2rem;
+    font-size: 2.1rem;
+  }
+
+  #detail-img {
+    margin-bottom: 15px;
+  }
+
+  #detail-img {
+    width: 100%;
+  }
+
+  .data-body {
+    display: none;
+  }
+
+  .btn-divider {
+    color: #cfcfcf;
+  }
+
+  .foot-title {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    margin-left: -28px;
+    margin-top: -12px;
+    background: #f6f6f6;
+    color: #999999;
+    text-align: center;
+    padding: 0 10px;
+  }
+
+  .detail-foot {
+    position: relative;
+    margin-top: 40px;
+  }
+
+  .finish-divider {
+    margin-bottom: 20px;
+  }
+
+  .share-btns {
+    max-width: 330px;
+    margin: auto;
+  }
+
+  .share-btns div {
+    float: left;
+    width: 33%;
+    text-align: center;
+  }
+
+  #detail-count {
+    color: #999999 !important;
+    font-size: 1.4rem;
+  }
+
+  .banner-bg {
+    background: url(http://s0.pstatp.com/resource/toutiao_wap/static/image/shadow_f90b6bd.png);
+    height: 25px;
+    background-size: cover;
+    margin-left: -10px;
+    margin-right: -10px;
+    margin-top: -45px;
+    margin-bottom: 15px;
+    position: relative;
+  }
+
+  .unfold-field {
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    text-align: center;
+    margin-bottom: 0;
+    display: none;
+    position: relative;
+    margin-top: -25px;
+    color: #54a0dc;
+    background: #f6f6f6;
+  }
+
+  .unfold-field .text-link {
+    cursor: pointer;
+    background-size: contain;
+    display: inline-block;
+    width: 58px;
+    height: 58px;
+    background: rgba(255, 255, 255, 1);
+    border-radius: 29px;
+    font-size: 14px;
+    /*box-shadow: 0 -1px 4px 0 #e2e1e1;*/
+    color: #5784df;
+  }
+
+  .unfold-field .text-link i {
+    display: block;
+    line-height: 14px;
+    font-style: normal;
+    text-align: center;
+    color: #40ced9;
+  }
+
+  .unfold-field .text-link i:first-child {
+    margin-top: 15px;
+  }
+</style><body class=detail-body><div class=data-body><div id=detail-title></div><div style="margin-bottom: 10px"><img src=i/schedule/eye.jpg width=25 style="margin-left: 5px" class=am-text-middle> <span id=detail-count class=am-text-middle></span></div><div id=details></div><div class=am-warning><span class="am-icon-btn am-warning am-icon-warning"></span>预览之后记得保存哦！！！！！！！！！！</div><div class=banner-bg style="display: none;"></div><div class=unfold-field style="display: none;"><a href=javascript:; class="text-link unfold-btn" onclick=openArticle()><i>展开</i><i>全文</i></a></div><div class=detail-foot style="display: none"><div class=finish-divider><hr data-am-widget=divider class="am-divider am-divider-default btn-divider"><div class=foot-title>分享</div><div class="share-btns am-cf"><div><img src=i/share/wechat1.png width=50 onclick="activityList({'share':'wechat'});" id=session></div><div><img src=i/share/wechat2.png width=50 onclick="activityList({'share':'session'});" id=wechat></div><div><img src=i/share/weibo.png width=50 onclick="activityList({'share':'weibo'});" id=weibo></div></div></div></div></div></body><script src=js/jquery.min.js></script><script src=js/amazeui.min.js></script><script>
+  $(document).ready(function () {
+
+    var article =localStorage.getItem('article');
+    article = JSON.parse(article);
+//    var articleId = JSON.parse(article).id;
+    $('#detail-img').attr('src', article.pictureUrl);
+    $('#details').html(article.htmlInfo);
+    $('#detail-title').html(article.title);
+//    $('#detail-count').html(article.clickCount + '人阅读');
+    setTimeout(load(), 500);
+    var articleHeight = $('#details').height() + 20;
+    var height = $(window).height() * 2;
+    if (height < articleHeight) {
+      $('#details').css('height', height);
+      $('.unfold-field').show();
+      $('.banner-bg').show();
+    }
+
+  });
+  function load() {
+    $('.data-body').fadeIn();
+  }
+  function openArticle() {
+    $('#details').css('height', 'auto');
+    $('.unfold-field').hide();
+    $('.banner-bg').hide();
+  }
+</script></html>

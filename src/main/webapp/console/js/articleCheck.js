@@ -118,12 +118,10 @@ function searchArticle(id) {
             "<td><div class='am-btn-toolbar'><div class='am-btn-group am-btn-group-xs'>" +
             "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick='changeArticle(" + n + ")'>" +
             "<span class='am-icon-pencil-square-o'></span> 编辑</button>";
-            datas += "</button>" +
-/*
+            datas += "" +
             "<button type='button' class='am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only' " +
-            "onclick='deleteCourse(" + value.id + ")'  >" +
-            "<span class='am-icon-trash-o'></span> 删除</button>" +
-*/
+            "onclick='lookNow(" + n + ")'  >" +
+            "<span class='am-icon-trash-o'></span> 预览</button>" +
             "</div></div></td></tr>";
         });
         $("#allDatas").append(datas);
@@ -154,4 +152,33 @@ function changeArticle(id) {
     $('#pictureUrl2').val(data.pictureUrl2);
     $('#change-info-box').show();
     $('#info-table').hide();
+}
+function lookNow(id) {
+    var article = articles[id];
+    window.open('http://101.231.124.8:45677/xlab-healthcloud/app/detail.html?'+article.id,'','width=400,height=600');
+}
+
+function toLook() {
+    var title = $('#title').val();
+    var desc = $('#desc').val();
+    var pictureUrl = $('#pictureUrl').val();
+    var pictureUrl2 = $('#pictureUrl2').val();
+    var type = $('#type').val();
+    var id = $('#id').val();
+    var htmlInfo = UE.getEditor('htmlInfo').getContent();
+    if (title.length == 0 || desc.length == 0 || pictureUrl.length == 0 ||pictureUrl2.length == 0 || htmlInfo.length == 0 || type.length == 0) {
+        alert('有字段没有填写');
+        return false;
+    }
+    var json = {
+        "title": title,
+        "pictureUrl": pictureUrl,
+        "pictureUrl2": pictureUrl2,
+        "htmlInfo": htmlInfo,
+        "desc": desc,
+        "id":id
+    };
+    json = JSON.stringify(json);
+    localStorage.setItem('article', json);
+    window.open('http://101.231.124.8:45677/xlab-healthcloud/app/check.html','','width=400,height=600');
 }
