@@ -61,4 +61,10 @@ public class HcPackageRepositoryTest {
         HcPackage hcPackage = hcPackageRepository.findOne(1l);
         Assert.isTrue(hcPackage.getHealthCategory().getId() == 7l);
     }
+
+    @Test
+    public void testFindTop4OrderByRecommendValueDesc() throws Exception {
+        List<HcPackage> packages = hcPackageRepository.findTop4ByOrderByRecommendValueDesc();
+        Assert.isTrue(4 == packages.size());
+    }
 }

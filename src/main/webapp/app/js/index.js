@@ -55,11 +55,11 @@ function inLoad() {
 
 function loadArticles(id) {
   page = 0, loads = 0, totalPages = 0, number = 0, flag = 0;
-  $('#banner-scroll').hide();
+  $('#homepage-scroll').hide();
   $('#error-png').hide();
   $('.today-bar').attr('onclick', 'loadTodayArticles()');
   $('.today-bar').addClass('today-bar-noactive');
-  $('#banner-scroll').show();
+  $('#homepage-scroll').show();
   $('#banners').html('');
   $('#article').html('');
   $.get(typeTagUrl + healthCategoryId + '/' + id, function (data) {
@@ -95,7 +95,7 @@ function loadTodayArticles() {
   page = 0, loads = 0, totalPages = 0, number = 0, flag = 1;
   $('#error-png').hide();
   $('.today-bar').attr('onclick', '');
-  $('#banner-scroll').show();
+  $('#homepage-scroll').show();
   /*
    if (typeof(mySwiper) != 'undefined') {
    mySwiper.removeAllSlides();
@@ -131,7 +131,7 @@ function loadTodayArticles() {
     $('#article').html(articleTemple(values));
     typeArticleUrl = commonUrl + 'discovery/app/recommand/tag/articles/';
     sessionStorage.removeItem('articleUrl');
-    $('#banner-scroll').hide();
+    $('#homepage-scroll').hide();
   })
 }
 
@@ -190,14 +190,14 @@ function loadTypeArticles(id) {
       $('#banners').append(articleTemple(articleList));
     if (values.length == 0) {
       $('#error-png').show();
-      $('#banner-scroll').hide();
+      $('#homepage-scroll').hide();
     }
     page++;
     loads = 1;
     number = data.ret_values.number + 1;
     totalPages = data.ret_values.totalPages;
     if (number === totalPages) {
-      $('#banner-scroll').hide();
+      $('#homepage-scroll').hide();
     }
   });
 }

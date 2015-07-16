@@ -27,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -42,7 +41,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -60,9 +58,6 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     @Autowired
     private DoctorRepository doctorRepository;
-
-    @Autowired
-    private WordAnalyzerService wordAnalyzerService;
 
     @Autowired
     private UserRepository userRepository;
@@ -105,7 +100,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     @RequestMapping(value = "replyMessage/{id}/{userTel}", method = RequestMethod.POST)
     public ControllerResult replyMessage(@PathVariable("id") long id, @PathVariable("userTel") String userTel, @RequestBody TexMessagesRequestBody body) throws IOException {
         EmMessages oldEm = emMessagesRepository.findOne(id);
-        if(oldEm == null){
+        if (body.getExt() == null) {
+            Map<String, Object> map = new HashMap<>();
+            body.setExt(map);
+        }
+        if (oldEm == null) {
             return new ControllerResult()
                     .setRet_code(-1)
                     .setRet_values("")
@@ -130,13 +129,9 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 true,
                 false
         );
-        EmMessages newMessage = emMessagesRepository.save(emMessages);
+        emMessagesRepository.save(emMessages);
         //回复后发送信息给用户
-       /* Map<String, Object> filterMap = new HashMap<>();
-        filterMap.put("tel_equal", body.getFrom());
-        Doctor doctor = doctorRepository.find(filterMap);*/
         Doctor doctor = doctorRepository.find(Collections.singletonMap("tel_equal", body.getFrom()));
-        //TODO 发短信注释
         SmsUtils.sendEmReplyInfo(userTel);
 
         //修改app发送信息状态为已回复
@@ -249,7 +244,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             orderCache.putIfAbsent(user.getId().toString(), questionOrder.getId().toString());
         }
 
-        return new ControllerResult().setRet_code(0).setRet_values(Collections.singletonMap("waiting",Constant.INTERROGATION_WAIT_CONTENT)).setMessage("文本消息发送成功");
+        return new ControllerResult().setRet_code(0).setRet_values(Collections.singletonMap("waiting", Constant.INTERROGATION_WAIT_CONTENT)).setMessage("文本消息发送成功");
 
     }
 
@@ -448,7 +443,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         newMessages.setCreatedDate(new Date());
 
         //最新问题是否被回复
-        EmMessages lastMessage = emMessagesRepository.findTopByToUserAndIsShowForDoctorOrderByCreatedDateDesc(groupId,0);
+        EmMessages lastMessage = emMessagesRepository.findTopByToUserAndIsShowForDoctorOrderByCreatedDateDesc(groupId, 0);
 
 
         //判断当天是否有医生数量提示
@@ -626,11 +621,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     /**
      * 医生App查询抢单纪录
+     *
      * @param doctorId 医生的id
      * @return
      */
     @RequestMapping(value = "/doctorOrders/{doctorId}", method = RequestMethod.GET)
-    public ControllerResult findQuestionOrders(@PathVariable long doctorId){
+    public ControllerResult findQuestionOrders(@PathVariable long doctorId) {
 
         Map<String, QuestionOrder.QuestionStatus> statusMap = new HashMap<>();
         statusMap.put("processing", QuestionOrder.QuestionStatus.processing);
@@ -640,7 +636,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 QuestionOrder.QuestionStatus.processing
         };
 
-        List<QuestionOrder> orders= questionOrderRepository.findQuestionOrdersByDoctorID(doctorId, statuses);
+        List<QuestionOrder> orders = questionOrderRepository.findQuestionOrdersByDoctorID(doctorId, statuses);
         QuestionOrder newQuestion = questionOrderService.findOneNewQuestion();
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("orders", orders);
@@ -654,10 +650,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     /**
      * 给医生App返回一个新的问题
+     *
      * @return
      */
     @RequestMapping(value = "/getNewQuestion", method = RequestMethod.GET)
-    public ControllerResult findOneQuestionRandom(){
+    public ControllerResult findOneQuestionRandom() {
         QuestionOrder newQuestion = questionOrderService.findOneNewQuestion();
         return new ControllerResult()
                 .setRet_code(0)

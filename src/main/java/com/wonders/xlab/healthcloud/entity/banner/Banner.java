@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Table(name = "hc_banner")
 public class Banner extends AbstractBaseEntity<Long> {
 
-    /** Banner标签 0 计划 1 发现 2 管家 3 问诊 4 商城 5 个人中心 6 购药 */
+    /** Banner标签 0 计划 1 发现 2 管家 3 问诊 4 商城 5 个人中心 6 购药 7 活动 */
     @Enumerated
     @Column(nullable = false)
     private BannerTag bannerTag;
@@ -44,8 +44,7 @@ public class Banner extends AbstractBaseEntity<Long> {
     public Banner() {
     }
 
-    public Banner(BannerTag bannerTag, BannerType bannerType, Long articleId, String title, String picUrl, String linkUrl, boolean enabled, int position) {
-        this.bannerTag = bannerTag;
+    public Banner(BannerType bannerType, Long articleId, String title, String picUrl, String linkUrl, boolean enabled, int position) {
         this.bannerType = bannerType;
         this.articleId = articleId;
         this.title = title;

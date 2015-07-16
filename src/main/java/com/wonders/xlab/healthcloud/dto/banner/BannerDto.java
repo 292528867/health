@@ -17,7 +17,7 @@ public class BannerDto {
 
     /** Banner标签 0 计划 1 发现 2 管家 3 问诊 4 商城 5 个人中心 6 购药 */
     @NotNull(message = "标签不能为空")
-    @Pattern(regexp = "^0|1|2|3|4|5|6$", message = "标签必须为 0日程｜1发现｜2管家｜3问诊｜4商城｜5个人中心｜6购药")
+//    @Pattern(regexp = "^0|1|2|3|4|5|6$", message = "标签必须为 0日程｜1发现｜2管家｜3问诊｜4商城｜5个人中心｜6购药")
     private String bannerTag;
 
     /** 标语位置 0 上 1 下 */
@@ -53,7 +53,6 @@ public class BannerDto {
 
     public Banner toNewBanner() {
         Banner banner = new Banner(
-                BannerTag.values()[NumberUtils.toInt(bannerTag)],
                 BannerType.values()[NumberUtils.toInt(bannerType)],
                 articleId,
                 title,
@@ -62,6 +61,7 @@ public class BannerDto {
                 Boolean.valueOf(enabled),
                 Integer.valueOf(position)
         );
+        banner.setBannerTag(BannerTag.values()[NumberUtils.toInt(bannerTag)]);
         return banner;
     }
 

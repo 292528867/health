@@ -74,7 +74,7 @@
             <div class="am-u-sm-12 am-u-md-6">
                 <div class="am-btn-toolbar">
                     <div class="am-btn-group am-btn-group-xs">
-                        <button type="button" class="am-btn am-btn-default" onclick="openAddType()"><span
+                        <button type="button" class="am-btn am-btn-default" onclick="openAdd()"><span
                                 class="am-icon-plus"></span> 新增
                         </button>
                     </div>
@@ -99,9 +99,10 @@
                         <tr>
                             <th class="table-check"><input type="checkbox"/></th>
                             <th class="table-id">ID</th>
-                            <th class="table-title">名称</th>
-                            <th class="table-title">简称</th>
-                            <th class="table-title">描述</th>
+                            <th class="table-title">活动名称</th>
+                            <th class="table-title">URL</th>
+                            <th class="table-title">图片</th>
+                            <th class="table-title">是否启用</th>
                             <th class="table-set">操作</th>
                         </tr>
                         </thead>
@@ -150,42 +151,62 @@
 
 <div class="am-modal " tabindex="-1" id="add-modal">
     <div class="am-modal-dialog">
-        <div class="am-modal-hd">添加分类
+        <div class="am-modal-hd">添加头条
             <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
         </div>
         <div class="am-modal-bd">
             <fieldset>
                 <div class="am-form-group type-add-form">
-                    <label for="title">标题</label>
-                    <input type="text" id="title" placeholder=""
-                           required name="title"/>
+                    <label for="name">名称</label>
+                    <input type="text" id="name" placeholder=""
+                           required name="name"/>
                 </div>
                 <div class="am-form-group type-add-form">
-                    <label for="tag">简称</label>
-                    <input type="text" id="tag" placeholder=""
-                           required name="tag"/>
+                    <label for="linkUrl">链接地址</label>
+                    <input type="text" id="linkUrl" placeholder=""
+                           required name="linkUrl"/>
                 </div>
                 <div class="am-form-group type-add-form">
-                    <label for="desc">描述</label>
-                    <input type="text" id="desc" placeholder=""
-                           required name="desc"/>
+                    <label for="position">排序：（请填写数字，数值越大排序越前）</label>
+                    <input type="tel" id="position" placeholder=""
+                           required name="position"/>
+                </div>
+                <div class="am-cf">
+                    <label class="am-radio" style="width: 100px;float: left;">
+                        <input type="radio" name="enabled" value="true" data-am-ucheck checked>
+                        启用
+                    </label>
+                    <label class="am-radio" style="width: 100px;float: left;margin-top: 10px;">
+                        <input type="radio" name="enabled" value="false" data-am-ucheck>
+                        下架
+                    </label>
                 </div>
                 <div class="am-form-group type-add-form">
-                    <label for="firstRelatedIds">一级关联</label>
-                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'secondary', searchBox:1}"
-                            id="firstRelatedIds" name="firstRelatedIds" class="type-select">
-                    </select>
+                    <label for="picUrl">图片地址</label>
+                    <input type="text" id="picUrl" placeholder=""
+                           required name="picUrl"/>
                 </div>
-                <div class="am-form-group type-add-form">
-                    <label for="secondRelatedIds">二级关联</label>
-                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'warning', dropUp:1, searchBox:1}"
-                            id="secondRelatedIds" name="secondRelatedIds" class="type-select">
-                    </select>
+                <form action="http://101.231.124.8:45677/xlab-healthcloud/discovery/cms/uploadPicture" class="am-form"
+                      id="top-img-form" method="post"
+                      enctype="multipart/form-data">
+                    <fieldset>
+                        <img src="" alt="" id="top-img" style="height: 100px;"/>
+                        <input type="file" multiple accept="image/*" name="file" id="top-file"/>
+                        <button class="am-btn am-btn-warning" type="submit" id="top-img-sub">先点我上传图片哦</button>
+                    </fieldset>
+                </form>
+                <div class="progress">
+                    <div class="bar"></div>
+                    <div class="percent">0%</div>
                 </div>
+
+                <div id="status"></div>
+
+                <br/>
 
             </fieldset>
 
-            <button class="am-btn am-btn-secondary" type="button" id="type-add" onclick="addType()">提交</button>
+            <button class="am-btn am-btn-secondary" type="button" id="type-add" onclick="addSub()">提交</button>
             <br/>
 
 
@@ -194,44 +215,49 @@
 </div>
 <div class="am-modal " tabindex="-1" id="change-modal">
     <div class="am-modal-dialog">
-        <div class="am-modal-hd">修改分类
+        <div class="am-modal-hd">修改
             <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
         </div>
         <div class="am-modal-bd">
             <fieldset>
-                <div class="am-form-group">
-                    <label for="change-title">标题</label>
-                    <input type="text" id="change-title" placeholder=""
-                           required name="change-title"/>
-                </div>
-                <div class="am-form-group">
-                    <label for="change-tag">简称</label>
-                    <input type="text" id="change-tag" placeholder=""
-                           required name="change-tag"/>
-                </div>
-                <div class="am-form-group">
-                    <label for="change-desc">描述</label>
-                    <input type="text" id="change-desc" placeholder=""
-                           required name="change-desc"/>
+                <div class="am-form-group type-add-form">
+                    <label for="change-name">名称</label>
+                    <input type="text" id="change-name" placeholder=""
+                           required name="change-name"/>
                 </div>
                 <div class="am-form-group type-add-form">
-                    <label for="change-firstRelatedIds">一级关联</label>
-                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'secondary', searchBox:1}"
-                            id="change-firstRelatedIds" name="change-firstRelatedIds" class="type-select">
-                    </select>
+                    <label for="change-linkUrl">链接地址</label>
+                    <input type="text" id="change-linkUrl" placeholder=""
+                           required name="change-linkUrl"/>
                 </div>
                 <div class="am-form-group type-add-form">
-                    <label for="change-secondRelatedIds">二级关联</label>
-                    <select multiple data-am-selected="{maxHeight:200, btnSize: 'sm', btnStyle: 'warning', dropUp:1, searchBox:1}"
-                            id="change-secondRelatedIds" name="change-secondRelatedIds" class="type-select">
-                    </select>
+                    <label for="change-position">排序：（请填写数字，数值越大排序越前）</label>
+                    <input type="tel" id="change-position" placeholder=""
+                           required name="change-position"/>
                 </div>
+                <div class="am-form-group type-add-form">
+                    <label for="change-picUrl">图片地址</label>
+                    <input type="text" id="change-picUrl" placeholder=""
+                           required name="change-picUrl"/>
+                </div>
+                <form action="http://101.231.124.8:45677/xlab-healthcloud/discovery/cms/uploadPicture" class="am-form"
+                      id="change-top-img-form" method="post"
+                      enctype="multipart/form-data">
+                    <fieldset>
+                        <img src="" alt="" id="change-top-img" style="height: 100px;"/>
+                        <input type="file" multiple accept="image/*" name="file" id="change-top-file"/>
+                        <button class="am-btn am-btn-warning" type="submit" id="change-top-img-sub">先点我上传图片哦</button>
+                    </fieldset>
+                </form>
 
+                <div id="change-status"></div>
 
+                <br/>
                 <input type="hidden" id="change-id"/>
+
             </fieldset>
 
-            <button class="am-btn am-btn-secondary" type="button" id="type-chage" onclick="changeTypeSub()">提交</button>
+            <button class="am-btn am-btn-secondary" type="button" id="change-type-add" onclick="changeSub()">提交</button>
             <br/>
 
 
@@ -254,11 +280,89 @@
 <script src="assets/js/app.js"></script>
 <script src="js/common.js"></script>
 <script src="js/jsform.js"></script>
-
-<script type="text/javascript">
+<script src="js/form.js"></script>
+<script src="js/indexEdit/topsAdd.js"></script>
+<script src="js/indexEdit/topsLoad.js"></script>
+<script>
     $(document).ready(function () {
+        var bar = $('.bar');
+        var percent = $('.percent');
+        var status = $('#status');
+
+        function showResponseIndex(responseText, statusText, xhr, $form) {
+            console.log('status: ' + statusText + '\n\nresponseText: \n' + responseText);
+            console.log(responseText);
+            if (responseText.ret_code == '0') {
+                $('#top-img').attr('src', responseText.ret_values);
+                $('#picUrl').val(responseText.ret_values);
+//                $('#change-modal').modal('toggle'),
+                percent.html('上传成功');
+                $('#top-img-sub').attr('disabled', false);
+            }
+        }
+
+
+        $('#top-img-form').on('submit', function (e) {
+            e.preventDefault(); // prevent native submit
+            console.log('正在提交');
+            if ($('#top-file').val().length == 0) {
+                alert('请提交文件');
+                return false;
+            }
+            $('#top-img-sub').attr('disabled', 'disabled');
+            $(this).ajaxSubmit({
+                        target: '.am-padding-left',
+                        success: showResponseIndex,
+                        uploadProgress: function (event, position, total, percentComplete) {
+                            var percentVal = percentComplete + '%';
+                            bar.width(percentVal)
+                            if (percentComplete == 100) {
+                                percentVal = "<i class='am-icon-spinner am-icon-spin'></i> 请等待服务器提交";
+                            }
+                            percent.html(percentVal);
+                        }
+                    },
+                    function () {
+                    })
+        });
+        $('#change-top-img-form').on('submit', function (e) {
+            e.preventDefault(); // prevent native submit
+            console.log('正在提交');
+            if ($('#change-top-file').val().length == 0) {
+                alert('请提交文件');
+                return false;
+            }
+            $('#change-top-img-sub').attr('disabled', 'disabled');
+            $(this).ajaxSubmit({
+                        target: '.am-padding-left',
+                        success: showResponse,
+                        uploadProgress: function (event, position, total, percentComplete) {
+                            var percentVal = percentComplete + '%';
+                            bar.width(percentVal)
+                            if (percentComplete == 100) {
+                                percentVal = "<i class='am-icon-spinner am-icon-spin'></i> 请等待服务器提交";
+                            }
+                            percent.html(percentVal);
+                        }
+                    },
+                    function () {
+                    })
+        });
+
+        function showResponse(responseText, statusText, xhr, $form) {
+            console.log('status: ' + statusText + '\n\nresponseText: \n' + responseText);
+            console.log(responseText);
+            if (responseText.ret_code == '0') {
+                $('#change-top-img').attr('src', responseText.ret_values);
+                $('#change-picUrl').val(responseText.ret_values);
+//                $('#change-modal').modal('toggle'),
+                percent.html('上传成功');
+                $('#change-top-img-sub').attr('disabled', false);
+            }
+        }
 
     });
+
 </script>
 </body>
 </html>

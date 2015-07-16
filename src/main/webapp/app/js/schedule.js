@@ -40,7 +40,8 @@ else {
         '<img src="i/schedule/check.jpg" alt="" width="25" style="vertical-align: top" class="am-vertical-align-middle"/>' +
         '</div>' +
         '<div style="width: 60%" id="shedule-time">' + new Date(value.time).Format("yyyy-MM-dd hh:mm") + '</div>' +
-        '<div style="width: 30%"><span id="schedule-value">' + value.statement + '</span>mmol/L</div></div>';
+        '<div style="width: 30%"><span id="schedule-value">' + value.statement + '</span>mmol/L</div></div>'+
+        '<hr data-am-widget="divider" style="" class="am-divider am-divider-dashed"/>';
       });
       $('#shedule-box').append(string);
     }

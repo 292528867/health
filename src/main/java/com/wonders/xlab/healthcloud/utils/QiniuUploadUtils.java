@@ -38,7 +38,7 @@ public class QiniuUploadUtils {
 
 	public static String upload(byte byteData[], String fileName) {
 
-		String upFileName = String.valueOf(new Date())+ fileName;
+		String upFileName = String.valueOf(System.currentTimeMillis())+ fileName;
 
         String address = null;
 
@@ -51,6 +51,28 @@ public class QiniuUploadUtils {
 			QiniuRet ret = res.jsonToObject(QiniuRet.class);
 
 			address = url + ret.key;
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        return address;
+	}
+	
+	public static String upload_key(byte byteData[], String fileName) {
+
+		String upFileName = fileName;
+
+        String address = null;
+
+        try {
+
+			UploadManager uploadManager = new UploadManager();
+
+			Response res = uploadManager.put(byteData, upFileName, getUpToken(upFileName));
+
+			QiniuRet ret = res.jsonToObject(QiniuRet.class);
+
+			address = ret.key;
 
 		} catch (IOException e) {
 			e.printStackTrace();

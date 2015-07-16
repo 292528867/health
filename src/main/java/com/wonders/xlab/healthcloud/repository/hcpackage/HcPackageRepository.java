@@ -28,4 +28,6 @@ public interface HcPackageRepository extends MyRepository<HcPackage, Long> {
 
     List<HcPackage> findByIdLessThan(long packageId);
 
+    List<HcPackage> findTop4ByOrderByRecommendValueDesc();
+
 }

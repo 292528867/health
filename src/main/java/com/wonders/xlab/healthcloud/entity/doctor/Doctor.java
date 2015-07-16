@@ -68,6 +68,9 @@ public class Doctor extends BaseInfo<Long> {
     @Enumerated
     private Valid valid = Valid.invalid;
 
+    /**
+     * 积分
+     */
     private int integral;
 
     /**

@@ -9,14 +9,14 @@ var loadData = function () {
             datas += "<tr style='display: none' ><td>" + value.id +
                 "</td>" +
                 "<td><div><img class='portrait' onclick='imgClick(\""+ value.iconUrl +"\");' " + modalLink(value.iconUrl) + " src='" + value.iconUrl+"' alt=\"X\"/></div></td>" +
-                " <td class='am-hide-sm-only'>" + value.iCardName+"</td>" +
-                " <td class='am-hide-sm-only'>医生名字</td>" +
-                " <td class='am-hide-sm-only'>医生名字</td>" +
-                " <td class='am-hide-sm-only'>医生名字</td>" +
+                " <td class='am-hide-sm-only'>" + value.iCardName +"</td>" +
+                " <td class='am-hide-sm-only'>" + value.qualificationName +"</td>" +
+                " <td class='am-hide-sm-only'>" + value.hospital +"</td>" +
+                " <td class='am-hide-sm-only'>" + value.department +"</td>" +
                 " <td class='am-hide-sm-only'><div><img class='qualification' onclick='imgClick(\""+ value.iCardUrl +"\");' " + modalLink(value.iCardUrl) + " src='" + value.iCardUrl +"' alt='X'/></div></td>" +
                 " <td class='am-hide-sm-only'><div><img class='qualification' onclick='imgClick(\""+ value.qualificationUrl +"\");' " + modalLink(value.qualificationUrl) + " src='" + value.qualificationUrl +"' alt='X'/></div></td>" +
                 " <td class='am-hide-sm-only'><div><img class='qualification' onclick='imgClick(\""+ value.permitUrl +"\");' " + modalLink(value.permitUrl) + " src='" + value.permitUrl +"' alt='X'/></div></td>" +
-                " <td class='am-hide-sm-only'>电话号码</td>" +
+                " <td class='am-hide-sm-only'>" + value.tel +"</td>" +
                 " <td id='handle" + value.id +"'><div class='am-btn-toolbar'><div class='am-btn-group am-btn-group-xs'>" +
                 "<button id='doctor-pass"+ value.id +"' onclick='check(" + value.id +", 1)' class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button'>" +
                 "<span class='am-icon-check-circle-o'></span>通过</button>" +
@@ -31,7 +31,7 @@ var loadData = function () {
 }
 
 var modalLink = function (url) {
-    var dataModal = "data-am-modal=\"{target: '#doc-modal-1', closeViaDimmer: 0, width: 800, height: 800}\"";
+    var dataModal = "data-am-modal=\"{target: '#doc-modal-1', closeViaDimmer: 0, width: 600, height: 500}\"";
     return null == url || url =="" ? "": dataModal;
 };
 
