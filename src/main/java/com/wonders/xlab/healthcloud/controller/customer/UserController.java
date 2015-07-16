@@ -407,6 +407,14 @@ public class UserController extends AbstractBaseController<User, Long> {
 
     }
 
+    @RequestMapping("findUser/{userId}")
+    public ControllerResult<?> findUser(@PathVariable long userId) {
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(userRepository.findOne(userId))
+                .setMessage("用户信息获取成功！");
+    }
+
     @Override
     protected MyRepository<User, Long> getRepository() {
         return userRepository;

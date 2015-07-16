@@ -351,6 +351,15 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
     }
 
 
+    @RequestMapping("findDoctor/{doctorId}")
+    public ControllerResult<?> findDoctor(@PathVariable long doctorId) {
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(doctorRepository.findOne(doctorId))
+                .setMessage("医生信息获取成功！");
+    }
+
+
     private String uploadQualification(MultipartFile file) throws IOException {
         return null == file ? "" :
                 QiniuUploadUtils.upload(
