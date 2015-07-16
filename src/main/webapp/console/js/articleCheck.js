@@ -6,6 +6,8 @@ var typeUrl = commonUrl + "discovery/cms/listCategory/";
 var articleAddUrl = commonUrl + 'discovery/cms/addInfo/';
 var articleSearchUrl = commonUrl + 'discovery/cms/listInfo/';
 var articleChangeUrl =commonUrl +'discovery/cms/updateInfo/';
+var page = 0, loads = 0, totalPages = 0;
+
 $.get(typeUrl, function (data) {
     console.log(data);
     //  location.reload();
@@ -96,43 +98,60 @@ function searchArticle(id) {
     if (id.length == 0||id==null) {
         return false;
     }
-    $('#info-loading').html('信息(<i class="am-icon-refresh am-icon-spin"></i>正在读取！！！！！)');
-    $('#allDatas').html('');
+    page = 0;
     $('#type').val(id);
     localStorage.setItem('typeId',id);
-    //$('#type').attr('value', id);
-    //$("#type").find("option[text=id]").attr("selected",true);
-    $.get(articleSearchUrl + id, function (data) {
-        //  location.reload();
+    loadArticles(id, page);
+}
+
+
+function loadArticles(id,page) {
+    $('#info-loading').html('信息(<i class="am-icon-refresh am-icon-spin"></i>正在读取！！！！！)');
+    $("#allDatas").html('');
+    //var $w = $(window);
+    $('html, body').animate({scrollTop: 0}, '500');
+    $.get(articleSearchUrl + id+'?page=' + page, function (data) {
         $('#allDatas').html('');
-        articles = data.ret_values;
+        articles = data.ret_values.content;
+        $('#totalElements').html(data.ret_values.totalElements)
         console.log(data);
         var datas = '';
-        $.each(data.ret_values, function (n, value) {
+        $.each(data.ret_values.content, function (n, value) {
             datas += "<tr ><td><input type='checkbox'/></td><td>" +
-            value.id +
-            "</td>" +
-            "<td><a href='#'>" + value.title + "</a></td>" +
-            "<td class='am-hide-sm-only'>" + value.description + "</td>" +
-            "<td class='am-hide-sm-only'><img src='" + value.pictureUrl + "' style='max-height:80px;' /></td>" +
-            "<td><div class='am-btn-toolbar'><div class='am-btn-group am-btn-group-xs'>" +
-            "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick='changeArticle(" + n + ")'>" +
-            "<span class='am-icon-pencil-square-o'></span> 编辑</button>";
+                value.id +
+                "</td>" +
+                "<td><a href='#'>" + value.title + "</a></td>" +
+                "<td class='am-hide-sm-only'>" + value.description + "</td>" +
+                    //"<td class='am-hide-sm-only'><img src='" + value.pictureUrl + "' style='max-height:80px;' /></td>" +
+                "<td><div class='am-btn-toolbar'><div class='am-btn-group am-btn-group-xs'>" +
+                "<button class='am-btn am-btn-default am-btn-xs am-text-secondary' type='button' onclick='changeArticle(" + n + ")'>" +
+                "<span class='am-icon-pencil-square-o'></span> 编辑</button>";
             datas += "" +
-            "<button type='button' class='am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only' " +
-            "onclick='lookNow(" + n + ")'  >" +
-            "<span class='am-icon-trash-o'></span> 预览</button>" +
-            "</div></div></td></tr>";
+                "<button type='button' class='am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only' " +
+                "onclick='lookNow(" + n + ")'  >" +
+                "<span class='am-icon-trash-o'></span> 预览</button>" +
+                "</div></div></td></tr>";
         });
-        $("#allDatas").append(datas);
+        $("#allDatas").html(datas);
         //customer = null;
         $('#change-info-box').hide();
         $('#info-table').show();
-        $('#info-loading').html('信息读取成功！一共'+articles.length+'条数据');
+        $('#info-loading').html('信息读取成功！');
         searchCount=1;
+        var page = '';
+        for (var i=1;i<=data.ret_values.totalPages;i++)
+        {
+            page += '<li ><a href="javascript:loadArticles('+id+','+(i-1)+')">'+i+'</a></li>';
+        }
+        $("#pages").html(page);
+        $("#pages").find('li:eq('+data.ret_values.number+')').addClass('am-active');
+
     });
 
 }
+
+
+
 function changeArticle(id) {
     var article = articles[id];
     data = article;

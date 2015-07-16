@@ -32,7 +32,7 @@ else {
     $('title').html(article.title);
     $('#detail-count').html(article.clickAmount + '人关注');
     var string = '';
-    if (article.type == 1) {
+    if (article.type == 2) {
       $('.schedule-type').show();
       $('#schedule-value').html();
       $.each(article.statementDtos, function (n, value) {
@@ -66,7 +66,7 @@ function finishTask() {
 //    noticePhone('2222');
   $('#finish-btn').button('loading');
   $('#finish-btn').attr('disabled', true);
-  if ($('#getValue').val().length == 0 && article.type == 1) {
+  if ($('#getValue').val().length == 0 && article.type == 2) {
     $('#finish-btn').button('reset');
     $('#finish-btn').attr('disabled', false);
     //alert('请填写内容吧！');
