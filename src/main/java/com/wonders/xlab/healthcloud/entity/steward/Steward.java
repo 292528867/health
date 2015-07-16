@@ -81,6 +81,11 @@ public class Steward extends BaseInfo<Long> {
      */
     private int serviceUserNum = 0;
 
+    /**
+     * 管家是否可选
+     */
+    private boolean choice = true;
+
     public Rank getRank() {
         return rank;
     }
@@ -167,5 +172,13 @@ public class Steward extends BaseInfo<Long> {
 
     public void setServiceUserNum(int serviceUserNum) {
         this.serviceUserNum = serviceUserNum;
+    }
+
+    public boolean isChoice() {
+        return choice;
+    }
+
+    public void setChoice(boolean choice) {
+        this.choice = choice;
     }
 }

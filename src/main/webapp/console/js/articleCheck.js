@@ -147,8 +147,8 @@ function changeArticle(id) {
     UE.getEditor('htmlInfo').setContent(data.htmlInfo);
     $('#index-img').attr('src',data.pictureUrl);
     $('#pictureUrl').val(data.pictureUrl);
-    $('#homepage-img-index').attr('src', data.pictureUrl2);
-    $('#homepage-img').attr('src', data.pictureUrl2);
+    $('#banner-img-index').attr('src', data.pictureUrl2);
+    $('#banner-img').attr('src', data.pictureUrl2);
     $('#pictureUrl2').val(data.pictureUrl2);
     $('#change-info-box').show();
     $('#info-table').hide();
