@@ -6,7 +6,6 @@ import com.wonders.xlab.healthcloud.dto.hcpackage.ProgressDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
-import com.wonders.xlab.healthcloud.repository.TipsRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageCompleteRepository;
 import com.wonders.xlab.healthcloud.service.homepage.HomePageService;
@@ -37,9 +36,6 @@ public class HomePageController {
 
     @Autowired
     private HcPackageDetailRepository hcPackageDetailRepository;
-
-    @Autowired
-    private TipsRepository tipsRepository;
 
     @Autowired
     private HomePageService homePageService;
