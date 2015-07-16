@@ -278,49 +278,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 .setMessage("成功！");
     }
 
-
-    /**
-     * 判断管家是否可用
-     */
-    @RequestMapping(value = "verifyStewardIsValid",method = RequestMethod.POST)
-    public Object verifyStewardIsValid(String packageId) {
-        Map<String, Object> resultMap = new HashMap<>();
-        List<Steward> stewardList;
-        int serviceUserNum = 0;
-        if(!StringUtils.isEmpty(packageId)){
-            RecommendPackage rp = recommendPackageRepository.findOne(Long.parseLong(packageId));
-            if (null != rp) {
-                stewardList = stewardRepository.findByRank(rp.getRank());
-                for (Steward steward : stewardList) {
-                    serviceUserNum += steward.getServiceUserNum();
-                }
-                if (rp.getRank().ordinal()==3 && serviceUserNum < stewardList.size()*2) {
-                    resultMap.put("effective", true);
-                }else if (rp.getRank().ordinal()==2 && serviceUserNum < stewardList.size()*2) {
-                    resultMap.put("effective", true);
-                }else if(rp.getRank().ordinal()==1 && serviceUserNum < stewardList.size()*2){
-                    resultMap.put("effective", true);
-                }else if(rp.getRank().ordinal()==0 && serviceUserNum < stewardList.size()*2){
-                    resultMap.put("effective", false);
-                }
-            } else {
-                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("参数传递错误");
-            }
-        }else {
-            stewardList = stewardRepository.findAll();
-            for (Steward steward : stewardList) {
-                serviceUserNum += steward.getServiceUserNum();
-            }
-            if (serviceUserNum < 24) {
-                resultMap.put("effective", true);
-            } else {
-                resultMap.put("effective", false);
-            }
-        }
-        return new ControllerResult<Map>().setRet_code(0).setRet_values(resultMap).setMessage("请求成功");
-
-    }
-
     /**
      * 订单支付
      *
@@ -329,7 +286,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
      * @return
      */
     @RequestMapping("payServices/{userId}/{payWay}")
-    public String payServices(@PathVariable Long userId, @PathVariable String payWay, @RequestBody @Valid ServiceDto serviceDto, BindingResult result) throws RuntimeException {
+    public Object payServices(@PathVariable Long userId, @PathVariable String payWay, @RequestBody @Valid ServiceDto serviceDto, BindingResult result) throws RuntimeException {
         if (result.hasErrors()) {
             StringBuilder builder = new StringBuilder();
             for (ObjectError error : result.getAllErrors()) {
@@ -338,7 +295,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             new ControllerResult<String>()
                     .setRet_code(-1)
                     .setRet_values(builder.toString())
-                    .setMessage("失败");
+                    .setMessage("服务异常");
         }
         int integration = 0; //积分
         double amount;  //金额
@@ -348,18 +305,39 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         List<Services> services = servicesRepository.findAll(filters);
         Steward steward = new Steward();
         //存在推荐包
+        int serviceUserNum = 0;
         if (!StringUtils.isEmpty(serviceDto.getPackageId())) {
             // 计算推荐包价格
+
+
             RecommendPackage rp = recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
             amount = Double.parseDouble(rp.getPrice());
-            //随机一个管家
+
             List<Steward> stewards = stewardRepository.findByRank(rp.getRank());
             for (Steward s : stewards) {
-                if (s.getServiceUserNum()>=2){
-                    stewards.remove(s);
-                }
+                serviceUserNum += s.getServiceUserNum();
             }
-            steward = stewards.get((int) (System.currentTimeMillis() % stewards.size()));
+            /**
+             * 判断管家是否可用
+             */
+            if((rp.getRank().ordinal()==3 && serviceUserNum < stewards.size()*2)
+                    ||(rp.getRank().ordinal()==2 && serviceUserNum < stewards.size()*2)
+                    ||(rp.getRank().ordinal()==1 && serviceUserNum < stewards.size()*2)
+                    ||(rp.getRank().ordinal()==0 && serviceUserNum < stewards.size()*2)) {
+                //随机一个管家
+                for (Steward s : stewards) {
+                    if (s.getServiceUserNum()>=2){
+                        stewards.remove(s);
+                    }
+                }
+                steward = stewards.get((int) (System.currentTimeMillis() % stewards.size()));
+            } else {
+                return new ControllerResult<>()
+                        .setRet_code(-1)
+                        .setRet_values("")
+                        .setMessage("管家已分配完成,请等待");
+            }
+
         } else {
             if (!StringUtils.isEmpty(serviceDto.getStewardId())) {
                 steward = stewardRepository.findOne(Long.parseLong(serviceDto.getStewardId()));
@@ -396,7 +374,10 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             service.setUsedNumber(service.getUsedNumber() + 1);
             servicesRepository.save(service);
         }
-        return charge.toString();
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(charge.toString())
+                .setMessage("");
     }
 
     /**
@@ -461,6 +442,9 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
 
             Steward steward = stewardOrder.getSteward();
             steward.setServiceUserNum(steward.getServiceUserNum() + 1);
+            if(steward.getServiceUserNum()==2){
+                steward.setChoice(false);
+            }
             stewardRepository.save(steward);
 
             int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
