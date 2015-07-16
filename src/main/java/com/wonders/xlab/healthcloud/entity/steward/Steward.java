@@ -76,6 +76,10 @@ public class Steward extends BaseInfo<Long> {
     @Transient
     private List<Map<String, Object>> starService = new ArrayList<>();
 
+    /**
+     * 服务的顾客人数
+     */
+    private int serviceUserNum = 0;
 
     public Rank getRank() {
         return rank;
@@ -155,5 +159,13 @@ public class Steward extends BaseInfo<Long> {
 
     public void setServiceTel(String serviceTel) {
         this.serviceTel = serviceTel;
+    }
+
+    public int getServiceUserNum() {
+        return serviceUserNum;
+    }
+
+    public void setServiceUserNum(int serviceUserNum) {
+        this.serviceUserNum = serviceUserNum;
     }
 }

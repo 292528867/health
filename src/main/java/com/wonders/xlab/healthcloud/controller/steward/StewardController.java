@@ -278,6 +278,49 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 .setMessage("成功！");
     }
 
+
+    /**
+     * 判断管家是否可用
+     */
+    @RequestMapping(value = "verifyStewardIsValid",method = RequestMethod.POST)
+    public Object verifyStewardIsValid(String packageId) {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<Steward> stewardList;
+        int serviceUserNum = 0;
+        if(!StringUtils.isEmpty(packageId)){
+            RecommendPackage rp = recommendPackageRepository.findOne(Long.parseLong(packageId));
+            if (null != rp) {
+                stewardList = stewardRepository.findByRank(rp.getRank());
+                for (Steward steward : stewardList) {
+                    serviceUserNum += steward.getServiceUserNum();
+                }
+                if (rp.getRank().ordinal()==3 && serviceUserNum < stewardList.size()*2) {
+                    resultMap.put("effective", true);
+                }else if (rp.getRank().ordinal()==2 && serviceUserNum < stewardList.size()*2) {
+                    resultMap.put("effective", true);
+                }else if(rp.getRank().ordinal()==1 && serviceUserNum < stewardList.size()*2){
+                    resultMap.put("effective", true);
+                }else if(rp.getRank().ordinal()==0 && serviceUserNum < stewardList.size()*2){
+                    resultMap.put("effective", false);
+                }
+            } else {
+                return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("参数传递错误");
+            }
+        }else {
+            stewardList = stewardRepository.findAll();
+            for (Steward steward : stewardList) {
+                serviceUserNum += steward.getServiceUserNum();
+            }
+            if (serviceUserNum < 24) {
+                resultMap.put("effective", true);
+            } else {
+                resultMap.put("effective", false);
+            }
+        }
+        return new ControllerResult<Map>().setRet_code(0).setRet_values(resultMap).setMessage("请求成功");
+
+    }
+
     /**
      * 订单支付
      *
@@ -311,6 +354,11 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             amount = Double.parseDouble(rp.getPrice());
             //随机一个管家
             List<Steward> stewards = stewardRepository.findByRank(rp.getRank());
+            for (Steward s : stewards) {
+                if (s.getServiceUserNum()>=2){
+                    stewards.remove(s);
+                }
+            }
             steward = stewards.get((int) (System.currentTimeMillis() % stewards.size()));
         } else {
             if (!StringUtils.isEmpty(serviceDto.getStewardId())) {
@@ -364,7 +412,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         Map<String, Object> value = new HashMap<>();
         if (null != stewardOrder) {
             Charge charge = pingppService.queryCharge(stewardOrder.getChargeId());
-            if (null != charge){
+            if (null != charge) {
                 if (charge.getPaid()) {
                     int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
                     int currentServicedPeriod = DateUtils.calculateDaysOfTwoDateIgnoreHours(stewardOrder.getCreatedDate(), new Date());
@@ -380,7 +428,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                     value.put("effective", false);
                 }
                 value.put("chargeId", stewardOrder.getChargeId());
-            }else {
+            } else {
                 return new ControllerResult<String>()
                         .setRet_code(-1)
                         .setRet_values("")
@@ -395,6 +443,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 .setRet_values(value)
                 .setMessage("查询成功");
     }
+
     /**
      * 支付完成以后的订单详情
      *
@@ -409,6 +458,11 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             stewardOrder.setOrderStatus(StewardOrder.OrderStatus.支付成功);
             stewardOrder.setPayDate(new Date());
             stewardOrderRepository.save(stewardOrder);
+
+            Steward steward = stewardOrder.getSteward();
+            steward.setServiceUserNum(steward.getServiceUserNum() + 1);
+            stewardRepository.save(steward);
+
             int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
             String[] detilServicedPeriod = new String[totalServicePeriod];
             for (int num = 0; num < detilServicedPeriod.length; num++) {
