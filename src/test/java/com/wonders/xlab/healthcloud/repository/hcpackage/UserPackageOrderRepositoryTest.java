@@ -2,7 +2,6 @@ package com.wonders.xlab.healthcloud.repository.hcpackage;
 
 import com.wonders.xlab.framework.Application;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
-import com.wonders.xlab.healthcloud.service.hcpackage.UserPackageOrderService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
