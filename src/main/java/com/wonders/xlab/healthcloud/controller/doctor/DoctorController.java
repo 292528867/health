@@ -70,7 +70,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
     private EMUtils emUtils;
 
     /**
-     * 医师手机登陆
+     * 医师手机登录
      *
      * @param iden
      * @param result
@@ -114,7 +114,6 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                 .setRet_code(0)
                 .setRet_values(doctor)
                 .setMessage("成功");
-
     }
 
     private ControllerResult<?> doctorRegister(Doctor doctor) {
@@ -135,7 +134,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
     }
 
     /**
-     * 第三方登陆
+     * 第三方登录
      *
      * @param token
      * @param result
@@ -155,11 +154,11 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
 
             DoctorThird third = this.doctorThirdRepository.findByThirdIdAndThirdType(token.getThirdId(), ThirdBaseInfo.ThirdType.values()[Integer.parseInt(token.getThirdType())]);
 
-            // 没有手机号登陆
+            // 没有手机号登录
             if (token.getTel() == null) {
 
 
-                // 找不到第三方账号，第一次用第三方登陆
+                // 找不到第三方账号，第一次用第三方登录
                 if (third == null) {
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("用户不存在");
                 } else {
@@ -173,7 +172,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
                     return new ControllerResult<Doctor>().setRet_code(0).setRet_values(third.getDoctor()).setMessage("成功");
                 }
 
-                // 带有手机登陆，创建第三方账号，查看医师是否用手机注册，有就绑定
+                // 带有手机登录，创建第三方账号，查看医师是否用手机注册，有就绑定
                 if (!ValidateUtils.validateTel(token.getTel())) {
                     return new ControllerResult<String>().setRet_code(-1).setRet_values("").setMessage("关联的手机号格式不正确！");
                 }
@@ -349,6 +348,16 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
     @RequestMapping("doctors/{checked}")
     public List<Doctor> findApplyDoctors(@PathVariable Doctor.Checked checked) {
         return doctorRepository.findByChecked(checked);
+    }
+
+
+    @RequestMapping("findDoctor/{doctorId}")
+    public ControllerResult<?> findDoctor(@PathVariable long doctorId) {
+        Doctor doctor = doctorRepository.findOne(doctorId);
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(doctor)
+                .setMessage("医生信息获取成功！");
     }
 
 

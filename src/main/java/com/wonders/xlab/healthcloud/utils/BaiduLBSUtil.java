@@ -28,11 +28,10 @@ public class BaiduLBSUtil {
     private static String GEOTABLE_ID = "113464";
 
     //上传景点信息to百度LBS
-    @SuppressWarnings("unchecked")
     public static Object createPOI(Steward steward) throws JsonProcessingException, UnsupportedEncodingException {
 
         String url = "http://api.map.baidu.com/geodata/v3/poi/create";
-        Map body = new HashMap();
+        Map<String, Object> body = new HashMap<>();
         body.put("ak", AK);
         body.put("geotable_id", GEOTABLE_ID);
         body.put("title", URLEncoder.encode(steward.getNickName().toString(), "UTF-8"));
@@ -54,7 +53,7 @@ public class BaiduLBSUtil {
     /**
      * 检索百度数据
      */
-    public static LBSResult nearbyJob(String coordinate,long distance) {
+    public static LBSResult nearbyJob(String coordinate, long distance) {
         String url = "http://api.map.baidu.com/geosearch/v3/nearby";
         StringBuffer sb = new StringBuffer();
         sb.append("ak=").append(AK).append("&");
@@ -107,9 +106,9 @@ public class BaiduLBSUtil {
     }
 
 
-    private static void reInitMessageConverter(RestTemplate restTemplate){
+    private static void reInitMessageConverter(RestTemplate restTemplate) {
 
-        List<HttpMessageConverter<?>> converterList=restTemplate.getMessageConverters();
+        List<HttpMessageConverter<?>> converterList = restTemplate.getMessageConverters();
         HttpMessageConverter<?> converterTarget = null;
         for (HttpMessageConverter<?> item : converterList) {
             if (item.getClass() == StringHttpMessageConverter.class) {
@@ -131,7 +130,7 @@ public class BaiduLBSUtil {
 //    }
 
     public static LBSResult getLBSResult(String reqUrl) {
-        LBSResult result = restTemplate.getForObject(reqUrl,LBSResult.class);
-        return  result;
+        LBSResult result = restTemplate.getForObject(reqUrl, LBSResult.class);
+        return result;
     }
 }

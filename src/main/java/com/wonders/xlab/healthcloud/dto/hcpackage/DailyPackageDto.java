@@ -1,5 +1,8 @@
 package com.wonders.xlab.healthcloud.dto.hcpackage;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wonders.xlab.healthcloud.service.hcpackage.HcpackageService;
+
 import java.util.Date;
 
 /**
@@ -19,14 +22,14 @@ public class DailyPackageDto {
     /** 点击次数 */
     private int clickAmount;
 
-    public DailyPackageDto() {
-    }
+    @JsonIgnore
+    private int coefficient;
 
-    public DailyPackageDto(Long packageDetailId, Date recommendTimeFrom, String taskName, int clickAmount) {
-        this.clickAmount = clickAmount;
-        this.packageDetailId = packageDetailId;
-        this.recommendTimeFrom = recommendTimeFrom;
-        this.taskName = taskName;
+    @JsonIgnore
+    private Date createdDate;
+
+
+    public DailyPackageDto() {
     }
 
     public Long getPackageDetailId() {
@@ -55,12 +58,26 @@ public class DailyPackageDto {
 
 
     public int getClickAmount() {
-        return clickAmount;
+        return HcpackageService.calculateClickCount(coefficient, clickAmount, createdDate);
     }
 
     public void setClickAmount(int clickAmount) {
         this.clickAmount = clickAmount;
     }
 
+    public int getCoefficient() {
+        return coefficient;
+    }
 
+    public void setCoefficient(int coefficient) {
+        this.coefficient = coefficient;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
 }

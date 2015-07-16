@@ -38,8 +38,14 @@ public enum BannerTag {
     /**
      * 购药
      */
-    ShoppingDrug("购药")
-    ;
+    ShoppingDrug("购药"),
+
+    /**
+     * 活动
+     */
+    Activity("活动");
+
+
 
     private String name;
 

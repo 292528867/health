@@ -220,7 +220,7 @@ public class UserController extends AbstractBaseController<User, Long> {
                 }
             }
         } catch (Exception e) {
-            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("登陆失败");
+            return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("登录失败");
         }
     }
 
@@ -405,6 +405,15 @@ public class UserController extends AbstractBaseController<User, Long> {
 
         return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("邀请码验证失败!");
 
+    }
+
+    @RequestMapping("findUser/{userId}")
+    public ControllerResult<?> findUser(@PathVariable long userId) {
+        User user = userRepository.findOne(userId);
+        return new ControllerResult<>()
+                .setRet_code(0)
+                .setRet_values(user)
+                .setMessage("用户信息获取成功！");
     }
 
     @Override
