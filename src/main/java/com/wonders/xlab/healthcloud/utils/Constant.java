@@ -17,7 +17,7 @@ public class Constant {
     //轻问诊回复推送描述
     public static final String INTERROGATION_REPLY_PUSH = "特聘专家%d耗时%s分钟，认真看完了你的问题并作出专业解答。快点查阅看看吧。";
     //轻问诊的医生数量的问候语
-    public static final String INTERROGATION_GRETTINGS = "你并没有发烧但感到头疼脑热？你并没有心脏病，但胸闷气短？你有一些小症状但不知是什么情况？不用出门，轻问诊%s位专家帮你了解自己的身体现状。";
+    public static final String INTERROGATION_GRETTINGS = "你并没有发烧但感到头疼脑热？你并没有心脏病，但胸闷气短？你有一些小症状但不知是什么情况？不用出门，轻问诊<font color='#ffa800'>%s</font>位专家帮你了解自己的身体现状。";
     //轻问诊的提示例子
     public static final String INTERROGATION_QUESTION_SAMPLE = "我40岁，糖尿病7年，血糖一直偏高，空腹血糖一直在9左右，餐后血糖13左右。一直在吃阿卡波糖片，" +
             "前段时间换了药，不但血糖没有降低，反而出现了心慌、胸闷、气短的症状。现在不知道要怎么办，需要打胰岛素吗？";
