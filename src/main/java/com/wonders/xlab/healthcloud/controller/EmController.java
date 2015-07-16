@@ -642,7 +642,9 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Map<String, Object> paraMap = new HashMap();
         paraMap.put("doctor.id_equal", doctorId);
         paraMap.put("questionStatus_in", statuses);
-        List<QuestionOrder> orders = questionOrderRepository.findAll(paraMap, pageable).getContent();
+//        List<QuestionOrder> orders = questionOrderRepository.findAll(paraMap, pageable).getContent();
+
+        List<QuestionOrder> orders = questionOrderRepository.findQuestionOrdersByDoctorID(doctorId, statuses, pageable);
 
         QuestionOrder newQuestion = questionOrderService.findOneNewQuestion();
         Map<String, Object> resultMap = new HashMap<>();
