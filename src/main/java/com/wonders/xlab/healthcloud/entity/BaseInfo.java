@@ -133,8 +133,8 @@ public abstract class BaseInfo<ID extends Serializable> extends AbstractPersista
         this.iconUrl = iconUrl;
     }
 
-    public int getSex() {
-        return sex.ordinal();
+    public Sex getSex() {
+        return sex;
     }
 
     public void setSex(Sex sex) {
