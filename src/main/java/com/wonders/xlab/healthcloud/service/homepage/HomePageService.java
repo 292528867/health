@@ -14,5 +14,5 @@ public interface HomePageService {
 
     ObjectNode retrieveBannerNode(ObjectNode node);
 
-    List<HcPackageDetail> retrievePackageDetailList(List<HcPackageDetail> prePackageDetailList, Date now);
+    ObjectNode retrieveTasksAndTipsByAllDetailList(ObjectNode resultNode, List<HcPackageDetail> prePackageDetailList, Date now);
 }

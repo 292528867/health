@@ -8,10 +8,8 @@ import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageOrderRepository;
 import com.wonders.xlab.healthcloud.service.discovery.DiscoveryService;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +24,6 @@ import java.util.List;
 @Service
 public class UserPackageOrderService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserPackageOrderService.class);
-
     @Autowired
     private UserPackageOrderRepository userPackageOrderRepository;
 
@@ -39,6 +35,9 @@ public class UserPackageOrderService {
 
     @Resource(name = "discoveryServiceProxy")
     private DiscoveryService discoveryService;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Transactional
     public void scheduleCalculateIsPackageFinished(int aliquotNumber) {

@@ -1,10 +1,13 @@
 package com.wonders.xlab.healthcloud.service.homepage.impl;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.wonders.xlab.healthcloud.dto.hcpackage.DailyPackageDto;
+import com.wonders.xlab.healthcloud.entity.HomePageTips;
 import com.wonders.xlab.healthcloud.entity.banner.Banner;
 import com.wonders.xlab.healthcloud.entity.banner.BannerTag;
 import com.wonders.xlab.healthcloud.entity.banner.BannerType;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
+import com.wonders.xlab.healthcloud.repository.TipsRepository;
 import com.wonders.xlab.healthcloud.repository.banner.BannerRepository;
 import com.wonders.xlab.healthcloud.service.homepage.HomePageService;
 import org.apache.commons.lang3.RandomUtils;
@@ -21,6 +24,9 @@ public class HomePageServiceImpl implements HomePageService {
 
     @Autowired
     private BannerRepository bannerRepository;
+
+    @Autowired
+    private TipsRepository tipsRepository;
 
     @Override
     public ObjectNode retrieveBannerNode(ObjectNode node) {
@@ -69,7 +75,7 @@ public class HomePageServiceImpl implements HomePageService {
     }
 
     @Override
-    public List<HcPackageDetail> retrievePackageDetailList(List<HcPackageDetail> prePackageDetailList, Date now) {
+    public ObjectNode retrieveTasksAndTipsByAllDetailList(ObjectNode resultNode, List<HcPackageDetail> prePackageDetailList, Date now) {
 
         List<HcPackageDetail> finialDetailList = new ArrayList<>();
 
@@ -132,6 +138,32 @@ public class HomePageServiceImpl implements HomePageService {
             }
         });
 
-        return finialDetailList;
+        List<DailyPackageDto> tasks = new ArrayList<>();
+        for (HcPackageDetail detail : finialDetailList) {
+            DailyPackageDto dto = new DailyPackageDto();
+            dto.setPackageDetailId(detail.getId());
+            dto.setRecommendTimeFrom(detail.getRecommendTimeFrom());
+            dto.setTaskName(detail.getTaskName());
+            dto.setClickAmount(detail.getHcPackage().getClickAmount());
+            dto.setCoefficient(detail.getHcPackage().getCoefficient());
+            dto.setCreatedDate(detail.getHcPackage().getCreatedDate());
+            tasks.add(dto);
+        }
+        List<HomePageTips> tips = tipsRepository.findAll();
+        List<String> allTips = new ArrayList<>();
+
+        if (tasks.isEmpty()) {
+            HomePageTips tipsOne = tips.get(RandomUtils.nextInt(0, tips.size()));
+            tips.remove(tipsOne);
+            allTips.add(tipsOne.getTips());
+            allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
+        } else if (tasks.size() == 1) {
+            allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
+        }
+
+        resultNode.putPOJO("tips", allTips);
+        resultNode.putPOJO("task", tasks);
+
+        return resultNode;
     }
 }
