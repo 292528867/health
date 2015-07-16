@@ -3,6 +3,7 @@ package com.wonders.xlab.healthcloud.service.customer.impl;
 import com.wonders.xlab.healthcloud.entity.customer.User;
 import com.wonders.xlab.healthcloud.repository.customer.UserRepository;
 import com.wonders.xlab.healthcloud.service.customer.UserService;
+import com.wonders.xlab.healthcloud.service.hcpackage.UserPackageOrderService;
 import com.wonders.xlab.healthcloud.utils.ShareCodeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
