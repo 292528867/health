@@ -6,15 +6,12 @@ import com.wonders.xlab.healthcloud.dto.hcpackage.DailyPackageDto;
 import com.wonders.xlab.healthcloud.dto.hcpackage.ProgressDto;
 import com.wonders.xlab.healthcloud.dto.result.ControllerResult;
 import com.wonders.xlab.healthcloud.entity.HomePageTips;
-import com.wonders.xlab.healthcloud.entity.banner.Banner;
-import com.wonders.xlab.healthcloud.entity.banner.BannerTag;
-import com.wonders.xlab.healthcloud.entity.banner.BannerType;
 import com.wonders.xlab.healthcloud.entity.hcpackage.HcPackageDetail;
 import com.wonders.xlab.healthcloud.entity.hcpackage.UserPackageOrder;
 import com.wonders.xlab.healthcloud.repository.TipsRepository;
-import com.wonders.xlab.healthcloud.repository.banner.BannerRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.HcPackageDetailRepository;
 import com.wonders.xlab.healthcloud.repository.hcpackage.UserPackageCompleteRepository;
+import com.wonders.xlab.healthcloud.service.homepage.HomePageService;
 import com.wonders.xlab.healthcloud.utils.DateUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,10 +39,10 @@ public class HomePageController {
     private HcPackageDetailRepository hcPackageDetailRepository;
 
     @Autowired
-    private BannerRepository bannerRepository;
+    private TipsRepository tipsRepository;
 
     @Autowired
-    private TipsRepository tipsRepository;
+    private HomePageService homePageService;
 
     /**
      * 首页
@@ -58,62 +55,20 @@ public class HomePageController {
             JsonNodeFactory factory = JsonNodeFactory.instance;
             ObjectNode resultNode = factory.objectNode();
             ObjectNode bannerNode = factory.objectNode();
+            resultNode.putPOJO("banner", homePageService.retrieveBannerNode(bannerNode));
 
-            List<Banner> topBanners = new ArrayList<>();
-            List<Banner> bottomBanners = new ArrayList<>();
-
-            // 发现的标语
-            List<Banner> discoveryBanners = bannerRepository.findByBannerTagAndEnabled(BannerTag.Discovery, true);
-            // 发现之外的标语
-            List<Banner> otherBanners = bannerRepository.findByBannerTagNotAndEnabled(BannerTag.Discovery, true);
             // 完成计划的Id
             List<Long> completeDetailIds = new ArrayList<>();
-            // 添加发现之外的banner
-            for (Banner basicBanner : otherBanners) {
-                if (basicBanner.getBannerType() == BannerType.Top.ordinal()) {
-                    topBanners.add(basicBanner);
-                } else {
-                    bottomBanners.add(basicBanner);
-                }
-            }
-            // 随机一个发现的banner
-            if (!discoveryBanners.isEmpty()) {
-                Banner disBanner = discoveryBanners.get(RandomUtils.nextInt(0, discoveryBanners.size()));
-                if (disBanner.getBannerType() == BannerType.Top.ordinal()) {
-                    topBanners.add(disBanner);
-                } else {
-                    bottomBanners.add(disBanner);
-                }
-            }
-            Collections.sort(topBanners, new Comparator<Banner>() {
-                @Override
-                public int compare(Banner o1, Banner o2) {
-                    return o1.getPosition() - o2.getPosition();
-                }
-            });
-            Collections.sort(bottomBanners, new Comparator<Banner>() {
-                @Override
-                public int compare(Banner o1, Banner o2) {
-                    return o1.getPosition() - o2.getPosition();
-                }
-            });
-            bannerNode.putPOJO("topBanners", topBanners);
-            bannerNode.putPOJO("bottomBanners", bottomBanners);
 
-            resultNode.putPOJO("banner", bannerNode);
             // 查找没有完成的健康包
             List<UserPackageOrder> userPackageOrders = this.userPackageCompleteRepository.findByUserIdAndPackageComplete(userId, false);
 
             List<HcPackageDetail> allDetailList = new ArrayList<>();
-            List<HcPackageDetail> finialDetailList = new ArrayList<>();
-
             // 查看完成度
             List<ProgressDto> progressDtos = new ArrayList<>();
             Date now = new Date();
             // 查找用户完成的任务
             // TODO: 时间还需优化，按照天算
-            Calendar cfrom = Calendar.getInstance();
-            Calendar cto = Calendar.getInstance();
             for (UserPackageOrder upo : userPackageOrders) {
                 completeDetailIds.clear();
                 String[] strdetails = StringUtils.split(upo.getHcPackageDetailIds(), ',');
@@ -122,31 +77,25 @@ public class HomePageController {
                         completeDetailIds.add(NumberUtils.toLong(strdetails[i]));
                     }
                 }
-
                 // 持续时间
                 int duration = upo.getHcPackage().getDuration();
                 // 每个任务的时间 - 循环过的时间
 
-                cfrom.setTime(upo.getCreatedDate());
-                cto.setTime(now);
-                cfrom.set(Calendar.HOUR_OF_DAY, 0);
-                cfrom.set(Calendar.MINUTE, 0);
-                cfrom.set(Calendar.SECOND, 0);
-                cfrom.set(Calendar.MILLISECOND, 0);
-
-                cto.set(Calendar.HOUR_OF_DAY, 0);
-                cto.set(Calendar.MINUTE, 0);
-                cto.set(Calendar.SECOND, 0);
-                cto.set(Calendar.MILLISECOND, 0);
-
-                int day = DateUtils.calculatePeiorDaysOfTwoDate(cfrom.getTime(), cto.getTime()) - duration * upo.getCurrentCycleIndex();
+                int day = calculatePeiorDaysOfTwoDateWith24(upo.getCreatedDate(), now) - duration * upo.getCurrentCycleIndex();
+                // 第一天默认进度 1
                 int progress = 1;
                 if (day != 0) {
                     progress = day * 100 / duration;
                 }
+                String title = "";
+                if (upo.getHcPackage().getHealthCategory() != null
+                        && upo.getHcPackage().getHealthCategory().getClassification() != null
+                        && upo.getHcPackage().getHealthCategory().getClassification().getTitle() != null) {
+                    title = upo.getHcPackage().getHealthCategory().getClassification().getTitle();
+                }
                 progressDtos.add(
                         new ProgressDto(
-                                upo.getHcPackage().getHealthCategory().getClassification().getTitle(),
+                                title,
                                 upo.getHcPackage().getTitle(),
                                 upo.getHcPackage().getSmallIcon(),
                                 progress
@@ -156,7 +105,6 @@ public class HomePageController {
                 List<HcPackageDetail> tempDetailFrom;
 
                 day += 1;
-                System.out.println(upo.getHcPackage().getId());
                 if (completeDetailIds.isEmpty()) {
                     tempDetailFrom = hcPackageDetailRepository.findByPackageIdAndDayOrderByTimeFromAsc(upo.getHcPackage().getId(), day);
                 } else {
@@ -164,78 +112,24 @@ public class HomePageController {
                 }
                 allDetailList.addAll(tempDetailFrom);
             }
-            // 升序
-            Collections.sort(allDetailList, new Comparator<HcPackageDetail>() {
-                @Override
-                public int compare(HcPackageDetail o1, HcPackageDetail o2) {
-                    return o1.getRecommendTimeFrom().compareTo(o2.getRecommendTimeFrom());
-                }
-            });
+            // 获取最终list
+            List<HcPackageDetail> finialDetailList = homePageService.retrievePackageDetailList(allDetailList, now);
 
-            List<HcPackageDetail> beforeDetail = new ArrayList<>();
-            List<HcPackageDetail> afterDetail = new ArrayList<>();
-            Calendar c = Calendar.getInstance();
-            Calendar cFrom = Calendar.getInstance();
-            c.setTime(now);
-
-            for (HcPackageDetail detail : allDetailList) {
-                cFrom.setTime(detail.getRecommendTimeFrom());
-
-                c.set(Calendar.HOUR_OF_DAY, cFrom.get(Calendar.HOUR_OF_DAY));
-                c.set(Calendar.MINUTE, cFrom.get(Calendar.MINUTE));
-                System.out.println(c.getTime());
-                if ((c.getTime().getTime() - now.getTime()) > 0) {
-                    afterDetail.add(detail);
-                } else {
-                    beforeDetail.add(detail);
-                }
-            }
-            // 当前时间钱的list倒叙，选取最接近的时间
-            Collections.sort(beforeDetail, new Comparator<HcPackageDetail>() {
-                @Override
-                public int compare(HcPackageDetail o1, HcPackageDetail o2) {
-                    return o2.getRecommendTimeFrom().compareTo(o1.getRecommendTimeFrom());
-                }
-            });
-            // 选取任务
-            if (!afterDetail.isEmpty()) {
-                finialDetailList.add(afterDetail.get(0));
-                if (!beforeDetail.isEmpty()) {
-                    finialDetailList.add(beforeDetail.get(0));
-                } else if (afterDetail.size() > 1){
-                    finialDetailList.add(afterDetail.get(1));
-                }
-            } else {
-                if (!beforeDetail.isEmpty()) {
-                    finialDetailList.add(beforeDetail.get(0));
-                }
-                if (beforeDetail.size() > 1) {
-                    finialDetailList.add(beforeDetail.get(1));
-                }
-            }
-
-            // 最终list升序
-            Collections.sort(finialDetailList, new Comparator<HcPackageDetail>() {
-                @Override
-                public int compare(HcPackageDetail o1, HcPackageDetail o2) {
-                    return o1.getRecommendTimeFrom().compareTo(o2.getRecommendTimeFrom());
-                }
-            });
             // 添加进度
             resultNode.putPOJO("progress", progressDtos);
 
             List<DailyPackageDto> tasks = new ArrayList<>();
             for (HcPackageDetail detail : finialDetailList) {
-                DailyPackageDto dto = new DailyPackageDto(
-                        detail.getId(),
-                        detail.getRecommendTimeFrom(),
-                        detail.getTaskName(),
-                        detail.getHcPackage().getClickAmount()
-                );
+                DailyPackageDto dto = new DailyPackageDto();
+                dto.setPackageDetailId(detail.getId());
+                dto.setRecommendTimeFrom(detail.getRecommendTimeFrom());
+                dto.setTaskName(detail.getTaskName());
+                dto.setClickAmount(detail.getHcPackage().getClickAmount());
+                dto.setCoefficient(detail.getHcPackage().getCoefficient());
+                dto.setCreatedDate(detail.getHcPackage().getCreatedDate());
                 tasks.add(dto);
             }
-            List<HomePageTips> tips = this.tipsRepository.findAll();
-
+            List<HomePageTips> tips = tipsRepository.findAll();
             List<String> allTips = new ArrayList<>();
 
             if (tasks.isEmpty()) {
@@ -255,6 +149,26 @@ public class HomePageController {
             exp.printStackTrace();
             return new ControllerResult<String>().setRet_code(-1).setRet_values("失败啦").setMessage("失败");
         }
+    }
 
+    // 按照24小时计算天数
+    // TODO：继续优化方法
+    public int calculatePeiorDaysOfTwoDateWith24 (Date from, Date to) {
+
+        Calendar cfrom = Calendar.getInstance();
+        Calendar cto = Calendar.getInstance();
+        cfrom.setTime(from);
+        cto.setTime(to);
+        cfrom.set(Calendar.HOUR_OF_DAY, 0);
+        cfrom.set(Calendar.MINUTE, 0);
+        cfrom.set(Calendar.SECOND, 0);
+        cfrom.set(Calendar.MILLISECOND, 0);
+
+        cto.set(Calendar.HOUR_OF_DAY, 0);
+        cto.set(Calendar.MINUTE, 0);
+        cto.set(Calendar.SECOND, 0);
+        cto.set(Calendar.MILLISECOND, 0);
+
+        return DateUtils.calculatePeiorDaysOfTwoDate(cfrom.getTime(), cto.getTime());
     }
 }

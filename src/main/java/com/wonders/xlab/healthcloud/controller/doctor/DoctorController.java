@@ -353,9 +353,10 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
 
     @RequestMapping("findDoctor/{doctorId}")
     public ControllerResult<?> findDoctor(@PathVariable long doctorId) {
+        Doctor doctor = doctorRepository.findOne(doctorId);
         return new ControllerResult<>()
                 .setRet_code(0)
-                .setRet_values(doctorRepository.findOne(doctorId))
+                .setRet_values(doctor)
                 .setMessage("医生信息获取成功！");
     }
 

@@ -3,10 +3,10 @@
  */
 
 var packageUrl= commonUrl +'hcPackage/listHcPackage',
-    bannerListUrl= commonUrl +'banner/listBannerForConsole',
-    topicListUrl= commonUrl +'banner/retrieveHealthInfos/',
-    addBanner= commonUrl +'banner/addBanner',
-    updateBannerUrl= commonUrl +'banner/updateBanner/';
+    bannerListUrl= commonUrl +'homepage/listBannerForConsole',
+    topicListUrl= commonUrl +'homepage/retrieveHealthInfos/',
+    addBanner= commonUrl +'homepage/addBanner',
+    updateBannerUrl= commonUrl +'homepage/updateBanner/';
 
 
 //编辑
