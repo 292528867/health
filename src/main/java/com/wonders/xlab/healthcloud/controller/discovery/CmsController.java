@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
@@ -231,7 +232,7 @@ public class CmsController {
 	// 查询分类健康信息
 	@RequestMapping(value = "listInfo/{healthCategoryId}", method = RequestMethod.GET)
 	public ControllerResult<?> listHealthInfo(@PathVariable Long healthCategoryId, Pageable pageable) {
-		return new ControllerResult<List<HealthInfo>>().setRet_code(0).setRet_values(
+		return new ControllerResult<Page<HealthInfo>>().setRet_code(0).setRet_values(
 				this.healthInfoRepository.findByHealthCategoryId(healthCategoryId, pageable)).setMessage("成功");
 	}
 	
