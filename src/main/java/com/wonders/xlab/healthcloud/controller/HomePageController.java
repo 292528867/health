@@ -120,12 +120,13 @@ public class HomePageController {
 
             List<DailyPackageDto> tasks = new ArrayList<>();
             for (HcPackageDetail detail : finialDetailList) {
-                DailyPackageDto dto = new DailyPackageDto(
-                        detail.getId(),
-                        detail.getRecommendTimeFrom(),
-                        detail.getTaskName(),
-                        detail.getHcPackage().getClickAmount()
-                );
+                DailyPackageDto dto = new DailyPackageDto();
+                dto.setPackageDetailId(detail.getId());
+                dto.setRecommendTimeFrom(detail.getRecommendTimeFrom());
+                dto.setTaskName(detail.getTaskName());
+                dto.setClickAmount(detail.getHcPackage().getClickAmount());
+                dto.setCoefficient(detail.getHcPackage().getCoefficient());
+                dto.setCreatedDate(detail.getHcPackage().getCreatedDate());
                 tasks.add(dto);
             }
             List<HomePageTips> tips = tipsRepository.findAll();
