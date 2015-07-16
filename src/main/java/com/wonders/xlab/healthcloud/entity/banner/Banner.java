@@ -16,7 +16,6 @@ public class Banner extends AbstractBaseEntity<Long> {
 
     /** Banner标签 0 计划 1 发现 2 管家 3 问诊 4 商城 5 个人中心 6 购药 */
     @Enumerated
-    @Column(nullable = false)
     private BannerTag bannerTag;
 
     /** Banner位置 0 上 1 下 */
