@@ -310,8 +310,6 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             // 计算推荐包价格
 
             RecommendPackage rp = recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
-            amount = Double.parseDouble(rp.getPrice());
-
             List<Steward> stewards = stewardRepository.findByRank(rp.getRank());
             for (Steward s : stewards) {
                 serviceUserNum += s.getServiceUserNum();
@@ -330,6 +328,8 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                     }
                 }
                 steward = stewards.get((int) (System.currentTimeMillis() % stewards.size()));
+
+                amount = Double.parseDouble(rp.getPrice());
             } else {
                 return new ControllerResult<>()
                         .setRet_code(-1)

@@ -443,7 +443,19 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         //最新问题是否被回复
         EmMessages lastMessage = emMessagesRepository.findTopByToUserAndIsShowForDoctorOrderByCreatedDateDesc(groupId, 0);
+        if (lastMessage == null) {//没有任何数据时 第一次访问
+            newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS, EMUtils.countDoctors()));
+            newMessages.setToUser(groupId);
+            newMessages.setIsShowForDoctor(1); //不让医生端看到
+            newMessages.setFromUser(tel);
 
+            List<EmMessages> list = new ArrayList<>();
+            list.add( emMessagesRepository.save(newMessages));
+            emDoctorNumber.setLastQuestionStatus(0);
+            emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
+            emDoctorNumber.setList(list);
+            return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
+        }
 
         //判断当天是否有医生数量提示
         EmMessages emMessages = emMessagesRepository.findByToUserAndIsShowForDoctorAndCreatedDateBetween(groupId, 1,
@@ -466,14 +478,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         }
 
-        if (lastMessage == null) {//没有任何数据时
-            List<EmMessages> list = new ArrayList<>();
-            list.add(emMessages);
-            emDoctorNumber.setLastQuestionStatus(0);
-            emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
-            emDoctorNumber.setList(list);
-            return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
-        }
+
 
         if (lastMessage.getIsReplied()) { //用户已回复
 

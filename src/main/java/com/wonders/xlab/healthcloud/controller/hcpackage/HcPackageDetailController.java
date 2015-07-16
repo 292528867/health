@@ -114,8 +114,9 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
                 detail.getDetail(),
                 detail.getIcon()
         );
-        if (detail.isNeedSupplemented())
-            dto.setType(1);
+        if (detail.getHcPackageDetailType() != null) {
+            dto.setType(detail.getHcPackageDetailType().getId());
+        }
         if (detail.getIcon() == null)
             dto.setPictureType(0);
         if (detail.getIcon().endsWith("mp4")) {
@@ -209,8 +210,9 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
                 detail.getDetail(),
                 detail.getIcon()
         );
-        if (detail.isNeedSupplemented())
-            dto.setType(1);
+        if (detail.getHcPackageDetailType() != null) {
+            dto.setType(detail.getHcPackageDetailType().getId());
+        }
         if (detail.getIcon() == null)
             dto.setPictureType(0);
         if (detail.getIcon().endsWith("mp4")) {
