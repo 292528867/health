@@ -630,7 +630,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * @return
      */
     @RequestMapping(value = "/doctorOrders/{doctorId}", method = RequestMethod.GET)
-    public ControllerResult findQuestionOrders(@PathVariable long doctorId) {
+    public ControllerResult findQuestionOrders(@PathVariable long doctorId, Pageable pageable) {
 
         Map<String, QuestionOrder.QuestionStatus> statusMap = new HashMap<>();
         statusMap.put("processing", QuestionOrder.QuestionStatus.processing);
@@ -639,8 +639,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 QuestionOrder.QuestionStatus.done,
                 QuestionOrder.QuestionStatus.processing
         };
+        Map<String, Object> paraMap = new HashMap();
+        paraMap.put("doctor.id_equal", doctorId);
+        paraMap.put("questionStatus_in", statuses);
+        List<QuestionOrder> orders = questionOrderRepository.findAll(paraMap, pageable).getContent();
 
-        List<QuestionOrder> orders = questionOrderRepository.findQuestionOrdersByDoctorID(doctorId, statuses);
         QuestionOrder newQuestion = questionOrderService.findOneNewQuestion();
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("orders", orders);

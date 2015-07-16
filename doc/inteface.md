@@ -330,7 +330,8 @@ ResponseBody:
 
 
 医生查询订单接口
-接口地址：http://10.1.64.179:8080/xlab-healthcloud/em/doctorOrders/{doctorId}
+接口地址：http://10.1.64.179:8080/xlab-healthcloud/em/doctorOrders/{doctorId}?page={pageNumber}
+URL中参数doctorId为医生的I，pageNumber从0开始
 method：GET
 RequestBody: null
 ResponseBody:
