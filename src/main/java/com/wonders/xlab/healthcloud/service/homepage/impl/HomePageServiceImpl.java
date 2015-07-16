@@ -121,7 +121,7 @@ public class HomePageServiceImpl implements HomePageService {
             finialDetailList.add(afterDetail.get(0));
             if (!beforeDetail.isEmpty()) {
                 finialDetailList.add(beforeDetail.get(0));
-            } else if (afterDetail.size() > 1){
+            } else if (afterDetail.size() > 1) {
                 finialDetailList.add(afterDetail.get(1));
             }
         } else {
