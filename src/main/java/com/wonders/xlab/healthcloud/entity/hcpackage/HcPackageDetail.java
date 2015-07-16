@@ -19,6 +19,10 @@ public class HcPackageDetail extends AbstractBaseEntity<Long> {
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     private HcPackage hcPackage;
 
+    /** 任务类型 例如：只读，填写血压，填写血糖 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    private HcPackageDetailType hcPackageDetailType;
+
     /**
      * 任务名称
      */
@@ -91,6 +95,14 @@ public class HcPackageDetail extends AbstractBaseEntity<Long> {
 
     public void setHcPackage(HcPackage hcPackage) {
         this.hcPackage = hcPackage;
+    }
+
+    public HcPackageDetailType getHcPackageDetailType() {
+        return hcPackageDetailType;
+    }
+
+    public void setHcPackageDetailType(HcPackageDetailType hcPackageDetailType) {
+        this.hcPackageDetailType = hcPackageDetailType;
     }
 
     public String getDetail() {

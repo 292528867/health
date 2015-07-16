@@ -69,7 +69,6 @@ public class HomePageController {
             List<ProgressDto> progressDtos = new ArrayList<>();
             Date now = new Date();
             // 查找用户完成的任务
-            // TODO: 时间还需优化，按照天算
             for (UserPackageOrder upo : userPackageOrders) {
                 completeDetailIds.clear();
                 String[] strdetails = StringUtils.split(upo.getHcPackageDetailIds(), ',');
@@ -121,16 +120,22 @@ public class HomePageController {
             // 添加进度
             resultNode.putPOJO("progress", progressDtos);
             resultNode.put("currentDay", DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
-            return new ControllerResult<>().setRet_code(0).setRet_values(resultNode).setMessage("成功");
+            return new ControllerResult<>()
+                    .setRet_code(0)
+                    .setRet_values(resultNode)
+                    .setMessage("成功");
         } catch (Exception exp) {
             exp.printStackTrace();
-            return new ControllerResult<String>().setRet_code(-1).setRet_values("失败啦").setMessage("失败");
+            return new ControllerResult<String>()
+                    .setRet_code(-1)
+                    .setRet_values("失败啦")
+                    .setMessage("失败");
         }
     }
 
     // 按照24小时计算天数
     // TODO：继续优化方法
-    public int calculatePeiorDaysOfTwoDateWith24 (Date from, Date to) {
+    public int calculatePeiorDaysOfTwoDateWith24(Date from, Date to) {
 
         Calendar cfrom = Calendar.getInstance();
         Calendar cto = Calendar.getInstance();

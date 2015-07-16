@@ -20,7 +20,7 @@ public class DayPackageDetailDto {
     private String detail;
 
     /** 是否需要补充内容的显示 */
-    private int type;
+    private Long type;
 
     /** 是否完成 0 否 1 是 */
     private int complete;
@@ -76,11 +76,11 @@ public class DayPackageDetailDto {
         this.detail = detail;
     }
 
-    public int getType() {
+    public Long getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(Long type) {
         this.type = type;
     }
 
