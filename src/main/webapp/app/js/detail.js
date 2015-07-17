@@ -12,13 +12,13 @@ $.get(url + articleId, function (data) {
   $('#detail-count').html(article.clickCount + '人阅读');
   setTimeout(load(), 500);
 //    $('title').html(article.title);
-  var articleHeight = $('#details').height() + 20;
-  var height = $(window).height() * 2;
-  if (height < articleHeight) {
-    $('#details').css('height', height);
-    $('.unfold-field').show();
-    $('.banner-bg').show();
-  }
+//  var articleHeight = $('#details').height() + 20;
+//  var height = $(window).height() * 2;
+  //if (height < articleHeight) {
+  //  $('#details').css('height', height);
+  //  //$('.unfold-field').show();
+  //  //$('.banner-bg').show();
+  //}
 });
 if (articleIdLocal != null && articleIdLocal == articleId) {
   $('.detail-foot').show();
@@ -27,11 +27,11 @@ if (articleIdLocal != null && articleIdLocal == articleId) {
 function load() {
   $('.data-body').fadeIn();
 }
-function openArticle() {
-  $('#details').css('height', 'auto');
-  $('.unfold-field').hide();
-  $('.banner-bg').hide();
-}
+//function openArticle() {
+//  $('#details').css('height', 'auto');
+//  $('.unfold-field').hide();
+//  $('.banner-bg').hide();
+//}
 function activityList(id) {
   window.location.href = 'share.html?' + id.share;
 }
