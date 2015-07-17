@@ -514,10 +514,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         if (calendar.getTimeInMillis() - calendar1.getTimeInMillis() >= EMUtils.getOvertime() * 60 * 1000) {  // 超时
             emDoctorNumber.setLastQuestionStatus(1);
             emDoctorNumber.setContent(Constant.INTERROGATION_OVERTIME_CONTENT);
+            emDoctorNumber.setList(new ArrayList<EmMessages>());
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         } else {
             emDoctorNumber.setLastQuestionStatus(1);
             emDoctorNumber.setContent(Constant.INTERROGATION_WAIT_CONTENT);
+            emDoctorNumber.setList(new ArrayList<EmMessages>());
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         }
 
