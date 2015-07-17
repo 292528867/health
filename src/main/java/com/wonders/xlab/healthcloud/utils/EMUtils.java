@@ -24,6 +24,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -56,13 +57,16 @@ public class EMUtils {
 
     @Autowired
     @Qualifier(value = "emCache")
-    private static Cache emCache;
+    private Cache emCache;
+
+    private static ObjectMapper objectMapper;
 
     static {
         restTemplate = new RestTemplate();
         restTemplate.setMessageConverters(new ArrayList<HttpMessageConverter<?>>() {{
             add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
         }});
+        objectMapper = new ObjectMapper();
     }
 
     @PostConstruct
@@ -90,25 +94,31 @@ public class EMUtils {
                 "\",\"client_secret\":\"" +
                 appClientSecret + "\"}";
         //发起HTTP请求
-        ResponseEntity<EMToken> result = restTemplate.exchange(
+        ResponseEntity<String> result = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 new HttpEntity<>(body, header),
-                EMToken.class,
+                String.class,
                 new HashMap<String, Object>() {{
                     put("key", "token");
                 }}
         );
-        //请求成功
-        if (HttpStatus.OK.equals(result.getStatusCode())) {
-            String accessToken = result.getBody().getAccess_token();
-            hcCache.addToCache("access_token", accessToken);
-            logger.info("access_token={},applyDate＝{}", accessToken, DateUtils.covertToYYYYMMDDStr(new Date()));
-            return accessToken;
 
-        } else {
+        try {
+            if (HttpStatus.OK.equals(result.getStatusCode())) {
+                EMToken emToken = objectMapper.readValue(result.getBody(), EMToken.class);
+                String accessToken = emToken.getAccess_token();
+                hcCache.addToCache("access_token", accessToken);
+                logger.info("access_token={},applyDate＝{}", accessToken, DateUtils.covertToYYYYMMDDStr(new Date()));
+                return accessToken;
+            } else {
+                throw new RuntimeException(result.getStatusCode().toString());
+            }
+            //请求成功
+        } catch (IOException e) {
             throw new RuntimeException(result.getStatusCode().toString());
         }
+
     }
 
     /**

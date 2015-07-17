@@ -48,8 +48,6 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
     @Autowired
     private UserPackageOrderRepository userPackageOrderRepository;
 
-
-
     @RequestMapping(value = "addTask", method = RequestMethod.POST)
     public Object addPackageTask(@Valid HcPackageDetailDto hcPackageDetailDto, BindingResult result) {
 
