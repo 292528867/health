@@ -222,7 +222,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 		// 重置分组内容
 		List<HealthInfoDto> dtoes = new ArrayList<>();
 		for (HealthInfo healthInfo : page.getContent()) {
-			HealthInfoDto dto = new HealthInfoDto().toNewHealthInfoDto(healthInfo);
+			HealthInfoDto dto = new HealthInfoDto().toSimpleHealthInfoDto(healthInfo);
 			dto.setClickCount(healthInfo.getHealthInfoClickInfo().getVirtualClickCount());
 			dtoes.add(dto);
 		}
