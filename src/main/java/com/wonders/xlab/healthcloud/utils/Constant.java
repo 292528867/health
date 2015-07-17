@@ -25,4 +25,7 @@ public class Constant {
     public static final String INTERROGATION_OVERTIME_CONTENT = "此刻我们十分理解您的担忧与焦虑，我们已布下天罗地网缉拿专家为您解答困惑。稍后专家将亲自奉上本月全勤奖金%s个健康豆，别客气，拿着！";
     //轻问诊的等待描述
     public static final String INTERROGATION_WAIT_CONTENT = "此刻我们已从专业团队中预约了最符合您情况的专家为您解答困惑，为了您的健康，给专家留一小会时间吧~";
+
+    //医生用户群组id  群主账号／密码 admin_doctor  
+    public static final String DOCTOR_GROUP_ID = "83917248216957360";
 }
