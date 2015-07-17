@@ -84,7 +84,7 @@ public class Steward extends BaseInfo<Long> {
     /**
      * 管家是否可选
      */
-    private boolean choice = true;
+    private boolean choice;
 
     public Rank getRank() {
         return rank;

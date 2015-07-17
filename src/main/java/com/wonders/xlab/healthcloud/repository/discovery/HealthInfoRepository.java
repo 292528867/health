@@ -10,7 +10,7 @@ import com.wonders.xlab.framework.repository.MyRepository;
 import com.wonders.xlab.healthcloud.entity.discovery.HealthInfo;
 
 public interface HealthInfoRepository extends MyRepository<HealthInfo, Long> {
-	List<HealthInfo> findByHealthCategoryId(Long id, Pageable pageable);
+	Page<HealthInfo> findByHealthCategoryId(Long id, Pageable pageable);
 	@Query("select info from HealthInfo info where info.healthCategory.id in (?1)")
 	List<HealthInfo> findHealthCategoryIds(Long... ids);
 	

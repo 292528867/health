@@ -1,6 +1,5 @@
 package com.wonders.xlab.healthcloud.service.homepage.impl;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wonders.xlab.healthcloud.dto.hcpackage.DailyPackageDto;
 import com.wonders.xlab.healthcloud.entity.HomePageTips;
 import com.wonders.xlab.healthcloud.entity.banner.Banner;
@@ -29,7 +28,10 @@ public class HomePageServiceImpl implements HomePageService {
     private TipsRepository tipsRepository;
 
     @Override
-    public ObjectNode retrieveBannerNode(ObjectNode node) {
+    public Map<String, Object> retrieveBannerNode() {
+
+        Map<String, Object> result = new HashMap<>();
+
         List<Banner> topBanners = new ArrayList<>();
         List<Banner> bottomBanners = new ArrayList<>();
 
@@ -68,15 +70,16 @@ public class HomePageServiceImpl implements HomePageService {
                 return o1.getPosition() - o2.getPosition();
             }
         });
-        node.putPOJO("topBanners", topBanners);
-        node.putPOJO("bottomBanners", bottomBanners);
+        result.put("topBanners", topBanners);
+        result.put("bottomBanners", bottomBanners);
 
-        return node;
+        return result;
     }
 
     @Override
-    public ObjectNode retrieveTasksAndTipsByAllDetailList(ObjectNode resultNode, List<HcPackageDetail> prePackageDetailList, Date now) {
+    public Map<String, Object> retrieveTasksAndTipsByAllDetailList(List<HcPackageDetail> prePackageDetailList, Date now) {
 
+        Map<String, Object> resultMap = new HashMap<>();
         List<HcPackageDetail> finialDetailList = new ArrayList<>();
 
         // 升序
@@ -118,7 +121,7 @@ public class HomePageServiceImpl implements HomePageService {
             finialDetailList.add(afterDetail.get(0));
             if (!beforeDetail.isEmpty()) {
                 finialDetailList.add(beforeDetail.get(0));
-            } else if (afterDetail.size() > 1){
+            } else if (afterDetail.size() > 1) {
                 finialDetailList.add(afterDetail.get(1));
             }
         } else {
@@ -161,9 +164,9 @@ public class HomePageServiceImpl implements HomePageService {
             allTips.add(tips.get(RandomUtils.nextInt(0, tips.size())).getTips());
         }
 
-        resultNode.putPOJO("tips", allTips);
-        resultNode.putPOJO("task", tasks);
+        resultMap.put("tips", allTips);
+        resultMap.put("task", tasks);
 
-        return resultNode;
+        return resultMap;
     }
 }

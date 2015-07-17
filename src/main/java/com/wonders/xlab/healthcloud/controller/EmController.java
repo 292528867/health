@@ -108,16 +108,24 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     @RequestMapping(value = "replyMessage/{id}/{userTel}", method = RequestMethod.POST)
     public ControllerResult replyMessage(@PathVariable("id") long id, @PathVariable("userTel") String userTel, @RequestBody TexMessagesRequestBody body) throws IOException {
         EmMessages oldEm = emMessagesRepository.findOne(id);
-        if (body.getExt() == null) {
-            Map<String, Object> map = new HashMap<>();
-            body.setExt(map);
-        }
         if (oldEm == null) {
             return new ControllerResult<>()
                     .setRet_code(-1)
                     .setRet_values("")
                     .setMessage("回复失败");
         }
+        QuestionOrder questionOrder = questionOrderRepository.find(Collections.singletonMap("messages.id_equal", oldEm.getId()));
+        if(QuestionOrder.QuestionStatus.done == questionOrder.getQuestionStatus()){
+            return new ControllerResult<>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("该问题已回复");
+        }
+        if (body.getExt() == null) {
+            Map<String, Object> map = new HashMap<>();
+            body.setExt(map);
+        }
+
         String messagesJson = objectMapper.writeValueAsString(body);
         //扩展属性
         //   Map<String, String> extendAttr = wordAnalyzerService.analyzeText(body.getMsg().getMsg());
@@ -145,7 +153,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         //修改app发送信息状态为已回复
         oldEm.setIsReplied(true);
         emMessagesRepository.save(oldEm);
-        QuestionOrder questionOrder = questionOrderRepository.find(Collections.singletonMap("messages.id_equal", oldEm.getId()));
+
         questionOrder.setQuestionStatus(QuestionOrder.QuestionStatus.done);
         questionOrderRepository.save(questionOrder);
 
@@ -171,17 +179,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                     "",String.format(Constant.INTERROGATION_REPLY_PUSH,doctor.getNickName(),minutes.getMinutes()),user.getTel());
         }*/
 
-        return new ControllerResult().setRet_code(0).setRet_values(responseEntity.getBody()).setMessage("消息发送成功");
+        return new ControllerResult<>().setRet_code(0).setRet_values(responseEntity.getBody()).setMessage("消息发送成功");
 
-    }
-
-    @RequestMapping(value = "test", method = RequestMethod.POST)
-    public ControllerResult test(@RequestBody TexMessagesRequestBody body) throws Exception {
-        String messagesJson = objectMapper.writeValueAsString(body);
-        //发送信息
-        emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);
-
-        return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("文本消息发送成功");
     }
 
     /**
@@ -462,7 +461,19 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         //最新问题是否被回复
         EmMessages lastMessage = emMessagesRepository.findTopByToUserAndIsShowForDoctorOrderByCreatedDateDesc(groupId, 0);
+        if (lastMessage == null) {//没有任何数据时 第一次访问
+            newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS, EMUtils.countDoctors()));
+            newMessages.setToUser(groupId);
+            newMessages.setIsShowForDoctor(1); //不让医生端看到
+            newMessages.setFromUser(tel);
 
+            List<EmMessages> list = new ArrayList<>();
+            list.add( emMessagesRepository.save(newMessages));
+            emDoctorNumber.setLastQuestionStatus(0);
+            emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
+            emDoctorNumber.setList(list);
+            return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
+        }
 
         //判断当天是否有医生数量提示
         EmMessages emMessages = emMessagesRepository.findByToUserAndIsShowForDoctorAndCreatedDateBetween(groupId, 1,
@@ -485,14 +496,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         }
 
-        if (lastMessage == null) {//没有任何数据时
-            List<EmMessages> list = new ArrayList<>();
-            list.add(emMessages);
-            emDoctorNumber.setLastQuestionStatus(0);
-            emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
-            emDoctorNumber.setList(list);
-            return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
-        }
+
 
         if (lastMessage.getIsReplied()) { //用户已回复
 
@@ -528,10 +532,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         if (calendar.getTimeInMillis() - calendar1.getTimeInMillis() >= EMUtils.getOvertime() * 60 * 1000) {  // 超时
             emDoctorNumber.setLastQuestionStatus(1);
             emDoctorNumber.setContent(Constant.INTERROGATION_OVERTIME_CONTENT);
+            emDoctorNumber.setList(new ArrayList<EmMessages>());
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         } else {
             emDoctorNumber.setLastQuestionStatus(1);
             emDoctorNumber.setContent(Constant.INTERROGATION_WAIT_CONTENT);
+            emDoctorNumber.setList(new ArrayList<EmMessages>());
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         }
 
@@ -644,7 +650,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
      * @return
      */
     @RequestMapping(value = "/doctorOrders/{doctorId}", method = RequestMethod.GET)
-    public ControllerResult findQuestionOrders(@PathVariable long doctorId) {
+    public ControllerResult findQuestionOrders(@PathVariable long doctorId, Pageable pageable) {
 
         Map<String, QuestionOrder.QuestionStatus> statusMap = new HashMap<>();
         statusMap.put("processing", QuestionOrder.QuestionStatus.processing);
@@ -653,9 +659,18 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 QuestionOrder.QuestionStatus.done,
                 QuestionOrder.QuestionStatus.processing
         };
+        Map<String, Object> paraMap = new HashMap();
+        paraMap.put("doctor.id_equal", doctorId);
+        paraMap.put("questionStatus_in", statuses);
+//        List<QuestionOrder> orders = questionOrderRepository.findAll(paraMap, pageable).getContent();
 
-        List<QuestionOrder> orders = questionOrderRepository.findQuestionOrdersByDoctorID(doctorId, statuses);
-        QuestionOrder newQuestion = questionOrderService.findOneNewQuestion();
+        List<QuestionOrder> orders = questionOrderRepository.findQuestionOrdersByDoctorID(doctorId, statuses, pageable);
+
+        QuestionOrder newQuestion = null;
+        if(pageable.getPageNumber() == 0){
+            newQuestion = questionOrderService.findOneNewQuestion();
+        }
+
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("orders", orders);
         resultMap.put("newQuestion", newQuestion);
