@@ -451,7 +451,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 23, 59, 59
         ).toDate();
 
-        String groupId = userRepository.findByTel(tel).getGroupId();
+        User currentUser = userRepository.findByTel(tel);
+        String groupId = null;
+        if(currentUser != null){
+            groupId = currentUser.getGroupId();
+        }
 
         EmDoctorNumber emDoctorNumber = new EmDoctorNumber();
         emDoctorNumber.setGroupId(groupId);//ios端老是拿不到goupid
@@ -476,6 +480,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         }
 
         //判断当天是否有医生数量提示
+        if (StringUtils.isEmpty(groupId)) {
+            return new ControllerResult<EmDoctorNumber>()
+                    .setRet_code(-1)
+                    .setRet_values(null)
+                    .setMessage("数据错误");
+        }
         EmMessages emMessages = emMessagesRepository.findByToUserAndIsShowForDoctorAndCreatedDateBetween(groupId, 1,
                 com.wonders.xlab.healthcloud.utils.DateUtils.covertToYYYYMMDD(new Date()), endTime);
 
@@ -534,10 +544,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             emDoctorNumber.setLastQuestionStatus(1);
             emDoctorNumber.setContent(String.format(Constant.INTERROGATION_OVERTIME_CONTENT,time));
             // 修改用户积分
-            User user = userRepository.findByTel(tel);
-            user.setIntegrals(user.getIntegrals()+time);
-            userRepository.save(user);
-
+            currentUser.setIntegrals(currentUser.getIntegrals()+time);
+            userRepository.save(currentUser);
             emDoctorNumber.setList(new ArrayList<EmMessages>());
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         } else {
