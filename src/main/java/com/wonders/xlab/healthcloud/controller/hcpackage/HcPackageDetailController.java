@@ -68,12 +68,12 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
 
 
     @RequestMapping("tasksInPackage/{packageId}")
-    public List<HcPackageDetail> findTasksInPackage(@PathVariable Long packageId) {
+    public List<HcPackageDetail> findTasksInPackage(@PathVariable long packageId) {
         return hcPackageDetailRepository.findByHcPackageId(packageId);
     }
 
     @RequestMapping(value = "modify/{id}", method = {RequestMethod.PUT})
-    public HcPackageDetail modify(@PathVariable Long id, @Valid HcPackageDetailDto hcPackageDetailDto) {
+    public HcPackageDetail modify(@PathVariable long id, @Valid HcPackageDetailDto hcPackageDetailDto) {
         HcPackageDetail hcPackageDetail = hcPackageDetailRepository.findOne(id);
         BeanUtils.copyProperties(hcPackageDetailDto, hcPackageDetail);
         return super.modify(hcPackageDetail);
@@ -85,7 +85,7 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
      * @return
      */
     @RequestMapping(value = "retrievePackageDetail/{userId}/{detailId}", method = RequestMethod.GET)
-    public Object retrievePackageDetail(@PathVariable Long userId, @PathVariable Long detailId) {
+    public Object retrievePackageDetail(@PathVariable long userId, @PathVariable Long detailId) {
 
         // 获取健康包任务
         HcPackageDetail detail = this.hcPackageDetailRepository.findOne(detailId);
@@ -148,7 +148,7 @@ public class HcPackageDetailController extends AbstractBaseController<HcPackageD
      * @return
      */
     @RequestMapping(value = "confirmDetail/{userId}/{detailId}", method = RequestMethod.POST)
-    public Object confirmDetail(@PathVariable Long userId, @PathVariable Long detailId, @RequestParam(required = false) String content) {
+    public Object confirmDetail(@PathVariable Long userId, @PathVariable long detailId, @RequestParam(required = false) String content) {
 
         User user = this.userRepository.findOne(userId);
 

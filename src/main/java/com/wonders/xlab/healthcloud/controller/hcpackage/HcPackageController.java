@@ -251,13 +251,13 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      * @return
      */
     @RequestMapping(value = "findOnePackage/{id}", method = RequestMethod.GET)
-    public HcPackage findOnePackage(@PathVariable Long id) {
+    public HcPackage findOnePackage(@PathVariable long id) {
         HcPackage hcPackage = hcPackageRepository.findOnePackage(id);
         return hcPackage;
     }
 
     @RequestMapping("packageClick/{packageId}")
-    public Object packageClick(@PathVariable Long packageId) {
+    public Object packageClick(@PathVariable long packageId) {
         HcPackage hcPackage = hcPackageRepository.findOne(packageId);
         int clickCount = hcPackage.getClickAmount() + 1;
         hcPackage.setClickAmount(clickCount);
@@ -275,7 +275,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
      * @return
      */
     @RequestMapping("checked/{userId}")
-    public Object checkedPackege(@PathVariable Long userId) {
+    public Object checkedPackege(@PathVariable long userId) {
         List<UserPackageOrder> userPackageOrders = userPackageOrderRepository.findByUserIdAndPackageCompleteFalse(userId);
         List<UserPackageOrderDto> userPackageOrderDtos = new ArrayList<>();
         for (UserPackageOrder userPackageOrder : userPackageOrders) {
@@ -300,7 +300,7 @@ public class HcPackageController extends AbstractBaseController<HcPackage, Long>
     }
 
     @RequestMapping(value = "findPackagesByCategoryId/{categoryId}", method = RequestMethod.GET)
-    public ControllerResult findPackagesByCategoryId(@PathVariable Long categoryId) {
+    public ControllerResult findPackagesByCategoryId(@PathVariable long categoryId) {
         List<HcPackage> packageList = hcPackageRepository.findByCategoryId(categoryId);
         if (CollectionUtils.isNotEmpty(packageList)) {
             return new ControllerResult<>()

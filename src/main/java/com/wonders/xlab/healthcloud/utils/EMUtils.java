@@ -7,6 +7,7 @@ import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
 import net.sf.ehcache.Cache;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class EMUtils {
 
     private static RestTemplate restTemplate;
 
-    private static Logger logger = LoggerFactory.getLogger(EMUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(EMUtils.class);
 
     private static final String url = "http://a1.easemob.com/xlab/ugyufuy/{key}";
 
@@ -155,11 +156,11 @@ public class EMUtils {
         //获取请求方式枚举
         HttpMethod httpMethod = EnumUtils.getEnum(HttpMethod.class, method.toUpperCase());
 //----------------发布时，需取消以下注释－－－－－－－－－－－－－－－－
-//        String token = hcCache.getFromCache("access_token");
-//        //缓存Cache失效，重新请求放到缓存
-//        if (StringUtils.isEmpty(token)) {
-//            token = pushTokenToCache();
-//        }
+        String token = hcCache.getFromCache("access_token");
+        //缓存Cache失效，重新请求放到缓存
+        if (StringUtils.isEmpty(token)) {
+            token = pushTokenToCache();
+        }
 
         //请求头为空调用默认请求头，不为空调用自定义请求头
         if (null == headers) {
@@ -171,8 +172,8 @@ public class EMUtils {
             headers.setAccept(acceptableMediaTypes);
 
 //----------------发布时，需取消以下注释，并注释headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
-//            headers.add("Authorization", "Bearer " + token);
-            headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
+            headers.add("Authorization", "Bearer " + token);
+//            headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
         }
 
         //添加需替换路径key 和 路径
