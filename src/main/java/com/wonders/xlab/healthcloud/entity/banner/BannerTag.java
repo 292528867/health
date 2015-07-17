@@ -43,9 +43,12 @@ public enum BannerTag {
     /**
      * 活动
      */
-    Activity("活动");
+    Activity("活动"),
 
-
+    /**
+     * 无
+     */
+    None("无");
 
     private String name;
 
