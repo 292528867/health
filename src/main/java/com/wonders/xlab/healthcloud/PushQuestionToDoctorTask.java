@@ -18,7 +18,7 @@ public class PushQuestionToDoctorTask {
     /**
      * 每隔60秒推新问题给医生
      */
-    @Scheduled(cron = "*/59 * * * * ? ")
+    @Scheduled(cron = "0 */1 * * * ? ")
     private void push() {
         try {
             questionOrderService.sendQuestionToDoctors("");

@@ -332,7 +332,12 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
             //TODO 从缓存中获取环信token 医生群组暂时写死
             String groupId = "82830104253694376";
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", "Bearer YWMtEJuECCJLEeWN-d-uaORhJQAAAU-OGpHmVNOp0Va6o2OEAUzNiA1O9UB_oFw");
+            String token = hcCache.getFromCache("access_token");
+            //缓存Cache失效，重新请求放到缓存
+            if (StringUtils.isEmpty(token)) {
+                token = emUtils.pushTokenToCache();
+            }
+            headers.add("Authorization", "Bearer " + token);
             headers.setContentType(MediaType.TEXT_PLAIN);
             emUtils.requestEMChat(headers, "post", "chatgroups/" + groupId + "/users/" + "doctor" + doctor.getTel(), String.class);
         }

@@ -36,9 +36,6 @@ public class UserPackageOrderService {
     @Resource(name = "discoveryServiceProxy")
     private DiscoveryService discoveryService;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @Transactional
     public void scheduleCalculateIsPackageFinished(int aliquotNumber) {
         /**
@@ -87,6 +84,7 @@ public class UserPackageOrderService {
     }
 
     public void scheduleCalculateIsPackageFinished(int aliquotNumber, int number) {
+
     }
 
 

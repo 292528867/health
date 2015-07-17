@@ -53,7 +53,7 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
         if (500 == code) {
             return result.setRet_code(-1)
                     .setRet_values("")
-                    .setMessage("最多选择两个健康包！");
+                    .setMessage("安排得过来吗？\n目前日程已满啦！");
         } else if (400 == code) {
             return result.setRet_code(-1)
                     .setRet_values("")
@@ -65,7 +65,7 @@ public class UserPackageOrderController extends AbstractBaseController<UserPacka
     }
 
     @RequestMapping(value = "cancel/{userId}/{packageId}", method = RequestMethod.POST)
-    public Object deletePlan(@PathVariable Long userId, @PathVariable Long packageId) {
+    public Object deletePlan(@PathVariable long userId, @PathVariable long packageId) {
         UserPackageOrder userPackageOrder = userPackageOrderRepository.findByUserIdAndHcPackageIdAndPackageComplete(userId, packageId, false);
 
         List<Long> completeDetailIds = new ArrayList<>();

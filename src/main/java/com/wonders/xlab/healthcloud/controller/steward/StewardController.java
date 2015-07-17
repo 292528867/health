@@ -187,7 +187,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         arithmeticArrayNode.add(node);
 
         ObjectNode result = jsonNodeFactory.objectNode();
-        result.putPOJO("services", services);
+        result.putPOJO("services", orderServices);
         result.putPOJO("steward", stewardRepository.findByOrderByRand());
         result.putPOJO("arithmetic", arithmeticArrayNode);
 
@@ -297,43 +297,22 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                     .setRet_values(builder.toString())
                     .setMessage("服务异常");
         }
-        int integration = 0; //积分
-        double amount;  //金额
+        double amount = 0.00;  //金额
         List<String> serviceIds = Arrays.asList(StringUtils.split(serviceDto.getServiceIds(), ','));
         Map<String, Object> filters = new HashMap<>();
         filters.put("serviceId_in", serviceIds);
         List<Services> services = servicesRepository.findAll(filters);
         Steward steward = new Steward();
         //存在推荐包
-        int serviceUserNum = 0;
         if (!StringUtils.isEmpty(serviceDto.getPackageId())) {
             // 计算推荐包价格
-
             RecommendPackage rp = recommendPackageRepository.findOne(Long.parseLong(serviceDto.getPackageId()));
             List<Steward> stewards = stewardRepository.findByRank(rp.getRank());
-            for (Steward s : stewards) {
-                serviceUserNum += s.getServiceUserNum();
-            }
             /**
              * 判断管家是否可用
              */
-            if((rp.getRank().ordinal()==3 && serviceUserNum < stewards.size()*2)
-                    ||(rp.getRank().ordinal()==2 && serviceUserNum < stewards.size()*2)
-                    ||(rp.getRank().ordinal()==1 && serviceUserNum < stewards.size()*2)
-                    ||(rp.getRank().ordinal()==0 && serviceUserNum < stewards.size()*2)) {
-                //随机一个管家
-                List<Steward> stewardList = new ArrayList<>();
-                for (Steward s : stewards) {
-                    stewardList.add(s);
-                }
-                for (Steward sl : stewardList) {
-                    if (sl.getServiceUserNum()>=2){
-                        stewards.remove(sl);
-                    }
-                }
-
+            if (checkStewardEffective(rp, stewards)) {
                 steward = stewards.get((int) (System.currentTimeMillis() % stewards.size()));
-
                 amount = Double.parseDouble(rp.getPrice());
             } else {
                 return new ControllerResult<>()
@@ -341,27 +320,11 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                         .setRet_values("")
                         .setMessage("管家已被使用完,请等待管家被释放");
             }
-
         } else {
             if (!StringUtils.isEmpty(serviceDto.getStewardId())) {
                 steward = stewardRepository.findOne(Long.parseLong(serviceDto.getStewardId()));
-                // 计算积分
-                for (Services service : services) {
-                    integration += service.getServiceIntegration();
-                }
-                integration += steward.getStewardIntegration();
-            }
-            // 判断自定义积分换算金额
-            if (integration <= 4) {
-                amount = 0.01;
-            } else if (integration >= 5 && integration <= 10) {
-                amount = 28;
-            } else if (integration >= 11 && integration <= 17) {
-                amount = 78;
-            } else if (integration >= 18 && integration <= 48) {
-                amount = 158;
-            } else {
-                amount = 298;
+                // 判断自定义积分换算金额
+                amount = countAmounts(steward, services);
             }
         }
         PingDto pingDto = new PingDto("健康套餐", "健康云养生套餐", amount);
@@ -441,16 +404,17 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         StewardOrder stewardOrder = stewardOrderRepository.findByChargeId(chargeId);
         if (null != stewardOrder) {
             stewardOrder.setOrderStatus(StewardOrder.OrderStatus.支付成功);
-            stewardOrder.setPayDate(new Date());
-            stewardOrderRepository.save(stewardOrder);
+            if (null == stewardOrder.getPayDate()){
+                stewardOrder.setPayDate(new Date());
+                stewardOrderRepository.save(stewardOrder);
 
-            Steward steward = stewardOrder.getSteward();
-            steward.setServiceUserNum(steward.getServiceUserNum() + 1);
-            if(steward.getServiceUserNum()==2){
-                steward.setChoice(false);
+                Steward steward = stewardOrder.getSteward();
+                steward.setServiceUserNum(steward.getServiceUserNum() + 1);
+                if (steward.getServiceUserNum() == 2) {
+                    steward.setChoice(false);
+                }
+                stewardRepository.save(steward);
             }
-            stewardRepository.save(steward);
-
             int totalServicePeriod = stewardOrder.getSteward().getServicedPeriod();
             String[] detilServicedPeriod = new String[totalServicePeriod];
             for (int num = 0; num < detilServicedPeriod.length; num++) {
@@ -508,4 +472,58 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
         }
         return newMap;
     }
+
+    /**
+     * 计算金额
+     */
+    private double countAmounts(Steward steward, List<Services> services) {
+        // 计算积分
+        int integration = 0; //积分
+        for (Services service : services) {
+            integration += service.getServiceIntegration();
+        }
+        integration += steward.getStewardIntegration();
+        double amount;
+        if (integration <= 4) {
+            amount = 0.01;
+        } else if (integration >= 5 && integration <= 10) {
+            amount = 28;
+        } else if (integration >= 11 && integration <= 17) {
+            amount = 78;
+        } else if (integration >= 18 && integration <= 48) {
+            amount = 158;
+        } else {
+            amount = 298;
+        }
+        return amount;
+    }
+
+    /**
+     * 判断管家是否在服务期内
+     *
+     * @param rp
+     * @param stewards
+     * @return
+     */
+    private boolean checkStewardEffective(RecommendPackage rp, List<Steward> stewards) {
+        int serviceUserNum = 0;
+        List<Steward> stewardList = new ArrayList<>();
+        for (Steward s : stewards) {
+            serviceUserNum += s.getServiceUserNum();
+            stewardList.add(s);
+        }
+        if ((rp.getRank().ordinal() == 3 && serviceUserNum < stewards.size() * 2)
+                || (rp.getRank().ordinal() == 2 && serviceUserNum < stewards.size() * 2)
+                || (rp.getRank().ordinal() == 1 && serviceUserNum < stewards.size() * 2)
+                || (rp.getRank().ordinal() == 0 && serviceUserNum < stewards.size() * 2)) {
+            for (Steward ss : stewardList) {
+                if (ss.getServiceUserNum() >= 2) {
+                    stewards.remove(ss);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
 }
