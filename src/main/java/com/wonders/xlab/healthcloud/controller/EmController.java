@@ -646,7 +646,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         List<QuestionOrder> orders = questionOrderRepository.findQuestionOrdersByDoctorID(doctorId, statuses, pageable);
 
-        QuestionOrder newQuestion = questionOrderService.findOneNewQuestion();
+        QuestionOrder newQuestion = null;
+        if(pageable.getPageNumber() == 0){
+            newQuestion = questionOrderService.findOneNewQuestion();
+        }
+
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("orders", orders);
         resultMap.put("newQuestion", newQuestion);
