@@ -99,16 +99,24 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
     @RequestMapping(value = "replyMessage/{id}/{userTel}", method = RequestMethod.POST)
     public ControllerResult replyMessage(@PathVariable("id") long id, @PathVariable("userTel") String userTel, @RequestBody TexMessagesRequestBody body) throws IOException {
         EmMessages oldEm = emMessagesRepository.findOne(id);
-        if (body.getExt() == null) {
-            Map<String, Object> map = new HashMap<>();
-            body.setExt(map);
-        }
         if (oldEm == null) {
-            return new ControllerResult()
+            return new ControllerResult<>()
                     .setRet_code(-1)
                     .setRet_values("")
                     .setMessage("回复失败");
         }
+        QuestionOrder questionOrder = questionOrderRepository.find(Collections.singletonMap("messages.id_equal", oldEm.getId()));
+        if(QuestionOrder.QuestionStatus.done == questionOrder.getQuestionStatus()){
+            return new ControllerResult<>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("该问题已回复");
+        }
+        if (body.getExt() == null) {
+            Map<String, Object> map = new HashMap<>();
+            body.setExt(map);
+        }
+
         String messagesJson = objectMapper.writeValueAsString(body);
         //扩展属性
         //   Map<String, String> extendAttr = wordAnalyzerService.analyzeText(body.getMsg().getMsg());
@@ -136,7 +144,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         //修改app发送信息状态为已回复
         oldEm.setIsReplied(true);
         emMessagesRepository.save(oldEm);
-        QuestionOrder questionOrder = questionOrderRepository.find(Collections.singletonMap("messages.id_equal", oldEm.getId()));
+
         questionOrder.setQuestionStatus(QuestionOrder.QuestionStatus.done);
         questionOrderRepository.save(questionOrder);
 
@@ -166,14 +174,6 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
     }
 
-    @RequestMapping(value = "test", method = RequestMethod.POST)
-    public ControllerResult test(@RequestBody TexMessagesRequestBody body) throws Exception {
-        String messagesJson = objectMapper.writeValueAsString(body);
-        //发送信息
-        emUtils.requestEMChat(messagesJson, "POST", "messages", String.class);
-
-        return new ControllerResult().setRet_code(0).setRet_values("").setMessage("文本消息发送成功");
-    }
 
     /**
      * (接受app)文本消息发送
@@ -186,7 +186,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         long askTime = System.currentTimeMillis();
         User user = userRepository.findByTel(body.getFrom());
         if (user == null) {
-            return new ControllerResult()
+            return new ControllerResult<>()
                     .setRet_code(-1)
                     .setRet_values("")
                     .setMessage("用户不存在");
@@ -195,7 +195,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         String askTimeStr = questionCache.putIfAbsent(userAskTime, String.valueOf(askTime));
         if (!String.valueOf(askTime).equals(askTimeStr)) {
             //已有其他线程处理，禁止重复提交
-            return new ControllerResult()
+            return new ControllerResult<>()
                     .setRet_code(-1)
                     .setRet_values("")
                     .setMessage("发送失败");
@@ -243,7 +243,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             orderCache.putIfAbsent(user.getId().toString(), questionOrder.getId().toString());
         }
 
-        return new ControllerResult().setRet_code(0).setRet_values(Collections.singletonMap("waiting", Constant.INTERROGATION_WAIT_CONTENT)).setMessage("文本消息发送成功");
+        return new ControllerResult<>().setRet_code(0).setRet_values(Collections.singletonMap("waiting", Constant.INTERROGATION_WAIT_CONTENT)).setMessage("文本消息发送成功");
 
     }
 
@@ -272,7 +272,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         );
         emMessagesRepository.save(emMessages);
 
-        return new ControllerResult().setRet_code(0).setRet_values("").setMessage("图片信息发送成功");
+        return new ControllerResult<>().setRet_code(0).setRet_values("").setMessage("图片信息发送成功");
     }
 
     /**
@@ -644,7 +644,9 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Map<String, Object> paraMap = new HashMap();
         paraMap.put("doctor.id_equal", doctorId);
         paraMap.put("questionStatus_in", statuses);
-        List<QuestionOrder> orders = questionOrderRepository.findAll(paraMap, pageable).getContent();
+//        List<QuestionOrder> orders = questionOrderRepository.findAll(paraMap, pageable).getContent();
+
+        List<QuestionOrder> orders = questionOrderRepository.findQuestionOrdersByDoctorID(doctorId, statuses, pageable);
 
         QuestionOrder newQuestion = questionOrderService.findOneNewQuestion();
         Map<String, Object> resultMap = new HashMap<>();
