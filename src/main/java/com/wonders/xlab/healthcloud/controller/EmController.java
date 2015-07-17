@@ -31,7 +31,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -358,9 +357,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         String body = objectMapper.writeValueAsString(Collections.singletonMap("nickname", nickname));
 
         try {
-
-            emUtils.requestEMChat(HttpMethod.PUT, body, "users/" + username, ChatGroupsResponseBody.class);
-
+            emUtils.requestEMChat(body, "put",  "users/" + username, ChatGroupsResponseBody.class);
         } catch (HttpClientErrorException e) {
             return -1;
         }
@@ -451,7 +448,11 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 23, 59, 59
         ).toDate();
 
-        String groupId = userRepository.findByTel(tel).getGroupId();
+        User currentUser = userRepository.findByTel(tel);
+        String groupId = null;
+        if(currentUser != null){
+            groupId = currentUser.getGroupId();
+        }
 
         EmDoctorNumber emDoctorNumber = new EmDoctorNumber();
         emDoctorNumber.setGroupId(groupId);//ios端老是拿不到goupid
@@ -476,6 +477,12 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         }
 
         //判断当天是否有医生数量提示
+        if (StringUtils.isEmpty(groupId)) {
+            return new ControllerResult<EmDoctorNumber>()
+                    .setRet_code(-1)
+                    .setRet_values(null)
+                    .setMessage("数据错误");
+        }
         EmMessages emMessages = emMessagesRepository.findByToUserAndIsShowForDoctorAndCreatedDateBetween(groupId, 1,
                 com.wonders.xlab.healthcloud.utils.DateUtils.covertToYYYYMMDD(new Date()), endTime);
 
@@ -534,10 +541,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             emDoctorNumber.setLastQuestionStatus(1);
             emDoctorNumber.setContent(String.format(Constant.INTERROGATION_OVERTIME_CONTENT,time));
             // 修改用户积分
-            User user = userRepository.findByTel(tel);
-            user.setIntegrals(user.getIntegrals()+time);
-            userRepository.save(user);
-
+            currentUser.setIntegrals(currentUser.getIntegrals()+time);
+            userRepository.save(currentUser);
             emDoctorNumber.setList(new ArrayList<EmMessages>());
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         } else {

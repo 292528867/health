@@ -10,7 +10,7 @@ public class EMToken {
      */
     private String access_token;
 
-    private String expires_in;
+    private Long expires_in;
 
     private String application;
 
@@ -22,11 +22,11 @@ public class EMToken {
         this.access_token = access_token;
     }
 
-    public String getExpires_in() {
+    public Long getExpires_in() {
         return expires_in;
     }
 
-    public void setExpires_in(String expires_in) {
+    public void setExpires_in(Long expires_in) {
         this.expires_in = expires_in;
     }
 
