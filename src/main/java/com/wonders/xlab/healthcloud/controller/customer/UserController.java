@@ -325,7 +325,7 @@ public class UserController extends AbstractBaseController<User, Long> {
 
         User user = userRepository.findOne(userId);
 
-        int i = SmsUtils.inviteFriend(user.getNickName(), mobiles);
+        int i = SmsUtils.inviteFriend(user.getInviteCode(), mobiles);
 
         AddressBook addressBook = new AddressBook(userName, mobiles);
 

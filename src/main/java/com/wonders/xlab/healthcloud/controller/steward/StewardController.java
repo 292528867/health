@@ -318,7 +318,7 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
                 return new ControllerResult<>()
                         .setRet_code(-1)
                         .setRet_values("")
-                        .setMessage("管家已被使用完,请等待管家被释放");
+                        .setMessage("先下手为强，管家已被约满,请尝试其他管家吧");
             }
         } else {
             if (!StringUtils.isEmpty(serviceDto.getStewardId())) {
