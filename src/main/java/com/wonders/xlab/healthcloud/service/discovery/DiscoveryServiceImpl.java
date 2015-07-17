@@ -184,7 +184,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 		List<HealthInfoDto> healthInfoDtoes = new ArrayList<>();
 		for (HealthInfo healthInfo : allHealthInfos) {
 			HealthInfoDto healthInfoDto = new HealthInfoDto();
-			healthInfoDto = new HealthInfoDto().toNewHealthInfoDto(healthInfo);
+			healthInfoDto = new HealthInfoDto().toSimpleHealthInfoDto(healthInfo);
 			healthInfoDto.setClickCount(healthInfo.getHealthInfoClickInfo().getVirtualClickCount());
 			healthInfoDtoes.add(healthInfoDto);
 		}
@@ -222,7 +222,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 		// 重置分组内容
 		List<HealthInfoDto> dtoes = new ArrayList<>();
 		for (HealthInfo healthInfo : page.getContent()) {
-			HealthInfoDto dto = new HealthInfoDto().toNewHealthInfoDto(healthInfo);
+			HealthInfoDto dto = new HealthInfoDto().toSimpleHealthInfoDto(healthInfo);
 			dto.setClickCount(healthInfo.getHealthInfoClickInfo().getVirtualClickCount());
 			dtoes.add(dto);
 		}

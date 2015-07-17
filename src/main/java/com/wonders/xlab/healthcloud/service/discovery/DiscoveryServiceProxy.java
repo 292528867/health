@@ -2,9 +2,7 @@ package com.wonders.xlab.healthcloud.service.discovery;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,20 +66,20 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 //	}
 	
 	
-	private void setDtoIsClicked(User user, List<HealthInfoDto> dtoes) {
-		Map<Long, Long> userClicked = new HashMap<>();
-		List<Object> allClickCountList = this.healthInfoUserClickInfoRepository.healthInfoTotalClickCountWithUserId(user.getId());
-		for (Object record : allClickCountList) {
-			Object[] record_values = (Object[]) record;
-			userClicked.put((Long) record_values[0], (Long) record_values[1]);
-		}
-		for (HealthInfoDto dto : dtoes) {
-			if (userClicked.get(dto.getId()) != null) 
-				dto.setClicked(true);
-			else
-				dto.setClicked(false);
-		}
-	}
+//	private void setDtoIsClicked(User user, List<HealthInfoDto> dtoes) {
+//		Map<Long, Long> userClicked = new HashMap<>();
+//		List<Object> allClickCountList = this.healthInfoUserClickInfoRepository.healthInfoTotalClickCountWithUserId(user.getId());
+//		for (Object record : allClickCountList) {
+//			Object[] record_values = (Object[]) record;
+//			userClicked.put((Long) record_values[0], (Long) record_values[1]);
+//		}
+//		for (HealthInfoDto dto : dtoes) {
+//			if (userClicked.get(dto.getId()) != null) 
+//				dto.setClicked(true);
+//			else
+//				dto.setClicked(false);
+//		}
+//	}
 	
 	private String toHealthCategoryIdStrs(List<HealthCategory> healthCategoryList) {
 		List<String> ids_str_array = new ArrayList<>();
@@ -129,7 +127,7 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 		List<HealthInfo> healthInfos = this.healthInfoRepository.findByHealthInfoIdsWithClickInfo(ids_long_list.toArray(new Long[0]));
 		List<HealthInfoDto> dtoes = new ArrayList<>();
 		for (HealthInfo healthInfo : healthInfos) {
-			HealthInfoDto healthInfoDto = new HealthInfoDto().toNewHealthInfoDto(healthInfo);
+			HealthInfoDto healthInfoDto = new HealthInfoDto().toSimpleHealthInfoDto(healthInfo);
 			healthInfoDto.setClickCount(healthInfo.getHealthInfoClickInfo().getVirtualClickCount());
 			dtoes.add(healthInfoDto);
 			
@@ -179,7 +177,10 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 	public Page<HealthInfoDto> getTagInfos(HealthCategory healthCategory, User user, Pageable pageable) {
 		// 计算是否点击此用户是否点击过
 		Page<HealthInfoDto> page = this.discoveryService.getTagInfos(healthCategory, user, pageable);
-		setDtoIsClicked(user, page.getContent());
+		
+		// 计算是否点击此用户是否点击过
+		// TODO：此版本不计算用户是否点击过
+//		setDtoIsClicked(user, page.getContent());
 		return page;
 	}
 	
@@ -212,7 +213,8 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 		}
 		
 		// 计算是否点击此用户是否点击过
-		setDtoIsClicked(user, dtoes);
+		// TODO：此版本不计算用户是否点击过
+//		setDtoIsClicked(user, dtoes);
 		
 		return dtoes;
 		

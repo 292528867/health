@@ -526,9 +526,15 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Calendar calendar = Calendar.getInstance();
         Calendar calendar1 = Calendar.getInstance();
         calendar1.setTime(emMessages.getCreatedDate());
-        if (calendar.getTimeInMillis() - calendar1.getTimeInMillis() >= EMUtils.getOvertime() * 60 * 1000) {  // 超时
+        int time =(int)(calendar.getTimeInMillis() - calendar1.getTimeInMillis() - EMUtils.getOvertime()) / 60 / 1000; //超时多长时间
+        if (time > 0) {  // 超时
             emDoctorNumber.setLastQuestionStatus(1);
-            emDoctorNumber.setContent(Constant.INTERROGATION_OVERTIME_CONTENT);
+            emDoctorNumber.setContent(String.format(Constant.INTERROGATION_OVERTIME_CONTENT,time));
+            // 修改用户积分
+            User user = userRepository.findByTel(tel);
+            user.setIntegrals(user.getIntegrals()+time);
+            userRepository.save(user);
+
             emDoctorNumber.setList(new ArrayList<EmMessages>());
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         } else {

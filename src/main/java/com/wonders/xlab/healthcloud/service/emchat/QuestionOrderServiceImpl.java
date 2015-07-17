@@ -7,6 +7,7 @@ import com.wonders.xlab.healthcloud.entity.EmMessages;
 import com.wonders.xlab.healthcloud.entity.QuestionOrder;
 import com.wonders.xlab.healthcloud.repository.QuestionOrderRepository;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
+import com.wonders.xlab.healthcloud.utils.Constant;
 import com.wonders.xlab.healthcloud.utils.EMUtils;
 import net.sf.ehcache.Cache;
 import org.apache.commons.lang3.StringUtils;
@@ -107,7 +108,7 @@ public class QuestionOrderServiceImpl implements QuestionOrderService {
                         //群发所有医生
                         requestBody.setTarget(new ArrayList<String>(){{
                             //TODO 获取医生群组，发给医生
-                            add("82830104253694376");
+                            add(Constant.DOCTOR_GROUP_ID);
                         }});
                         requestBody.setTargetType(message.getTargetType());
                     }

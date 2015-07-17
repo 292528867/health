@@ -13,7 +13,7 @@ public class SmsUtils {
     private static final String SMS_ACT_PWD = "Txb123456";
     private static final String SMS_VALID_CODE_CONTENT = "验证码为%s。我为你感到高兴，你开始更关注自己健康了。别急，20分钟内输入还是有效的。";
     private static final String SMS_DOCTOR_REPLY_CONTENT = "Hi~你之前的提问特聘专家已作出详尽解答啦，赶紧查阅吧！健康云，时刻与你一起关注健康。";
-    private static final String SMS_INVITE_FRIEND_CONTENT = "你的朋友%s正在使用健康云，赶紧加入吧";
+    private static final String SMS_INVITE_FRIEND_CONTENT = "病来方知健康贵，你的小伙伴邀你一起体验全程健康云，邀请码为%s，点击下方链接立即关爱自身健康。";
 
     private SmsUtils() {
 
@@ -58,9 +58,9 @@ public class SmsUtils {
         }
     }
 
-    public static int inviteFriend(String friendName,String mobiles){
+    public static int inviteFriend(String inviteCode,String mobiles){
         try {
-            String content = String.format(SMS_INVITE_FRIEND_CONTENT, friendName);
+            String content = String.format(SMS_INVITE_FRIEND_CONTENT,inviteCode );
             String resultCode = HttpSender.batchSend(SMS_SRV_URL, SMS_ACT_USER, SMS_ACT_PWD, mobiles, content, true, null, null);
             String status = resultCode.substring(resultCode.indexOf(",") + 1, resultCode.indexOf(",") + 2);
             if (StringUtils.equals(status, "0")) {

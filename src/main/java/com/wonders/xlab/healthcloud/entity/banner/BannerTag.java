@@ -45,8 +45,6 @@ public enum BannerTag {
      */
     Activity("活动");
 
-
-
     private String name;
 
     BannerTag(String name) {
