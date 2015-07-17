@@ -398,7 +398,7 @@ public class UserController extends AbstractBaseController<User, Long> {
 
                 } else {
 
-                    return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("不能重复填写邀请码!");
+                    return new ControllerResult<>().setRet_code(-1).setRet_values("").setMessage("您已经填写过邀请码!");
                 }
             }
         }
