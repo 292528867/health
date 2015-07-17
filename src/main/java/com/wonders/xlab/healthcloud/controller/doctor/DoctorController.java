@@ -14,10 +14,7 @@ import com.wonders.xlab.healthcloud.repository.doctor.DoctorRepository;
 import com.wonders.xlab.healthcloud.repository.doctor.DoctorThirdRepository;
 import com.wonders.xlab.healthcloud.service.cache.HCCache;
 import com.wonders.xlab.healthcloud.service.cache.HCCacheProxy;
-import com.wonders.xlab.healthcloud.utils.BeanUtils;
-import com.wonders.xlab.healthcloud.utils.EMUtils;
-import com.wonders.xlab.healthcloud.utils.QiniuUploadUtils;
-import com.wonders.xlab.healthcloud.utils.ValidateUtils;
+import com.wonders.xlab.healthcloud.utils.*;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.apache.commons.lang3.StringUtils;
@@ -330,7 +327,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
         Doctor doctor = doctorRepository.findOne(doctorId);
         if (checked.equals(Doctor.Checked.passed)) {
             //TODO 从缓存中获取环信token 医生群组暂时写死
-            String groupId = "82830104253694376";
+//            String groupId = "82830104253694376";
             HttpHeaders headers = new HttpHeaders();
             String token = hcCache.getFromCache("access_token");
             //缓存Cache失效，重新请求放到缓存
@@ -339,7 +336,7 @@ public class DoctorController extends AbstractBaseController<Doctor, Long> {
             }
             headers.add("Authorization", "Bearer " + token);
             headers.setContentType(MediaType.TEXT_PLAIN);
-            emUtils.requestEMChat(headers, "post", "chatgroups/" + groupId + "/users/" + "doctor" + doctor.getTel(), String.class);
+            emUtils.requestEMChat(headers, "post", "chatgroups/" + Constant.DOCTOR_GROUP_ID + "/users/" + "doctor" + doctor.getTel(), String.class);
         }
         doctor.setChecked(checked);
         try {
