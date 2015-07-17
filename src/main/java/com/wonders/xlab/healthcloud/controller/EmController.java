@@ -496,7 +496,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             emMessagesRepository.save(newMessages);
 
             List<EmMessages> list = new ArrayList<>();
-            list.add(emMessages);
+            list.add(newMessages);
             emDoctorNumber.setLastQuestionStatus(0);
             emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
             emDoctorNumber.setList(list);
