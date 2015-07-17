@@ -33,18 +33,24 @@ else {
     $('#detail-count').html(article.clickAmount + '人关注');
     var string = '';
     if (article.type == 2) {
-      $('.schedule-type').show();
+      $('#blood').show();
       $('#schedule-value').html();
       $.each(article.statementDtos, function (n, value) {
         string += '<div style="margin-bottom: 10px;width: 100%;"><div style="width: 10%;text-align: left;height: 25px;" class="am-vertical-align">' +
-        '<img src="i/schedule/check.jpg" alt="" width="25" style="vertical-align: top" class="am-vertical-align-middle"/>' +
-        '</div>' +
-        '<div style="width: 60%" id="shedule-time">' + new Date(value.time).Format("yyyy-MM-dd hh:mm") + '</div>' +
-        '<div style="width: 30%"><span id="schedule-value">' + value.statement + '</span>mmol/L</div></div>'+
-        '<hr data-am-widget="divider" style="" class="am-divider am-divider-dashed"/>';
+          '<img src="i/schedule/check.jpg" alt="" width="25" style="vertical-align: top" class="am-vertical-align-middle"/>' +
+          '</div>' +
+          '<div style="width: 60%" id="shedule-time">' + new Date(value.time).Format("yyyy-MM-dd hh:mm") + '</div>' +
+          '<div style="width: 30%"><span id="schedule-value">' + value.statement + '</span>mmol/L</div></div>' +
+          '<hr data-am-widget="divider" style="" class="am-divider am-divider-dashed"/>';
       });
       $('#shedule-box').append(string);
     }
+    if (article.type == 3) {
+      $('#pressure').show();
+      $('#schedule-value').html();
+    }
+
+
     if (article.complete == 1) {
       var $finish = $('.finish-btn');
       $finish.addClass('finish-btn-ed');
@@ -64,21 +70,40 @@ else {
 
 function finishTask() {
 //    noticePhone('2222');
-  $('#finish-btn').button('loading');
-  $('#finish-btn').attr('disabled', true);
+  var $finish = $('.finish-btn');
+  $finish.button('loading');
+  $finish.attr('disabled', true);
   if ($('#getValue').val().length == 0 && article.type == 2) {
-    $('#finish-btn').button('reset');
-    $('#finish-btn').attr('disabled', false);
-    //alert('请填写内容吧！');
+    $finish.button('reset');
+    $finish.attr('disabled', false);
     $('#error-content').html('请填写内容');
-    $('#error-alert').modal('toggle');
-
+    $('#error-alert').modal('open');
     return false;
   }
+  if (article.type == 3 && $('#pressureValue1').val().length == 0||$('#pressureValue2').val().length == 0) {
+    $finish.button('reset');
+    $finish.attr('disabled', false);
+    $('#error-content').html('请填写内容');
+    $('#error-alert').modal('open');
+    return false;
+  }
+  var content = '';
+  if(article.type == 3){
+    var pressureValue=new Array();
+    pressureValue[0]=$('#pressureValue1').val();
+    pressureValue[1]=$('#pressureValue2').val();
+    if($('#pressureValue3').val().length!==0)
+    pressureValue[2]=$('#pressureValue3').val();
+    content = pressureValue.join(',');
+  }
+  if(article.type == 2){
+    content =$('#getValue').val();
+  }
+  console.log(content);
   $.ajax({
     url: commonUrl + 'task/confirmDetail/' + userId + '/' + articleId + '/',
     type: "POST",
-    data: {'content': $('#getValue').val()},
+    data: {'content': content},
     dataType: "json",
     success: function (response) {
       if (response.ret_code == 0) {
@@ -97,19 +122,19 @@ function finishTask() {
         $('#finish-btn').button('reset');
         $('#finish-btn').attr('disabled', false);
         $('#error-content').html(response.ret_values);
-        $('#error-alert').modal('toggle');
+        $('#error-alert').modal('open');
       }
 
 
     },
     error: function () {
       $('#error-content').html('请检查你的网络');
-      $('#error-alert').modal('toggle');
+      $('#error-alert').modal('open');
     }
 
 
   });
-  $('#finish-btn').button('reset');
+  $finish.button('reset');
 
 }
 function activityList() {

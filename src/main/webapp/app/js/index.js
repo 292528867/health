@@ -138,14 +138,14 @@ function loadTodayArticles() {
 function getDetails(id) {
   var articleId = id;
   var clickUrl = commonUrl + 'discovery/app/clickInfo/' + healthCategoryId + '/' + articleId;
+  //$('.app-body').hide();
+  //history.pushState('detail', '文章详情', 'detail.html?' + articleId);
   $.get(clickUrl, function (data) {
     localStorage.setItem('articleId', articleId);
     //window.location.href = 'detail.html?' + articleId;
-    //history.pushState('detail', '文章详情', 'detail.html?' + articleId+'#');
-    //$('.app-body').hide();
-    sessionStorage.setItem('index', id);
-    sessionStorage.setItem('top', document.body.scrollTop);
-    sessionStorage.setItem('height', document.body.height);
+    //sessionStorage.setItem('index', id);
+    //sessionStorage.setItem('top', document.body.scrollTop);
+    //sessionStorage.setItem('height', document.body.height);
     //loadDetails(id);
     var clickcount = $('#' + id).find('.clickCount').text();
     $('#' + id).find('.clickCount').text(parseInt(clickcount)+1);
@@ -163,24 +163,6 @@ function getDetails(id) {
    });
    */
 }
-/*
-window.onpopstate = function (event) {
-  var indexId = sessionStorage.getItem('index');
-  if (indexId != null) {
-    $('.data-body').hide();
-    setTimeout(function () {
-      $('.app-body').show();
-      //$('body').css('height', sessionStorage.getItem('height'));
-      //$('body').scrollTop(sessionStorage.getItem('top'));
-      $('body').scrollTop($('#' + indexId).offset().top - $(window).height() / 2+80);
-    }, 300);
-    //console.log(sessionStorage.getItem('top'));
-    //$('body').animate({scrollTop: sessionStorage.getItem('top')}, 100);
-    sessionStorage.setItem('load', 0);
-    $('body').css('background','#ffffff');
-  }
-};
-*/
 
 
 function loadTypeArticles(id) {
@@ -226,8 +208,24 @@ $(document).ready(function () {
 })
 
 
-
 /*
+window.onpopstate = function (event) {
+  var indexId = sessionStorage.getItem('index');
+  if (indexId != null) {
+    $('.data-body').hide();
+    setTimeout(function () {
+      $('.app-body').show();
+      //$('body').css('height', sessionStorage.getItem('height'));
+      $('body').scrollTop(sessionStorage.getItem('top'));
+      //$('body').animate({scrollTop: sessionStorage.getItem('top')}, 100);
+      //$('body').scrollTop($('#' + indexId).offset().top - $(window).height() / 2+80);
+    }, 300);
+    //console.log(sessionStorage.getItem('top'));
+    sessionStorage.setItem('load', 0);
+    $('body').css('background','#ffffff');
+  }
+};
+
 function loadDetails(id) {
   var article;
   $('body').scrollTop(0);
