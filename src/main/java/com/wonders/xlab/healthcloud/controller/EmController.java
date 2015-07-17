@@ -151,12 +151,22 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         //修改app发送信息状态为已回复
         oldEm.setIsReplied(true);
-        emMessagesRepository.save(oldEm);
+        EmMessages em = emMessagesRepository.save(oldEm);
 
         questionOrder.setQuestionStatus(QuestionOrder.QuestionStatus.done);
-        questionOrderRepository.save(questionOrder);
+         questionOrderRepository.save(questionOrder);
 
         User user = userRepository.findByTel(userTel);
+        // 修改用户积分
+        Calendar c = Calendar.getInstance();
+        c.setTime(em.getCreatedDate());  //回复时间
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(oldEm.getCreatedDate()); //提问时间
+        int time =(int) (c.getTimeInMillis() - c1.getTimeInMillis() - EMUtils.getOvertime()) / 60 / 1000;
+        if (time >0) {
+            user.setIntegrals(user.getIntegrals()+time);
+            userRepository.save(user);
+        }
         //从缓存里面移除该问题
         questionCache.removeFromCache(user.getId() + "_RESPONDENT");
         questionCache.removeFromCache(user.getId() + "_ASK_TIME");
@@ -507,6 +517,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         if (lastMessage.getIsReplied()) { //用户已回复
 
+
+
             newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS, EMUtils.countDoctors()));
 
             List<EmMessages> emMessagesList = null;
@@ -525,6 +537,8 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 }
             }*/
 
+
+
             emDoctorNumber.setList(emMessagesList);
 
             emDoctorNumber.setLastQuestionStatus(0);
@@ -540,9 +554,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         if (time > 0) {  // 超时
             emDoctorNumber.setLastQuestionStatus(1);
             emDoctorNumber.setContent(String.format(Constant.INTERROGATION_OVERTIME_CONTENT,time));
-            // 修改用户积分
-            currentUser.setIntegrals(currentUser.getIntegrals()+time);
-            userRepository.save(currentUser);
+
             emDoctorNumber.setList(new ArrayList<EmMessages>());
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
         } else {
