@@ -80,11 +80,20 @@ function finishTask() {
     $('#error-alert').modal('open');
     return false;
   }
-  if (article.type == 3 && $('#pressureValue1').val().length == 0||$('#pressureValue2').val().length == 0) {
+  if (article.type == 3 && $('#pressureValue1').val().length == 0) {
     $finish.button('reset');
     $finish.attr('disabled', false);
     $('#error-content').html('请填写内容');
     $('#error-alert').modal('open');
+    console.log(1);
+    return false;
+  }
+  if (article.type == 3 && $('#pressureValue2').val().length == 0) {
+    $finish.button('reset');
+    $finish.attr('disabled', false);
+    $('#error-content').html('请填写内容');
+    $('#error-alert').modal('open');
+    console.log(1);
     return false;
   }
   var content = '';

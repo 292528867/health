@@ -3,6 +3,7 @@ package com.wonders.xlab.healthcloud.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wonders.xlab.framework.Application;
+import com.wonders.xlab.healthcloud.dto.EMToken;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,5 +72,10 @@ public class EMUtilsTest {
     public void testRequstEMChatGet() throws Exception {
         ResponseEntity result = emUtils.requestEMChat(null, "get", "chatgroups", String.class);
         System.out.println("result.getBody() = " + result.getBody());
+    }
+
+    @Test
+    public void testPushTokenToCache() throws Exception {
+        System.out.println("emUtils.pushTokenToCache(); = " + emUtils.pushTokenToCache());
     }
 }
