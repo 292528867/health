@@ -120,6 +120,11 @@ public class StewardController extends AbstractBaseController<Steward, Long> {
             Set<Steward> stewards = new HashSet<>();
             stewards.addAll(stewardRepository.findByRank(rp.getRank()));
             rp.setStewards(stewards);
+        }else{
+            return new ControllerResult<>()
+                    .setRet_code(-1)
+                    .setRet_values("")
+                    .setMessage("次推荐包不存在服务项目！");
         }
         return new ControllerResult<RecommendPackage>()
                 .setRet_code(0)
