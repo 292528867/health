@@ -129,7 +129,7 @@ public class DiscoveryServiceProxy implements DiscoveryService {
 		List<HealthInfo> healthInfos = this.healthInfoRepository.findByHealthInfoIdsWithClickInfo(ids_long_list.toArray(new Long[0]));
 		List<HealthInfoDto> dtoes = new ArrayList<>();
 		for (HealthInfo healthInfo : healthInfos) {
-			HealthInfoDto healthInfoDto = new HealthInfoDto().toNewHealthInfoDto(healthInfo);
+			HealthInfoDto healthInfoDto = new HealthInfoDto().toSimpleHealthInfoDto(healthInfo);
 			healthInfoDto.setClickCount(healthInfo.getHealthInfoClickInfo().getVirtualClickCount());
 			dtoes.add(healthInfoDto);
 			

@@ -184,7 +184,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 		List<HealthInfoDto> healthInfoDtoes = new ArrayList<>();
 		for (HealthInfo healthInfo : allHealthInfos) {
 			HealthInfoDto healthInfoDto = new HealthInfoDto();
-			healthInfoDto = new HealthInfoDto().toNewHealthInfoDto(healthInfo);
+			healthInfoDto = new HealthInfoDto().toSimpleHealthInfoDto(healthInfo);
 			healthInfoDto.setClickCount(healthInfo.getHealthInfoClickInfo().getVirtualClickCount());
 			healthInfoDtoes.add(healthInfoDto);
 		}
