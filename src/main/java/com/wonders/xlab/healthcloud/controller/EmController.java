@@ -114,7 +114,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                     .setMessage("回复失败");
         }
         QuestionOrder questionOrder = questionOrderRepository.find(Collections.singletonMap("messages.id_equal", oldEm.getId()));
-        if(QuestionOrder.QuestionStatus.done == questionOrder.getQuestionStatus()){
+        if (QuestionOrder.QuestionStatus.done == questionOrder.getQuestionStatus()) {
             return new ControllerResult<>()
                     .setRet_code(-1)
                     .setRet_values("")
@@ -144,29 +144,27 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
                 true,
                 false
         );
-        emMessagesRepository.save(emMessages);
+        EmMessages em = emMessagesRepository.save(emMessages);
+
         //回复后发送信息给用户
         Doctor doctor = doctorRepository.find(Collections.singletonMap("tel_equal", body.getFrom()));
         SmsUtils.sendEmReplyInfo(userTel);
 
         //修改app发送信息状态为已回复
         oldEm.setIsReplied(true);
-        EmMessages em = emMessagesRepository.save(oldEm);
+        emMessagesRepository.save(oldEm);
 
         questionOrder.setQuestionStatus(QuestionOrder.QuestionStatus.done);
-         questionOrderRepository.save(questionOrder);
+        questionOrderRepository.save(questionOrder);
 
         User user = userRepository.findByTel(userTel);
         // 修改用户积分
-        Calendar c = Calendar.getInstance();
-        c.setTime(em.getCreatedDate());  //回复时间
-        Calendar c1 = Calendar.getInstance();
-        c1.setTime(oldEm.getCreatedDate()); //提问时间
-        int time =(int) (c.getTimeInMillis() - c1.getTimeInMillis() - EMUtils.getOvertime()) / 60 / 1000;
-        if (time >0) {
-            user.setIntegrals(user.getIntegrals()+time);
+        int time = (int) (em.getCreatedDate().getTime() - oldEm.getCreatedDate().getTime() - EMUtils.getOvertime()) / 60 / 1000;
+        if (time > 0) {
+            user.setIntegrals(user.getIntegrals() + time);
             userRepository.save(user);
         }
+
         //从缓存里面移除该问题
         questionCache.removeFromCache(user.getId() + "_RESPONDENT");
         questionCache.removeFromCache(user.getId() + "_ASK_TIME");
@@ -367,7 +365,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         String body = objectMapper.writeValueAsString(Collections.singletonMap("nickname", nickname));
 
         try {
-            emUtils.requestEMChat(body, "put",  "users/" + username, ChatGroupsResponseBody.class);
+            emUtils.requestEMChat(body, "put", "users/" + username, ChatGroupsResponseBody.class);
         } catch (HttpClientErrorException e) {
             return -1;
         }
@@ -460,7 +458,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
 
         User currentUser = userRepository.findByTel(tel);
         String groupId = null;
-        if(currentUser != null){
+        if (currentUser != null) {
             groupId = currentUser.getGroupId();
         }
 
@@ -479,7 +477,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             newMessages.setFromUser(tel);
 
             List<EmMessages> list = new ArrayList<>();
-            list.add( emMessagesRepository.save(newMessages));
+            list.add(emMessagesRepository.save(newMessages));
             emDoctorNumber.setLastQuestionStatus(0);
             emDoctorNumber.setContent(Constant.INTERROGATION_QUESTION_SAMPLE);
             emDoctorNumber.setList(list);
@@ -514,9 +512,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         }
 
 
-
         if (lastMessage.getIsReplied()) { //用户已回复
-
 
 
             newMessages.setMsg(String.format(Constant.INTERROGATION_GRETTINGS, EMUtils.countDoctors()));
@@ -538,7 +534,6 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
             }*/
 
 
-
             emDoctorNumber.setList(emMessagesList);
 
             emDoctorNumber.setLastQuestionStatus(0);
@@ -550,10 +545,10 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         Calendar calendar = Calendar.getInstance();
         Calendar calendar1 = Calendar.getInstance();
         calendar1.setTime(emMessages.getCreatedDate());
-        int time =(int)(calendar.getTimeInMillis() - calendar1.getTimeInMillis() - EMUtils.getOvertime()) / 60 / 1000; //超时多长时间
+        int time = (int) (calendar.getTimeInMillis() - calendar1.getTimeInMillis() - EMUtils.getOvertime()) / 60 / 1000; //超时多长时间
         if (time > 0) {  // 超时
             emDoctorNumber.setLastQuestionStatus(1);
-            emDoctorNumber.setContent(String.format(Constant.INTERROGATION_OVERTIME_CONTENT,time));
+            emDoctorNumber.setContent(String.format(Constant.INTERROGATION_OVERTIME_CONTENT, time));
 
             emDoctorNumber.setList(new ArrayList<EmMessages>());
             return new ControllerResult<EmDoctorNumber>().setRet_code(0).setRet_values(emDoctorNumber).setMessage("");
@@ -690,7 +685,7 @@ public class EmController extends AbstractBaseController<EmMessages, Long> {
         List<QuestionOrder> orders = questionOrderRepository.findQuestionOrdersByDoctorID(doctorId, statuses, pageable);
 
         QuestionOrder newQuestion = null;
-        if(pageable.getPageNumber() == 0){
+        if (pageable.getPageNumber() == 0) {
             newQuestion = questionOrderService.findOneNewQuestion();
         }
 
