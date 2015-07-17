@@ -438,6 +438,7 @@ messages: 提问的问题对象
 	toUser: 用户chatGroupId 医生回复问题时，需要发送至该chatGroupId
 	toUsers: 环信api需要，本接口中不需要处理
 questionStatus: 问题状态。processing为等待回答，done为已回答
+newQuestion: 进入抢单页面，查询历史订单时，会查出一条新问题给医生
 
 
 医生切换问题接口
