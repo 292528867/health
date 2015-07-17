@@ -66,6 +66,23 @@ public class HealthInfoDto {
 	}
 	
 	/**
+	 * 根据{@link HealthInfo}实体对象转换成dto对象，不包含htmlInfo
+	 * @param hi 游离对象
+	 * @return
+	 */
+	public HealthInfoDto toSimpleHealthInfoDto(HealthInfo hi) {
+		// 不包含htmlinfo
+		HealthInfoDto dto = new HealthInfoDto();
+		dto.setDesc(hi.getDescription());
+		dto.setTitle(hi.getTitle());
+		dto.setPictureUrl(hi.getPictureUrl());
+		dto.setPictureUrl2(hi.getPictureUrl2());
+		dto.setCreateTime(hi.getCreatedDate());
+		dto.setId(hi.getId());
+		return dto;
+	}
+	
+	/**
 	 * 更新一个{@link HealthInfo}实体对象，游离状态。
 	 */
 	public HealthInfo updateHealthInfo(HealthInfo hi) {
